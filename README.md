@@ -1,2 +1,2 @@
 # ft_transcendence
-Dernier projet du tronc commun de 42
+Le dernier projet du tronc commun de 42
