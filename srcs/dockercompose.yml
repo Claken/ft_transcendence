@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+    front:
+        container_name: front
+        # build:
+        #     ./requirements/nginx
+        ports:
+            - "8080:8080"
+        # restart:
+        #     unless-stopped
+        depends_on:
+            - back
+        networks:
+            - app
+
+    back:
+        container_name: back
+        # build:
+        #     ./requirements/wordpress
+        depends_on:
+            - db
+        ports:
+            - "6565:6565"
+        networks:
+            - app
+            - database
+        # restart:
+        #     unless-stopped
+
+    db:
+        image: postgres:14.4
+        restart: always
+        ports:
+          - "5432:5432"
+        env_file:
+          - ./requirements/db/.env
+        environment:
+          POSTGRES_DB: db
+          POSTGRES_USER: user
+          POSTGRES_PASSWORD: password
+        networks:
+            - database
+
+
+networks:
+    app:
+    database:
