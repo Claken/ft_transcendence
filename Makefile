@@ -6,7 +6,7 @@
 #    By: vico <vico@student.42.fr>                  +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/07/19 16:31:57 by vico              #+#    #+#              #
-#    Updated: 2022/07/22 18:59:02 by vico             ###   ########.fr        #
+#    Updated: 2022/07/25 17:00:36 by vico             ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -34,6 +34,9 @@ install:
 clean:
 			@printf "\n$(RED)Delete containers and volumes$(RESET)\n"
 			@docker-compose down -v
+
+fclean:		clean
+			@docker image rm frontend backend node:16.16.0 postgres:14.4 dpage/pgadmin4:4.18
 			@printf "\n"
 
 re:			clean all
