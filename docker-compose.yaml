@@ -30,7 +30,7 @@ services:
       - postgres-data:/var/lib/postgresql/data
 
   pgadmin:
-    image: dpage/pgadmin4:4.18
+    image: dpage/pgadmin4:6.11
     restart: always
     environment:
       PGADMIN_DEFAULT_EMAIL: admin@42.com

@@ -6,7 +6,7 @@
 #    By: vico <vico@student.42.fr>                  +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/07/19 16:31:57 by vico              #+#    #+#              #
-#    Updated: 2022/07/26 15:57:29 by vico             ###   ########.fr        #
+#    Updated: 2022/07/26 16:41:36 by vico             ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -38,7 +38,11 @@ clean:
 			@docker-compose down -v
 
 fclean:		clean
-			@docker image rm frontend backend node:16.16.0 postgres:14.4 dpage/pgadmin4:4.18
+			@printf "$(RED)Delete modules..."
+			@rm -rf backend/node_modules
+			@rm -rf frontend/node_modules
+			@printf "\n$(RED)Delete images...$(RESET)"
+			@docker image rm frontend backend postgres:14.4 dpage/pgadmin4:6.11
 			@printf "\n"
 
 re:			clean all
