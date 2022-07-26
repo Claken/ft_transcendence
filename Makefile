@@ -6,7 +6,7 @@
 #    By: vico <vico@student.42.fr>                  +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/07/19 16:31:57 by vico              #+#    #+#              #
-#    Updated: 2022/07/26 16:41:36 by vico             ###   ########.fr        #
+#    Updated: 2022/07/26 21:27:31 by vico             ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -25,7 +25,7 @@ $(NAME):
 			@printf "\n$(BLUE)Build images, containers and volumes...$(RESET)"
 			@cd backend;npm install;cd ../
 			@cd frontend;npm install;cd ../
-			@docker compose up --build -d
+			@docker-compose up --build -d
 			@printf " $(GREEN)[$(NAME) done][✔] $(RESET)\n"
 
 all:		 $(NAME)
