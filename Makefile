@@ -6,7 +6,7 @@
 #    By: vico <vico@student.42.fr>                  +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/07/19 16:31:57 by vico              #+#    #+#              #
-#    Updated: 2022/07/27 02:58:43 by vico             ###   ########.fr        #
+#    Updated: 2022/07/27 03:12:14 by vico             ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -39,6 +39,8 @@ clean:
 fclean:
 			@printf "$(RED)Delete containers, volumes and images...$(RESET)\n"
 			@docker-compose down -v --rmi all
+			@printf "$(RED)Delete image node...$(RESET)\n"
+			@docker image rm node:16.16.0 || :
 			@printf "$(RED)[fclean done]$(RESET)\n"
 
 re:			clean all
