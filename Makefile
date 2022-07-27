@@ -6,7 +6,7 @@
 #    By: vico <vico@student.42.fr>                  +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/07/19 16:31:57 by vico              #+#    #+#              #
-#    Updated: 2022/07/27 02:38:22 by vico             ###   ########.fr        #
+#    Updated: 2022/07/27 02:58:43 by vico             ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -29,16 +29,16 @@ $(NAME):
 all:		 $(NAME)
 
 install:
-			@sudo apt update;sudo apt install nodejs npm -y
+			@sudo apt update && sudo apt install nodejs npm -y
 
 clean:
 			@printf "$(RED)Delete containers and volumes...$(RESET)\n"
 			@docker-compose down -v
 			@printf "$(RED)[clean done]$(RESET)\n"
 
-fclean:		clean
-			@printf "$(RED)Delete images...$(RESET)\n"
-			@docker image rm frontend backend node:16.16.0 postgres:14.4 dpage/pgadmin4:6.11
+fclean:
+			@printf "$(RED)Delete containers, volumes and images...$(RESET)\n"
+			@docker-compose down -v --rmi all
 			@printf "$(RED)[fclean done]$(RESET)\n"
 
 re:			clean all
