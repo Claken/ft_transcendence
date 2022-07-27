@@ -6,7 +6,7 @@
 #    By: vico <vico@student.42.fr>                  +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/07/19 16:31:57 by vico              #+#    #+#              #
-#    Updated: 2022/07/26 21:27:31 by vico             ###   ########.fr        #
+#    Updated: 2022/07/27 02:38:22 by vico             ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -22,28 +22,24 @@ RESET		= \033[0m
 NAME		= project
 
 $(NAME):	
-			@printf "\n$(BLUE)Build images, containers and volumes...$(RESET)"
-			@cd backend;npm install;cd ../
-			@cd frontend;npm install;cd ../
+			@printf "$(BLUE)Build images, containers and volumes...$(RESET)\n"
 			@docker-compose up --build -d
 			@printf " $(GREEN)[$(NAME) done][✔] $(RESET)\n"
 
 all:		 $(NAME)
 
 install:
-			sudo apt update && sudo apt install nodejs npm -y
+			@sudo apt update;sudo apt install nodejs npm -y
 
 clean:
-			@printf "\n$(RED)Delete containers and volumes$(RESET)\n"
+			@printf "$(RED)Delete containers and volumes...$(RESET)\n"
 			@docker-compose down -v
+			@printf "$(RED)[clean done]$(RESET)\n"
 
 fclean:		clean
-			@printf "$(RED)Delete modules..."
-			@rm -rf backend/node_modules
-			@rm -rf frontend/node_modules
-			@printf "\n$(RED)Delete images...$(RESET)"
-			@docker image rm frontend backend postgres:14.4 dpage/pgadmin4:6.11
-			@printf "\n"
+			@printf "$(RED)Delete images...$(RESET)\n"
+			@docker image rm frontend backend node:16.16.0 postgres:14.4 dpage/pgadmin4:6.11
+			@printf "$(RED)[fclean done]$(RESET)\n"
 
 re:			clean all
 

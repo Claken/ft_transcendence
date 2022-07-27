@@ -1,15 +1,9 @@
 /backend/node_modules
 /backend/dist
-/backend/build
 
 /frontend/node_modules
 /frontend/dist
-/frontend/build
 
 .DS_Store
 
 .vscode/*
-!.vscode/settings.json
-!.vscode/tasks.json
-!.vscode/launch.json
-!.vscode/extensions.json
