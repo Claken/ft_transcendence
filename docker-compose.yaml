@@ -8,6 +8,8 @@ services:
       - 3000:3000
     depends_on:
       - backend
+    networks:
+      - pong_network
     container_name: frontend
 
   backend:
@@ -18,20 +20,19 @@ services:
     depends_on:
       - postgres
     networks:
-      - network_backend
+      - pong_network
     container_name: backend
 
   postgres:
     image: postgres:14.4
     restart: always
-    ports:
-      - 5432:5432
+    command: postgres -p 5432
     env_file:
       - ./.env
     volumes:
       - postgres-data:/var/lib/postgresql/data
     networks:
-      - network_backend
+      - pong_network
     container_name: postgres
       
 
@@ -49,11 +50,11 @@ services:
     depends_on:
       - postgres
     networks:
-      - network_backend
+      - pong_network
     container_name: pgadmin
 
 networks:
-  network_backend:
+  pong_network:
     driver: bridge
 
 volumes:
