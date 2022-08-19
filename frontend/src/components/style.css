@@ -1,0 +1,11 @@
+.navBar {
+    display: flex;
+    justify-content: space-around;
+}
+
+.navItem {
+    display: flex;
+    justify-content: center;
+    opacity: 0.4;
+    background-color: blue;
+}
