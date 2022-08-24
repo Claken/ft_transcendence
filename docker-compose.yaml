@@ -1,4 +1,31 @@
 version: "3.8"
+
+volumes:
+  frontend-data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: $PWD/frontend/src
+  backend-data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: $PWD/backend/src
+  postgres-data:
+    # driver: local
+    # driver_opts:
+    #   type: none
+    #   o: bind
+    #   device:
+  pgadmin-data:
+    # driver: local
+    # driver_opts:
+    #   type: none
+    #   o: bind
+    #   device:
+
 services:
 
   frontend:
@@ -60,29 +87,3 @@ services:
 networks:
   pong_network:
     driver: bridge
-
-volumes:
-  frontend-data:
-    driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: $PWD/frontend/src
-  backend-data:
-    driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: $PWD/backend/src
-  postgres-data:
-    # driver: local
-    # driver_opts:
-    #   type: none
-    #   o: bind
-    #   device:
-  pgadmin-data:
-    # driver: local
-    # driver_opts:
-    #   type: none
-    #   o: bind
-    #   device:
