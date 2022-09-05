@@ -5,8 +5,8 @@ import { AuthService } from './auth.service';
 import { AuthEntity } from './models/auth.entity';
 
 @Module({
-  imports[TypeOrmModule.forFeature(AuthEntity)],
+  imports: [TypeOrmModule.forFeature([AuthEntity])],
   controllers: [AuthController],
-  providers: [AuthService]
+  providers: [AuthService],
 })
 export class AuthModule {}
