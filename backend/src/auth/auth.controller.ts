@@ -1,7 +1,15 @@
-import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
-import { Observable } from 'rxjs';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Put,
+} from '@nestjs/common';
 import { DeleteResult, UpdateResult } from 'typeorm';
 import { AuthService } from './auth.service';
+import { AuthEntity } from './models/auth.entity';
 import { AuthPost } from './models/auth.interface';
 
 @Controller('auth')
@@ -9,24 +17,24 @@ export class AuthController {
   constructor(private authService: AuthService) {}
 
   @Post()
-  create(@Body() post: AuthPost): Observable<AuthPost> {
-    return this.authService.createUser(post);
+  async create(@Body() post: AuthPost): Promise<AuthPost> {
+    return await this.authService.createUser(post);
   }
   @Get()
-  findAllUsers(): Observable<AuthPost[]> {
-    return this.authService.findAllUsers();
+  async findAllUsers(): Promise<AuthEntity[]> {
+    return await this.authService.findAllUsers();
   }
 
   @Put(':id')
-  update(
+  async update(
     @Param('id') id: number,
     @Body() authPost: AuthPost,
-  ): Observable<UpdateResult> {
-    return this.authService.updateUser(id, authPost);
+  ): Promise<UpdateResult> {
+    return await this.authService.updateUser(id, authPost);
   }
 
   @Delete(':id')
-  delete(@Param('id') id: number): Observable<DeleteResult> {
-    return this.authService.deleteUser(id);
+  async delete(@Param('id') id: number): Promise<DeleteResult> {
+    return await this.authService.deleteUser(id);
   }
 }

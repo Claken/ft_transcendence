@@ -5,7 +5,8 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
-@Entity('auth_post')
+// Table in the DB
+@Entity('Users')
 export class AuthEntity {
   @PrimaryGeneratedColumn()
   id: number;
