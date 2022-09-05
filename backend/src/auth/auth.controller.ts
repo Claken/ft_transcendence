@@ -1,5 +1,6 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
 import { Observable } from 'rxjs';
+import { DeleteResult, UpdateResult } from 'typeorm';
 import { AuthService } from './auth.service';
 import { AuthPost } from './models/auth.interface';
 
@@ -14,5 +15,18 @@ export class AuthController {
   @Get()
   findAllUsers(): Observable<AuthPost[]> {
     return this.authService.findAllUsers();
+  }
+
+  @Put(':id')
+  update(
+    @Param('id') id: number,
+    @Body() authPost: AuthPost,
+  ): Observable<UpdateResult> {
+    return this.authService.updateUser(id, authPost);
+  }
+
+  @Delete(':id')
+  delete(@Param('id') id: number): Observable<DeleteResult> {
+    return this.authService.deleteUser(id);
   }
 }

@@ -2,7 +2,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { from, Observable } from 'rxjs';
-import { Repository } from 'typeorm';
+import { DeleteResult, Repository, UpdateResult } from 'typeorm';
 import { AuthEntity } from './models/auth.entity';
 import { AuthPost } from './models/auth.interface';
 
@@ -27,5 +27,13 @@ export class AuthService {
     // find() is a "Repository" method to call select query
     findAllUsers(): Observable<AuthPost[]> {
         return from(this.authPostRepo.find());
+    }
+
+    updateUser(id: number, authPost: AuthPost): Observable<UpdateResult> {
+        return from(this.authPostRepo.update(id, authPost));
+    }
+
+    deleteUser(id: number): Observable<DeleteResult> {
+        return from(this.authPostRepo.delete(id));
     }
 }
