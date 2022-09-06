@@ -7,7 +7,7 @@ import {
 
 // Table in the DB
 @Entity('Users')
-export class AuthEntity {
+export class UsersEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
