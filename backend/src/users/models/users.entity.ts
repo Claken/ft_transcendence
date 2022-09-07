@@ -9,10 +9,13 @@ import {
 @Entity('Users')
 export class UsersEntity {
   @PrimaryGeneratedColumn()
-  id: number;
+  id?: number;
+
+  @Column({ unique: true })
+  username: string;
 
   @Column()
-  username: string;
+  email?: string;
 
   @Column()
   password: string;

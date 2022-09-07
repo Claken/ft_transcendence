@@ -1,6 +1,8 @@
 export interface UsersPost {
   id?: number;
   username: string;
+  email?: string;
   password: string;
-  createdAt: Date;
+  createdAt?: Date;
+  access_token?: string; // ?
 }

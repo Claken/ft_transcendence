@@ -18,13 +18,25 @@ export class UsersService {
    * @returns
    * save() is a "Repository" method (from Typeorm) to call insert query
    */
-  async createUser(usersPost: UsersPost): Promise<UsersPost> {
+  async create(usersPost: UsersPost): Promise<UsersPost> {
     return await this.usersPostRepo.save(usersPost);
   }
 
   // find() is a "Repository" method to call select query
   async findAllUsers(): Promise<UsersEntity[]> {
     return await this.usersPostRepo.find();
+  }
+
+  async findOneBy(usernameToFind: string): Promise<UsersEntity> {
+    return await this.usersPostRepo.findOneBy({
+      username: usernameToFind,
+    });
+  }
+
+  async getByEmail(emailToFind: string): Promise<UsersEntity> {
+    return await this.usersPostRepo.findOneBy({
+      username: emailToFind,
+    });
   }
 
   async updateUser(id: number, usersPost: UsersPost): Promise<UpdateResult> {

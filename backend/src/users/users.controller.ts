@@ -18,11 +18,22 @@ export class UsersController {
 
   @Post()
   async create(@Body() post: UsersPost): Promise<UsersPost> {
-    return await this.usersService.createUser(post);
+    return await this.usersService.create(post);
   }
   @Get()
   async findAllUsers(): Promise<UsersEntity[]> {
     return await this.usersService.findAllUsers();
+  }
+
+  @Get(':username')
+  async findOneBy(
+    @Param('username') usernameToFind: string,
+  ): Promise<UsersEntity> {
+    return await this.usersService.findOneBy(usernameToFind);
+  }
+  @Get(':email')
+  async getByEmail(@Param('email') emailToFind: string): Promise<UsersEntity> {
+    return await this.usersService.findOneBy(emailToFind);
   }
 
   @Put(':id')
