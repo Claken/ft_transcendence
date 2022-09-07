@@ -23,6 +23,7 @@ export class UsersService {
   }
 
   // find() is a "Repository" method to call select query
+  // ? throw exception if not found ?
   async findAllUsers(): Promise<UsersEntity[]> {
     return await this.usersPostRepo.find();
   }
@@ -35,7 +36,13 @@ export class UsersService {
 
   async getByEmail(emailToFind: string): Promise<UsersEntity> {
     return await this.usersPostRepo.findOneBy({
-      username: emailToFind,
+      email: emailToFind,
+    });
+  }
+  
+  async getById(idToFind: number): Promise<UsersEntity> {
+    return await this.usersPostRepo.findOneBy({
+      id: idToFind,
     });
   }
 

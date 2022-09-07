@@ -33,7 +33,11 @@ export class UsersController {
   }
   @Get(':email')
   async getByEmail(@Param('email') emailToFind: string): Promise<UsersEntity> {
-    return await this.usersService.findOneBy(emailToFind);
+    return await this.usersService.getByEmail(emailToFind);
+  }
+  @Get(':id')
+  async getById(@Param('id') idToFind: number): Promise<UsersEntity> {
+    return await this.usersService.getById(idToFind);
   }
 
   @Put(':id')
