@@ -6,17 +6,20 @@ import {
   Param,
   Post,
   Put,
+  UseGuards,
 } from '@nestjs/common';
 import { DeleteResult, UpdateResult } from 'typeorm';
 import { UsersService } from './users.service';
 import { UsersEntity } from './models/users.entity';
 import { UsersPost } from './models/users.interface';
+import JwtAuthenticationGuard from 'src/auth/jwt-authentication.guard';
 
 @Controller('users')
 export class UsersController {
   constructor(private usersService: UsersService) {}
 
   @Post()
+  @UseGuards(JwtAuthenticationGuard)
   async create(@Body() post: UsersPost): Promise<UsersPost> {
     return await this.usersService.create(post);
   }
