@@ -2,6 +2,7 @@ import { IsNotEmpty, IsEmail, Matches, Length } from 'class-validator';
 import { MESSAGES, REGEX } from 'src/app.utility';
 
 export class CreateUserDto {
+  id:number;
   email: string;
 
   @IsNotEmpty()

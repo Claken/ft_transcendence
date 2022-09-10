@@ -11,8 +11,8 @@ import {
 import { DeleteResult, UpdateResult } from 'typeorm';
 import { UsersService } from './users.service';
 import { UsersEntity } from './models/users.entity';
-import { UsersPost } from './models/users.interface';
 import JwtAuthenticationGuard from 'src/auth/jwt-authentication.guard';
+import { UsersPost } from './models/users.interface';
 
 @Controller('users')
 export class UsersController {

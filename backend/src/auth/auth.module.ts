@@ -7,7 +7,7 @@ import { LocalStrategy } from './local.strategy';
 import { AuthController } from './auth.controller';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { config } from 'process';
-import { JwtStrategy } from './jwt.strategy';
+import { FortyTwoStrategy, JwtStrategy } from './fortytwo.strategy';
 
 @Module({
   imports: [
@@ -17,14 +17,14 @@ import { JwtStrategy } from './jwt.strategy';
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: async (configService: ConfigService) => ({
-        secret: configService.get('JWT'),
+        secret: process.env.JWT_SECRET,
         signOptions: {
-          expiresIn: `${configService.get('JWT_EXPIRATION_TIME')}s`,
+          expiresIn: '3600s',
         },
       }),
     }),
   ],
-  providers: [AuthService, LocalStrategy, JwtStrategy, ConfigService],
+  providers: [AuthService, JwtStrategy, ConfigService, FortyTwoStrategy],
   controllers: [AuthController],
 })
 export class AuthModule {}
