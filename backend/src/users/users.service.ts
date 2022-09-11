@@ -28,7 +28,7 @@ export class UsersService {
     return await this.usersPostRepo.find();
   }
 
-  async findOneBy(usernameToFind: string): Promise<UsersEntity> {
+  async getByUsername(usernameToFind: string): Promise<UsersEntity> {
     return await this.usersPostRepo.findOneBy({
       username: usernameToFind,
     });

@@ -1,59 +1,45 @@
-import { Controller, Get, Post, Req, Res, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Redirect, Req, Res, UseGuards } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { CreateUserDto } from 'src/users/dto/createUser.dto';
 import { AuthService } from './auth.service';
-import { FortyTwoAuthGuard } from './FortyTwoAuthGuard';
-import RequestWithUser from './requestWithUser.interface';
+import { FortyTwoAuthGuard } from './fortytwo.authguard';
 
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
+  /**
+   *
+   * @param request this is the route the user will visit to authenticate
+   * @param response
+   * @returns
+   */
+  @Get('login')
   @UseGuards(FortyTwoAuthGuard)
-  @Post('login')
-  async login(@Req() request: RequestWithUser, @Res() response: Response) {
-    const { user } = request;
-    const cookie = this.authService.getCookieJwtToken(user.id);
-    response.setHeader('Set-Cookie', cookie);
-    user.password = undefined;
-    return response.send(user);
+  login() {
+    return ;
   }
 
+  /**
+   *
+   * @param req this is the redirect URL the OAuth2 Provider will call
+   * @param res
+   * @returns
+   */
   @UseGuards(FortyTwoAuthGuard)
   @Get('callback')
-  async fortytworedirect(
-    @Req() req: any,
-    @Res() res: Response,
-  ): Promise<Response> {
-    const {
-      user,
-      authInfo,
-    }: {
-      user: CreateUserDto;
-      authInfo: {
-        accessToken: string;
-        refreshToken: string;
-        expires_in: number;
-      };
-    } = req;
-    if (!user) {
-      res.redirect('/auth/login');
-      return;
-    }
-
-    req.user = undefined;
-
-    const jwt = this.authService.login(user);
-
-    res.set('authorization', `Bearer ${jwt}`);
-
-    return res.status(201).json({ authInfo, user });
+  redirect(@Res() res: Response) {
+    res.send(200);
   }
-
+  /**
+   *
+   * @param request destroy Session Log out
+   * @param response
+   * @returns
+   */
   @UseGuards()
-  @Post('logout')
+  @Get('logout')
   async logout(@Req() request: Request, @Res() response: Response) {
-    response.setHeader('Set-Cookie', this.authService.getCookieForLogOut());
     return response.status(200);
   }
 }

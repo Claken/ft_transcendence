@@ -1,33 +1,17 @@
-import { Injectable } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
-import { ConfigService } from '@nestjs/config';
-import { CreateUserDto } from 'src/users/dto/createUser.dto';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { UsersService } from 'src/users/users.service';
 
 @Injectable()
 export class AuthService {
   constructor(
-    private jwtService: JwtService,
-    private configService: ConfigService,
+    private usersService: UsersService,
   ) {}
 
-  login(user: CreateUserDto) {
-    const payload = {
-      name: user.username,
-      sub: user.id,
-    };
-
-    return this.jwtService.sign(payload);
-  }
-
-  public getCookieJwtToken(userId: number) {
-    const payload: TokenPayload = { userId };
-    const token = this.jwtService.sign(payload);
-    return `Authentication=${token}; HttpOnly; Path=/; Max-Age=${this.configService.get(
-      'JWT_EXPIRATION_TIME'
-    )}`;
-  }
-
-  public getCookieForLogOut() {
-    return `Authentication=; HttpOnly; Path=/; Max-Age=0`;
-  }
+  // public async findUserById(apiId: number): Promise<any> {
+  //   const user = await this.usersService.getById(apiId);
+  //   if (!user) {
+  //     throw new UnauthorizedException();
+  //   }
+  //   return user;
+  // }
 }

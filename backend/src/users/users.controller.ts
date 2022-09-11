@@ -11,7 +11,6 @@ import {
 import { DeleteResult, UpdateResult } from 'typeorm';
 import { UsersService } from './users.service';
 import { UsersEntity } from './models/users.entity';
-import JwtAuthenticationGuard from 'src/auth/jwt-authentication.guard';
 import { UsersPost } from './models/users.interface';
 
 @Controller('users')
@@ -19,7 +18,6 @@ export class UsersController {
   constructor(private usersService: UsersService) {}
 
   @Post()
-  @UseGuards(JwtAuthenticationGuard)
   async create(@Body() post: UsersPost): Promise<UsersPost> {
     return await this.usersService.create(post);
   }
@@ -32,7 +30,7 @@ export class UsersController {
   async findOneBy(
     @Param('username') usernameToFind: string,
   ): Promise<UsersEntity> {
-    return await this.usersService.findOneBy(usernameToFind);
+    return await this.usersService.getByUsername(usernameToFind);
   }
   @Get(':email')
   async getByEmail(@Param('email') emailToFind: string): Promise<UsersEntity> {
