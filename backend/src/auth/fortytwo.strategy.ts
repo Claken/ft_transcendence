@@ -1,20 +1,15 @@
 import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
-import { Strategy } from 'passport-oauth2';
-import { AuthService } from './auth.service';
-import { UsersPost } from 'src/users/models/users.interface';
-import { Profile } from 'passport';
+import { Strategy, Profile } from 'passport-42';
 
 @Injectable()
-export class FortyTwoStrategy extends PassportStrategy(
-  Strategy,
-  'passport-42',
-) {
-  constructor(private authService: AuthService, private user: UsersPost) {
+export class FortyTwoStrategy extends PassportStrategy(Strategy, '42') {
+  constructor(configService: ConfigService) {
     super({
-      clientID: process.env.FORTYTWO_APP_UID,
-      clientSecret: process.env.FORTYTWO_APP_SECRET,
-      callbackURL: process.env.FORTYTWO_CALLBACK_URL,
+      clientID: configService.get<string>('FORTYTWO_APP_UID'),
+      clientSecret: configService.get<string>('FORTYTWO_APP_SECRET'),
+      callbackURL: configService.get<string>('FORTYTWO_CALLBACK_URL'),
     });
   }
   async validate(
@@ -22,9 +17,8 @@ export class FortyTwoStrategy extends PassportStrategy(
     refreshToken: string,
     profile: Profile,
   ): Promise<any> {
-    const { username, id, photos, emails } = profile;
-    console.log(username, id, photos, emails);
+    const { username, id, emails } = profile;
+    console.log(username, id, emails);
     // this.authService.findUserById(profile.);
-    // return ;
   }
 }
