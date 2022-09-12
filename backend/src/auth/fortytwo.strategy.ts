@@ -3,6 +3,7 @@ import { PassportStrategy } from '@nestjs/passport';
 import { Strategy } from 'passport-oauth2';
 import { AuthService } from './auth.service';
 import { UsersPost } from 'src/users/models/users.interface';
+import { Profile } from 'passport';
 
 @Injectable()
 export class FortyTwoStrategy extends PassportStrategy(
@@ -16,8 +17,14 @@ export class FortyTwoStrategy extends PassportStrategy(
       callbackURL: process.env.FORTYTWO_CALLBACK_URL,
     });
   }
-  async validate(accessToken: string, refreshToken: string): Promise<any> {
-
-    // return this.authService.findUserById(data.id);
+  async validate(
+    accessToken: string,
+    refreshToken: string,
+    profile: Profile,
+  ): Promise<any> {
+    const { username, id, photos, emails } = profile;
+    console.log(username, id, photos, emails);
+    // this.authService.findUserById(profile.);
+    // return ;
   }
 }
