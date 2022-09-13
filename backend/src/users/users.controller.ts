@@ -11,14 +11,14 @@ import {
 import { DeleteResult, UpdateResult } from 'typeorm';
 import { UsersService } from './users.service';
 import { UsersEntity } from './models/users.entity';
-import { UsersPost } from './models/users.interface';
+import { IUser } from './models/users.interface';
 
 @Controller('users')
 export class UsersController {
   constructor(private usersService: UsersService) {}
 
   @Post()
-  async create(@Body() post: UsersPost): Promise<UsersPost> {
+  async create(@Body() post: IUser): Promise<IUser> {
     return await this.usersService.create(post);
   }
   @Get()
@@ -44,9 +44,9 @@ export class UsersController {
   @Put(':id')
   async update(
     @Param('id') id: number,
-    @Body() usersPost: UsersPost,
+    @Body() user: IUser,
   ): Promise<UpdateResult> {
-    return await this.usersService.updateUser(id, usersPost);
+    return await this.usersService.updateUser(id, user);
   }
 
   @Delete(':id')

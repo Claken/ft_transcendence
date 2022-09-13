@@ -1,17 +1,24 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { IUser } from 'src/users/models/users.interface';
 import { UsersService } from 'src/users/users.service';
+import { AuthProvider } from './models/auths.interface';
 
 @Injectable()
-export class AuthService {
-  constructor(
-    private usersService: UsersService,
-  ) {}
+export class AuthService implements AuthProvider {
+  constructor(private usersService: UsersService) {}
 
-  // public async findUserById(apiId: number): Promise<any> {
-  //   const user = await this.usersService.getById(apiId);
-  //   if (!user) {
-  //     throw new UnauthorizedException();
-  //   }
-  //   return user;
-  // }
+  async validateUser(userDetails: IUser) {
+    const { id: userId } = userDetails;
+    const userFound = await this.usersService.getById(userId);
+    if (userFound) return userFound;
+    // should throw error if !userFound you cannot connect
+    return this.createUser(userDetails);
+  }
+  createUser(userDetails: IUser) {
+    return this.usersService.create(userDetails);
+  }
+
+  async findUserById(userId: number): Promise<IUser | undefined> {
+    return await this.usersService.getById(userId);  
+  }
 }

@@ -1,8 +1,8 @@
-export interface UsersPost {
+export interface IUser {
   id?: number;
   username: string;
-  email?: string;
-  password: string;
+  emails?: string;
+  profileUrl: string;
   createdAt?: Date;
-  access_token?: string; // ?
+  // accessToken?: string; // ?
 }

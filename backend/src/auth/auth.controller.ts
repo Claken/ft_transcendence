@@ -5,7 +5,7 @@ import { FortyTwoAuthGuard } from './fortytwo.authguard';
 
 @Controller('auth/42')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor() {}
 
   @Get('login')
   @UseGuards(FortyTwoAuthGuard)

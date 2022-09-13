@@ -10,15 +10,19 @@ import {
 export class UsersEntity {
   @PrimaryGeneratedColumn()
   id?: number;
-
-  @Column({ unique: true })
+  
+  // tofix: authService return newDefaultUser 
+  @Column({ default: '', unique: true }) 
   username: string;
 
-  @Column()
-  email?: string;
+  @Column({ default: '' })
+  emails?: string;
 
-  @Column()
-  password: string;
+  @Column({ default: '' })
+  profileUrl: string;
+
+  // @Column()
+  // accessToken?: string;
 
   @CreateDateColumn()
   createdAt: Date;
