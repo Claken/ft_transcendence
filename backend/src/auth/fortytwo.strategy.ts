@@ -24,3 +24,4 @@ export class FortyTwoStrategy extends PassportStrategy(Strategy, '42') {
     return await this.authService.validateUser(userDetails);
   }
 }
+

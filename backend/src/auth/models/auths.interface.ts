@@ -4,5 +4,4 @@ export interface AuthProvider {
     validateUser(userDetails: IUser);
     createUser(userDetails: IUser);
     findUserById(userId: number): Promise<IUser | undefined>;
-    // do implementation
 }

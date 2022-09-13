@@ -34,9 +34,9 @@ import { PassportModule } from '@nestjs/passport';
         };
       },
     }),
+    PassportModule.register({ session: true }),
     UsersModule,
     AuthModule,
-    PassportModule.register({ session: true }),
   ],
   controllers: [AppController],
   providers: [AppService],

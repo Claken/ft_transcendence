@@ -1,7 +1,6 @@
 import { Controller, Get, Req, Res, UseGuards } from '@nestjs/common';
 import { Request, Response } from 'express';
-import { AuthService } from './auth.service';
-import { FortyTwoAuthGuard } from './fortytwo.authguard';
+import { AuthenticatedGuard, FortyTwoAuthGuard } from './fortytwo.authguard';
 
 @Controller('auth/42')
 export class AuthController {
@@ -17,6 +16,12 @@ export class AuthController {
   @UseGuards(FortyTwoAuthGuard)
   redirect(@Res() res: Response) {
     res.send(200);
+  }
+
+  @Get('status')
+  @UseGuards(AuthenticatedGuard)
+  status() {
+    return "status";
   }
 
   @UseGuards()
