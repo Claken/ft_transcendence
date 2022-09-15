@@ -5,18 +5,14 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
-import * as Joi from 'joi';
 import { PassportModule } from '@nestjs/passport';
+import { entities } from './TypeOrm';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: ['.env'],
-      validationSchema: Joi.object({
-        JWT_SECRET: Joi.string().required(),
-        JWT_EXPIRATION_TIME: Joi.string().required(),
-      })
     }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
@@ -24,12 +20,12 @@ import { PassportModule } from '@nestjs/passport';
       useFactory: async (configService: ConfigService) => {
         return {
           type: 'postgres',
-          host: configService.get('POSTGRES_HOST'),
-          port: Number.parseInt(configService.get('POSTGRES_PORT')),
-          username: configService.get('POSTGRES_USER'),
-          password: configService.get('POSTGRES_PASSWORD'),
-          database: configService.get('POSTGRES_DB'),
-          autoLoadEntities: true,
+          host: configService.get<string>('POSTGRES_HOST'),
+          port: Number.parseInt(configService.get<string>('POSTGRES_PORT')),
+          username: configService.get<string>('POSTGRES_USER'),
+          password: configService.get<string>('POSTGRES_PASSWORD'),
+          database: configService.get<string>('POSTGRES_DB'),
+          entities: entities ,
           synchronize: true,
         };
       },

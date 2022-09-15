@@ -1,10 +1,10 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { IUser } from 'src/users/models/users.interface';
+import { IUser } from 'src/TypeOrm/Entities/users.entity';
 import { UsersService } from 'src/users/users.service';
-import { AuthProvider } from './models/auths.interface';
+import { IAuth } from './models/auths.interface';
 
 @Injectable()
-export class AuthService implements AuthProvider {
+export class AuthService implements IAuth {
   constructor(private usersService: UsersService) {}
 
   async validateUser(userDetails: IUser) {
@@ -19,6 +19,6 @@ export class AuthService implements AuthProvider {
   }
 
   async findUserById(userId: number): Promise<IUser | undefined> {
-    return await this.usersService.getById(userId);  
+    return await this.usersService.getById(userId);
   }
 }

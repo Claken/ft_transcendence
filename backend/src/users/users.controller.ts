@@ -10,8 +10,7 @@ import {
 } from '@nestjs/common';
 import { DeleteResult, UpdateResult } from 'typeorm';
 import { UsersService } from './users.service';
-import { UsersEntity } from './models/users.entity';
-import { IUser } from './models/users.interface';
+import { IUser, UsersEntity } from '../TypeOrm/Entities/users.entity';
 
 @Controller('users')
 export class UsersController {

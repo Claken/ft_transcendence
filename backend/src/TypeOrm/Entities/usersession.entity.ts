@@ -7,7 +7,7 @@ import {
   PrimaryColumn,
 } from 'typeorm';
 
-@Entity({ name: 'sessions' })
+@Entity({ name: 'Sessions' })
 export class UserSession implements ISession {
   @Index()
   @Column('bigint')

@@ -1,3 +1,3 @@
-import { IUser } from "src/users/models/users.interface";
+import { IUser } from "src/TypeOrm/Entities/users.entity";
 
 export type Cb = (err: Error, user: IUser) => void;

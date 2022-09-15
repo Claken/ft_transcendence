@@ -1,16 +1,15 @@
 import { NestFactory } from '@nestjs/core';
-import { getRepositoryToken } from '@nestjs/typeorm';
 import { TypeormStore } from 'connect-typeorm/out';
 import * as session from 'express-session';
 import * as passport from 'passport';
+import { getRepository } from 'typeorm';
 // import { DataSource } from 'typeorm';
 import { AppModule } from './app.module';
-// import { UserSession } from './users/models/UserSession'
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const port = process.env.BACK_PORT;
-  // const sessionRepo = getRepositoryToken(UserSession);
+  // const sessionRepo = getRepository(UserSession);
   app.use(
     session({
       cookie: {

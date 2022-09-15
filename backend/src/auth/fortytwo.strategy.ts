@@ -1,15 +1,13 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy, Profile } from 'passport-42';
-import { AuthProvider } from './models/auths.interface';
+import { IAuth } from './models/auths.interface';
 
 @Injectable()
 export class FortyTwoStrategy extends PassportStrategy(Strategy, '42') {
-  constructor(
-    @Inject('AUTH_SERVICE') private readonly authService: AuthProvider,
-  ) {
+  constructor(@Inject('AUTH_SERVICE') private readonly authService: IAuth) {
     super({
-      clientID: process.env.FORTYTWO_APP_UID,
+      clientID: process.env.FORTYTWO_APP_UID, //TODO: configServiceg.get
       clientSecret: process.env.FORTYTWO_APP_SECRET,
       callbackURL: process.env.FORTYTWO_CALLBACK_URL,
     });
@@ -24,4 +22,3 @@ export class FortyTwoStrategy extends PassportStrategy(Strategy, '42') {
     return await this.authService.validateUser(userDetails);
   }
 }
-

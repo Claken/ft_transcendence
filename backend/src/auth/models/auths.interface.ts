@@ -1,7 +1,7 @@
-import { IUser } from "src/users/models/users.interface";
+import { IUser } from 'src/TypeOrm/Entities/users.entity';
 
-export interface AuthProvider {
-    validateUser(userDetails: IUser);
-    createUser(userDetails: IUser);
-    findUserById(userId: number): Promise<IUser | undefined>;
+export interface IAuth {
+  validateUser(userDetails: IUser);
+  createUser(userDetails: IUser);
+  findUserById(userId: number): Promise<IUser | undefined>;
 }
