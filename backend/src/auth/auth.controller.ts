@@ -1,15 +1,17 @@
-import { Controller, Get, Req, Res, UseGuards } from '@nestjs/common';
+import { Controller, Get, Req, Res, UseGuards, Post } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { AuthenticatedGuard, FortyTwoAuthGuard } from './fortytwo.authguard';
+import { AuthService } from './auth.service';
+import { IUser } from 'src/TypeOrm/Entities/users.entity';
 
 @Controller('auth/42')
 export class AuthController {
-  constructor() {}
+  constructor(private readonly authService: AuthService) {}
 
   @Get('login')
   @UseGuards(FortyTwoAuthGuard)
-  login() {
-    return ;
+  login(@Req() req: Request) : { access_token: string} {
+    return this.authService.login(req.user as IUser);
   }
 
   @Get('callback')

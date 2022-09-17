@@ -2,10 +2,14 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { IUser } from 'src/TypeOrm/Entities/users.entity';
 import { UsersService } from 'src/users/users.service';
 import { IAuth } from './models/auths.interface';
+import { JwtService } from '@nestjs/jwt'
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class AuthService implements IAuth {
-  constructor(private usersService: UsersService) {}
+  constructor(private usersService: UsersService,
+	private jwtService: JwtService,
+	private configService: ConfigService) {}
 
   async validateUser(userDetails: IUser) {
     const { id: userId } = userDetails;
@@ -16,6 +20,22 @@ export class AuthService implements IAuth {
   }
   createUser(userDetails: IUser) {
     return this.usersService.create(userDetails);
+  }
+
+  login(user: IUser): { access_token : string} {
+	  const payload = {
+		  email: user.emails,
+		  sub: user.id
+	  }
+	  return {
+		  access_token: this.jwtService.sign(payload)
+	  }
+  }
+
+  verify(token: string) {
+	  const decodef = this.jwtService.verify(token, {
+		  secret: this.configService.get<string>('JWT_SECRET')
+	  })
   }
 
   async findUserById(userId: number): Promise<IUser | undefined> {
