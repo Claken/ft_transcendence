@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
-import { Strategy, Profile } from 'passport-42';
-import { IAuth } from '../models/auths.interface';
+import { Strategy, Profile, VerifyCallback } from 'passport-42';
+import { IAuth } from '../interfaces/auths.interface';
 
 @Injectable()
 export class FortyTwoStrategy extends PassportStrategy(Strategy, '42') {
@@ -15,10 +15,11 @@ export class FortyTwoStrategy extends PassportStrategy(Strategy, '42') {
   async validate(
     accessToken: string,
     refreshToken: string,
-    profile: Profile,
+	profile: Profile,
+	done: VerifyCallback
   ): Promise<any> {
     const { username, id: userId, emails, profileUrl } = profile;
-    const userDetails = { username, userId, emails, profileUrl };
-    return await this.authService.validateUser(userDetails);
+    const user = { username, userId, emails, profileUrl, accessToken };
+    return done(null, user);
   }
 }

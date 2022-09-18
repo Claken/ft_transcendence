@@ -1,7 +1,7 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { IUser } from 'src/TypeOrm/Entities/users.entity';
 import { UsersService } from 'src/users/users.service';
-import { IAuth } from './models/auths.interface';
+import { IAuth } from './interfaces/auths.interface';
 import { JwtService } from '@nestjs/jwt'
 import { ConfigService } from '@nestjs/config';
 
@@ -15,16 +15,15 @@ export class AuthService implements IAuth {
     const { id: userId } = userDetails;
     const userFound = await this.usersService.getById(userId);
     if (userFound) return userFound;
-    // should throw error if !userFound you cannot connect
-    return this.createUser(userDetails);
+	return null;
   }
   createUser(userDetails: IUser) {
     return this.usersService.create(userDetails);
   }
 
-  login(user: IUser): { access_token : string} {
+  async login(user: IUser) {
 	  const payload = {
-		  email: user.emails,
+		  name: user.username,
 		  sub: user.id
 	  }
 	  return {
