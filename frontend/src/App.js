@@ -1,10 +1,10 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import React, { useState } from "react";
-import Home from "./pages/Home";
-import Register from "./pages/Register";
-import Pong from "./pages/Pong";
-import Channel from "./pages/Channel";
-import Account from "./pages/Account";
+import Home from "./pages/Home.tsx";
+import Register from "./pages/Register.tsx";
+import Pong from "./pages/Pong.tsx";
+import Channel from "./pages/Channel.tsx";
+import Account from "./pages/Account.tsx";
 
 function App() {
   return (
