@@ -3,7 +3,7 @@ import Navigation from "../components/Navigation.tsx";
 
 function Account() {
   return (
-    <div>
+    <div className="background">
       <Navigation />
       <h1>Account</h1>
     </div>

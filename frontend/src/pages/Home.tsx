@@ -4,7 +4,7 @@ import "../styles/page.css"
 
 function Home() {
   return (
-    <div>
+    <div className="background">
       <Navigation />
       <h1>Home</h1>
     </div>

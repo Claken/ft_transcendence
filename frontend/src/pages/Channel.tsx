@@ -3,7 +3,7 @@ import Navigation from "../components/Navigation.tsx";
 
 function Channel() {
   return (
-    <div>
+    <div className="background">
       <Navigation />
       <h1>Channel</h1>
     </div>

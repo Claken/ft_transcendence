@@ -3,7 +3,7 @@ import Navigation from "../components/Navigation.tsx";
 
 function Pong() {
   return (
-    <div>
+    <div className="background">
       <Navigation />
       <h1>Pong</h1>
     </div>
