@@ -21,9 +21,15 @@
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
+<<<<<<< HEAD
     "@nestjs/common": "^9.0.0",
     "@nestjs/config": "^2.2.0",
     "@nestjs/core": "^9.0.0",
+=======
+    "@nestjs/common": "^9.0.11",
+    "@nestjs/config": "^2.2.0",
+    "@nestjs/core": "^9.0.11",
+>>>>>>> mamaquig
     "@nestjs/platform-express": "^9.0.0",
     "@nestjs/typeorm": "^9.0.0",
     "pg": "^8.7.3",

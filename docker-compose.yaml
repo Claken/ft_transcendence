@@ -1,4 +1,4 @@
-version: "3.8"
+version: "3.9"
 
 volumes:
   frontend-data:
@@ -46,8 +46,11 @@ services:
     image: backend
     ports:
       - 3001:3001
+    # depends_on:
+      # - postgres
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
     networks:
       - pong_network
     container_name: backend
@@ -72,6 +75,11 @@ services:
     networks:
       - pong_network
     container_name: postgres
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
       
 
   pgadmin:
