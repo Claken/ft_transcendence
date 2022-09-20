@@ -1,10 +1,10 @@
 import React, { useRef, useEffect } from 'react'
 
-const Canvas = props => {
+const Canvas = (props: JSX.IntrinsicAttributes & React.ClassAttributes<HTMLCanvasElement> & React.CanvasHTMLAttributes<HTMLCanvasElement>) => {
   
   const canvasRef = useRef(null)
   
-  const draw = (ctx, frameCount) => {
+  const draw = (ctx: { clearRect: (arg0: number, arg1: number, arg2: any, arg3: any) => void; canvas: { width: any; height: any }; fillStyle: string; beginPath: () => void; arc: (arg0: number, arg1: number, arg2: number, arg3: number, arg4: number) => void; fill: () => void }, frameCount: number) => {
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height)
     ctx.fillStyle = '#000000'
     ctx.beginPath()
@@ -17,7 +17,7 @@ const Canvas = props => {
     const canvas = canvasRef.current
     const context = canvas.getContext('2d')
     let frameCount = 0
-    let animationFrameId
+    let animationFrameId: number
     
     //Our draw came here
     const render = () => {
