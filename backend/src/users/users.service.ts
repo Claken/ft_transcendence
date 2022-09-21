@@ -13,9 +13,9 @@ export class UsersService {
   ) {}
 
   // save() is a "Repository" method (from Typeorm) to call insert query
-  create(userDetails: IUser): Promise<IUser> {
-    const newUser = this.userRepo.create(userDetails);
-    return this.userRepo.save(newUser);
+  async create(user: IUser): Promise<IUser> {
+    const newUser = this.userRepo.create(user);
+    return await this.userRepo.save(newUser);
   }
 
   // find() is a "Repository" method to call select query
@@ -42,8 +42,8 @@ export class UsersService {
     });
   }
 
-  async updateUser(id: number, userDetails: IUser): Promise<UpdateResult> {
-    return await this.userRepo.update(id, userDetails);
+  async updateUser(id: number, user: IUser): Promise<UpdateResult> {
+    return await this.userRepo.update(id, user);
   }
 
   async deleteUser(id: number): Promise<DeleteResult> {

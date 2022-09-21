@@ -1,36 +1,30 @@
-import { Controller, Get, Req, Res, UseGuards, Post } from '@nestjs/common';
+import { Controller, Get, Query, Req, Res, UseGuards } from '@nestjs/common';
 import { Request, Response } from 'express';
-import {
-  AuthenticatedGuard,
-  FortyTwoAuthGuard,
-} from './guards/fortytwo.authguard';
+import { FortyTwoAuthGuard } from './guards/fortytwo.guard';
 import { AuthService } from './auth.service';
+import { JwtAuthGuard } from './guards/jwt.guard';
 import { IUser } from 'src/TypeOrm/Entities/users.entity';
-import { JwtStrategy } from './strategies/jwt.strategy';
 
 @Controller('auth/42')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @Get('login')
   @UseGuards(FortyTwoAuthGuard)
-  login(@Req() req: Request): Promise<{ access_token: string }> {
+  @Get('login')
+  register(@Req() req: Request) {}
+
+  @UseGuards(FortyTwoAuthGuard)
+  @Get('callback')
+  login(@Req() req: Request) {
     return this.authService.login(req.user as IUser);
   }
 
-  @Get('callback')
-  @UseGuards(JwtStrategy)
-  redirect(@Res() res: Response) {
-    res.send(200);
-  }
-
+  @UseGuards(JwtAuthGuard)
   @Get('test')
-  //   @UseGuards(AuthenticatedGuard)
-  mytest() {
-    return 'test';
+  mytest(@Req() req: Request) {
+    return req.user;
   }
 
-  @UseGuards()
   @Get('logout')
   async logout(@Req() request: Request, @Res() response: Response) {
     return response.status(200);
