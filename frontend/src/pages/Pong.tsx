@@ -1,12 +1,11 @@
 import React from "react";
 import Navigation from "../components/Navigation";
-import Game from "../components/game"
+import Game from "../components/Game"
 
 function Pong() {
   return (
     <div>
       <Navigation />
-      <h1>Pong</h1>
       <Game/ >;
     </div>
   );
