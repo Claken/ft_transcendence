@@ -9,10 +9,14 @@ const Game = (props: JSX.IntrinsicAttributes & React.ClassAttributes<HTMLCanvasE
 	let	CanvasWidth = 1600;
 	let	CanvasHeight = 760;
 	let EmptyGround = 50 / 2;
-	const [playerL, setPlayerL] = useState(0); // avoir le login pour l'afficher
-	const [playerR, setPlayerR] = useState(0); // avoir le login pour l'afficher
+	// const [playerL, setPlayerL] = useState(0); // avoir le profil du user
+	// const [playerR, setPlayerR] = useState(0); // avoir le profil du user
+	const [loginLP, setLoginLP] = useState('Player 1'); // avoir le login du joueur de gauche pour l'afficher
+	const [loginRP, setLoginRP] = useState('Player 2'); // avoir le login du joueur de droite pour l'afficher
 	const [scoreLP, setScoreLP] = useState(0); // Score du joueur gauche
 	const [scoreRP, setScoreRP] = useState(0); // Score du joueur droit
+
+	//TODO: créer un tableau pour y stocker toutes les infos nécessaire à envoyer à la bdd
 
 	useEffect(() => {
 		const canvas = canvasRef.current;
@@ -37,30 +41,31 @@ const Game = (props: JSX.IntrinsicAttributes & React.ClassAttributes<HTMLCanvasE
 		function render() {
 			if (context == null)
 				return;
-			// context.clearRect(0, 50, width, height); // clean le rectangle pour redessiner dessus après une écriture par exemple ? TODO: nécessaire ???
-			/* Affichage de base pour le PONG */
-			context.fillStyle = "black" // assigne la couleur noir au rectangle
+			context.clearRect(0, 0, width, height); // nettoie la zone spécifiée pour redessiner au propre par dessus
+			context.fillStyle = "black" // assigne la couleur noir au prochain dessin/texte
 			context.fillRect(0, 50, width, height) // créer un rectangle de taille width X height
-			context.font = "120px Roboto"; // applique une police pour le texte suivant
-			context.fillStyle = "white"; // applique une couleur pour le texte
-			// context.fillText("PONG", width/2.5, height/4); // applique le texte à l'endroit voulu dans le rectangle
-
-					/* Affichage des joueurs */
-			context.font = "30px Roboto"; // applique une police pour le texte suivant
-			context.fillStyle = "black"; // applique une couleur pour le texte
-			context.fillText("Player 1", width/4.5, 30);
-			context.fillText("Player 2", width/2 + width/4.5, 30);
+			
+			/* Affichage des joueurs et du score */
+			context.font = "40px Roboto";
+			context.fillStyle = "black";
+			context.textAlign = 'start'; // affiche le login au plus à gauche
+			context.fillText(loginLP, 0, 40); //affiche le login du joueur de gauche
+			context.textAlign = 'end'; // affiche le login au plus à droite
+			context.fillText(loginRP, width, 40); //affiche le login du joueur de droite
+			context.textAlign = 'center'; // affiche le login au plus au centre
+			context.font = "60px Roboto"; // applique une police pour le texte suivant
+			context.fillText(scoreLP + ' - ' + scoreRP, width / 2, 45); // applique le texte à l'endroit voulu dans le rectangle
 
 					/* Affichage balle et de la ligne centrale*/
 			context.beginPath();
 			context.fillStyle = 'white';
-			context.arc(ballX,ballY,10,0,Math.PI*2); //balle
+			context.arc(ballX,ballY,10,0,Math.PI*2); //balle //TODO: Donner les positions stockées dans la bdd
 			// if (ballX == width)
 			// 	ballX = 0;
 			// ballX=ballX+1;
 			context.fill();
-			context.fillRect(width - paddleLarge, posHR, paddleLarge-1, paddleSize); //paddle gauche
-			context.fillRect(1, posHL, paddleLarge, paddleSize); //paddle droit
+			context.fillRect(width - paddleLarge, posHR, paddleLarge-1, paddleSize); //paddle gauche //TODO: Donner les positions stockées dans la bdd
+			context.fillRect(1, posHL, paddleLarge, paddleSize); //paddle droit //TODO: Donner les positions stockées dans la bdd
 
 			context.strokeStyle = 'white';
 			context.moveTo(width/2, 50);
