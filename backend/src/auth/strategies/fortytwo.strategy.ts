@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { CanActivate, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy, Profile, VerifyCallback } from 'passport-42';
@@ -33,8 +33,8 @@ export class FortyTwoStrategy extends PassportStrategy(Strategy, '42') {
     profile: Profile,
     done: VerifyCallback,
   ): Promise<any> {
-    const { username, id: userId, emails, profileUrl } = profile;
-    const user = { userId, login: username, email: emails[0].value, profileUrl };
+    const { username, id: userId, emails, photos } = profile;
+    const user = { userId, login: username, email: emails[0].value, pictureUrl: photos[0].value };
     await this.authService.register(user);
     return done(null, user);
   }

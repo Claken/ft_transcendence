@@ -1,10 +1,18 @@
-import { Controller, Get, Put, Query, Req, Res, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Put,
+  Query,
+  Redirect,
+  Req,
+  Res,
+  UseGuards,
+} from '@nestjs/common';
 import { Request, Response } from 'express';
 import { FortyTwoAuthGuard } from './guards/fortytwo.guard';
 import { AuthService } from './auth.service';
 import { JwtAuthGuard } from './guards/jwt.guard';
 import { IUser } from 'src/TypeOrm/Entities/users.entity';
-import { use } from 'passport';
 
 @Controller('auth/42')
 export class AuthController {
@@ -16,14 +24,10 @@ export class AuthController {
 
   @UseGuards(FortyTwoAuthGuard)
   @Get('callback')
-  async login(
-    @Req() req: Request,
-    @Res() res: Response,
-  ) {
-    await this.authService.login(req.user as IUser);
-    return res.redirect('/auth/42/test');
+  @Redirect('/auth/42/test')
+  async login(@Req() req: Request) {
+    return await this.authService.login(req.user as IUser);
   }
-
 
   @UseGuards(JwtAuthGuard)
   @Get('test')
@@ -31,8 +35,9 @@ export class AuthController {
     return req.user;
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get('logout')
-  async logout(@Req() request: Request, @Res() response: Response) {
-    return response.status(200);
+  async logout(@Req() req: Request, @Res() response: Response) {
+    await this.authService.logout(req.user as IUser);
   }
 }

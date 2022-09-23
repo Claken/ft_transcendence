@@ -22,7 +22,7 @@ export class UsersEntity {
   email?: string;
 
   @Column({ default: '' })
-  profileUrl?: string;
+  pictureUrl?: string;
 
   @Column({ default: '' })
   accessToken?: string;
@@ -36,7 +36,7 @@ export interface IUser {
   login: string;
   name?: string;
   email?: string;
-  profileUrl?: string;
+  pictureUrl?: string;
   accessToken?: string;
   createdAt?: Date;
 }

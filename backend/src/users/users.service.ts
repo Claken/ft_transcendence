@@ -24,12 +24,14 @@ export class UsersService {
     return await this.userRepo.find();
   }
 
+  // unuse
   async getByLogin(loginToFind: string): Promise<UsersEntity> {
     return await this.userRepo.findOneBy({
       login: loginToFind,
     });
   }
 
+  // unuse
   async getByEmail(emailToFind: string): Promise<UsersEntity> {
     return await this.userRepo.findOneBy({
       email: emailToFind,
@@ -42,6 +44,7 @@ export class UsersService {
     });
   }
 
+  // unuse
   async updateUser(id: number, user: IUser): Promise<UpdateResult> {
     return await this.userRepo.update(id, user);
   }
@@ -53,6 +56,7 @@ export class UsersService {
     return await this.getById(id);
   }
 
+  // unuse
   async deleteUser(id: number): Promise<DeleteResult> {
     return await this.userRepo.delete(id);
   }

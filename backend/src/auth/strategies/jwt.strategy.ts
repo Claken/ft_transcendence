@@ -4,8 +4,10 @@ import { PassportStrategy } from '@nestjs/passport';
 import { Strategy, ExtractJwt } from 'passport-jwt';
 import { UsersService } from 'src/users/users.service';
 
+
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
+  // With PassportStrategy validate() is automatically called
   constructor(
     private readonly userService: UsersService,
     private readonly configService: ConfigService,
@@ -16,13 +18,13 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       secretOrKey: configService.get<string>('JWT_SECRET'),
     });
   }
-  async validate(payload: any) {
+  async validate(payload: any) { 
+    // here we don't really check whether the token is valid or not
+    // it's already done in the super() call above
     // TokenPayload instead of any
-    const user = await this.userService.getById(payload.sub);
     return {
       id: payload.sub,
       name: payload.name,
-      ...user,
     };
   }
 }
