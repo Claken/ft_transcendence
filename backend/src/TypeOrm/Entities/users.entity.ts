@@ -13,13 +13,13 @@ export class UsersEntity {
 
   // tofix: authService return newDefaultUser
   @Column({ default: '', unique: true })
-  username: string;
+  login: string;
 
   @Column({ default: '', unique: true })
   name?: string;
 
   @Column({ default: '' })
-  emails?: string;
+  email?: string;
 
   @Column({ default: '' })
   profileUrl?: string;
@@ -27,20 +27,16 @@ export class UsersEntity {
   @Column({ default: '' })
   accessToken?: string;
 
-  // @Column()
-  // accessToken?: string;
-
   @CreateDateColumn()
-  createdAt: Date;
+  createdAt?: Date;
 }
 
 export interface IUser {
   id?: number;
+  login: string;
   name?: string;
-  username: string;
-  emails?: string;
+  email?: string;
   profileUrl?: string;
-  createdAt?: Date;
   accessToken?: string;
-  // accessToken?: string; // ?
+  createdAt?: Date;
 }

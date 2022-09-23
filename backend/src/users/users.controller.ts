@@ -25,11 +25,11 @@ export class UsersController {
     return await this.usersService.findAllUsers();
   }
 
-  @Get(':username')
+  @Get(':login')
   async findOneBy(
-    @Param('username') usernameToFind: string,
+    @Param('login') loginToFind: string,
   ): Promise<UsersEntity> {
-    return await this.usersService.getByUsername(usernameToFind);
+    return await this.usersService.getByLogin(loginToFind);
   }
   @Get(':email')
   async getByEmail(@Param('email') emailToFind: string): Promise<UsersEntity> {

@@ -13,27 +13,28 @@ export class AuthService {
   ) {}
 
   async register(user: IUser): Promise<IUser> {
-    const { id: userId } = user;
-    const userFound = await this.usersService.getById(userId);
+    const { id } = user;
+    const userFound = await this.usersService.getById(id);
     if (userFound) return userFound;
-    return null;
+    return await this.usersService.create(user);
   }
 
-  login(user: IUser): { access_token: string } {
+  async login(user: IUser) {
     const payload = {
-      name: user.username,
+      name: user.login,
       sub: user.id,
     };
-    return {
-      access_token: this.jwtService.sign(payload),
-    };
+    const access_token = this.jwtService.sign(payload);
+    const { id: userId } = user;
+    
+    await this.usersService.updateToken(userId, access_token);
   }
 
-  // verify(token: string) {
-  //   const decodef = this.jwtService.verify(token, {
-  // 	  secret: this.configService.get<string>('JWT_SECRET')
-  //   })
-  // }
+  verify(token: string) {
+    const decodef = this.jwtService.verify(token, {
+  	  secret: this.configService.get<string>('JWT_SECRET')
+    })
+  }
 
   public getCookieWithJwtToken(userId: number) {
     const payload: any = { userId };

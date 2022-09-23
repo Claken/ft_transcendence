@@ -14,6 +14,17 @@ export class FortyTwoStrategy extends PassportStrategy(Strategy, '42') {
       clientID: configService.get<string>('FORTYTWO_APP_UID'),
       clientSecret: configService.get<string>('FORTYTWO_APP_SECRET'),
       callbackURL: configService.get<string>('FORTYTWO_CALLBACK_URL'),
+      // profileFields: {
+      //   'id': function (obj) { return String(obj.id); },
+      //   'username': 'login',
+      //   'displayName': 'displayname',
+      //   'name.familyName': 'last_name',
+      //   'name.givenName': 'first_name',
+      //   'profileUrl': 'url',
+      //   'emails.0.value': 'email',
+      //   'phoneNumbers.0.value': 'phone',
+      //   'photos.0.value': 'image_url'
+      // }
     });
   }
   async validate(
@@ -23,7 +34,8 @@ export class FortyTwoStrategy extends PassportStrategy(Strategy, '42') {
     done: VerifyCallback,
   ): Promise<any> {
     const { username, id: userId, emails, profileUrl } = profile;
-    const user = { username, userId, emails, profileUrl, accessToken };
-    return await this.authService.register(user);
+    const user = { userId, login: username, email: emails[0].value, profileUrl };
+    await this.authService.register(user);
+    return done(null, user);
   }
 }
