@@ -7,20 +7,10 @@ function Channel() {
   const { isLog, setIsLog } = useContext(LogContext);
 
   return (
-    <nav>
-      {(isLog && (
-        <>
-          <div className="background">
-            <Navigation />
-            <h1>Channel</h1>
-          </div>
-        </>
-      )) || (
-        <>
-          <Navigate to="/login" />
-        </>
-      )}
-    </nav>
+    <div className="background">
+      <Navigation />
+      <h1>Channel</h1>
+    </div>
   );
 }
 

@@ -16,18 +16,18 @@ function App() {
   };
 
   return (
-    <LogContext.Provider value={contextValue}>
-      <BrowserRouter>
+    <BrowserRouter>
+      <LogContext.Provider value={contextValue}>
         <Routes>
-          <Route path="/login" element={<Login />} />
+          <Route path="/login" element={ isLog ? <Navigate to="/account" /> : <Login />} />
           <Route path="/" element={<Home />} />
           <Route path="*" element={<Home />} />
-          <Route path="/channel" element={<Channel />} />
-          <Route path="/account" element={<Account />} />
-          <Route path="/pong" element={<Pong />} />
+          <Route path="/channel" element={ isLog ? <Channel /> : <Navigate to="/login" />} />
+          <Route path="/account" element={ isLog ? <Account /> : <Navigate to="/login" />} />
+          <Route path="/pong" element={ isLog ? <Pong /> : <Navigate to="/login" />} />
         </Routes>
-      </BrowserRouter>
-    </LogContext.Provider>
+      </LogContext.Provider>    
+    </BrowserRouter>
   );
 }
 
