@@ -1,5 +1,6 @@
-import { UsersEntity } from './Entities/users.entity';
+import { UserSession } from "./Entities/session.entity";
+import { UsersEntity } from "./Entities/users.entity";
 
-export const entities = [ UsersEntity ];
+export const entities = [ UsersEntity, UserSession ];
 
-export { UsersEntity };
+export { UsersEntity, UserSession };

@@ -6,30 +6,17 @@ import { FortyTwoStrategy } from './strategies/fortytwo.strategy';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersEntity } from 'src/TypeOrm';
 import { PassportModule } from '@nestjs/passport';
-import { JwtModule } from '@nestjs/jwt';
-import { JwtStrategy } from './strategies/jwt.strategy';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { SessionSerializer } from './serializer/session.serializer';
 
 @Module({
   imports: [
     UsersModule,
-    PassportModule,
-    JwtModule.registerAsync({
-      imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: async (configService: ConfigService) => ({
-        secret: configService.get<string>('JWT_SECRET'),
-        signOptions: { expiresIn: configService.get<string>('JWT_EXPIRATION_TIME') },
-      })
+    PassportModule.register({
+      session: true,
     }),
     TypeOrmModule.forFeature([UsersEntity]),
   ],
   controllers: [AuthController],
-  providers: [
-    ConfigService,
-    FortyTwoStrategy,
-    JwtStrategy,
-	  AuthService,
-  ],
+  providers: [FortyTwoStrategy, AuthService, SessionSerializer],
 })
 export class AuthModule {}

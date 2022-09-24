@@ -35,7 +35,6 @@ export class FortyTwoStrategy extends PassportStrategy(Strategy, '42') {
   ): Promise<any> {
     const { username, id: userId, emails, photos } = profile;
     const user = { userId, login: username, email: emails[0].value, pictureUrl: photos[0].value };
-    await this.authService.register(user);
-    return done(null, user);
+    return await this.authService.register(user);
   }
 }

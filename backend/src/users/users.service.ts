@@ -20,6 +20,7 @@ export class UsersService {
 
   // find() is a "Repository" method to call select query
   // ? throw exception if not found ?
+  // unuse
   async findAllUsers(): Promise<UsersEntity[]> {
     return await this.userRepo.find();
   }
@@ -49,12 +50,12 @@ export class UsersService {
     return await this.userRepo.update(id, user);
   }
 
-  async updateToken(id: number, access_token: string): Promise<UsersEntity> {
-    const user = await this.getById(id);
-    user.accessToken = access_token;
-    await this.userRepo.save(user);
-    return await this.getById(id);
-  }
+  // async updateToken(id: number, access_token: string): Promise<UsersEntity> {
+  //   const user = await this.getById(id);
+  //   user.accessToken = access_token;
+  //   await this.userRepo.save(user);
+  //   return await this.getById(id);
+  // }
 
   // unuse
   async deleteUser(id: number): Promise<DeleteResult> {
