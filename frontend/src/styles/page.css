@@ -11,7 +11,7 @@
   width: 310px;
   height: 85px;
   border-radius: 30px;
-  background: green;
+  background: rgb(43, 102, 43);
 }
 
 .rectangleguest {
@@ -21,7 +21,7 @@
   width: 310px;
   height: 200px;
   border-radius: 30px;
-  background: green;
+  background: rgb(43, 102, 43);
 }
 
 .login {

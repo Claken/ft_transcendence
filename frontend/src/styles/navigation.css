@@ -64,8 +64,8 @@ nav {
   cursor: pointer;
   border: none;
   color: white;
-  background: green;
-  box-shadow: 0 0 5px green;
+  background: rgb(43, 102, 43);
+  box-shadow: 0 0 5px rgb(43, 102, 43);
 }
 
 .btngreen:hover {

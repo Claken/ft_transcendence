@@ -1,5 +1,4 @@
 import React, { useContext } from "react";
-import { Navigate } from "react-router-dom";
 import LogContext from "../contexts/LogContext";
 import Navigation from "../components/Navigation.tsx";
 
