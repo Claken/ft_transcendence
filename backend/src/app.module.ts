@@ -3,6 +3,9 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ChatController } from './chat/chat.controller';
+import { ChatGateway } from './chat/chat.gateway';
+import { entities } from './TypeORM';
 
 @Module({
   imports: [
@@ -20,6 +23,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
           username: configService.get('POSTGRES_USER'),
           password: configService.get('POSTGRES_PASSWORD'),
           database: configService.get('POSTGRES_DB'),
+          entities: entities,
           autoLoadEntities: true,
           synchronize: true,
         };

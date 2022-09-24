@@ -27,8 +27,8 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     this.server.emit('received', text);
   }
 
-  @SubscribeMessage('MsgToServer')
+  @SubscribeMessage('msgToServer')
   HandleMessageToServer(client: Socket, text: string): WsResponse<string> {
-    return {event: 'MsgToClient', data: text};
+    return {event: 'msgToClient', data: text};
   }
 }

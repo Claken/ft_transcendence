@@ -4,7 +4,10 @@
 	<meta charset="UTF-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Document</title>
+	<title>WebSocket Tester</title>
+	<script type="module">import { io } from "https://cdn.socket.io/4.4.1/socket.io.esm.min.js";</script>
+	<script type="module">import React, { useState, useEffect } from "react";</script>
+	<!-- <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script> -->
 </head>
 <body>
 	<div id="v-app">
@@ -20,7 +23,32 @@
 		</p>
 	</div>
 	<script>
-		var app = new Vue
+		var app = new React({
+			el: '#v-app',
+			data: {
+				title: 'MY TITLE',
+				text: '',
+				messages: ['Some message', 'Another message'],
+				socket: null,
+			},
+			methods: {
+				sendMessage() {
+					console.log('send: ${this.text}');
+					this.socket.emit('msgToServer', this.text);
+					this.text = "";
+				},
+				receiveMessage(msg) {
+					console.log('recv: ${msg}');
+					this.messages.push(msg);
+				},
+			},
+			created() {
+				this.socket = io('https://localhost:3001');
+				this.socket.on('msgToClient', (msg) => {
+					this.receiveMessage(msg);
+				});
+			}
+		});
 	</script>
 
 </body>
