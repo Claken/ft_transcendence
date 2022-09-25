@@ -2,20 +2,26 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import * as session from 'express-session';
 import * as passport from 'passport';
+import { ConfigService } from '@nestjs/config';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const port = process.env.BACK_PORT;
-  // const sessionRepo = getRepository(UserSession);
+  const configService = app.get(ConfigService);
+
+  app.enableCors({
+    origin: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    credentials: true,
+  });
   app.use(
     session({
+      secret: configService.get<string>('SESSION_SECRET'),
+      resave: false,
+      saveUninitialized: false,
       cookie: {
         maxAge: 86400000, //60000 * 60 * 24
       },
-      secret: process.env.SESSION_SECRET,
-      resave: false,
-      saveUninitialized: false,
-      // store: new TypeormStore().connect(sessionRepo)
     }),
   );
   app.use(passport.initialize());

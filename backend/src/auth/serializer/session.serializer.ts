@@ -11,10 +11,10 @@ export class SessionSerializer extends PassportSerializer {
   }
 
   serializeUser(user: any, done: (err: Error, user: IUser) => void) {
-    done(null, user);
+    done(null, user); // user is the data to stored inside the session
   }
 
   async deserializeUser(payload: any, done: (err: Error, user: IUser) => void) {
-    done(null, payload);
+    done(null, payload); // callback payload make req.user acessible through controller
   }
 }

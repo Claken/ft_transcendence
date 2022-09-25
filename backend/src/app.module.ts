@@ -36,4 +36,3 @@ import { entities } from './TypeOrm';
   providers: [AppService],
 })
 export class AppModule {}
-

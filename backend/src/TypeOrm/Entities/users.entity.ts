@@ -24,9 +24,6 @@ export class UsersEntity {
   @Column({ default: '' })
   pictureUrl?: string;
 
-  @Column({ default: '' })
-  accessToken?: string;
-
   @CreateDateColumn()
   createdAt?: Date;
 }
@@ -37,6 +34,5 @@ export interface IUser {
   name?: string;
   email?: string;
   pictureUrl?: string;
-  accessToken?: string;
   createdAt?: Date;
 }

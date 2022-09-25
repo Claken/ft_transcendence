@@ -3,10 +3,9 @@ import {
   Get,
   Redirect,
   Req,
-  Res,
   UseGuards,
 } from '@nestjs/common';
-import { Request, Response } from 'express';
+import { Request } from 'express';
 import { AuthenticatedGuard, FortyTwoAuthGuard } from './guards/fortytwo.guard';
 import { AuthService } from './auth.service';
 
@@ -35,6 +34,9 @@ export class AuthController {
 
   @UseGuards(AuthenticatedGuard)
   @Get('logout')
-  logout(@Req() req: Request, @Res() response: Response) {
+  async logOut(@Req() req: Request) {
+    // logOut() => removes the session from the memory of the webserver
+    req.logOut(() => void {}); // without the callback an error occured...
+    req.session.cookie.maxAge = 0;
   }
 }
