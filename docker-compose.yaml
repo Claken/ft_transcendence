@@ -6,13 +6,13 @@ volumes:
     driver_opts:
       type: none
       o: bind
-      device: $PWD/frontend
+      device: $PWD/frontend/src
   backend-data:
     driver: local
     driver_opts:
       type: none
       o: bind
-      device: $PWD/backend
+      device: $PWD/backend/src
   postgres-data:
     # driver: local
     # driver_opts:
@@ -39,7 +39,7 @@ services:
       - pong_network
     container_name: frontend
     volumes:
-      - frontend-data:/usr/src/app:rw
+      - frontend-data:/usr/src/app/src:rw
 
   backend:
     build: backend/.
@@ -55,7 +55,7 @@ services:
       - pong_network
     container_name: backend
     volumes:
-      - backend-data:/usr/src/app:rw
+      - backend-data:/usr/src/app/src:rw
 
   postgres:
     image: postgres:14.4
