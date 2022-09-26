@@ -16,6 +16,14 @@ const Game = (props: JSX.IntrinsicAttributes & React.ClassAttributes<HTMLCanvasE
 	const [scoreLP, setScoreLP] = useState(0); // Score du joueur gauche
 	const [scoreRP, setScoreRP] = useState(0); // Score du joueur droit
 
+	/* Tableau d'état pour savoir où en est le jeu */
+	const State = {
+		INIT: 0,
+		PAUSE: 1,
+		PLAY: 2,
+		WIN: 3,
+		LOSE: 4,
+	};
 	//TODO: créer un tableau pour y stocker toutes les infos nécessaire à envoyer à la bdd
 
 	useEffect(() => {
