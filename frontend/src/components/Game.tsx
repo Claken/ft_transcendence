@@ -15,37 +15,65 @@ const Game = (props: JSX.IntrinsicAttributes & React.ClassAttributes<HTMLCanvasE
 	const [loginRP, setLoginRP] = useState('Player 2'); // avoir le login du joueur de droite pour l'afficher
 	const [scoreLP, setScoreLP] = useState(0); // Score du joueur gauche
 	const [scoreRP, setScoreRP] = useState(0); // Score du joueur droit
-
-	/* Tableau d'état pour savoir où en est le jeu */
-	const State = {
-		INIT: 0,
-		PAUSE: 1,
-		PLAY: 2,
-		WIN: 3,
-		LOSE: 4,
-	};
-	//TODO: créer un tableau pour y stocker toutes les infos nécessaire à envoyer à la bdd
-
+	
+	
 	useEffect(() => {
 		const canvas = canvasRef.current;
 		if (canvas == null)
-			return;
+		return;
 		const context = canvas.getContext("2d");
 		if (context == null)
-			return;
+		return;
 		var width = canvas.width;				//largeur du canvas
 		var height = canvas.height;				//hauteur du canvas
 		var posHL = height/2 - EmptyGround;		//placement en hauteur du paddle gauche (joueur gauche)
 		var posHR = height/2 - EmptyGround;		//placement en hauteur du paddle droit (joueur droit)
 		var ballX = width / 2;					//placement en X de la balle
 		var ballY = height / 2 + EmptyGround;	//placement en Y de la balle
+		var ballRadius = 10;					//taille de la balle
 		var paddleSize = height/7;				//hauteur du paddle
 		var paddleLarge = width/100;			//largeur du paddle
+		
+		var deltaX = -4;
+		var deltaY = 4;
+		
+		//TODO: créer un tableau pour y stocker toutes les infos nécessaire à envoyer au back
+		const allPos = { //va etre envoye au back a chaque update de la ball et des paddle
+			ballRadius: ballRadius,
+			width:width,
+			height:height,
+			paddleLarge:paddleLarge,
+			paddleSize:paddleSize,
+			posHL:posHL,
+			posHR:posHR,
+			ballX:ballX,
+			ballY:ballY,
+			scoreLP:scoreLP,
+			scoreRP:scoreRP,
+			deltaX:deltaX,
+			deltaY:deltaY,
+		};
 
-		//TODO: avoir un affichage pour des états de jeu différents, comme une victoire, defaites, leave, etc...
-		
 		let animationFrameId: number;
-		
+
+		/* Tableau d'état pour savoir où en est le jeu */
+		const State = {
+			INIT: 0,
+			PAUSE: 1,
+			PLAY: 2,
+			WIN: 3,
+			LOSE: 4,
+		};
+
+		//socket on pour update ball ?
+		socket.on("updatedBall", data => {
+			allPos.ballX = data;
+			// allPos.deltaY = data.dy;
+			// allPos.scoreLP = data.scoreLeft;
+			// allPos.scoreRP = data.scoreRight;
+			console.log(allPos.ballX + " et " + allPos.width);
+		});
+
 		function render() {
 			if (context == null)
 				return;
@@ -64,16 +92,17 @@ const Game = (props: JSX.IntrinsicAttributes & React.ClassAttributes<HTMLCanvasE
 			context.font = "60px Roboto"; // applique une police pour le texte suivant
 			context.fillText(scoreLP + ' - ' + scoreRP, width / 2, 45); // applique le texte à l'endroit voulu dans le rectangle
 
+			context.fillText(allPos.ballX + ' - ' + allPos.width, 600 / 2, 45); // applique le texte à l'endroit voulu dans le rectangle
+
 					/* Affichage balle et de la ligne centrale*/
 			context.beginPath();
 			context.fillStyle = 'white';
-			context.arc(ballX,ballY,10,0,Math.PI*2); //balle //TODO: Donner les positions stockées dans la bdd
-			// if (ballX == width)
-			// 	ballX = 0;
-			// ballX=ballX+1;
+			socket.emit("ball", allPos);
+			context.arc(allPos.ballX, allPos.ballY, ballRadius, 0, Math.PI*2); //balle
+
 			context.fill();
-			context.fillRect(width - paddleLarge, posHR, paddleLarge-1, paddleSize); //paddle gauche //TODO: Donner les positions stockées dans la bdd
-			context.fillRect(1, posHL, paddleLarge, paddleSize); //paddle droit //TODO: Donner les positions stockées dans la bdd
+			context.fillRect(width - paddleLarge, posHR, paddleLarge-1, paddleSize); //paddle gauche
+			context.fillRect(1, posHL, paddleLarge, paddleSize); //paddle droit
 
 			context.strokeStyle = 'white';
 			context.moveTo(width/2, 50);
