@@ -5,10 +5,9 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ChatController } from './chat/chat.controller';
 import { ChatGateway } from './chat/chat.gateway';
-import { entities } from './TypeORM';
+import { entities } from './TypeOrm';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
-import { entities } from './TypeOrm';
 
 @Module({
   imports: [

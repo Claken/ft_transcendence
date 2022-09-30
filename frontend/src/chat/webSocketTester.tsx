@@ -27,7 +27,7 @@ function AppTestSockets() {
 	useEffect(() => {
 		socket = io('https://localhost:3000');
 		socket.on('msgToClient', (msg: string) => {
-			this.receiveMessage(msg);
+			receiveMessage(msg);
 		})
 
 		return () => {
