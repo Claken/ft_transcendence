@@ -7,6 +7,9 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
   private logger: Logger = new Logger('ChatGateway'); //
 
+  @WebSocketServer() // decorator
+  server: Server;
+
   afterInit(server: Server) {
     this.logger.log('Initialized!');
   }
@@ -18,9 +21,6 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   handleDisconnect(client: Socket) {
     this.logger.log(`Client ${client.id} disconnected`);
   }
-
-  @WebSocketServer() // decorator
-  server: Server;
 
   @SubscribeMessage('everyone_message') // decorator pour indiquer quelle méthode envoyer pour l'évènement dont le nom correspond à 'messages'
   SendMessageToEveryone(client: Socket, text: string): void {

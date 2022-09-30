@@ -6,7 +6,7 @@ function AppTestSockets() {
 	const	title = 'MY TITLE';
 	const 	[messages, addMessages] = useState<string[]>(['Some message', 'Another message']);
 	const	[text, changeText] = useState<string>("");
-	const 	socket = null;
+	let 	socket = null;
 
 	const sendMessage = (event: any) => {
 		event.preventDefault();
