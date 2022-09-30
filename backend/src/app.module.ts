@@ -6,10 +6,14 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ChatController } from './chat/chat.controller';
 import { ChatGateway } from './chat/chat.gateway';
 import { entities } from './TypeORM';
+import { UsersModule } from './users/users.module';
+import { AuthModule } from './auth/auth.module';
+import { entities } from './TypeOrm';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
+      isGlobal: true,
       envFilePath: ['.env'],
     }),
     TypeOrmModule.forRootAsync({
@@ -18,17 +22,18 @@ import { entities } from './TypeORM';
       useFactory: async (configService: ConfigService) => {
         return {
           type: 'postgres',
-          host: configService.get('POSTGRES_HOST'),
-          port: configService.get('POSTGRES_PORT'),
-          username: configService.get('POSTGRES_USER'),
-          password: configService.get('POSTGRES_PASSWORD'),
-          database: configService.get('POSTGRES_DB'),
+          host: configService.get<string>('POSTGRES_HOST'),
+          port: Number.parseInt(configService.get<string>('POSTGRES_PORT')),
+          username: configService.get<string>('POSTGRES_USER'),
+          password: configService.get<string>('POSTGRES_PASSWORD'),
+          database: configService.get<string>('POSTGRES_DB'),
           entities: entities,
-          autoLoadEntities: true,
           synchronize: true,
         };
       },
     }),
+    UsersModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],

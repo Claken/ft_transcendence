@@ -1,0 +1,58 @@
+.background {
+  min-height: 100vh;
+  min-width: 100vw;
+  background: #333333;
+}
+
+.rectangle {
+  border: 1px solid black;
+  margin-left: auto;
+  margin-right: auto;
+  width: 20em;
+  height: 28em;
+  border-radius: 40px;
+  background: green;
+}
+
+.register {
+  text-align: center;
+  color: white;
+}
+
+.items {
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.input {
+  text-decoration: none;
+  border-radius: 75px;
+  text-align: center;
+  background: #3b3b3b;
+}
+
+.blank {
+	height: 15px;
+}
+
+.btnconfirm {
+  margin-left: auto;
+  margin-right: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  width: 120px;
+  height: 40px;
+  border-radius: 75px;
+  font-size: 15px;
+  cursor: pointer;
+  border: none;
+  color: white;
+  background: #3b3b3b;
+}
+
+.btnconfirm:hover {
+  box-shadow: 0 5px 35px 0 #272727;
+}
