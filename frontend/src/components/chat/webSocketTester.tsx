@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import io from 'socket.io-client';
 
-function AppTestSockets() {
+const AppTestSockets = () => {
 
 	const	title = 'MY TITLE';
 	const 	[messages, addMessages] = useState<string[]>(['Some message', 'Another message']);
 	const	[text, changeText] = useState<string>("");
-	let 	socket = null;
+	const 	socket = io('https://localhost:3000');
 
 	const sendMessage = (event: any) => {
 		event.preventDefault();
@@ -25,7 +25,7 @@ function AppTestSockets() {
 	}
 
 	useEffect(() => {
-		socket = io('https://localhost:3000');
+		// socket = io('https://localhost:3000');
 		socket.on('msgToClient', (msg: string) => {
 			receiveMessage(msg);
 		})
@@ -37,14 +37,14 @@ function AppTestSockets() {
 
 	return (
 		<div>
-			<h1>{{title}}</h1>
+			<h1>{title}</h1>
 			<form onSubmit={sendMessage}>
 				<input type='text' value={text} />
 				<button type="submit">Send</button>
 			</form>
-			<div>{messages.map((id: number, msg: string) => {
-				<p key={id}>{msg}</p>
-			})}</div>
+			<div>
+				{messages.map((msg: string, id: number) => <p key={id}>{msg}</p>)}
+			</div>
 			
 		</div>
 	)
