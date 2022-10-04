@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import io from 'socket.io-client';
 
-const 	socket = io('http://localhost:3000');
+const 	socket = io('http://localhost:3001');
 
 const AppTestSockets = () => {
 
-	const	title = 'MY TITLE';
+	const	title = 'WEBSOCKETS TESTER';
 	const 	[messages, addMessages] = useState<string[]>(['Some message', 'Another message']);
 	const	[text, changeText] = useState<string>("");
 
@@ -31,10 +31,12 @@ const AppTestSockets = () => {
 
 	useEffect(() => {
 		// socket = io('https://localhost:3000');
+		console.log('ici');
 		socket.on('msgToClient', (msg: any) => {
 			receiveMessage(msg)});
 
 		return () => {
+			console.log('la');
 			socket.off('msgToClient');
 		}
 	}, [])
@@ -49,7 +51,6 @@ const AppTestSockets = () => {
 			<div>
 				{messages.map((msg: string, id: number) => <p key={id}>{msg}</p>)}
 			</div>
-			
 		</div>
 	)
 }
