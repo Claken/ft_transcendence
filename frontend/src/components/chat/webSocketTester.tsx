@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import io from 'socket.io-client';
+import io, { Socket } from 'socket.io-client';
 
-const 	socket = io('http://localhost:3001');
+// const 	socket = io('http://localhost/3001');
 
 const AppTestSockets = () => {
 
 	const	title = 'WEBSOCKETS TESTER';
 	const 	[messages, addMessages] = useState<string[]>(['Some message', 'Another message']);
 	const	[text, changeText] = useState<string>("");
+	const	[socket, setSocket] = useState<Socket>();
 
 
 	const handleChange = (event: any) => {
@@ -17,7 +18,7 @@ const AppTestSockets = () => {
 	const sendMessage = (event: any) => {
 		event.preventDefault();
 		console.log('send: ' + text);
-		socket.emit('msgToServer', text);
+		socket?.emit('msgToServer', text);
 		changeText("");
 	}
 
@@ -30,16 +31,20 @@ const AppTestSockets = () => {
 	}
 
 	useEffect(() => {
-		// socket = io('https://localhost:3000');
-		console.log('ici');
-		socket.on('msgToClient', (msg: any) => {
-			receiveMessage(msg)});
+		console.log('first');
+		const newSocket = io('http://localhost:3001');
+		setSocket(newSocket);
+	}, [setSocket])
+
+	useEffect(() => {
+		console.log('bim');
+		socket?.on('msgToClient', receiveMessage);
 
 		return () => {
-			console.log('la');
-			socket.off('msgToClient');
+			console.log('bam');
+			socket?.off('msgToClient', receiveMessage);
 		}
-	}, [])
+	}, [receiveMessage])
 
 	return (
 		<div>
