@@ -3,11 +3,12 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { ChatController } from './chat/chat.controller';
-import { ChatGateway } from './chat/chat.gateway';
 import { entities } from './TypeOrm';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
+import { AppLoggerMiddleware } from './http.logger.middleware';
+import { MiddlewareConsumer } from '@nestjs/common';
+import { ChatModule } from './chat/chat.module';
 
 @Module({
   imports: [
@@ -33,8 +34,13 @@ import { AuthModule } from './auth/auth.module';
     }),
     UsersModule,
     AuthModule,
+    ChatModule,
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule {
+  configure(consumer: MiddlewareConsumer): void {
+    consumer.apply(AppLoggerMiddleware).forRoutes('*');
+  }
+}

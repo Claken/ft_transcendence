@@ -31,17 +31,14 @@ const AppTestSockets = () => {
 	}
 
 	useEffect(() => {
-		console.log('first');
 		const newSocket = io('http://localhost:3001');
 		setSocket(newSocket);
 	}, [setSocket])
 
 	useEffect(() => {
-		console.log('bim');
 		socket?.on('msgToClient', receiveMessage);
 
 		return () => {
-			console.log('bam');
 			socket?.off('msgToClient', receiveMessage);
 		}
 	}, [receiveMessage])
