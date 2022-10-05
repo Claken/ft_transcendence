@@ -74,7 +74,8 @@ const Game = (props: JSX.IntrinsicAttributes & React.ClassAttributes<HTMLCanvasE
 
 		// Ajout d'event pour écouter les évènements que je définie
 		const movePlayer = e => {
-			if (e.key === "ArrowUp" || e.key === "ArrowDown") {
+			if (e.key === "ArrowUp" || e.key === "ArrowDown"
+				|| e.key === "w" || e.key === "s" || e.key === "z") {
 				e.preventDefault();
 				if (curr != e.key)
 					prev = curr;
@@ -85,8 +86,9 @@ const Game = (props: JSX.IntrinsicAttributes & React.ClassAttributes<HTMLCanvasE
 		}
 
 		const stopPlayer = e => {
-			if (e.key === "ArrowUp" || e.key === "ArrowDown") {
-				e.preventDefault();
+			if (e.key === "ArrowUp" || e.key === "ArrowDown"
+				|| e.key === "w" || e.key === "s" || e.key === "z") {
+					e.preventDefault();
 				if (e.key !== prev)
 					curr = prev;
 				allPos.key = curr;
@@ -132,8 +134,10 @@ const Game = (props: JSX.IntrinsicAttributes & React.ClassAttributes<HTMLCanvasE
 			// }
 			if (context == null)
 				return;
-			if (allPos.key === "ArrowUp" || allPos.key === "ArrowDown")
-				socket.emit("movePlayer", allPos);
+			if (allPos.key === "ArrowUp" || allPos.key === "ArrowDown"
+				|| allPos.key === "w" || allPos.key === "s"
+				|| allPos.key === "z")
+					socket.emit("movePlayer", allPos);
 			// if (key === "ArrowDown")
 			// 	socket.emit("moveDown", allPos);
 			socket.emit("pos", allPos);

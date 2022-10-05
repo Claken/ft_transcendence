@@ -66,12 +66,12 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
 	@SubscribeMessage('movePlayer')
 	async PaddleUp(client: any, allPos) {
-		if (allPos.key === "ArrowUp") {
+		if (allPos.key === "ArrowUp" || allPos.key === "w" || allPos.key === "z") {
 			allPos.posHL -= 4;
 			if (allPos.posHL < 0 + allPos.EmptyGround)
 				allPos.posHL = 0 + allPos.EmptyGround;
 		}
-		if (allPos.key === "ArrowDown") {
+		if (allPos.key === "ArrowDown" || allPos.key === "s") {
 			allPos.posHL += 4;
 			if (allPos.posHL + allPos.paddleSize > allPos.height)
 				allPos.posHL = allPos.height - allPos.paddleSize;
