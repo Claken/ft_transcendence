@@ -17,7 +17,6 @@ const Game = (props: JSX.IntrinsicAttributes & React.ClassAttributes<HTMLCanvasE
 	const [scoreLP, setScoreLP] = useState(0); // Score du joueur gauche
 	const [scoreRP, setScoreRP] = useState(0); // Score du joueur droit
 	
-	
 	useEffect(() => {
 		const canvas = canvasRef.current;
 		if (canvas == null)
@@ -27,15 +26,15 @@ const Game = (props: JSX.IntrinsicAttributes & React.ClassAttributes<HTMLCanvasE
 		return;
 		var width = canvas.width;				//largeur du canvas
 		var height = canvas.height;				//hauteur du canvas
-		var posHL = height/2 - EmptyGround/2;	//placement en hauteur du paddle gauche (joueur gauche)
-		var posHR = height/2 - EmptyGround/2;	//placement en hauteur du paddle droit (joueur droit)
-		var paddleSize = height/7;				//hauteur du paddle
-		var paddleLarge = width/100;			//largeur du paddle
+		var pLY = height/2 - EmptyGround/2;		//placement en hauteur du paddle gauche (joueur gauche)
+		var pRY = height/2 - EmptyGround/2;		//placement en hauteur du paddle droit (joueur droit)
+		var paddleH = height/7;					//hauteur du paddle
+		var paddleW = width/100;				//largeur du paddle
 		var radius = 10;						//taille de la balle
 		var ballX = width / 2;					//placement en X de la balle
 		var ballY = height / 2 + EmptyGround/2;	//placement en Y de la balle
-		var vx = -3;
-		var vy = 3;
+		var vx = 2;
+		var vy = 2;
 		var state = 2;
 		var key = "";
 		var prev = "";
@@ -46,10 +45,10 @@ const Game = (props: JSX.IntrinsicAttributes & React.ClassAttributes<HTMLCanvasE
 			radius: radius,
 			width:width,
 			height:height,
-			paddleLarge:paddleLarge,
-			paddleSize:paddleSize,
-			posHL:posHL,
-			posHR:posHR,
+			paddleW:paddleW,
+			paddleH:paddleH,
+			pLY:pLY,
+			pRY:pRY,
 			ballX:ballX,
 			ballY:ballY,
 			scoreLP:scoreLP,
@@ -75,7 +74,8 @@ const Game = (props: JSX.IntrinsicAttributes & React.ClassAttributes<HTMLCanvasE
 		// Ajout d'event pour écouter les évènements que je définie
 		const movePlayer = e => {
 			if (e.key === "ArrowUp" || e.key === "ArrowDown"
-				|| e.key === "w" || e.key === "s" || e.key === "z") {
+				|| e.key === "w" || e.key === "s" || e.key === "z"
+				|| e.key === "W" || e.key === "S" || e.key === "Z") {
 				e.preventDefault();
 				if (curr != e.key)
 					prev = curr;
@@ -87,7 +87,8 @@ const Game = (props: JSX.IntrinsicAttributes & React.ClassAttributes<HTMLCanvasE
 
 		const stopPlayer = e => {
 			if (e.key === "ArrowUp" || e.key === "ArrowDown"
-				|| e.key === "w" || e.key === "s" || e.key === "z") {
+				|| e.key === "w" || e.key === "s" || e.key === "z"
+				|| e.key === "W" || e.key === "S" || e.key === "Z") {
 					e.preventDefault();
 				if (e.key !== prev)
 					curr = prev;
@@ -101,23 +102,20 @@ const Game = (props: JSX.IntrinsicAttributes & React.ClassAttributes<HTMLCanvasE
 		document.addEventListener('keyup', stopPlayer);
 
 		// Update positions
-		socket.on("updatedPos", newPos => {
-			allPos.ballX = newPos.ballX;
-			allPos.ballY = newPos.ballY;
-			allPos.vy = newPos.vy;
-			allPos.vx = newPos.vx;
+		socket.on("updatedData", newData => {
+			allPos.ballX = newData.ballX;
+			allPos.ballY = newData.ballY;
+			allPos.vy = newData.vy;
+			allPos.vx = newData.vx;
+			allPos.scoreLP = newData.scoreLP
+			allPos.scoreRP = newData.scoreRP
 		});
 
 		// Update des joueurs
-		socket.on("updatedPlayer", newPos => {
-			allPos.posHL = newPos.posHL;
-			allPos.posHR = newPos.posHR;
+		socket.on("updatedPlayer", newData => {
+			allPos.pLY = newData.pLY;
+			allPos.pRY = newData.pRY;
 		});
-
-		// // Update du joueur droit
-		// socket.on("updateRP", newPos => {
-		// 	allPos.posHR = newPos;
-		// });
 
 		function render() {
 			// switch (state) {
@@ -135,12 +133,11 @@ const Game = (props: JSX.IntrinsicAttributes & React.ClassAttributes<HTMLCanvasE
 			if (context == null)
 				return;
 			if (allPos.key === "ArrowUp" || allPos.key === "ArrowDown"
-				|| allPos.key === "w" || allPos.key === "s"
-				|| allPos.key === "z")
+				|| allPos.key === "w" || allPos.key === "W"
+				|| allPos.key === "s" || allPos.key === "S"
+				|| allPos.key === "z" || allPos.key === "Z")
 					socket.emit("movePlayer", allPos);
-			// if (key === "ArrowDown")
-			// 	socket.emit("moveDown", allPos);
-			socket.emit("pos", allPos);
+			socket.emit("update", allPos);
 			context.clearRect(0, 0, width, height); // nettoie la zone spécifiée pour redessiner au propre par dessus
 			context.fillStyle = "black" // assigne la couleur noir au prochain dessin/texte
 			context.fillRect(0, 50, width, height) // créer un rectangle de taille width X height
@@ -154,7 +151,7 @@ const Game = (props: JSX.IntrinsicAttributes & React.ClassAttributes<HTMLCanvasE
 			context.fillText(loginRP, width, 40); //affiche le login du joueur de droite
 			context.textAlign = 'center'; // affiche le login au plus au centre
 			context.font = "60px Roboto"; // applique une police pour le texte suivant
-			// context.fillText(allPos.scoreLP + ' - ' + allPos.scoreRP, width / 2, 45);// applique le texte à l'endroit voulu dans le rectangle
+			context.fillText(allPos.scoreLP + ' - ' + allPos.scoreRP, width / 2, 45);// applique le texte à l'endroit voulu dans le rectangle
 			context.fillText(allPos.ballX + ' X ' + allPos.ballY, 600 / 2, 45);
 			context.fillText(allPos.width + ' X ' + allPos.height, 1200 / 2, 45);
 
@@ -163,8 +160,8 @@ const Game = (props: JSX.IntrinsicAttributes & React.ClassAttributes<HTMLCanvasE
 			context.fillStyle = 'white';
 			context.arc(allPos.ballX, allPos.ballY, radius, 0, Math.PI*2); //balle
 			context.fill();
-			context.fillRect(width - paddleLarge, allPos.posHR, paddleLarge-1, paddleSize); //paddle gauche
-			context.fillRect(1, allPos.posHL, paddleLarge, paddleSize); //paddle droit
+			context.fillRect(1, allPos.pLY, paddleW, paddleH); //paddle gauche
+			context.fillRect(width - paddleW, allPos.pRY, paddleW-1, paddleH); //paddle droit
 			context.strokeStyle = 'white';
 			context.moveTo(width/2, 50);
 			context.lineTo(width/2, height);
