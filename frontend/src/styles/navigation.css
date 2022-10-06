@@ -20,12 +20,20 @@ nav {
 }
 
 .space {
+<<<<<<< HEAD
   margin-right: 12vw;
+=======
+  margin-right: 15vw;
+>>>>>>> 72615eb10d2d5584eacd9003af90f49f327cbd7e
   margin-bottom: 2px;
 }
 
 .spacenotlog {
+<<<<<<< HEAD
   margin-right: calc(48vw + 360px);
+=======
+  margin-right: calc(60vw + 360px);
+>>>>>>> 72615eb10d2d5584eacd9003af90f49f327cbd7e
   margin-bottom: 2px;
 }
 
