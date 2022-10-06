@@ -62,7 +62,7 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 		if ((left < pL_right && right > pL_left && top < pL_bot && bot > pL_top)
 			|| (left < pR_right && right > pR_left && top < pR_bot && bot > pR_top)) {
 				allPos.vx *= -1;
-				console.log(allPos.vx);
+				// console.log(allPos.vx);
 		}
 		else if (right > allPos.width) {
 			allPos.ballX = allPos.width/2;
