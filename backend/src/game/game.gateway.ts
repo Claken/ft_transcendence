@@ -7,7 +7,7 @@ import {
 	OnGatewayInit
 } from '@nestjs/websockets';
 
-@WebSocketGateway({cors: "http://localhost:3000"})//front ?
+@WebSocketGateway({cors: "http://localhost:3000"})
 export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
 	
 	@WebSocketServer() server;
@@ -59,21 +59,23 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 		}
 
 		//joueur gauche et droit en X
-		if ((left < pL_right && right > pL_left && top < pL_bot && bot > pL_top)
-			|| (left < pR_right && right > pR_left && top < pR_bot && bot > pR_top)) {
+		if ((left < pL_right && top < pL_bot && bot > pL_top)
+			|| (right > pR_left && top < pR_bot && bot > pR_top)) {
 				allPos.vx *= -1;
-				// console.log(allPos.vx);
 		}
 		else if (right > allPos.width) {
 			allPos.ballX = allPos.width/2;
 			allPos.scoreLP++;
-			// allPos.vx *= -1;//todo
+			if (allPos.scoreLP >= allPos.score)
+				allPos.state = 4
+			allPos.vx *= -1;//todo
 		}
 		else if (left < 0) {
 			allPos.ballX = allPos.width / 2;
 			allPos.scoreRP++;
+			if (allPos.scoreRP >= allPos.score)
+				allPos.state = 3
 		}
-
 		//assignation finale de la valeur
 		allPos.ballX += allPos.vx;
 		allPos.ballY += allPos.vy;
