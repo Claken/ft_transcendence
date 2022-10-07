@@ -30,24 +30,27 @@ const Game = (props: JSX.IntrinsicAttributes & React.ClassAttributes<HTMLCanvasE
 		const context = canvas.getContext("2d");
 		if (context == null)
 		return;
-		var width = canvas.width;				//largeur du canvas
-		var height = canvas.height;				//hauteur du canvas
-		var pLY = height/2 - EmptyGround/2;		//placement en hauteur du paddle gauche (joueur gauche)
-		var pRY = height/2 - EmptyGround/2;		//placement en hauteur du paddle droit (joueur droit)
-		var paddleH = height/8;					//hauteur du paddle
-		var paddleW = width/100;				//largeur du paddle
-		var radius = 10;						//taille de la balle
-		var ballX = width / 2;					//placement en X de la balle
-		var ballY = height / 2 + EmptyGround/2;	//placement en Y de la balle
-		var vx = -5;
-		var vy = -5;
-		var state = 4;
+		var width = canvas.width;					//largeur du canvas
+		var height = canvas.height;					//hauteur du canvas
+		var pLY = height/2 - EmptyGround/2;			//placement en hauteur du paddle gauche
+		var pRY = height/2 - EmptyGround/2;			//placement en hauteur du paddle droit
+		var paddleH = height/8;						//hauteur du paddle
+		var paddleW = width/100;					//largeur du paddle
+		var radius = 10;							//taille de la balle
+		var ballX = width / 2;						//placement en X de la balle
+		var ballY = height / 2 + EmptyGround/2;		//placement en Y de la balle
+		var vx = -5;								//vitesse en X de la balle
+		var vy = -5;								//vitesse en Y de la balle
+		var state = 0;								//etat du jeu
 		var key = "";
 		var prev = "";
 		var curr = "";
 		var score = 5;
+		let animationFrameId: number;
 
-		//Tab qui va etre envoye au back a chaque update de la ball et des paddle
+/* ***************************************************************************** */
+/*    Tab qui va etre envoye au back a chaque update de la ball et des paddle    */
+/* ***************************************************************************** */
 		const allPos = {
 			radius: radius,
 			width:width,
@@ -68,9 +71,9 @@ const Game = (props: JSX.IntrinsicAttributes & React.ClassAttributes<HTMLCanvasE
 			score:score,
 		};
 
-		let animationFrameId: number;
-
-		/* Tableau d'état pour savoir où en est le jeu */
+/* ***************************************************************************** */
+/*                  Tableau d'état pour savoir où en est le jeu                  */
+/* ***************************************************************************** */
 		const State = {
 			INIT: 0,
 			PAUSE: 1,
@@ -79,7 +82,9 @@ const Game = (props: JSX.IntrinsicAttributes & React.ClassAttributes<HTMLCanvasE
 			LOSE: 4,
 		};
 		
-		// Ajout d'event pour écouter les évènements que je définie
+/* ***************************************************************************** */
+/*            Ajout d'event pour écouter les touches/cliques entrant             */
+/* ***************************************************************************** */
 		const pauseGame = e => {
 			if (e.key === "p" || e.key === " ") {
 				e.preventDefault();
@@ -120,9 +125,8 @@ const Game = (props: JSX.IntrinsicAttributes & React.ClassAttributes<HTMLCanvasE
 
 			if (allPos.state === State.INIT
 				&& (x > (width/2-200) && x < (width/2+200)
-				&& y > (height/2 - 50) && y < (height/2))) {
+				&& y > (height/2 - 50) && y < (height/2)))
 					allPos.state = State.PLAY;
-			}
 			else if (allPos.state === State.PAUSE || allPos.state === State.PLAY) {
 				if (x > (((width/2) - 150) - (radius*2)) && x < (((width/2) - 150) + (radius*2))
 					&& y > (25 - (radius*2)) && y < (25 + (radius*2))) {
@@ -142,6 +146,11 @@ const Game = (props: JSX.IntrinsicAttributes & React.ClassAttributes<HTMLCanvasE
 						allPos.pRY = pRY;
 				}
 			}
+			if ((allPos.state === State.LOSE || allPos.state === State.WIN)
+				&& (x > (width/2 - 290) && x < (width/2 + 290)
+				&& y > ((height / 1.6) - 50) && y < (height / 1.6))) {
+				allPos.state = State.INIT;
+			}
 		}
 
 		document.addEventListener('keydown', pauseGame);
@@ -149,7 +158,9 @@ const Game = (props: JSX.IntrinsicAttributes & React.ClassAttributes<HTMLCanvasE
 		document.addEventListener('keyup', stopPlayer);
 		document.addEventListener('click', clickInterpreter);
 
-		// Update positions
+/* ***************************************************************************** */
+/*              Communication avec le back sur l'échange de données              */
+/* ***************************************************************************** */
 		socket.on("updatedData", newData => {
 			allPos.ballX = newData.ballX;
 			allPos.ballY = newData.ballY;
@@ -161,37 +172,43 @@ const Game = (props: JSX.IntrinsicAttributes & React.ClassAttributes<HTMLCanvasE
 			allPos.score = newData.score
 		});
 
-		// Update des joueurs
 		socket.on("updatedPlayer", newData => {
 			allPos.pLY = newData.pLY;
 			allPos.pRY = newData.pRY;
 		});
 
-		const initpage = () => {
+/* ***************************************************************************** */
+/*                   Affichage différent selon l'état du game                    */
+/* ***************************************************************************** */
+		const initPage = () => {
 			context.fillStyle = "white";
 			context.fillText("CLICK TO START", width / 2, height / 2, width);
-			//Choix de la map
+			//TODO: Choix de la map PUIS ensuite cliquer pour démarrer la partie ?
+			//TODO: Ou compte à rebourd, plus simple à gérer.
 		}
 
-		const pausepage = () => {
+		const pausePage = () => {
 			context.fillStyle = "white";
 			context.fillText("PAUSE", width / 2, height / 2, width);
 		}
 
-		const losepage = () => {
+		const losePage = () => {
 			context.fillStyle = "red";
 			context.fillText("You LOSE", width / 2, height / 2.2, width);
 			context.fillStyle = "white";
 			context.fillText("CLICK to restart a game", width / 2, height / 1.6, width);
 		}
 
-		const winpage = () => {
+		const winPage = () => {
 			context.fillStyle = "green";
 			context.fillText("You WIN", width / 2, height / 2.2, width);
 			context.fillStyle = "white";
 			context.fillText("CLICK to restart a game", width / 2, height / 1.6, width);
 		}
 
+/* ***************************************************************************** */
+/*                   Affichage des boutons PAUSE/PLAY et STOP                    */
+/* ***************************************************************************** */
 		const button = () => {
 			context.beginPath();
 			context.fillStyle = "black";
@@ -199,37 +216,39 @@ const Game = (props: JSX.IntrinsicAttributes & React.ClassAttributes<HTMLCanvasE
 			context.arc((width/2) + 150, 25, radius*2, 0, Math.PI*2);
 			context.fill();
 			context.fillStyle = "white";
-			context.fillRect((width/2) + 140, 15, 20, 20);
+			context.fillRect((width/2) + 142.5, 17.5, 15, 15);
 			if (allPos.state === State.PAUSE) {
-				context.fillRect(640, 15, 8, 20);
-				context.fillRect(652, 15, 8, 20);
+				context.beginPath();
+				context.moveTo((width/2) - 155, 15);
+				context.lineTo((width/2) - 155, 35);
+				context.lineTo((width/2) - 140, 25);
+				context.fill();
+				context.closePath();
 			}
 			if (allPos.state === State.PLAY) {
-				context.beginPath();
-				context.fillStyle = "black";
-				context.arc(650, 25, radius*2, 0, Math.PI*2);
-				context.fill();
-				context.fillStyle = "white";
-				context.fillRect(640, 15, 8, 20);
-				context.fillRect(652, 15, 8, 20);
+				context.fillRect((width/2) - 160, 15, 8, 20);
+				context.fillRect((width/2) - 148, 15, 8, 20);
 			}
 		};
 
+/* ***************************************************************************** */
+/*                      Fonction principale de l'affichage                       */
+/* ***************************************************************************** */
 		function render() {
-			context.clearRect(0, 0, width, height); // nettoie la zone spécifiée pour redessiner au propre par dessus
-			context.fillStyle = "black" // assigne la couleur noir au prochain dessin/texte
-			context.fillRect(0, 50, width, height) // créer un rectangle de taille width X height
+			context.clearRect(0, 0, width, height);
+			context.fillStyle = "black";
+			context.fillRect(0, 50, width, height);
 			if (allPos.state === State.INIT) {
-				initpage();
+				initPage();
 			}
 			else if(allPos.state === State.PAUSE) {
 				button();
-				pausepage();
+				pausePage();
 			}
 			else if(allPos.state === State.LOSE)
-				losepage();
+				losePage();
 			else if(allPos.state === State.WIN)
-				winpage();
+				winPage();
 			else if(allPos.state === State.PLAY) {
 				button();
 				if (allPos.key === "ArrowUp" || allPos.key === "ArrowDown"
@@ -239,27 +258,25 @@ const Game = (props: JSX.IntrinsicAttributes & React.ClassAttributes<HTMLCanvasE
 						socket.emit("movePlayer", allPos);
 				socket.emit("update", allPos);
 			}
-				/* Affichage des joueurs et du score */
 				context.font = "40px Roboto";
 				context.fillStyle = "black";
-				context.textAlign = 'start'; // affiche le login au plus à gauche
-				context.fillText(loginLP, 0, 40); //affiche le login du joueur de gauche
-				context.textAlign = 'end'; // affiche le login au plus à droite
-				context.fillText(loginRP, width, 40); //affiche le login du joueur de droite
-				context.textAlign = 'center'; // affiche le login au plus au centre
-				context.font = "60px Roboto"; // applique une police pour le texte suivant
-				context.fillText(allPos.scoreLP + ' - ' + allPos.scoreRP, width / 2, 45);// applique le texte à l'endroit voulu dans le rectangle
-				/* Affichage balle/paddle/ligne centrale*/
+				context.textAlign = 'start';
+				context.fillText(loginLP, 0, 40);
+				context.textAlign = 'end';
+				context.fillText(loginRP, width, 40);
+				context.textAlign = 'center';
+				context.font = "60px Roboto";
+				context.fillText(allPos.scoreLP + ' - ' + allPos.scoreRP, width / 2, 45);
 				context.beginPath();
 				context.fillStyle = 'white';
-				context.arc(allPos.ballX, allPos.ballY, radius, 0, Math.PI*2); //balle
+				context.arc(allPos.ballX, allPos.ballY, radius, 0, Math.PI*2);
 				context.fill();
-				context.fillRect(1, allPos.pLY, paddleW, paddleH); //paddle gauche
-				context.fillRect(width - paddleW, allPos.pRY, paddleW-1, paddleH); //paddle droit
+				context.fillRect(1, allPos.pLY, paddleW, paddleH);
+				context.fillRect(width - paddleW, allPos.pRY, paddleW-1, paddleH);
 				context.strokeStyle = 'white';
 				context.moveTo(width/2, 50);
 				context.lineTo(width/2, height);
-				context.stroke(); //ligne centrale
+				context.stroke();
 				animationFrameId = window.requestAnimationFrame(render);
 		}
 		render();
@@ -270,7 +287,9 @@ const Game = (props: JSX.IntrinsicAttributes & React.ClassAttributes<HTMLCanvasE
 		}
 	}, [])
 
-	
+/* ***************************************************************************** */
+/*                          balise HTML de la page web                           */
+/* ***************************************************************************** */
 	return (
 		<div>
 			<canvas ref={canvasRef} width={CanvasWidth} height={CanvasHeight}  {...props}/>

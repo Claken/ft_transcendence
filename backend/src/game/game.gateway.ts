@@ -34,59 +34,64 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 	}
 
 	@SubscribeMessage('update')
-	async moveBall(client: any, allPos) { //quel est le premier param ?
-		//var pour facilement identifier les côtés de la balle
+	async moveBall(client: any, allPos) { //TODO: quel est le premier param ?
+/* ***************************************************************************** */
+/*      var pour facilement identifier les côtés de la balle et des paddles      */
+/* ***************************************************************************** */
 		let	left = allPos.ballX - allPos.radius,
 			right = allPos.ballX + allPos.radius,
 			top = allPos.ballY - allPos.radius,
 			bot = allPos.ballY + allPos.radius
 
-		//var pour facilement identifier les côtés du joueur gauche
 		let	pL_left = 1 - allPos.radius / 2,
 			pL_right = 1 + allPos.paddleW / 2,
 			pL_top = (allPos.pLY + allPos.EmptyGround) - allPos.paddleH / 2,
 			pL_bot = (allPos.pLY + allPos.EmptyGround) + allPos.paddleH / 2
 
-		//var pour facilement identifier les côtés du joueur droit
 		let	pR_left = (allPos.width - 1) - allPos.paddleW / 2,
 			pR_right = (allPos.width - 1) + allPos.paddleW / 2,
 			pR_top = (allPos.pRY + allPos.EmptyGround) - allPos.paddleH / 2,
 			pR_bot = (allPos.pRY + allPos.EmptyGround) + allPos.paddleH / 2
 
-		//détection bord en Y
+/* ***************************************************************************** */
+/*             Détection des colisions sur bord en Y et paddles en X             */
+/* ***************************************************************************** */
 		if (bot > allPos.height || top - allPos.EmptyGround < 0) {
 			allPos.vy *= -1;
 		}
 
-		//joueur gauche et droit en X
 		if ((left < pL_right && top < pL_bot && bot > pL_top)
 			|| (right > pR_left && top < pR_bot && bot > pR_top)) {
 				allPos.vx *= -1;
 		}
 		else if (right > allPos.width) {
 			allPos.ballX = allPos.width/2;
+			allPos.ballY = (allPos.height / 2) + allPos.EmptyGround/2;
 			allPos.scoreLP++;
 			if (allPos.scoreLP >= allPos.score)
-				allPos.state = 4
-			allPos.vx *= -1;//todo
+				allPos.state = 4 //TODO: gagnant/perdant en fonction de joueur et pas du side.
+			allPos.vx *= -1;//TODO: à retirer.
 		}
 		else if (left < 0) {
-			allPos.ballX = allPos.width / 2;
+			allPos.ballX = allPos.width/2;
+			allPos.ballY = (allPos.height / 2) + allPos.EmptyGround/2;
 			allPos.scoreRP++;
 			if (allPos.scoreRP >= allPos.score)
-				allPos.state = 3
+				allPos.state = 3 //TODO: gagnant/perdant en fonction de joueur et pas du side.
 		}
-		//assignation finale de la valeur
-		allPos.ballX += allPos.vx;
-		allPos.ballY += allPos.vy;
+		if (allPos.state != 3 && allPos.state != 4) {
+			allPos.ballX += allPos.vx;
+			allPos.ballY += allPos.vy;
+		}
 		this.server.emit("updatedData", allPos);
 	}
 
+/* ***************************************************************************** */
+/*                    Mouvement des paddles gauche et droite.                    */
+/* ***************************************************************************** */
 	@SubscribeMessage('movePlayer')
 	async PaddleUp(client: any, allPos) {
-		/*
-			En fonction de l'userID, le paddle Gauche ou Droit bouge
-		*/
+	//TODO: En fonction de l'userID, le paddle Gauche ou Droit bouge
 		if (allPos.key === "ArrowUp" || allPos.key === "w" || allPos.key === "W"
 			|| allPos.key === "z" || allPos.key === "Z") {
 			allPos.pLY -= 6;
