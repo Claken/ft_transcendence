@@ -6,7 +6,8 @@ import io, { Socket } from 'socket.io-client';
 const AppTestSockets = () => {
 
 	const	title = 'WEBSOCKETS TESTER';
-	const 	[messages, addMessages] = useState<string[]>([]);
+	// const 	[messages, addMessages] = useState<string[]>([]);
+	const 	[messages, addMessages] = useState<{sender: string; message: string}[]>([])
 	const	[text, changeText] = useState<string>("");
 	const	[socket, setSocket] = useState<Socket>();
 	const	[username, changeUsername] = useState<string>("");
@@ -19,17 +20,18 @@ const AppTestSockets = () => {
 	const sendMessage = (event: any) => {
 		event.preventDefault();
 		console.log('send: ' + text);
-		socket?.emit('msgToServer', {sender: username, msg: text});
+		socket?.emit('msgToServer', {sender: username, message: text});
 		changeText("");
 	}
 
-	const receiveMessage = (message: {sender: string, msg: string}) => {
-		console.log('recv: ' + message.msg);
-		console.log('recv: ' + message.sender);
+	const receiveMessage = (obj: {sender: string, message: string}) => {
+		console.log('recv: ' + obj.message);
+		console.log('recv: ' + obj.sender);
 		const messagesCopy = [...messages];
 
-		messagesCopy.push(message.sender);
-		messagesCopy.push(message.msg);
+		// messagesCopy.push(message.sender);
+		// messagesCopy.push(message.msg);
+		messagesCopy.push(obj);
 		addMessages(messagesCopy);
 	}
 
@@ -65,7 +67,9 @@ const AppTestSockets = () => {
 			<div>
 				{/* <strong>{username}</strong> */}
 				{/* <p>{text}</p> */}
-					{messages.map((msg: string, id: number) => <ul key={id}>{msg}</ul>)}
+					{messages.map((msg: any, id: number) => <ul key={id}>
+						<strong> {msg.sender}:</strong> {msg.message}
+						</ul>)}
 			</div>
 		</div>
 	)
