@@ -19,15 +19,17 @@ const AppTestSockets = () => {
 	const sendMessage = (event: any) => {
 		event.preventDefault();
 		console.log('send: ' + text);
-		socket?.emit('msgToServer', text);
+		socket?.emit('msgToServer', {sender: username, msg: text});
 		changeText("");
 	}
 
-	const receiveMessage = (msg: string) => {
-		console.log('recv: ' + msg);
+	const receiveMessage = (message: {sender: string, msg: string}) => {
+		console.log('recv: ' + message.msg);
+		console.log('recv: ' + message.sender);
 		const messagesCopy = [...messages];
 
-		messagesCopy.push(msg);
+		messagesCopy.push(message.sender);
+		messagesCopy.push(message.msg);
 		addMessages(messagesCopy);
 	}
 
@@ -63,7 +65,7 @@ const AppTestSockets = () => {
 			<div>
 				{/* <strong>{username}</strong> */}
 				{/* <p>{text}</p> */}
-				{messages.map((msg: string, id: number) => <p key={id}>{msg}</p>)}
+					{messages.map((msg: string, id: number) => <ul key={id}>{msg}</ul>)}
 			</div>
 		</div>
 	)
