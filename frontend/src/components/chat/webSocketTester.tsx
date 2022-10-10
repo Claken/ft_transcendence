@@ -5,8 +5,7 @@ import io, { Socket } from 'socket.io-client';
 
 const AppTestSockets = () => {
 
-	const	title = 'WEBSOCKETS TESTER';
-	// const 	[messages, addMessages] = useState<string[]>([]);
+	const	title = 'PROTO CHATROOM';
 	const 	[messages, addMessages] = useState<{sender: string; message: string}[]>([])
 	const	[text, changeText] = useState<string>("");
 	const	[socket, setSocket] = useState<Socket>();
@@ -29,8 +28,6 @@ const AppTestSockets = () => {
 		console.log('recv: ' + obj.sender);
 		const messagesCopy = [...messages];
 
-		// messagesCopy.push(message.sender);
-		// messagesCopy.push(message.msg);
 		messagesCopy.push(obj);
 		addMessages(messagesCopy);
 	}
@@ -65,11 +62,7 @@ const AppTestSockets = () => {
 				<button type="submit">Send</button>
 			</form>
 			<div>
-				{/* <strong>{username}</strong> */}
-				{/* <p>{text}</p> */}
-					{messages.map((msg: any, id: number) => <ul key={id}>
-						<strong> {msg.sender}:</strong> {msg.message}
-						</ul>)}
+				{messages.map((msg: any, id: number) => <ul key={id}><strong>{msg.sender}:</strong> {msg.message}</ul>)}
 			</div>
 		</div>
 	)
