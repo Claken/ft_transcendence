@@ -1,8 +1,8 @@
 import React, { useRef, useEffect, useState } from 'react'
-import axios from 'axios'
+import axios from 'axios' //TODO:
 import { socket } from "./Socket";
 import "../styles/canvas.css"
-import { Server } from 'tls';
+import { Server } from 'tls'; //TODO:
 
 const displayButtons = {
 	display: "flex" as "flex",
@@ -183,6 +183,10 @@ const Game = (props: JSX.IntrinsicAttributes & React.ClassAttributes<HTMLCanvasE
 		const initPage = () => {
 			context.fillStyle = "white";
 			context.fillText("CLICK TO START", width / 2, height / 2, width);
+			//if (user == 0)
+				//allPos.loginLP = ...;
+			//else
+				//allPos.loginLP = ...;
 			//TODO: Choix de la map PUIS ensuite cliquer pour démarrer la partie ?
 			//TODO: Ou compte à rebourd, plus simple à gérer.
 		}
