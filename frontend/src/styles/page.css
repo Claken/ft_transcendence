@@ -1,20 +1,42 @@
+html,
+body {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+
 .background {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
   min-height: 100vh;
   min-width: 100vw;
   background: #333333;
 }
 
-.rectangle {
+.rectanglelog {
   border: 1px solid black;
   margin-left: auto;
   margin-right: auto;
-  width: 20em;
-  height: 28em;
-  border-radius: 40px;
-  background: green;
+  width: 310px;
+  height: 85px;
+  border-radius: 30px;
+  background: rgb(43, 102, 43);
 }
 
-.register {
+.rectangleguest {
+  border: 1px solid black;
+  margin-left: auto;
+  margin-right: auto;
+  width: 310px;
+  height: 200px;
+  border-radius: 30px;
+  background: rgb(43, 102, 43);
+}
+
+.login {
   text-align: center;
   color: white;
 }
@@ -33,7 +55,10 @@
 }
 
 .blank {
-	height: 15px;
+	text-align: center;
+	color: rgb(155, 0, 0);
+	font-size: 13px;
+	height: 18px;
 }
 
 .btnconfirm {
@@ -43,8 +68,8 @@
   justify-content: center;
   align-items: center;
   text-align: center;
-  width: 120px;
-  height: 40px;
+  width: 150px;
+  height: 50px;
   border-radius: 75px;
   font-size: 15px;
   cursor: pointer;
