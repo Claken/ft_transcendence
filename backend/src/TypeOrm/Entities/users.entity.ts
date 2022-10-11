@@ -2,12 +2,14 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { Game } from './game.entity';
 
 // Table in the DB
 @Entity('Users')
-export class UsersEntity {
+export class Users implements IUser {
   @PrimaryGeneratedColumn()
   id?: number;
 
@@ -26,6 +28,7 @@ export class UsersEntity {
 
   @CreateDateColumn()
   createdAt?: Date;
+
 }
 
 export interface IUser {

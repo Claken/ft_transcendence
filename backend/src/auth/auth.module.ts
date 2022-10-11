@@ -4,7 +4,7 @@ import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { FortyTwoStrategy } from './strategies/fortytwo.strategy';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { UsersEntity } from 'src/TypeOrm';
+import { Users } from 'src/TypeOrm';
 import { PassportModule } from '@nestjs/passport';
 import { SessionSerializer } from './serializer/session.serializer';
 
@@ -14,7 +14,7 @@ import { SessionSerializer } from './serializer/session.serializer';
     PassportModule.register({
       session: true,
     }),
-    TypeOrmModule.forFeature([UsersEntity]),
+    TypeOrmModule.forFeature([Users]),
   ],
   controllers: [AuthController],
   providers: [FortyTwoStrategy, AuthService, SessionSerializer],

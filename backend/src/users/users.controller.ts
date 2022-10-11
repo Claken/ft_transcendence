@@ -10,7 +10,7 @@ import {
 } from '@nestjs/common';
 import { DeleteResult, UpdateResult } from 'typeorm';
 import { UsersService } from './users.service';
-import { IUser, UsersEntity } from '../TypeOrm/Entities/users.entity';
+import { IUser, Users } from '../TypeOrm/Entities/users.entity';
 
 @Controller('users')
 export class UsersController {
@@ -21,22 +21,20 @@ export class UsersController {
     return await this.usersService.create(post);
   }
   @Get()
-  async findAllUsers(): Promise<UsersEntity[]> {
+  async findAllUsers(): Promise<Users[]> {
     return await this.usersService.findAllUsers();
   }
 
   @Get(':login')
-  async findOneBy(
-    @Param('login') loginToFind: string,
-  ): Promise<UsersEntity> {
+  async findOneBy(@Param('login') loginToFind: string): Promise<Users> {
     return await this.usersService.getByLogin(loginToFind);
   }
   @Get(':email')
-  async getByEmail(@Param('email') emailToFind: string): Promise<UsersEntity> {
+  async getByEmail(@Param('email') emailToFind: string): Promise<Users> {
     return await this.usersService.getByEmail(emailToFind);
   }
   @Get(':id')
-  async getById(@Param('id') idToFind: number): Promise<UsersEntity> {
+  async getById(@Param('id') idToFind: number): Promise<Users> {
     return await this.usersService.getById(idToFind);
   }
 
