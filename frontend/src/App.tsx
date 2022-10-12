@@ -5,30 +5,24 @@ import Login from "./pages/Login";
 import Pong from "./pages/Pong";
 import Channel from "./pages/Channel";
 import Account from "./pages/Account";
-import LogContext from "./contexts/LogContext";
+import { AuthProvider } from "./contexts/AuthContext";
+import { RequiredAuth } from "./components/RequiredAuth";
 
 function App() {
-  const [isLog, setIsLog] = useState(false);
-
-  const contextValue = {
-    isLog,
-    setIsLog,
-  };
-
-  return (
-    <BrowserRouter>
-      <LogContext.Provider value={contextValue}>
-        <Routes>
-          <Route path="/login" element={ isLog ? <Navigate to="/account" /> : <Login />} />
-          <Route path="/" element={<Home />} />
-          <Route path="*" element={<Home />} />
-          <Route path="/channel" element={ isLog ? <Channel /> : <Navigate to="/login" />} />
-          <Route path="/account" element={ isLog ? <Account /> : <Navigate to="/login" />} />
-          <Route path="/pong" element={ isLog ? <Pong /> : <Navigate to="/login" />} />
-        </Routes>
-      </LogContext.Provider>    
-    </BrowserRouter>
-  );
+	return (
+		<AuthProvider>
+			<BrowserRouter>
+				<Routes>
+					<Route path="/" element={<RequiredAuth><Home /></RequiredAuth>} />
+          <Route path="*" element={<Login />} />
+					<Route path="/login" element={<Login />} />
+					<Route path="/channel" element={<RequiredAuth><Channel /></RequiredAuth>} />
+					<Route path="/account" element={<RequiredAuth><Account /></RequiredAuth>} />
+					<Route path="/pong" element={<RequiredAuth><Pong /></RequiredAuth>} />
+				</Routes>
+			</BrowserRouter>
+		</AuthProvider>
+	);
 }
 
 export default App;
