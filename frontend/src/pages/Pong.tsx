@@ -1,12 +1,14 @@
-import React from "react";
-import Navigation from "../components/Navigation";
-import Game from "../components/Game"
+import React, { useContext } from "react";
+import LogContext from "../contexts/LogContext";
+import Navigation from "../components/Navigation.tsx";
 
 function Pong() {
+  const { isLog, setIsLog } = useContext(LogContext);
+
   return (
-    <div>
+    <div className="background">
       <Navigation />
-      <Game/ >;
+      <h1>Pong</h1>
     </div>
   );
 }

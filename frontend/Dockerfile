@@ -8,8 +8,10 @@ WORKDIR /usr/src/app
 # where available (npm@5+)
 COPY package.json package-lock.json ./
 
-RUN npm install 
-# npm@latest --location=global
+RUN npm install
+RUN npm install -S react-router-dom
+# RUN npm cache clear –force
+# RUN npm i sass --save-dev (pour le scss)
 # If you are building your code for production
 # RUN npm ci --only=production
 
