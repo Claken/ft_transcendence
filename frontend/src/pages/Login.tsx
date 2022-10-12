@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
-import Navigation from "../components/Navigation.tsx";
-import GuestForm from "../components/GuestForm.tsx";
-import LoginForm from "../components/LoginForm.tsx";
+import Navigation from "../components/Navigation";
+import GuestForm from "../components/GuestForm";
+import LoginForm from "../components/LoginForm";
 import "../styles/page.css";
 
 function Login() {

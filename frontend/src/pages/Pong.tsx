@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import LogContext from "../contexts/LogContext";
-import Navigation from "../components/Navigation.tsx";
+import Navigation from "../components/Navigation";
 
 function Pong() {
   const { isLog, setIsLog } = useContext(LogContext);

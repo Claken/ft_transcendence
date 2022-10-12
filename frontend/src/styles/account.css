@@ -5,28 +5,17 @@
   margin-left: auto;
   margin-right: auto;
   width: 60vw;
-<<<<<<< HEAD
-  height: 550px;
-=======
   height: 700px;
->>>>>>> 72615eb10d2d5584eacd9003af90f49f327cbd7e
   border-radius: 10px;
   background: rgb(43, 102, 43);
 }
 
 .rectanglestats {
   border: 1px solid black;
-<<<<<<< HEAD
-  margin-top: -160px;
-  margin-left: 28vw;
-  width: 30vw;
-  height: 510px;
-=======
   margin-top: -100px;
   margin-left: 28vw;
   width: 30vw;
   height: 640px;
->>>>>>> 72615eb10d2d5584eacd9003af90f49f327cbd7e
   border-radius: 10px;
   background: rgb(59, 78, 59);
 }

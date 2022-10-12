@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import LogContext from "../contexts/LogContext";
-import Navigation from "../components/Navigation.tsx";
+import Navigation from "../components/Navigation";
 import "../styles/account.css"
 import Profile from "../assets/img/profile.jpeg"
 
