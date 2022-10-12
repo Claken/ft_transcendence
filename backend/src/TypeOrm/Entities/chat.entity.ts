@@ -36,6 +36,6 @@ export interface IChatRoom {
 	owner: string;
 	administrator: string;
 	isPublic: boolean;
-	password: string;
+	password?: string;
 	createdAt: Date;
 }

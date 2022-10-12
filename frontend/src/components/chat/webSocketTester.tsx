@@ -1,15 +1,28 @@
 import React, { useState, useEffect } from 'react';
 import io, { Socket } from 'socket.io-client';
+import { isForOfStatement } from 'typescript';
 
 // const 	socket = io('http://localhost/3001');
+
+interface IMessageToBack {
+	sender: string;
+	message: string;
+}
+
+interface IRoom {
+	active: boolean;
+	member: boolean;
+	name: string;
+}
 
 const AppTestSockets = () => {
 
 	const	title = 'PROTO CHATROOM';
-	const 	[messages, addMessages] = useState<{sender: string; message: string}[]>([])
+	const 	[messages, addMessages] = useState<IMessageToBack[]>([]);
 	const	[text, changeText] = useState<string>("");
 	const	[socket, setSocket] = useState<Socket>();
 	const	[username, changeUsername] = useState<string>("");
+	const	[rooms, setRooms] = useState<IRoom[]>([]);
 	let 	ignore = false;
 
 	const handleChange = (event: any) => {
@@ -23,6 +36,12 @@ const AppTestSockets = () => {
 		changeText("");
 	}
 
+	// const sendChatMessage = (event: any) => {
+	// 	event.preventDefault();
+	// 	socket?.emit('chatToServer', {sender: username, room: message: text});
+	// 	changeText("");
+	// }
+
 	const receiveMessage = (obj: {sender: string, message: string}) => {
 		console.log('recv: ' + obj.message);
 		console.log('recv: ' + obj.sender);
@@ -30,14 +49,52 @@ const AppTestSockets = () => {
 
 		messagesCopy.push(obj);
 		addMessages(messagesCopy);
+		console.log(rooms);
 	}
+
+	const addARoom = (roomName: string) => {
+		const newRoom: IRoom = {
+			active: false,
+			member: false,
+			name: roomName,
+		};
+		
+		const roomsCopy = [...rooms];
+		roomsCopy.push(newRoom);
+
+		setRooms(roomsCopy);
+	}
+
+	const leftRoom = (room: string) => {
+		rooms.forEach(element => {
+			if (element.name === room)
+			{
+				element.member = false;
+			}
+		});
+	}
+
+	const joinedRoom = (room: string) => {
+		rooms.forEach(element => {
+			if (element.name === room)
+			{
+				element.member = true;
+			}
+		});
+	}
+
+	/* ***************************************************************************** */
+	/*    						Les différents UseEffets    						 */
+	/* ***************************************************************************** */
 
 	useEffect(() => {
 		if (!ignore)
 		{
 			console.log('here');
 			const newName = prompt('Enter your username: ');
+			const askARoom = prompt('Enter a name of your room: ');
 			changeUsername(newName || '');
+			addARoom(askARoom || '');
 			ignore = true;
 		}
 	}, [])
@@ -53,6 +110,21 @@ const AppTestSockets = () => {
 			socket?.off('msgToClient', receiveMessage);
 		}
 	}, [receiveMessage])
+
+	useEffect(() => {
+		socket?.on('leftRoom', leftRoom);
+		return () => {
+			socket?.off('leftRoom', leftRoom);
+		}
+	}, [leftRoom])
+
+	useEffect(() => {
+		socket?.on('joinedRoom', joinedRoom);
+		return () => {
+			socket?.off('joinedRoom', joinedRoom);
+		}
+	}, [joinedRoom])
+
 
 	return (
 		<div>
