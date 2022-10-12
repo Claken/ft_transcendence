@@ -25,6 +25,16 @@ const AppTestSockets = () => {
 	const	[rooms, setRooms] = useState<IRoom[]>([]);
 	let 	ignore = false;
 
+	function findActiveRoom() {
+	
+		rooms.forEach(element => {
+			if (element.active === true)
+			{
+				return element;
+			}
+		})
+	}
+
 	const handleChange = (event: any) => {
 		changeText(event.target.value);
 	}
@@ -36,11 +46,12 @@ const AppTestSockets = () => {
 		changeText("");
 	}
 
-	// const sendChatMessage = (event: any) => {
-	// 	event.preventDefault();
-	// 	socket?.emit('chatToServer', {sender: username, room: message: text});
-	// 	changeText("");
-	// }
+	const sendChatMessage = (event: any) => {
+		event.preventDefault();
+		const activeRoom = findActiveRoom();
+		socket?.emit('chatToServer', {sender: username, room: activeRoom, message: text});
+		changeText("");
+	}
 
 	const receiveMessage = (obj: {sender: string, message: string}) => {
 		console.log('recv: ' + obj.message);
