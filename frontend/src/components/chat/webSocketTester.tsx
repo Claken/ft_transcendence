@@ -41,7 +41,7 @@ const AppTestSockets = () => {
 	}, [])
 
 	useEffect(() => {
-		const newSocket = io('http://localhost:3001');
+		const newSocket = io('http://localhost:3000');
 		setSocket(newSocket);
 	}, [setSocket])
 

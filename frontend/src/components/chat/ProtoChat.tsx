@@ -13,6 +13,7 @@ interface IRoom {
 	active: boolean;
 	member: boolean;
 	name: string;
+	messages: IMessageToBack[];
 }
 
 const ProtoChat = () => {
@@ -34,6 +35,7 @@ const ProtoChat = () => {
 			active: false,
 			member: false,
 			name: '',
+			messages: [],
 		};
 		rooms.forEach((element: IRoom) => {
 			if (element.active === true)
@@ -81,18 +83,27 @@ const ProtoChat = () => {
 	const sendChatMessage = (event: any) => {
 		event.preventDefault();
 		const activeRoom = findActiveRoom();
-		socket?.emit('chatToServer', {sender: username, room: activeRoom, message: text});
+		socket?.emit('chatToServer', {sender: username, room: activeRoom.name, message: text});
 		changeText("");
 	}
 
-	const receiveChatMessage = (obj: {sender: string, message: string}) => {
-		console.log('recv: ' + obj.message);
-		console.log('recv: ' + obj.sender);
-		const messagesCopy = [...messages];
+	const receiveChatMessage = (obj: {sender: string, room: string, message: string}) => {
+		
+		console.log('recvChat: ' + obj.message);
+		console.log('recvChat: ' + obj.sender);
+		console.log('recvChat: ' + obj.room);
 
-		messagesCopy.push(obj);
-		addMessages(messagesCopy);
-		console.log(rooms);
+		let theroom: IMessageToBack = {
+			sender: obj.sender,
+			message: obj.message,
+		};
+
+		rooms.forEach((element: IRoom) => {
+			if (element.name === obj.room)
+			{
+				element.messages.push(theroom);
+			}
+		})
 	}
 
 	const receiveMessage = (obj: {sender: string, message: string}) => {
@@ -110,6 +121,7 @@ const ProtoChat = () => {
 			active: false,
 			member: false,
 			name: roomName,
+			messages: [],
 		};
 		
 		const roomsCopy = [...rooms];
@@ -157,7 +169,7 @@ const ProtoChat = () => {
 		{
 			console.log('here');
 			const newName = prompt('Enter your username: ');
-			const askARoom = prompt('Enter a name of your room: ');
+			const askARoom = prompt('Enter a name for your room: ');
 			changeUsername(newName || '');
 			addARoom(askARoom || '');
 			ignore = true;
@@ -175,6 +187,13 @@ const ProtoChat = () => {
 			socket?.off('msgToClient', receiveMessage);
 		}
 	}, [receiveMessage])
+
+	useEffect(() => {
+		socket?.on('chatToClient', receiveChatMessage);
+		return () => {
+			socket?.off('chatToClient', receiveChatMessage);
+		}
+	}, [receiveChatMessage])
 
 	useEffect(() => {
 		socket?.on('leftRoom', leftRoom);
