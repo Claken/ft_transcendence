@@ -27,7 +27,7 @@ const AppTestSockets = () => {
 
 	function findActiveRoom() {
 	
-		rooms.forEach(element => {
+		rooms.forEach((element: any) => {
 			if (element.active === true)
 			{
 				return element;
@@ -77,7 +77,7 @@ const AppTestSockets = () => {
 	}
 
 	const leftRoom = (room: string) => {
-		rooms.forEach(element => {
+		rooms.forEach((element: any) => {
 			if (element.name === room)
 			{
 				element.member = false;
@@ -86,7 +86,7 @@ const AppTestSockets = () => {
 	}
 
 	const joinedRoom = (room: string) => {
-		rooms.forEach(element => {
+		rooms.forEach((element: any) => {
 			if (element.name === room)
 			{
 				element.member = true;
