@@ -11,6 +11,7 @@ export class GameController {
   async create(@Body() post: IGame): Promise<IGame> {
     return await this.gameService.create(post);
   }
+
   @Get()
   async findAllGames(): Promise<Game[]> {
     return await this.gameService.findAllGames();

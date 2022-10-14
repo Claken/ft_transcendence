@@ -3,17 +3,12 @@ import axios from "axios"; //TODO:
 import { socket } from "./Socket";
 import "../styles/canvas.css";
 import { Server } from "tls"; //TODO:
-
-const displayButtons = {
-	display: "flex" as "flex",
-	flexDirection: "row" as "row",
-};
+import { IGame } from '../interfaces/game.interface'
 
 const Game = (
 	props: JSX.IntrinsicAttributes &
 		React.ClassAttributes<HTMLCanvasElement> &
-		React.CanvasHTMLAttributes<HTMLCanvasElement>
-) => {
+		React.CanvasHTMLAttributes<HTMLCanvasElement> ) => {
 	const canvasRef = useRef<HTMLCanvasElement>(null);
 	let CanvasWidth = 1600;
 	let CanvasHeight = 760;
@@ -24,7 +19,29 @@ const Game = (
 	const [loginRP, setLoginRP] = useState("Player 2"); // avoir le login du joueur de droite pour l'afficher
 	const [scoreLP, setScoreLP] = useState(0); // Score du joueur gauche
 	const [scoreRP, setScoreRP] = useState(0); // Score du joueur droit
+	const [games, setGames] = useState<IGame[]>([]);
+	const [game, setGame] = useState<IGame>(null);
 
+	const addGame = () => {
+		const cpyGames = [...games];
+		setGame({loginLP: loginLP, loginRP: loginRP});
+		cpyGames.push(game);
+		setGames(cpyGames);
+	}
+
+	useEffect(() => {
+		// Créer 
+		axios.post('http://localhost:3001/game', game);
+	}, [games]) //todo: la valeur dans le tab doit changer pour appeler useState
+
+	useEffect(() => {
+		// axios
+		const MYLOGIN = axios.get('http://localhost:3001/game') 
+	}, [games])
+
+/* ***************************************************************************** */
+/*                             USEEFFECT PRINCIPALE                              */
+/* ***************************************************************************** */
 	useEffect(() => {
 		const canvas = canvasRef.current;
 		if (canvas == null) return;
@@ -80,6 +97,7 @@ const Game = (
 			PLAY: 2,
 			WIN: 3,
 			LOSE: 4,
+			ABORT: 5,
 		};
 
 		/* ***************************************************************************** */
@@ -95,11 +113,13 @@ const Game = (
 		const pauseGame = (e) => {
 			if (e.key === "p" || e.key === " ") {
 				e.preventDefault();
-				if (allPos.state === State.PLAY) allPos.state = State.PAUSE;
+				if (allPos.state === State.PLAY)
+					socket.emit("state", State.PAUSE);
 				else if (allPos.state === State.PAUSE)
-					allPos.state = State.PLAY;
+					socket.emit("state", State.PLAY);
 			}
 		};
+
 		const movePlayer = (e) => {
 			if (
 				e.key === "ArrowUp" ||
@@ -148,7 +168,7 @@ const Game = (
 				y > height / 2 - 50 &&
 				y < height / 2
 			)
-				allPos.state = State.PLAY;
+				socket.emit("state", State.PLAY);
 			else if (
 				allPos.state === State.PAUSE ||
 				allPos.state === State.PLAY
@@ -157,23 +177,25 @@ const Game = (
 					x > width / 2 - 150 - radius * 2 &&
 					x < width / 2 - 150 + radius * 2 &&
 					y > 25 - radius * 2 &&
-					y < 25 + radius * 2
-				) {
-					if (allPos.state === State.PAUSE) allPos.state = State.PLAY;
-					else allPos.state = State.PAUSE;
-				} else if (
+					y < 25 + radius * 2) {
+					if (allPos.state === State.PAUSE)
+						socket.emit("state", State.PLAY);
+					else
+						socket.emit("state", State.PAUSE);
+				}
+				else if (
 					x > width / 2 + 150 - radius * 2 &&
 					x < width / 2 + 150 + radius * 2 &&
 					y > 25 - radius * 2 &&
-					y < 25 + radius * 2
-				) {
-					allPos.state = State.INIT;
-					allPos.ballX = ballX;
-					allPos.ballY = ballY;
-					allPos.scoreLP = scoreLP;
-					allPos.scoreRP = scoreRP;
-					allPos.pLY = pLY;
-					allPos.pRY = pRY;
+					y < 25 + radius * 2) {
+						//TODO: METTRE A JOURS DANS LE BACK DONNEES. Check NOTES.
+						socket.emit("state", State.INIT);
+						allPos.ballX = ballX;
+						allPos.ballY = ballY;
+						allPos.scoreLP = scoreLP;
+						allPos.scoreRP = scoreRP;
+						allPos.pLY = pLY;
+						allPos.pRY = pRY;
 				}
 			}
 			if (
@@ -183,7 +205,9 @@ const Game = (
 				y > height / 1.6 - 50 &&
 				y < height / 1.6
 			) {
-				allPos.state = State.INIT;
+				socket.emit("state", State.INIT);
+				allPos.scoreLP = 0;
+				allPos.scoreRP = 0;
 			}
 		};
 
@@ -202,13 +226,16 @@ const Game = (
 			allPos.vx = newData.vx;
 			allPos.scoreLP = newData.scoreLP;
 			allPos.scoreRP = newData.scoreRP;
-			allPos.state = newData.state;
 			allPos.score = newData.score;
 		});
 
 		socket.on("updatedPlayer", (newData) => {
 			allPos.pLY = newData.pLY;
 			allPos.pRY = newData.pRY;
+		});
+
+		socket.on("updatedState", (newState) => {
+			allPos.state = newState;
 		});
 
 		/* ***************************************************************************** */
@@ -246,12 +273,12 @@ const Game = (
 			context.fillStyle = "green";
 			context.fillText("You WIN", width / 2, height / 2.2, width);
 			context.fillStyle = "white";
-			context.fillText(
-				"CLICK to restart a game",
-				width / 2,
-				height / 1.6,
-				width
-			);
+			context.fillText("CLICK to restart a game", width / 2, height / 1.6, width);
+		};
+
+		const abortPage = () => {
+			context.fillStyle = "white";
+			context.fillText("PAUSE", width / 2, height / 2, width);
 		};
 
 		/* ***************************************************************************** */
@@ -291,8 +318,11 @@ const Game = (
 			} else if (allPos.state === State.PAUSE) {
 				button();
 				pausePage();
-			} else if (allPos.state === State.LOSE) losePage();
-			else if (allPos.state === State.WIN) winPage();
+			}
+			else if (allPos.state === State.LOSE)
+				losePage();
+			else if (allPos.state === State.WIN)
+				winPage();
 			else if (allPos.state === State.PLAY) {
 				button();
 				if (
@@ -316,11 +346,7 @@ const Game = (
 			context.fillText(loginRP, width, 40);
 			context.textAlign = "center";
 			context.font = "60px Roboto";
-			context.fillText(
-				allPos.scoreLP + " - " + allPos.scoreRP,
-				width / 2,
-				45
-			);
+			context.fillText(allPos.scoreLP + " - " + allPos.scoreRP, width / 2, 45);
 			context.beginPath();
 			context.fillStyle = "white";
 			context.arc(allPos.ballX, allPos.ballY, radius, 0, Math.PI * 2);
@@ -352,7 +378,10 @@ const Game = (
 				height={CanvasHeight}
 				{...props}
 			/>
+			<div><button onClick={addGame}>addGame</button></div>
+			<div>{game ? game.loginLP : null}</div>
 		</div>
+		
 	);
 };
 

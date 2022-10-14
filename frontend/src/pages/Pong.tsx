@@ -1,6 +1,7 @@
 import React, { useContext } from "react";
 import LogContext from "../contexts/LogContext";
 import Navigation from "../components/Navigation";
+import Game from "../components/Game"
 
 function Pong() {
   const { isLog, setIsLog } = useContext(LogContext);
@@ -8,7 +9,7 @@ function Pong() {
   return (
     <div className="background">
       <Navigation />
-      <h1>Pong</h1>
+      <h1><Game/ ></h1>
     </div>
   );
 }

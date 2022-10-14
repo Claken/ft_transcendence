@@ -28,7 +28,6 @@ export class Users implements IUser {
 
   @CreateDateColumn()
   createdAt?: Date;
-
 }
 
 export interface IUser {

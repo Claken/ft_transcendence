@@ -7,6 +7,8 @@ import {
 	OnGatewayInit
 } from '@nestjs/websockets';
 
+var gameQueue = [];
+
 @WebSocketGateway({cors: "http://localhost:3000"})
 export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
 	
@@ -106,8 +108,24 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 		this.server.emit("updatedPlayer", allPos);
 	}
 
-	@SubscribeMessage('notification')
-	async test() {
-		console.log("tata");
+/* ***************************************************************************** */
+/*                    Mise à jours du state pour les joueurs                     */
+/* ***************************************************************************** */
+	@SubscribeMessage('state')
+	async State(client: any, currentState) {
+		this.server.emit("updatedState", currentState);
 	}
+
+/* ***************************************************************************** */
+/*                    Mouvement des paddles gauche et droite.                    */
+/* ***************************************************************************** */
+	// @SubscribeMessage('state')
+	// async ???(client: any, currentState) {
+	// 	this.server.emit("updatedState", currentState);
+	// }
+
+	// @SubscribeMessage('notification')
+	// async test() {
+	// 	console.log("tata");
+	// }
 }

@@ -1,21 +1,19 @@
-
-
 .rectangleprofile {
   border: 1px solid black;
   margin-left: auto;
   margin-right: auto;
   width: 60vw;
-  height: 700px;
+  height: 600px;
   border-radius: 10px;
   background: rgb(43, 102, 43);
 }
 
 .rectanglestats {
   border: 1px solid black;
-  margin-top: -100px;
+  margin-top: -150px;
   margin-left: 28vw;
   width: 30vw;
-  height: 640px;
+  height: 540px;
   border-radius: 10px;
   background: rgb(59, 78, 59);
 }

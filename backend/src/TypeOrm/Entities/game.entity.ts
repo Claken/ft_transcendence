@@ -4,11 +4,10 @@ import {
 	Entity,
 	PrimaryGeneratedColumn,
 } from 'typeorm';
-import { Users } from "./users.entity"
 
 @Entity()
 export class Game implements IGame {
-	@PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn()
   id?: number;
 
   @Column()
