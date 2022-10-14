@@ -164,6 +164,7 @@ const ProtoChat = () => {
 	/*    						Les différents UseEffets    						 */
 	/* ***************************************************************************** */
 
+	// USEEFFECT POUR AVOIR NOM ET ROOM
 	useEffect(() => {
 		if (!ignore)
 		{
@@ -176,11 +177,13 @@ const ProtoChat = () => {
 		}
 	}, [])
 
+	// USEEFFECT POUR CREER UN SOCKET
 	useEffect(() => {
 		const newSocket = io('http://localhost:3001');
 		setSocket(newSocket);
 	}, [setSocket])
 
+	// USEFFECT POUR RECEVOIR LE MESSAGE VENANT DU BACKEND
 	useEffect(() => {
 		socket?.on('msgToClient', receiveMessage);
 		return () => {
@@ -188,6 +191,7 @@ const ProtoChat = () => {
 		}
 	}, [receiveMessage])
 
+	// USEFFECT POUR RECEVOIR UN MESSAGE POUR UNE ROOM
 	useEffect(() => {
 		socket?.on('chatToClient', receiveChatMessage);
 		return () => {
@@ -195,6 +199,7 @@ const ProtoChat = () => {
 		}
 	}, [receiveChatMessage])
 
+	// USEFFECT POUR QUITTER UNE ROOM
 	useEffect(() => {
 		socket?.on('leftRoom', leftRoom);
 		return () => {
@@ -202,6 +207,7 @@ const ProtoChat = () => {
 		}
 	}, [leftRoom])
 
+	// USEFFECT POUR REJOINDRE UNE ROOM
 	useEffect(() => {
 		socket?.on('joinedRoom', joinedRoom);
 		return () => {
