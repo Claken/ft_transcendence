@@ -43,6 +43,8 @@ const ProtoChat = () => {
 				activeRoom = element;
 			}
 		})
+		// console.log('activeRoom.messages');
+		// console.log(activeRoom.messages);
 		return activeRoom;
 	}
 
@@ -57,12 +59,15 @@ const ProtoChat = () => {
 				element.active = false;
 			}
 		})
+		// toggleRoomMembership();
 	}
 
-	// const isMemberOfActiveRoom = (): boolean => {
-	// 	const activeRoom = findActiveRoom();
-	// 	return activeRoom.member;
-	// }
+	const isMemberOfActiveRoom = (): boolean => {
+		const activeRoom = findActiveRoom();
+		console.log('activeRoom.member');
+		console.log(activeRoom.member);
+		return activeRoom.member;
+	}
 
 	/* ***************************************************************************** */
 	/*    					Functions pour la gestion des chats 					 */
@@ -84,7 +89,10 @@ const ProtoChat = () => {
 		const activeRoom = findActiveRoom();
 		console.log('sendChat:   ' + text);
 		console.log('activeRoom: ' + activeRoom.name);
-		socket?.emit('chatToServer', {sender: username, room: activeRoom.name, message: text});
+		if (activeRoom.member)
+			socket?.emit('chatToServer', {sender: username, room: activeRoom.name, message: text});
+		else
+			alert('you must be a member of the room bitch !');
 		changeText("");
 	}
 
@@ -103,8 +111,12 @@ const ProtoChat = () => {
 			if (element.name === obj.room)
 			{
 				element.messages.push(theroom);
+				console.log('element.messages');
+				console.log(element.messages);
 			}
 		})
+		console.log('findActiveRoom().messages');
+		console.log(findActiveRoom().messages);
 	}
 
 	const receiveMessage = (obj: {sender: string, message: string}) => {
@@ -138,6 +150,7 @@ const ProtoChat = () => {
 		rooms.forEach((element: any) => {
 			if (element.name === room)
 			{
+				console.log('no member');
 				element.member = false;
 			}
 		});
@@ -147,19 +160,23 @@ const ProtoChat = () => {
 		rooms.forEach((element: any) => {
 			if (element.name === room)
 			{
+				console.log('member');
 				element.member = true;
 			}
 		});
 	}
 
-	const toggleRoomMembership = () => {
+	const toggleRoomMembership = (event: any) => {
+		event.preventDefault();
 		const activeRoom = findActiveRoom();
 		if (activeRoom.member)
 		{
+			console.log('left');
 			socket?.emit('leaveRoom', activeRoom.name);
 		}
 		else
 		{
+			console.log('joined');
 			socket?.emit('joinRoom', activeRoom.name);
 		}
 	}
@@ -195,6 +212,7 @@ const ProtoChat = () => {
 
 	// USEFFECT POUR RECEVOIR UN MESSAGE POUR UNE ROOM
 	useEffect(() => {
+		console.log('useEffect bitch');
 		socket?.on('chatToClient', receiveChatMessage);
 		return () => {
 			socket?.off('chatToClient', receiveChatMessage);
@@ -235,10 +253,17 @@ const ProtoChat = () => {
 			<table>
     			<tbody>
         			<tr>
-						{rooms.map((room: any, id: number) => <td>
-								<button onClick={() => setActiveForRoom(room.name)}>{room.name}</button>
-								</td>
+						{rooms.map((room: any, id: number) => <td key={id}><button onClick={() => setActiveForRoom(room.name)}>{room.name}</button></td>
 						)}
+        			</tr>
+    			</tbody>
+			</table>
+			<table>
+    			<tbody>
+        			<tr>
+						<td>
+							Status: {isMemberOfActiveRoom() ? 'Joined' : 'Not joined'} <button onClick={toggleRoomMembership}>{isMemberOfActiveRoom() ? 'Leave' : 'Join'}</button>
+						</td>
         			</tr>
     			</tbody>
 			</table>
