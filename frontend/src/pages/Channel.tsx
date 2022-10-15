@@ -8,8 +8,8 @@ function Channel() {
     <div>
       <Navigation />
       <h1>Channel</h1>
-      {/* < ProtoChat /> */}
-      < AppTestSockets />
+      < ProtoChat />
+      {/* < AppTestSockets /> */}
     </div>
   );
 }

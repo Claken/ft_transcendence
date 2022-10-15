@@ -46,8 +46,7 @@ const ProtoChat = () => {
 		return activeRoom;
 	}
 
-	function setActiveForRoom(roomName: string) {
-	
+	const setActiveForRoom = (roomName: string) => {
 		rooms.forEach((element: IRoom) => {
 			if (element.name === roomName)
 			{
@@ -83,6 +82,8 @@ const ProtoChat = () => {
 	const sendChatMessage = (event: any) => {
 		event.preventDefault();
 		const activeRoom = findActiveRoom();
+		console.log('sendChat:   ' + text);
+		console.log('activeRoom: ' + activeRoom.name);
 		socket?.emit('chatToServer', {sender: username, room: activeRoom.name, message: text});
 		changeText("");
 	}
@@ -116,11 +117,14 @@ const ProtoChat = () => {
 		console.log(rooms);
 	}
 
-	const addARoom = (roomName: string) => {
+	const addARoom = (event: any) => {
+		event.preventDefault();
+		const askARoom = prompt('Enter a name for your room: ');
+		
 		const newRoom: IRoom = {
 			active: false,
 			member: false,
-			name: roomName,
+			name: askARoom || '',
 			messages: [],
 		};
 		
@@ -170,9 +174,7 @@ const ProtoChat = () => {
 		{
 			console.log('here');
 			const newName = prompt('Enter your username: ');
-			const askARoom = prompt('Enter a name for your room: ');
 			changeUsername(newName || '');
-			addARoom(askARoom || '');
 			ignore = true;
 		}
 	}, [])
@@ -219,12 +221,30 @@ const ProtoChat = () => {
 	return (
 		<div>
 			<h1>{title}</h1>
-			<form onSubmit={sendMessage}>
+			{/* <form onSubmit={sendMessage}>
+				<input type="text" value={text} onChange={handleChange}/>
+				<button type="submit">Send</button>
+			</form> */}
+			<form onSubmit={sendChatMessage}>
 				<input type="text" value={text} onChange={handleChange}/>
 				<button type="submit">Send</button>
 			</form>
+			<form onSubmit={addARoom}>
+				<button type="submit"><strong>Add a room</strong></button>
+			</form>
+			<table>
+    			<tbody>
+        			<tr>
+						{rooms.map((room: any, id: number) => <td>
+								<button onClick={() => setActiveForRoom(room.name)}>{room.name}</button>
+								</td>
+						)}
+        			</tr>
+    			</tbody>
+			</table>
 			<div>
-				{messages.map((msg: any, id: number) => <ul key={id}><strong>{msg.sender}:</strong> {msg.message}</ul>)}
+				{/* {messages.map((msg: any, id: number) => <ul key={id}><strong>{msg.sender}:</strong> {msg.message}</ul>)} */}
+				{findActiveRoom().messages.map((msg: any, id: number) => <ul key={id}><strong>{msg.sender}:</strong> {msg.message}</ul>)}
 			</div>
 		</div>
 	)
