@@ -20,17 +20,26 @@ const ProtoChat = () => {
 
 	const	title = 'PROTO CHATROOM';
 	const	[text, changeText] = useState<string>("");
-	const 	[messages, addMessages] = useState<IMessageToBack[]>([]);
+
+	// const 	[messages, addMessages] = useState<IMessageToBack[]>([]);
+
 	const	[socket, setSocket] = useState<Socket>();
 	const	[username, changeUsername] = useState<string>("");
 	const	[rooms, setRooms] = useState<IRoom[]>([]);
+
+	const	[joinButton, setJoinButton] = useState<string>("Join");
+	const	[joinStatus, setJoinStatus] = useState<string>("Not joined");
+
+	const	[activeRoom, setActiveRoom] = useState<string>("");
+	const	[message, messageReceived] = useState<boolean>(false);
+
 	let 	ignore = false;
 
 	/* ***************************************************************************** */
 	/*    							Functions utiles		    					 */
 	/* ***************************************************************************** */
 
-	function findActiveRoom(): IRoom {
+	const findActiveRoom = (): IRoom => {
 		let activeRoom: IRoom = {
 			active: false,
 			member: false,
@@ -48,6 +57,20 @@ const ProtoChat = () => {
 		return activeRoom;
 	}
 
+	const setJoinButtonAndStatus = () => {
+		const activeRoom = findActiveRoom();
+		if (activeRoom.member)
+		{
+			setJoinButton("Leave");
+			setJoinStatus("Joined");
+		}
+		else
+		{
+			setJoinButton("Join");
+			setJoinStatus("Not joined");
+		}
+	}
+
 	const setActiveForRoom = (roomName: string) => {
 		rooms.forEach((element: IRoom) => {
 			if (element.name === roomName)
@@ -59,14 +82,8 @@ const ProtoChat = () => {
 				element.active = false;
 			}
 		})
-		// toggleRoomMembership();
-	}
-
-	const isMemberOfActiveRoom = (): boolean => {
-		const activeRoom = findActiveRoom();
-		// console.log('activeRoom.member');
-		// console.log(activeRoom.member);
-		return activeRoom.member;
+		setActiveRoom(roomName);
+		setJoinButtonAndStatus();
 	}
 
 	/* ***************************************************************************** */
@@ -74,15 +91,16 @@ const ProtoChat = () => {
 	/* ***************************************************************************** */
 
 	const handleChange = (event: any) => {
+		console.log('handleChange');
 		changeText(event.target.value);
 	}
 
-	const sendMessage = (event: any) => {
-		event.preventDefault();
-		console.log('send: ' + text);
-		socket?.emit('msgToServer', {sender: username, message: text});
-		changeText("");
-	}
+	// const sendMessage = (event: any) => {
+	// 	event.preventDefault();
+	// 	console.log('send: ' + text);
+	// 	socket?.emit('msgToServer', {sender: username, message: text});
+	// 	changeText("");
+	// }
 
 	const sendChatMessage = (event: any) => {
 		event.preventDefault();
@@ -115,15 +133,15 @@ const ProtoChat = () => {
 		})
 	}
 
-	const receiveMessage = (obj: {sender: string, message: string}) => {
-		// console.log('recv: ' + obj.message);
-		// console.log('recv: ' + obj.sender);
-		const messagesCopy = [...messages];
+	// const receiveMessage = (obj: {sender: string, message: string}) => {
+	// 	// console.log('recv: ' + obj.message);
+	// 	// console.log('recv: ' + obj.sender);
+	// 	const messagesCopy = [...messages];
 
-		messagesCopy.push(obj);
-		addMessages(messagesCopy);
-		// console.log(rooms);
-	}
+	// 	messagesCopy.push(obj);
+	// 	addMessages(messagesCopy);
+	// 	// console.log(rooms);
+	// }
 
 	const addARoom = (event: any) => {
 		event.preventDefault();
@@ -169,13 +187,15 @@ const ProtoChat = () => {
 		const activeRoom = findActiveRoom();
 		if (activeRoom.member)
 		{
-			// console.log('left');
 			socket?.emit('leaveRoom', activeRoom.name);
+			setJoinButton("Join");
+			setJoinStatus("Not joined");
 		}
 		else
 		{
-			// console.log('joined');
 			socket?.emit('joinRoom', activeRoom.name);
+			setJoinButton("Leave");
+			setJoinStatus("Joined");
 		}
 	}
 
@@ -258,8 +278,12 @@ const ProtoChat = () => {
         			{/* <tr> */}
 						{/* <td> */}
 						<div>
-							Status: {isMemberOfActiveRoom() ? 'Joined ' : 'Not joined '}
-							<button onClick={toggleRoomMembership}>{isMemberOfActiveRoom() ? 'Leave' : 'Join'}</button>
+							<p>
+								Active room: {activeRoom}
+							</p>
+							<p>
+								Status: {joinStatus + ' '}<button onClick={toggleRoomMembership}>{joinButton}</button>
+							</p>
 						</div>
 						{/* </td> */}
         			{/* </tr> */}
