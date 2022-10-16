@@ -1,7 +1,6 @@
-import React, { useContext } from "react";
+import React from "react";
 import Navigation from "../components/Navigation";
 import "../styles/account.css";
-import Profile from "../assets/img/profile.jpeg";
 
 function Account() {
 

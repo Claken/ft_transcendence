@@ -6,14 +6,15 @@ export const AuthProvider = ({ children }) => {
 	const [user, setUser] = useState(null); // replace by user interface
 
 	const login = (user) => {
-		// window.location.href="http://localhost:3001/auth/42/login";
+		window.location.href="http://localhost:3001/auth/42/login";
 		setUser(user);
 	};
 	const loginAsGuest = (user) => {
 		setUser(user);
 	};
 	const logout = () => {
-		// window.location.href="http://localhost:3001/auth/42/logout";
+		// if (get.cookie() != null)
+		window.location.href="http://localhost:3001/auth/42/logout";
 		setUser(null);
 	};
 

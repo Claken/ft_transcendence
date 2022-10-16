@@ -1,15 +1,11 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { IUser } from 'src/TypeOrm/Entities/users.entity';
 import { UsersService } from 'src/users/users.service';
-import { JwtService } from '@nestjs/jwt';
-import { ConfigService } from '@nestjs/config';
-import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class AuthService {
   constructor(
     private usersService: UsersService,
-    private configService: ConfigService,
   ) {}
 
   async register(user: IUser): Promise<IUser> {

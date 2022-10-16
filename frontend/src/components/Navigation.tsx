@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import "../styles/navigation.css";
@@ -15,15 +15,15 @@ function Navigation() {
 	return (
 		<nav>
 			<ul className="list">
+				<li className="space">
+					<NavLink className="link" to="/">
+						<button className="btngreen">Home</button>
+					</NavLink>
+				</li>
 				{(auth.user && (
 					<>
 						<li className="space">
 							<h1>Welcome {auth.user}</h1>
-						</li>
-						<li className="space">
-							<NavLink className="link" to="/">
-								<button className="btngreen">Home</button>
-							</NavLink>
 						</li>
 						<li className="space">
 							<NavLink className="link" to="/pong">
@@ -48,11 +48,6 @@ function Navigation() {
 					</>
 				)) || (
 					<>
-						<li className="spacenotlog">
-							<NavLink className="link" to="/">
-								<button className="btngreen">Home</button>
-							</NavLink>
-						</li>
 						<li>
 							<NavLink className="link" to="/login">
 								<button className="btngreen">Login</button>

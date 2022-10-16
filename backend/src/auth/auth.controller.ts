@@ -1,14 +1,6 @@
-import {
-  Controller,
-  Get,
-  Redirect,
-  Req,
-  Res,
-  UseGuards,
-} from '@nestjs/common';
+import { Controller, Get, Redirect, Req, Res, UseGuards } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { AuthenticatedGuard, FortyTwoAuthGuard } from './guards/fortytwo.guard';
-import { AuthService } from './auth.service';
 
 @Controller('auth/42')
 export class AuthController {
@@ -27,10 +19,9 @@ export class AuthController {
     return req.user;
   }
 
-  @UseGuards(AuthenticatedGuard)
-  @Get('test')
-  mytest(@Req() req: Request) {
-    return "test";
+  @Get('me')
+  test(@Req() req: Request) {
+    return req.user;
   }
 
   @UseGuards(AuthenticatedGuard)
@@ -38,8 +29,10 @@ export class AuthController {
   @Redirect('http://localhost:3000')
   async logOut(@Req() req: Request) {
     // logOut() => removes the session from the memory of the webserver
-    req.logOut(() => void {}); // without the callback an error occured...
+    req.logOut((err) => {
+      console.log(err);
+    }); // without the callback an error occured...
+    // set maxAge to 0 remove the cookie from the browser
     req.session.cookie.maxAge = 0;
   }
-  
 }

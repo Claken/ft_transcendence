@@ -10,7 +10,8 @@ async function bootstrap() {
   const configService = app.get(ConfigService);
 
   app.enableCors({
-    origin: "*",
+    origin: 'http://localhost:3000',
+    credentials: true,
   });
   app.use(
     session({
@@ -19,7 +20,6 @@ async function bootstrap() {
       saveUninitialized: false,
       cookie: {
         maxAge: 60 * 60 * 360,
-        path: "/",
       },
     }),
   );

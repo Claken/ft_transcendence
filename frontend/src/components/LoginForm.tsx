@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import "../styles/page.css";
@@ -12,6 +12,8 @@ function LoginForm() {
 
 	const handleLogin = () => {
 		auth.login("John");
+		// abort new entry into the history stack
+		// when the back button to get back to the page is pressed
 		navigate(redirectPath, { replace: true });
 	};
 
