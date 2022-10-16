@@ -11,7 +11,7 @@ function LoginForm() {
 	const redirectPath = location.state?.path || "/";
 
 	const handleLogin = () => {
-		auth.login("John");
+		auth.login();
 		// abort new entry into the history stack
 		// when the back button to get back to the page is pressed
 		navigate(redirectPath, { replace: true });

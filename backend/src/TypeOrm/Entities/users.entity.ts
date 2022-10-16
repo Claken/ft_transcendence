@@ -13,7 +13,7 @@ export class UsersEntity {
 
   // tofix: authService return newDefaultUser
   @Column({ default: '', unique: true })
-  login: string;
+  login?: string;
 
   @Column({ default: '', unique: true })
   name?: string;
@@ -30,7 +30,7 @@ export class UsersEntity {
 
 export interface IUser {
   id?: number;
-  login: string;
+  login?: string;
   name?: string;
   email?: string;
   pictureUrl?: string;

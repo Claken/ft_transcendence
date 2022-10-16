@@ -1,6 +1,6 @@
-import React from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
+
 import "../styles/navigation.css";
 
 function Navigation() {
@@ -23,9 +23,6 @@ function Navigation() {
 				{(auth.user && (
 					<>
 						<li className="space">
-							<h1>Welcome {auth.user}</h1>
-						</li>
-						<li className="space">
 							<NavLink className="link" to="/pong">
 								<button className="btn">Pong</button>
 							</NavLink>
@@ -44,6 +41,16 @@ function Navigation() {
 							<button className="btngreen" onClick={handleLogout}>
 								Logout
 							</button>
+						</li>
+						<li>
+							<h3>{auth.user.name} Profile</h3>
+							<div>
+								<img
+									className="picture"
+									src={auth.user.pictureUrl}
+									alt="profilePic"
+								/>
+							</div>
 						</li>
 					</>
 				)) || (

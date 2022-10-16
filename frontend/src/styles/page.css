@@ -81,3 +81,9 @@ body {
 .btnconfirm:hover {
   box-shadow: 0 5px 35px 0 #272727;
 }
+
+.picture {
+  max-width: 12%;
+  max-height: 12%;
+  border-radius: 50%;
+}
