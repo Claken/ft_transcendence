@@ -19,8 +19,8 @@ interface IRoom {
 const ProtoChat = () => {
 
 	const	title = 'PROTO CHATROOM';
-	const 	[messages, addMessages] = useState<IMessageToBack[]>([]);
 	const	[text, changeText] = useState<string>("");
+	const 	[messages, addMessages] = useState<IMessageToBack[]>([]);
 	const	[socket, setSocket] = useState<Socket>();
 	const	[username, changeUsername] = useState<string>("");
 	const	[rooms, setRooms] = useState<IRoom[]>([]);
@@ -111,12 +111,8 @@ const ProtoChat = () => {
 			if (element.name === obj.room)
 			{
 				element.messages.push(theroom);
-				// console.log('element.messages');
-				// console.log(element.messages);
 			}
 		})
-		// console.log('findActiveRoom().messages');
-		// console.log(findActiveRoom().messages);
 	}
 
 	const receiveMessage = (obj: {sender: string, message: string}) => {
@@ -215,6 +211,7 @@ const ProtoChat = () => {
 
 	// USEFFECT POUR RECEVOIR UN MESSAGE POUR UNE ROOM
 	useEffect(() => {
+		// console.log('receiveChatMessage');
 		socket?.on('chatToClient', receiveChatMessage);
 		return () => {
 			socket?.off('chatToClient', receiveChatMessage);
@@ -223,6 +220,7 @@ const ProtoChat = () => {
 
 	// USEFFECT POUR QUITTER UNE ROOM
 	useEffect(() => {
+		console.log('leftRoom');
 		socket?.on('leftRoom', leftRoom);
 		return () => {
 			socket?.off('leftRoom', leftRoom);
@@ -231,6 +229,7 @@ const ProtoChat = () => {
 
 	// USEFFECT POUR REJOINDRE UNE ROOM
 	useEffect(() => {
+		console.log('joinedRoom');
 		socket?.on('joinedRoom', joinedRoom);
 		return () => {
 			socket?.off('joinedRoom', joinedRoom);
@@ -254,16 +253,18 @@ const ProtoChat = () => {
         			</tr>
     			</tbody>
 			</table>
-			<table>
-    			<tbody>
-        			<tr>
-						<td>
+			{/* <table> */}
+    			{/* <tbody> */}
+        			{/* <tr> */}
+						{/* <td> */}
+						<div>
 							Status: {isMemberOfActiveRoom() ? 'Joined ' : 'Not joined '}
 							<button onClick={toggleRoomMembership}>{isMemberOfActiveRoom() ? 'Leave' : 'Join'}</button>
-						</td>
-        			</tr>
-    			</tbody>
-			</table>
+						</div>
+						{/* </td> */}
+        			{/* </tr> */}
+    			{/* </tbody> */}
+			{/* </table> */}
 			<div>
 				{findActiveRoom().messages.map((msg: any, id: number) => <ul key={id}><strong>{msg.sender}:</strong> {msg.message}</ul>)}
 			</div>
