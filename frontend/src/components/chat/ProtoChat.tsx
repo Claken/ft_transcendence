@@ -64,8 +64,8 @@ const ProtoChat = () => {
 
 	const isMemberOfActiveRoom = (): boolean => {
 		const activeRoom = findActiveRoom();
-		console.log('activeRoom.member');
-		console.log(activeRoom.member);
+		// console.log('activeRoom.member');
+		// console.log(activeRoom.member);
 		return activeRoom.member;
 	}
 
@@ -88,7 +88,7 @@ const ProtoChat = () => {
 		event.preventDefault();
 		const activeRoom = findActiveRoom();
 		console.log('sendChat:   ' + text);
-		console.log('activeRoom: ' + activeRoom.name);
+		// console.log('activeRoom: ' + activeRoom.name);
 		if (activeRoom.member)
 			socket?.emit('chatToServer', {sender: username, room: activeRoom.name, message: text});
 		else
@@ -98,9 +98,9 @@ const ProtoChat = () => {
 
 	const receiveChatMessage = (obj: {sender: string, room: string, message: string}) => {
 		
-		console.log('recvChat: ' + obj.message);
-		console.log('recvChat: ' + obj.sender);
-		console.log('recvChat: ' + obj.room);
+		// console.log('recvChat: ' + obj.message);
+		// console.log('recvChat: ' + obj.sender);
+		// console.log('recvChat: ' + obj.room);
 
 		let theroom: IMessageToBack = {
 			sender: obj.sender,
@@ -111,27 +111,29 @@ const ProtoChat = () => {
 			if (element.name === obj.room)
 			{
 				element.messages.push(theroom);
-				console.log('element.messages');
-				console.log(element.messages);
+				// console.log('element.messages');
+				// console.log(element.messages);
 			}
 		})
-		console.log('findActiveRoom().messages');
-		console.log(findActiveRoom().messages);
+		// console.log('findActiveRoom().messages');
+		// console.log(findActiveRoom().messages);
 	}
 
 	const receiveMessage = (obj: {sender: string, message: string}) => {
-		console.log('recv: ' + obj.message);
-		console.log('recv: ' + obj.sender);
+		// console.log('recv: ' + obj.message);
+		// console.log('recv: ' + obj.sender);
 		const messagesCopy = [...messages];
 
 		messagesCopy.push(obj);
 		addMessages(messagesCopy);
-		console.log(rooms);
+		// console.log(rooms);
 	}
 
 	const addARoom = (event: any) => {
 		event.preventDefault();
 		const askARoom = prompt('Enter a name for your room: ');
+		if (askARoom === null)
+			return ;
 		
 		const newRoom: IRoom = {
 			active: false,
@@ -150,7 +152,7 @@ const ProtoChat = () => {
 		rooms.forEach((element: any) => {
 			if (element.name === room)
 			{
-				console.log('no member');
+				// console.log('no member');
 				element.member = false;
 			}
 		});
@@ -160,7 +162,7 @@ const ProtoChat = () => {
 		rooms.forEach((element: any) => {
 			if (element.name === room)
 			{
-				console.log('member');
+				// console.log('member');
 				element.member = true;
 			}
 		});
@@ -171,12 +173,12 @@ const ProtoChat = () => {
 		const activeRoom = findActiveRoom();
 		if (activeRoom.member)
 		{
-			console.log('left');
+			// console.log('left');
 			socket?.emit('leaveRoom', activeRoom.name);
 		}
 		else
 		{
-			console.log('joined');
+			// console.log('joined');
 			socket?.emit('joinRoom', activeRoom.name);
 		}
 	}
@@ -189,7 +191,7 @@ const ProtoChat = () => {
 	useEffect(() => {
 		if (!ignore)
 		{
-			console.log('here');
+			// console.log('here');
 			const newName = prompt('Enter your username: ');
 			changeUsername(newName || '');
 			ignore = true;
@@ -198,21 +200,21 @@ const ProtoChat = () => {
 
 	// USEEFFECT POUR CREER UN SOCKET
 	useEffect(() => {
+		console.log('connect');
 		const newSocket = io('http://localhost:3001');
 		setSocket(newSocket);
 	}, [setSocket])
 
 	// USEFFECT POUR RECEVOIR LE MESSAGE VENANT DU BACKEND
-	useEffect(() => {
-		socket?.on('msgToClient', receiveMessage);
-		return () => {
-			socket?.off('msgToClient', receiveMessage);
-		}
-	}, [receiveMessage])
+	// useEffect(() => {
+	// 	socket?.on('msgToClient', receiveMessage);
+	// 	return () => {
+	// 		socket?.off('msgToClient', receiveMessage);
+	// 	}
+	// }, [receiveMessage])
 
 	// USEFFECT POUR RECEVOIR UN MESSAGE POUR UNE ROOM
 	useEffect(() => {
-		console.log('useEffect bitch');
 		socket?.on('chatToClient', receiveChatMessage);
 		return () => {
 			socket?.off('chatToClient', receiveChatMessage);
@@ -235,14 +237,9 @@ const ProtoChat = () => {
 		}
 	}, [joinedRoom])
 
-
 	return (
 		<div>
 			<h1>{title}</h1>
-			{/* <form onSubmit={sendMessage}>
-				<input type="text" value={text} onChange={handleChange}/>
-				<button type="submit">Send</button>
-			</form> */}
 			<form onSubmit={sendChatMessage}>
 				<input type="text" value={text} onChange={handleChange}/>
 				<button type="submit">Send</button>
@@ -253,8 +250,7 @@ const ProtoChat = () => {
 			<table>
     			<tbody>
         			<tr>
-						{rooms.map((room: any, id: number) => <td key={id}><button onClick={() => setActiveForRoom(room.name)}>{room.name}</button></td>
-						)}
+						{rooms.map((room: any, id: number) => <td key={id}><button onClick={() => setActiveForRoom(room.name)}>{room.name}</button></td>)}
         			</tr>
     			</tbody>
 			</table>
@@ -262,13 +258,13 @@ const ProtoChat = () => {
     			<tbody>
         			<tr>
 						<td>
-							Status: {isMemberOfActiveRoom() ? 'Joined' : 'Not joined'} <button onClick={toggleRoomMembership}>{isMemberOfActiveRoom() ? 'Leave' : 'Join'}</button>
+							Status: {isMemberOfActiveRoom() ? 'Joined ' : 'Not joined '}
+							<button onClick={toggleRoomMembership}>{isMemberOfActiveRoom() ? 'Leave' : 'Join'}</button>
 						</td>
         			</tr>
     			</tbody>
 			</table>
 			<div>
-				{/* {messages.map((msg: any, id: number) => <ul key={id}><strong>{msg.sender}:</strong> {msg.message}</ul>)} */}
 				{findActiveRoom().messages.map((msg: any, id: number) => <ul key={id}><strong>{msg.sender}:</strong> {msg.message}</ul>)}
 			</div>
 		</div>
