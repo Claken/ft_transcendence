@@ -21,8 +21,6 @@ const ProtoChat = () => {
 	const	title = 'PROTO CHATROOM';
 	const	[text, changeText] = useState<string>("");
 
-	// const 	[messages, addMessages] = useState<IMessageToBack[]>([]);
-
 	const	[socket, setSocket] = useState<Socket>();
 	const	[username, changeUsername] = useState<string>("");
 	const	[rooms, setRooms] = useState<IRoom[]>([]);
@@ -189,21 +187,12 @@ const ProtoChat = () => {
 	// USEEFFECT POUR CREER UN SOCKET
 	useEffect(() => {
 		console.log('connect');
-		const newSocket = io('http://localhost:3001');
+		const newSocket = io('http://localhost:3001/chat');
 		setSocket(newSocket);
 	}, [setSocket])
 
-	// USEFFECT POUR RECEVOIR LE MESSAGE VENANT DU BACKEND
-	// useEffect(() => {
-	// 	socket?.on('msgToClient', receiveMessage);
-	// 	return () => {
-	// 		socket?.off('msgToClient', receiveMessage);
-	// 	}
-	// }, [receiveMessage])
-
 	// USEFFECT POUR RECEVOIR UN MESSAGE POUR UNE ROOM
 	useEffect(() => {
-		// console.log('receiveChatMessage');
 		socket?.on('chatToClient', receiveChatMessage);
 		return () => {
 			socket?.off('chatToClient', receiveChatMessage);

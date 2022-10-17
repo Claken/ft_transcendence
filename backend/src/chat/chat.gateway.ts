@@ -3,7 +3,7 @@ import { Server, Socket } from 'socket.io';
 import { Logger } from '@nestjs/common';
 
 // {cors: '*'} pour que chaque client dans le frontend puisse se connecter à notre gateway
-@WebSocketGateway({cors: '*'}) // decorator pour dire que la classe ChatGateway sera un gateway /
+@WebSocketGateway({cors: '*', namespace: '/chat'}) // decorator pour dire que la classe ChatGateway sera un gateway /
 export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
 
   private logger: Logger = new Logger('ChatGateway'); //
