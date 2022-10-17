@@ -19,20 +19,16 @@ export class AuthController {
     return req.user;
   }
 
-  @Get('me')
-  test(@Req() req: Request) {
-    return req.user;
-  }
-
-  @UseGuards(AuthenticatedGuard)
   @Get('logout')
   @Redirect('http://localhost:3000')
   async logOut(@Req() req: Request) {
     // logOut() => removes the session from the memory of the webserver
-    req.logOut((err) => {
-      console.log(err);
-    }); // without the callback an error occured...
-    // set maxAge to 0 remove the cookie from the browser
-    req.session.cookie.maxAge = 0;
+    if (req.user) {
+      req.logOut((err) => {
+        console.log(err);
+      }); // without the callback an error occured...
+      // set maxAge to 0 remove the cookie from the browser
+      req.session.cookie.maxAge = 0;
+    }
   }
 }

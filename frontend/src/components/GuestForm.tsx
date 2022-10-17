@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Navigate } from "react-router-dom";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import "../styles/page.css";
 
@@ -7,6 +7,7 @@ function GuestForm() {
 	const auth = useAuth();
 	const [guestInput, setGuestInput] = useState("");
 	const [errorMsg, setErrorMsg] = useState("");
+	const navigate = useNavigate();
 
 	const modifyGuestInput = (event) => {
 		const input = event.currentTarget.value;
@@ -20,7 +21,7 @@ function GuestForm() {
 		else {
 			auth.loginAsGuest(guestInput);
 			setGuestInput("");
-			return <Navigate to="/home" />;
+			navigate("/home");
 		}
 	};
 

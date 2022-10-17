@@ -6,15 +6,18 @@ import "../styles/page.css";
 function Home() {
 	const auth = useAuth();
 
-	// let users = auth.users.map((user: IUser, id: number) => (
-	// 	<li key={user.id}>{user.name}</li>
-	// ));
-
 	return (
 		<div className="background">
 			<Navigation />
 			<h1>Home</h1>
-			{/* <ul>{auth.users ? users : null}</ul> */}
+			<ul>
+				<li>debut</li>
+				{auth?.onlineUsers &&
+					auth?.onlineUsers?.map((user: IUser) => (
+						<li>{user?.name}</li>
+					))}
+				<li>fin</li>
+			</ul>
 		</div>
 	);
 }

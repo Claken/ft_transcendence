@@ -1,16 +1,26 @@
-import { NavLink, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { NavLink } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
-
+import guestPic from "../assets/img/profile1.jpg";
 import "../styles/navigation.css";
 
 function Navigation() {
 	const auth = useAuth();
-	const navigate = useNavigate();
 
 	const handleLogout = () => {
 		auth.logout();
-		navigate("/login");
 	};
+
+	const [picUrl, setPicUrl] = useState<string>(guestPic);
+	const [stylePic, setStylePic] = useState<string>("guestPic");
+	// TODO: pass props picUrl and stylePic to /account ?
+
+	useEffect(() => {
+		if (auth.user && auth.user.login) {
+			setPicUrl(auth.user.pictureUrl);
+			setStylePic("profilePic")
+		}
+	}, [auth.user])
 
 	return (
 		<nav>
@@ -37,20 +47,20 @@ function Navigation() {
 								<button className="btn">Account</button>
 							</NavLink>
 						</li>
-						<li>
+						<li className="space">
 							<button className="btngreen" onClick={handleLogout}>
 								Logout
 							</button>
 						</li>
-						<li>
-							<h3>{auth.user.name} Profile</h3>
-							<div>
-								<img
-									className="picture"
-									src={auth.user.pictureUrl}
-									alt="profilePic"
-								/>
-							</div>
+						<li className="space">
+							<h3>{auth.user.name}</h3>
+						</li>
+						<li className="space">
+							<img
+								className={stylePic}
+								src={picUrl}
+								alt="profilePic"
+							/>
 						</li>
 					</>
 				)) || (

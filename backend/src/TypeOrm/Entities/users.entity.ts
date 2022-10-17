@@ -11,7 +11,6 @@ export class UsersEntity {
   @PrimaryGeneratedColumn()
   id?: number;
 
-  // tofix: authService return newDefaultUser
   @Column({ default: '', unique: true })
   login?: string;
 
@@ -23,6 +22,9 @@ export class UsersEntity {
 
   @Column({ default: '' })
   pictureUrl?: string;
+
+  @Column({ default: '' })
+  status?: string;
 
   @CreateDateColumn()
   createdAt?: Date;
@@ -34,5 +36,6 @@ export interface IUser {
   name?: string;
   email?: string;
   pictureUrl?: string;
+  status?: string;
   createdAt?: Date;
 }

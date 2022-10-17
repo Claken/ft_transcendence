@@ -34,7 +34,13 @@ export class FortyTwoStrategy extends PassportStrategy(Strategy, '42') {
     done: VerifyCallback,
   ): Promise<any> {
     const { username, id: userId, emails, photos } = profile;
-    const user = { userId, login: username, email: emails[0].value, pictureUrl: photos[0].value };
+    const user = {
+      userId,
+      login: username,
+      name: username,
+      email: emails[0].value,
+      pictureUrl: photos[0].value,
+    };
     return await this.authService.register(user);
   }
 }
