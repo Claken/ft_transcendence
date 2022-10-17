@@ -31,7 +31,6 @@ const ProtoChat = () => {
 	const	[joinStatus, setJoinStatus] = useState<string>("Not joined");
 
 	const	[activeRoom, setActiveRoom] = useState<string>("");
-	const	[message, messageReceived] = useState<boolean>(false);
 
 	let 	ignore = false;
 
@@ -108,10 +107,14 @@ const ProtoChat = () => {
 		console.log('sendChat:   ' + text);
 		// console.log('activeRoom: ' + activeRoom.name);
 		if (activeRoom.member)
+		{
 			socket?.emit('chatToServer', {sender: username, room: activeRoom.name, message: text});
+		}
 		else
+		{
 			alert('you must be a member of the room bitch !');
-		changeText("");
+			changeText("");
+		}
 	}
 
 	const receiveChatMessage = (obj: {sender: string, room: string, message: string}) => {
@@ -131,6 +134,7 @@ const ProtoChat = () => {
 				element.messages.push(theroom);
 			}
 		})
+		changeText("");
 	}
 
 	// const receiveMessage = (obj: {sender: string, message: string}) => {
@@ -170,6 +174,7 @@ const ProtoChat = () => {
 				element.member = false;
 			}
 		});
+		setJoinButtonAndStatus();
 	}
 
 	const joinedRoom = (room: string) => {
@@ -180,23 +185,16 @@ const ProtoChat = () => {
 				element.member = true;
 			}
 		});
+		setJoinButtonAndStatus();
 	}
 
 	const toggleRoomMembership = (event: any) => {
 		event.preventDefault();
 		const activeRoom = findActiveRoom();
 		if (activeRoom.member)
-		{
 			socket?.emit('leaveRoom', activeRoom.name);
-			setJoinButton("Join");
-			setJoinStatus("Not joined");
-		}
 		else
-		{
 			socket?.emit('joinRoom', activeRoom.name);
-			setJoinButton("Leave");
-			setJoinStatus("Joined");
-		}
 	}
 
 	/* ***************************************************************************** */
@@ -273,22 +271,14 @@ const ProtoChat = () => {
         			</tr>
     			</tbody>
 			</table>
-			{/* <table> */}
-    			{/* <tbody> */}
-        			{/* <tr> */}
-						{/* <td> */}
-						<div>
-							<p>
-								Active room: {activeRoom}
-							</p>
-							<p>
-								Status: {joinStatus + ' '}<button onClick={toggleRoomMembership}>{joinButton}</button>
-							</p>
-						</div>
-						{/* </td> */}
-        			{/* </tr> */}
-    			{/* </tbody> */}
-			{/* </table> */}
+				<div>
+					<p>
+						Active room: {activeRoom}
+					</p>
+					<p>
+						Status: {joinStatus + ' '}<button onClick={toggleRoomMembership}>{joinButton}</button>
+					</p>
+				</div>
 			<div>
 				{findActiveRoom().messages.map((msg: any, id: number) => <ul key={id}><strong>{msg.sender}:</strong> {msg.message}</ul>)}
 			</div>
