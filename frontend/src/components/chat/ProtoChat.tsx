@@ -51,8 +51,6 @@ const ProtoChat = () => {
 				activeRoom = element;
 			}
 		})
-		// console.log('activeRoom.messages');
-		// console.log(activeRoom.messages);
 		return activeRoom;
 	}
 
@@ -94,18 +92,10 @@ const ProtoChat = () => {
 		changeText(event.target.value);
 	}
 
-	// const sendMessage = (event: any) => {
-	// 	event.preventDefault();
-	// 	console.log('send: ' + text);
-	// 	socket?.emit('msgToServer', {sender: username, message: text});
-	// 	changeText("");
-	// }
-
 	const sendChatMessage = (event: any) => {
 		event.preventDefault();
 		const activeRoom = findActiveRoom();
 		console.log('sendChat:   ' + text);
-		// console.log('activeRoom: ' + activeRoom.name);
 		if (activeRoom.member)
 		{
 			socket?.emit('chatToServer', {sender: username, room: activeRoom.name, message: text});
@@ -118,40 +108,30 @@ const ProtoChat = () => {
 	}
 
 	const receiveChatMessage = (obj: {sender: string, room: string, message: string}) => {
-		
-		// console.log('recvChat: ' + obj.message);
-		// console.log('recvChat: ' + obj.sender);
-		// console.log('recvChat: ' + obj.room);
-
-		let theroom: IMessageToBack = {
+	
+		const theroom: IMessageToBack = {
 			sender: obj.sender,
 			message: obj.message,
 		};
 
 		rooms.forEach((element: IRoom) => {
 			if (element.name === obj.room)
-			{
 				element.messages.push(theroom);
-			}
 		})
 		changeText("");
 	}
 
-	// const receiveMessage = (obj: {sender: string, message: string}) => {
-	// 	// console.log('recv: ' + obj.message);
-	// 	// console.log('recv: ' + obj.sender);
-	// 	const messagesCopy = [...messages];
-
-	// 	messagesCopy.push(obj);
-	// 	addMessages(messagesCopy);
-	// 	// console.log(rooms);
-	// }
-
 	const addARoom = (event: any) => {
 		event.preventDefault();
-		const askARoom = prompt('Enter a name for your room: ');
-		if (askARoom === null)
-			return ;
+		let askARoom = "";
+		while (askARoom === "")
+		{
+			askARoom = prompt('Enter a name for your room: ')!;
+			if (askARoom === null)
+				return ;
+			if (askARoom === "")
+				alert('This is not a right name for a room !');
+		}
 		
 		const newRoom: IRoom = {
 			active: false,
@@ -169,10 +149,7 @@ const ProtoChat = () => {
 	const leftRoom = (room: string) => {
 		rooms.forEach((element: any) => {
 			if (element.name === room)
-			{
-				// console.log('no member');
 				element.member = false;
-			}
 		});
 		setJoinButtonAndStatus();
 	}
@@ -180,10 +157,7 @@ const ProtoChat = () => {
 	const joinedRoom = (room: string) => {
 		rooms.forEach((element: any) => {
 			if (element.name === room)
-			{
-				// console.log('member');
 				element.member = true;
-			}
 		});
 		setJoinButtonAndStatus();
 	}
