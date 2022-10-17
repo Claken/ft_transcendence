@@ -21,6 +21,8 @@ const Game = (
 	const [scoreRP, setScoreRP] = useState(0); // Score du joueur droit
 	const [games, setGames] = useState<IGame[]>([]);
 	const [game, setGame] = useState<IGame>(null);
+	// const toto = props.dataFromPa
+	const keysPressed: boolean[] = [];
 
 	const addGame = () => {
 		const cpyGames = [...games];
@@ -32,7 +34,7 @@ const Game = (
 	useEffect(() => {
 		// Créer 
 		axios.post('http://localhost:3001/game', game);
-	}, [games]) //todo: la valeur dans le tab doit changer pour appeler useState
+	}, [games])
 
 	useEffect(() => {
 		// axios
@@ -52,30 +54,35 @@ const Game = (
 		var pLY = height / 2 - EmptyGround / 2; //placement en hauteur du paddle gauche
 		var pRY = height / 2 - EmptyGround / 2; //placement en hauteur du paddle droit
 		var paddleH = height / 8; //hauteur du paddle
-		var paddleW = width / 100; //largeur du paddle
-		var radius = 10; //taille de la balle
-		var ballX = width / 2; //placement en X de la balle
+		var paddleW = width / 150; //largeur du paddle
+		const radius = 10; //taille de la balle
+		var ballW = 15; //largeur de la balle
+		var ballH = ballW; //hauteur de la balle
+		var ballX = (width / 2) - (ballW / 2); //placement en X de la balle
 		var ballY = height / 2 + EmptyGround / 2; //placement en Y de la balle
-		var vx = -5; //vitesse en X de la balle
-		var vy = -5; //vitesse en Y de la balle
+		var vx = -1; //vitesse en X de la balle
+		var vy = -1; //vitesse en Y de la balle
 		var state = 0; //etat du jeu
 		var key = "";
 		var prev = "";
 		var curr = "";
 		var score = 5;
+		var speed = 2;
+		var compteur = 10;
 		let animationFrameId: number;
 
 		/* ***************************************************************************** */
 		/*    Tab qui va etre envoye au back a chaque update de la ball et des paddle    */
 		/* ***************************************************************************** */
 		const allPos = {
-			radius: radius,
 			width: width,
 			height: height,
 			paddleW: paddleW,
 			paddleH: paddleH,
 			pLY: pLY,
 			pRY: pRY,
+			ballW: ballW,
+			ballH: ballH,
 			ballX: ballX,
 			ballY: ballY,
 			scoreLP: scoreLP,
@@ -86,6 +93,8 @@ const Game = (
 			state: state,
 			key: key,
 			score: score,
+			speed: speed,
+			compteur: compteur,
 		};
 
 		/* ***************************************************************************** */
@@ -111,7 +120,7 @@ const Game = (
 		/*            Ajout d'event pour écouter les touches/cliques entrant             */
 		/* ***************************************************************************** */
 		const pauseGame = (e) => {
-			if (e.key === "p" || e.key === " ") {
+			if (e.key === "p"|| e.key === "P" || e.key === " ") {
 				e.preventDefault();
 				if (allPos.state === State.PLAY)
 					socket.emit("state", State.PAUSE);
@@ -169,12 +178,8 @@ const Game = (
 				y < height / 2
 			)
 				socket.emit("state", State.PLAY);
-			else if (
-				allPos.state === State.PAUSE ||
-				allPos.state === State.PLAY
-			) {
-				if (
-					x > width / 2 - 150 - radius * 2 &&
+			else if (allPos.state === State.PAUSE || allPos.state === State.PLAY) {
+				if (x > width / 2 - 150 - radius * 2 &&
 					x < width / 2 - 150 + radius * 2 &&
 					y > 25 - radius * 2 &&
 					y < 25 + radius * 2) {
@@ -188,26 +193,16 @@ const Game = (
 					x < width / 2 + 150 + radius * 2 &&
 					y > 25 - radius * 2 &&
 					y < 25 + radius * 2) {
-						//TODO: METTRE A JOURS DANS LE BACK DONNEES. Check NOTES.
 						socket.emit("state", State.INIT);
-						allPos.ballX = ballX;
-						allPos.ballY = ballY;
-						allPos.scoreLP = scoreLP;
-						allPos.scoreRP = scoreRP;
-						allPos.pLY = pLY;
-						allPos.pRY = pRY;
 				}
 			}
-			if (
-				(allPos.state === State.LOSE || allPos.state === State.WIN) &&
+			if ((allPos.state === State.LOSE || allPos.state === State.WIN) &&
 				x > width / 2 - 290 &&
 				x < width / 2 + 290 &&
 				y > height / 1.6 - 50 &&
 				y < height / 1.6
 			) {
 				socket.emit("state", State.INIT);
-				allPos.scoreLP = 0;
-				allPos.scoreRP = 0;
 			}
 		};
 
@@ -227,6 +222,9 @@ const Game = (
 			allPos.scoreLP = newData.scoreLP;
 			allPos.scoreRP = newData.scoreRP;
 			allPos.score = newData.score;
+			allPos.speed = newData.speed;
+			allPos.state = newData.state;
+			allPos.compteur = newData.compteur;
 		});
 
 		socket.on("updatedPlayer", (newData) => {
@@ -244,12 +242,20 @@ const Game = (
 		const initPage = () => {
 			context.fillStyle = "white";
 			context.fillText("CLICK TO START", width / 2, height / 2, width);
+			allPos.ballX = ballX;
+			allPos.ballY = ballY;
+			allPos.scoreLP = scoreLP;
+			allPos.scoreRP = scoreRP;
+			allPos.pLY = pLY;
+			allPos.pRY = pRY;
+			allPos.vx = vx;
+			allPos.vy = vy;
+			allPos.speed = speed;
 			//if (user == 0)
 			//allPos.loginLP = ...;
 			//else
 			//allPos.loginLP = ...;
 			//TODO: Choix de la map PUIS ensuite cliquer pour démarrer la partie ?
-			//TODO: Ou compte à rebourd, plus simple à gérer.
 		};
 
 		const pausePage = () => {
@@ -278,7 +284,7 @@ const Game = (
 
 		const abortPage = () => {
 			context.fillStyle = "white";
-			context.fillText("PAUSE", width / 2, height / 2, width);
+			context.fillText("ABORT", width / 2, height / 2, width);
 		};
 
 		/* ***************************************************************************** */
@@ -349,7 +355,7 @@ const Game = (
 			context.fillText(allPos.scoreLP + " - " + allPos.scoreRP, width / 2, 45);
 			context.beginPath();
 			context.fillStyle = "white";
-			context.arc(allPos.ballX, allPos.ballY, radius, 0, Math.PI * 2);
+			context.fillRect(allPos.ballX, allPos.ballY, allPos.ballW, allPos.ballH);
 			context.fill();
 			context.fillRect(1, allPos.pLY, paddleW, paddleH);
 			context.fillRect(width - paddleW, allPos.pRY, paddleW - 1, paddleH);
@@ -371,14 +377,16 @@ const Game = (
 	/*                          balise HTML de la page web                           */
 	/* ***************************************************************************** */
 	return (
+		//afficher le plateau de jeu lorsque l'user click sur le bouton
+		//
 		<div>
-			<canvas
+			{game ? null : <canvas
 				ref={canvasRef}
 				width={CanvasWidth}
 				height={CanvasHeight}
 				{...props}
-			/>
-			<div><button onClick={addGame}>addGame</button></div>
+			/>}
+			<div><button onClick={addGame}>Join a Game</button></div>
 			<div>{game ? game.loginLP : null}</div>
 		</div>
 		

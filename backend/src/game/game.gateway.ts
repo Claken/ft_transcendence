@@ -37,53 +37,63 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
 	@SubscribeMessage('update')
 	async moveBall(client: any, allPos) { //TODO: quel est le premier param ?
-/* ***************************************************************************** */
-/*      var pour facilement identifier les côtés de la balle et des paddles      */
-/* ***************************************************************************** */
-		let	left = allPos.ballX - allPos.radius,
-			right = allPos.ballX + allPos.radius,
-			top = allPos.ballY - allPos.radius,
-			bot = allPos.ballY + allPos.radius
+		/* ********************************************************************* */
+		/*          var pour facilement identifier les côtés de la balle         */
+		/* ********************************************************************* */
+		let	left = allPos.ballX,
+			right = allPos.ballX + allPos.ballW,
+			top = allPos.ballY,
+			bot = allPos.ballY + allPos.ballH
 
-		let	pL_left = 1 - allPos.radius / 2,
-			pL_right = 1 + allPos.paddleW / 2,
-			pL_top = (allPos.pLY + allPos.EmptyGround) - allPos.paddleH / 2,
-			pL_bot = (allPos.pLY + allPos.EmptyGround) + allPos.paddleH / 2
-
-		let	pR_left = (allPos.width - 1) - allPos.paddleW / 2,
-			pR_right = (allPos.width - 1) + allPos.paddleW / 2,
-			pR_top = (allPos.pRY + allPos.EmptyGround) - allPos.paddleH / 2,
-			pR_bot = (allPos.pRY + allPos.EmptyGround) + allPos.paddleH / 2
-
-/* ***************************************************************************** */
-/*             Détection des colisions sur bord en Y et paddles en X             */
-/* ***************************************************************************** */
-		if (bot > allPos.height || top - allPos.EmptyGround < 0) {
+		/* ********************************************************************* */
+		/*         Détection des colisions sur bord en Y et paddles en X         */
+		/* ********************************************************************* */
+		//Colisions haut et bas
+		if (top - allPos.EmptyGround < 0 || bot > allPos.height) {
 			allPos.vy *= -1;
 		}
 
-		if ((left < pL_right && top < pL_bot && bot > pL_top)
-			|| (right > pR_left && top < pR_bot && bot > pR_top)) {
-				allPos.vx *= -1;
+		//Colisions joueur Gauche
+		if(allPos.ballX <= 1 + allPos.paddleW) {
+			if((allPos.ballY + allPos.ballH >= allPos.pLY) && (allPos.ballY <= allPos.pLY + allPos.paddleH)){
+				allPos.vx = 1;
+				allPos.speed < 5 ? allPos.speed += 0.2 : null;
+				console.log("speed = " + allPos.speed) //TODO: retirer
+			}
 		}
-		else if (right > allPos.width) {
-			allPos.ballX = allPos.width/2;
-			allPos.ballY = (allPos.height / 2) + allPos.EmptyGround/2;
-			allPos.scoreLP++;
-			if (allPos.scoreLP >= allPos.score)
-				allPos.state = 4 //TODO: gagnant/perdant en fonction de joueur et pas du side.
-			allPos.vx *= -1;//TODO: à retirer.
+
+		//Colisions joueur Droit
+		if(allPos.ballX + allPos.ballW >= allPos.width - (1 + allPos.paddleW)) {
+			if((allPos.ballY + allPos.ballH >= allPos.pRY) && (allPos.ballY <= allPos.pRY + allPos.paddleH)){
+				allPos.vx = -1;
+				allPos.speed < 5 ? allPos.speed += 0.2 : null;
+				console.log("speed = " + allPos.speed) //TODO: retirer
+			}
 		}
-		else if (left < 0) {
-			allPos.ballX = allPos.width/2;
-			allPos.ballY = (allPos.height / 2) + allPos.EmptyGround/2;
-			allPos.scoreRP++;
-			if (allPos.scoreRP >= allPos.score)
-				allPos.state = 3 //TODO: gagnant/perdant en fonction de joueur et pas du side.
-		}
+
+		// Si l'état du jeu est différent de WIN ou LOSE
 		if (allPos.state != 3 && allPos.state != 4) {
-			allPos.ballX += allPos.vx;
-			allPos.ballY += allPos.vy;
+			// Si la balle sort du terrain de droite
+			if (right > allPos.width) {
+				allPos.scoreLP++;
+				if (allPos.scoreLP >= allPos.score)
+					allPos.state = 4 //TODO: gagnant/perdant en fonction de joueur et pas du side.
+				if (allPos.state != 3 && allPos.state != 4)
+					allPos.ballX = allPos.width/2;
+				allPos.speed = 2;
+				allPos.vx *= -1;//TODO: à retirer.
+			}
+			// Si la balle sort du terrain de gauche
+			if (left < 0) {
+				allPos.scoreRP++;
+				if (allPos.scoreRP >= allPos.score)
+					allPos.state = 3 //TODO: gagnant/perdant en fonction de joueur et pas du side.
+				if (allPos.state != 3 && allPos.state != 4)
+					allPos.ballX = allPos.width/2;
+				allPos.speed = 2;
+			}
+			allPos.ballX += allPos.vx * allPos.speed;
+			allPos.ballY += allPos.vy * allPos.speed;
 		}
 		this.server.emit("updatedData", allPos);
 	}
