@@ -2,8 +2,10 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { ChatRoomEntity } from './chat.entity';
 
 // Table in the DB
 @Entity('Users')
@@ -23,6 +25,9 @@ export class UsersEntity {
 
   @Column({ default: '' })
   pictureUrl?: string;
+
+  @OneToMany(() => ChatRoomEntity, Channel => Channel.owner)
+  ownChannel: ChatRoomEntity[];
 
   @CreateDateColumn()
   createdAt?: Date;

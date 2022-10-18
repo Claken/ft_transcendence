@@ -12,7 +12,23 @@ export class ChatService {
 		private readonly chatRepo: Repository<ChatRoomEntity>,
 	  ) {}
 
-	  findAllChatRooms(): Promise<ChatRoomEntity[]> {
-		return this.chatRepo.find();
+	  async findAllChatRooms(): Promise<ChatRoomEntity[]> {
+		return await this.chatRepo.find();
 	  }
+
+	  async findOneChatRoomByName(name: string): Promise<ChatRoomEntity> {
+		return await this.chatRepo.findOneBy({chatRoomName: name});
+	  }
+
+	  async findOneChatRoomById(id: number): Promise<ChatRoomEntity> {
+		return await this.chatRepo.findOneBy({id});
+	  }
+
+	//   async createChatRoom
+
+	  async deleteChatRoom(name: string): Promise<void> {
+		await this.chatRepo.delete(name);
+	  }
+
+	//   async createAChatRoom() : 
 }
