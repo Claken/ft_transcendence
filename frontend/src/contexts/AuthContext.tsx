@@ -7,7 +7,6 @@ const AuthContext = React.createContext(null);
 export const AuthProvider = ({ children }) => {
 	const [user, setUser] = useState<IUser>(null);
 	const [onlineUsers, setOnlineUsers] = useState<IUser[]>([]);
-	const [authToApi, setAuthToApi] = useState<boolean>(false);
 
 	useEffect(() => {
 		const getCookie = async () => {
@@ -25,8 +24,7 @@ export const AuthProvider = ({ children }) => {
 			}
 		};
 		getCookie();
-		setAuthToApi(false);
-	}, [authToApi]);
+	}, []);
 
 	useEffect(() => {
 		const addOnlineUser = () => {
@@ -39,7 +37,6 @@ export const AuthProvider = ({ children }) => {
 
 	const login = () => {
 		window.location.href = "http://localhost:3001/auth/42/login";
-		setAuthToApi(true);
 	};
 	const loginAsGuest = (guestName: string) => {
 		setUser({ name: guestName });

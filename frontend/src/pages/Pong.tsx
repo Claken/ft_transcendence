@@ -1,11 +1,9 @@
-import React from "react";
-import Navigation from "../components/Navigation";
+
 
 function Pong() {
 
 	return (
-		<div className="background">
-			<Navigation />
+		<div>
 			<h1>Pong</h1>
 		</div>
 	);

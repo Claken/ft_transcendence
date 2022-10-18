@@ -1,12 +1,10 @@
 import React from "react";
-import Navigation from "../components/Navigation";
 import "../styles/account.css";
 
 function Account() {
 
 	return (
-		<div className="background">
-			<Navigation />
+		<div>
 			<div className="rectangleprofile">
 				<button className="btnprofile">
 					<div className="crop"></div>

@@ -1,14 +1,14 @@
-import Navigation from "../components/Navigation";
+
 import { useAuth } from "../contexts/AuthContext";
 import { IUser } from "../interfaces/user.interface";
+
 import "../styles/page.css";
 
 function Home() {
 	const auth = useAuth();
 
 	return (
-		<div className="background">
-			<Navigation />
+		<div>
 			<h1>Home</h1>
 			<ul>
 				<li>debut</li>

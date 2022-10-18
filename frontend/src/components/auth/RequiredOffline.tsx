@@ -5,9 +5,11 @@ const RequiredOffline = () => {
 	const location = useLocation();
 	const auth = useAuth();
 
-	if (auth?.user)
-	    return <Navigate to="/home" state={{ from: location }} replace />
-	return <Outlet/>;
+	return auth.user ? (
+	<Navigate to="/" state={{ from: location }} replace />
+	) : (
+	<Outlet/>
+	);
 };
 
 export default RequiredOffline;

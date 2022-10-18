@@ -1,32 +1,84 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import React from "react";
-import Home from "./pages/Home";
-import Login from "./pages/Login";
-import Pong from "./pages/Pong";
-import Channel from "./pages/Channel";
-import Account from "./pages/Account";
-import { AuthProvider } from "./contexts/AuthContext";
-import RequiredAuth from "./components/auth/RequiredAuth";
-import RequiredOffline from "./components/auth/RequiredOffline";
+import Views from "./pages/Views";
+import { useEffect, useState } from "react";
+import { NavLink } from "react-router-dom";
+import { useAuth } from "./contexts/AuthContext";
+import guestPic from "./assets/img/profile1.jpg";
+import "./styles/navigation.css";
 
 function App() {
+	const auth = useAuth();
+
+	const handleLogout = () => {
+		auth.logout();
+	};
+
+	const [picUrl, setPicUrl] = useState<string>(guestPic);
+	const [stylePic, setStylePic] = useState<string>("guestPic");
+	// TODO: pass props picUrl and stylePic to /account ?
+
+	useEffect(() => {
+		if (auth.user && auth.user.login) {
+			setPicUrl(auth.user.pictureUrl);
+			setStylePic("profilePic")
+		}
+	}, [auth?.user])
+
 	return (
-		<AuthProvider>
-			<BrowserRouter>
-				<Routes>
-					<Route path="/" element={<Home />} />
-					<Route path="*" element={<Home />} />
-					<Route element={<RequiredOffline />}>
-						<Route path="/login" element={<Login />} />
-					</Route>
-					<Route element={<RequiredAuth />}>
-						<Route path="/channel" element={<Channel />} />
-						<Route path="/account" element={<Account />} />
-						<Route path="/pong" element={<Pong />} />
-					</Route>
-				</Routes>
-			</BrowserRouter>
-		</AuthProvider>
+		<div className="background">
+			<nav>
+				<ul className="list">
+					<li className="space">
+						<NavLink className="link" to="/">
+							<button className="btngreen">Home</button>
+						</NavLink>
+					</li>
+					{(auth?.user && (
+						<>
+							<li className="space">
+								<NavLink className="link" to="/pong">
+									<button className="btn">Pong</button>
+								</NavLink>
+							</li>
+							<li className="space">
+								<NavLink className="link" to="/Channel">
+									<button className="btn">Channel</button>
+								</NavLink>
+							</li>
+							<li className="space">
+								<NavLink className="link" to="/account">
+									<button className="btn">Account</button>
+								</NavLink>
+							</li>
+							<li className="space">
+								<button className="btngreen" onClick={handleLogout}>
+									Logout
+								</button>
+							</li>
+							<li className="space">
+								<h3>{auth.user.name}</h3>
+							</li>
+							<li className="space">
+								<img
+									className={stylePic}
+									src={picUrl}
+									alt="profilePic"
+								/>
+							</li>
+						</>
+					)) || (
+						<>
+							<li>
+								<NavLink className="link" to="/login">
+									<button className="btngreen">Login</button>
+								</NavLink>
+							</li>
+						</>
+					)}
+				</ul>
+				<div className="separate"></div>
+			</nav>
+			<Views />
+		</div>
 	);
 }
 
