@@ -10,9 +10,16 @@ export class ChatService {
 	constructor(
 		@InjectRepository(ChatRoomEntity)
 		private readonly chatRepo: Repository<ChatRoomEntity>,
-	  ) {}
+	  	) {}
 
-	  findAllChatRooms(): Promise<ChatRoomEntity[]> {
-		return this.chatRepo.find();
+		async findAllChatRooms(): Promise<ChatRoomEntity[]> {
+		return await this.chatRepo.find();
 	  }
+
+	  async create(chatRoom: IChatRoom): Promise<ChatRoomEntity> {
+		const newChatRoom = this.chatRepo.create(chatRoom);
+		return await this.chatRepo.save(newChatRoom);
+	  }
+
+
 }
