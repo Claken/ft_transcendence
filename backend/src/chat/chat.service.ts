@@ -10,7 +10,7 @@ export class ChatService {
 	constructor(
 		@InjectRepository(ChatRoomEntity)
 		private readonly chatRepo: Repository<ChatRoomEntity>,
-	  ) {}
+	  	) {}
 
 	  async findAllChatRooms(): Promise<ChatRoomEntity[]> {
 		return await this.chatRepo.find();
