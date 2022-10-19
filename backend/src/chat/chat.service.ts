@@ -24,7 +24,10 @@ export class ChatService {
 		return await this.chatRepo.findOneBy({id});
 	  }
 
-	//   async createChatRoom
+	  async createChatRoom(chatRoom: IChatRoom): Promise<ChatRoomEntity> {
+		const newChat = this.chatRepo.create(chatRoom);
+		return this.chatRepo.save(chatRoom);
+	  }
 
 	  async deleteChatRoom(name: string): Promise<void> {
 		await this.chatRepo.delete(name);

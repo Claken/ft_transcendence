@@ -187,7 +187,7 @@ const ProtoChat = () => {
 	// USEEFFECT POUR CREER UN SOCKET
 	useEffect(() => {
 		console.log('connect');
-		const newSocket = io('http://localhost:3001/chat');
+		const newSocket = io('http://localhost:3001');
 		setSocket(newSocket);
 	}, [setSocket])
 

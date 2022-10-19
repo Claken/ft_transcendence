@@ -28,6 +28,6 @@ export class ChatUserEntity {
 	@Column()
 	timeBan: number;
 
-	@ManyToOne(() => ChatRoomEntity, Channel => Channel.members)
-	inChannel: ChatRoomEntity;
+	// @ManyToOne(() => ChatRoomEntity, Channel => Channel.members)
+	// inChannel: ChatRoomEntity;
 }
