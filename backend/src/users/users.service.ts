@@ -6,21 +6,20 @@ import { IUser, UsersEntity } from '../TypeOrm/Entities/users.entity';
 
 @Injectable()
 export class UsersService {
-  // We inject the UsersRepository(Entity) into the UsersService using the @InjectRepository
+  // userRepo reflects the UsersEntity in database
   constructor(
     @InjectRepository(UsersEntity)
     private readonly userRepo: Repository<UsersEntity>,
   ) {}
 
-  // save() is a "Repository" method (from Typeorm) to call insert query
+  // save() is a Repository Typeorm method to call INSERT query
   async create(user: IUser): Promise<UsersEntity> {
     const newUser = this.userRepo.create(user);
     return await this.userRepo.save(newUser);
   }
 
-  // find() is a "Repository" method to call select query
-  // ? throw exception if not found ?
-  // unuse
+  // find() is a Repository Typeorm method to call SELECT query
+  // TODO: throw exception if not found ?
   async findAllUsers(): Promise<UsersEntity[]> {
     return await this.userRepo.find();
   }
@@ -45,20 +44,11 @@ export class UsersService {
     });
   }
 
-  // unuse
   async updateUser(id: number, user: IUser): Promise<UpdateResult> {
     return await this.userRepo.update(id, user);
   }
 
-  // async updateToken(id: number, access_token: string): Promise<UsersEntity> {
-  //   const user = await this.getById(id);
-  //   user.accessToken = access_token;
-  //   await this.userRepo.save(user);
-  //   return await this.getById(id);
-  // }
-
-  // unuse
-  async deleteUser(id: number): Promise<DeleteResult> {
+    async deleteUser(id: number): Promise<DeleteResult> {
     return await this.userRepo.delete(id);
   }
 }

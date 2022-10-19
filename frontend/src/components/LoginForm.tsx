@@ -1,4 +1,3 @@
-import React from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import "../styles/page.css";
@@ -11,6 +10,7 @@ function LoginForm() {
 	const from = location.state?.from?.path || "/";
 
 	const handleLogin = () => {
+		//TODO: handle multiple connexions
 		auth.login();
 		// abort new entry into the history stack
 		// when the back button to get back to the page is pressed
