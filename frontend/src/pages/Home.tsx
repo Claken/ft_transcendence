@@ -10,8 +10,7 @@ function Home() {
 		<div>
 			<h1>Home</h1>
 			<ul>
-				<li>cookies.name : | {auth?.cookies.name} | </li>
-				<li>auth.user : | {auth?.user} | </li>
+				<li>auth.user : | {auth?.user?.name} | </li>
 				<li>__ List Users __</li>
 				{auth?.users &&
 					auth?.users?.map((user: IUser) => (
