@@ -27,7 +27,7 @@ export class UsersEntity {
   pictureUrl?: string;
 
   @OneToMany(() => ChatRoomEntity, Channel => Channel.owner)
-  ownChannel: ChatRoomEntity[];
+  ownedChannels?: ChatRoomEntity;
 
   @CreateDateColumn()
   createdAt?: Date;
@@ -40,4 +40,5 @@ export interface IUser {
   email?: string;
   pictureUrl?: string;
   createdAt?: Date;
+  ownedChannels?: ChatRoomEntity;
 }

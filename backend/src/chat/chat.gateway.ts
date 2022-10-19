@@ -71,14 +71,14 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 	/*							POUR GERER LA DATABASE  						 */
 	/* ************************************************************************* */
 
-  	@SubscribeMessage('createChatRoom')
-	HandleCreationRoom(): void {
+  	// @SubscribeMessage('createChatRoom')
+	// HandleCreationRoom(): void {
 
-	}
+	// }
 
-	@SubscribeMessage('deleteChatRoom')
-	HandleDeletionRoom(): void {
+	// @SubscribeMessage('deleteChatRoom')
+	// HandleDeletionRoom(): void {
 		
-	}
+	// }
 
 }
