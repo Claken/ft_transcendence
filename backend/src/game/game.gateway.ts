@@ -51,12 +51,14 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 		//Colisions haut et bas
 		if (top - allPos.EmptyGround < 0 || bot > allPos.height) {
 			allPos.vy *= -1;
+			//TODO: emmettre un son
 		}
 
 		//Colisions joueur Gauche
 		if(allPos.ballX <= 1 + allPos.paddleW) {
 			if((allPos.ballY + allPos.ballH >= allPos.pLY) && (allPos.ballY <= allPos.pLY + allPos.paddleH)){
 				allPos.vx = 1;
+				//TODO: emmettre un son
 				allPos.speed < 5 ? allPos.speed += 0.2 : null;
 				console.log("speed = " + allPos.speed) //TODO: retirer
 			}
@@ -66,6 +68,7 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 		if(allPos.ballX + allPos.ballW >= allPos.width - (1 + allPos.paddleW)) {
 			if((allPos.ballY + allPos.ballH >= allPos.pRY) && (allPos.ballY <= allPos.pRY + allPos.paddleH)){
 				allPos.vx = -1;
+				//TODO: emmettre un son
 				allPos.speed < 5 ? allPos.speed += 0.2 : null;
 				console.log("speed = " + allPos.speed) //TODO: retirer
 			}
@@ -129,13 +132,19 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 /* ***************************************************************************** */
 /*                    Mouvement des paddles gauche et droite.                    */
 /* ***************************************************************************** */
-	// @SubscribeMessage('state')
-	// async ???(client: any, currentState) {
-	// 	this.server.emit("updatedState", currentState);
-	// }
+	@SubscribeMessage('image')
+	async Image(client: any, currentImg) {
+		this.server.emit("updateImg", currentImg);
+	}
 
-	// @SubscribeMessage('notification')
-	// async test() {
-	// 	console.log("tata");
-	// }
+	@SubscribeMessage('compteur')
+	async UpdateCompteur(client: any, currentSec) {
+		currentSec -= 1;
+		this.server.emit("compteurUpdated", currentSec);
+	}
+
+	@SubscribeMessage('notification')
+	async test() {
+		console.log("tata");
+	}
 }

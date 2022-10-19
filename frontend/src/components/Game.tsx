@@ -31,15 +31,15 @@ const Game = (
 		setGames(cpyGames);
 	}
 
-	useEffect(() => {
-		// Créer 
-		axios.post('http://localhost:3001/game', game);
-	}, [games])
+	// useEffect(() => {
+	// 	// Créer 
+	// 	axios.post('http://localhost:3001/game', game);
+	// }, [games])
 
-	useEffect(() => {
-		// axios
-		const MYLOGIN = axios.get('http://localhost:3001/game') 
-	}, [games])
+	// useEffect(() => {
+	// 	// axios
+	// 	const MYLOGIN = axios.get('http://localhost:3001/game') 
+	// }, [games])
 
 /* ***************************************************************************** */
 /*                             USEEFFECT PRINCIPALE                              */
@@ -62,14 +62,28 @@ const Game = (
 		var ballY = height / 2 + EmptyGround / 2; //placement en Y de la balle
 		var vx = -1; //vitesse en X de la balle
 		var vy = -1; //vitesse en Y de la balle
-		var state = 0; //etat du jeu
+		var state = 0; //etat du jeu TODO: mettre l'état à 6
 		var key = "";
 		var prev = "";
 		var curr = "";
 		var score = 5;
 		var speed = 2;
-		var compteur = 10;
 		let animationFrameId: number;
+		var img = new Image();
+		var mignature0 = new Image();
+		var mignature1 = new Image();
+		var mignature2 = new Image();
+		const gameBoards = [
+			"https://emotionsnumeriques.files.wordpress.com/2017/04/srjc9512.jpg?w=640",
+			"https://cdn.pocket-lint.com/r/s/1200x630/assets/images/149352-games-news-gwent-the-witcher-card-game-is-coming-to-ios-and-you-can-pre-order-it-for-free-now-image1-dkpsimikqa.jpg",
+			"https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/e8f138b7-dfde-4001-9305-eabae23b82ff/df6krl3-1950d728-786e-4aee-8504-bcd07f7c9b71.jpg?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7InBhdGgiOiJcL2ZcL2U4ZjEzOGI3LWRmZGUtNDAwMS05MzA1LWVhYmFlMjNiODJmZlwvZGY2a3JsMy0xOTUwZDcyOC03ODZlLTRhZWUtODUwNC1iY2QwN2Y3YzliNzEuanBnIn1dXSwiYXVkIjpbInVybjpzZXJ2aWNlOmZpbGUuZG93bmxvYWQiXX0.PxPrKzBYn4B63khYSVcan9XNsDDaxoq0X2oRXWaIJNQ"];
+		img.src = gameBoards[1];
+		mignature0.src = gameBoards[0];
+		mignature1.src = gameBoards[1];
+		mignature2.src = gameBoards[2];
+		const color = [];
+		var compteur = 10;
+		var timer = window.setInterval(tick, 1000);//TODO:
 
 		/* ***************************************************************************** */
 		/*    Tab qui va etre envoye au back a chaque update de la ball et des paddle    */
@@ -94,21 +108,29 @@ const Game = (
 			key: key,
 			score: score,
 			speed: speed,
-			compteur: compteur,
+			compteur: compteur,//TODO:
+			// image: image,//TODO:
+			img: img,//TODO:
 		};
 
 		/* ***************************************************************************** */
-		/*                  Tableau d'état pour savoir où en est le jeu                  */
+		/*                                Tableaux d'états                               */
 		/* ***************************************************************************** */
 		const State = {
-			INIT: 0,
-			PAUSE: 1,
-			PLAY: 2,
-			WIN: 3,
-			LOSE: 4,
-			ABORT: 5,
+			INIT:		0,
+			PAUSE:		1,
+			PLAY:		2,
+			WIN:		3,
+			LOSE:		4,
+			ABORT:		5,
+			WAITING:	6,
 		};
 
+		const Colors = {
+			white:	"white",
+			green:	"green",
+			red:	"red",
+		}
 		/* ***************************************************************************** */
 		/*                                 Requête AXIOS                                 */
 		/* ***************************************************************************** */
@@ -170,14 +192,29 @@ const Game = (
 			let y = e.offsetY;
 			e.preventDefault();
 
-			if (
-				allPos.state === State.INIT &&
-				x > width / 2 - 200 &&
-				x < width / 2 + 200 &&
-				y > height / 2 - 50 &&
-				y < height / 2
-			)
-				socket.emit("state", State.PLAY);
+			if (allPos.state === State.INIT) {
+				if (x > width/2 - 600 && x < width/2 - 300 && y > 300 && y < 500) { //CLASSIC
+					socket.emit("image", gameBoards[0]);
+					// allPos.image = gameBoards[0];
+					color[0] = Colors.green;
+					color[1] = Colors.white;
+					color[2] = Colors.white;
+				}
+				if (x > width/2 -150 && x < width/2 + 150 && y > 400 && y < 600) { //THEWITCHER
+					socket.emit("image", gameBoards[1]);
+					// allPos.image = gameBoards[1];
+					color[0] = Colors.white;
+					color[1] = Colors.green;
+					color[2] = Colors.white;
+				} 
+				if (x > width/2 + 300 && x < width/2 + 600 && y > 300 && y < 500) { //POKEMON
+					socket.emit("image", gameBoards[2]);
+					// allPos.image = gameBoards[2];
+					color[0] = Colors.white;
+					color[1] = Colors.white;
+					color[2] = Colors.green;
+				}
+			}
 			else if (allPos.state === State.PAUSE || allPos.state === State.PLAY) {
 				if (x > width / 2 - 150 - radius * 2 &&
 					x < width / 2 - 150 + radius * 2 &&
@@ -224,7 +261,6 @@ const Game = (
 			allPos.score = newData.score;
 			allPos.speed = newData.speed;
 			allPos.state = newData.state;
-			allPos.compteur = newData.compteur;
 		});
 
 		socket.on("updatedPlayer", (newData) => {
@@ -236,12 +272,18 @@ const Game = (
 			allPos.state = newState;
 		});
 
+		socket.on("updateImg", (currentImg) => {//TODO:
+			allPos.img.src = currentImg;
+		})
+
+		socket.on("compteurUpdated", (currentSec) => {//TODO:
+			allPos.compteur = currentSec;
+		})
+
 		/* ***************************************************************************** */
 		/*                   Affichage différent selon l'état du game                    */
 		/* ***************************************************************************** */
 		const initPage = () => {
-			context.fillStyle = "white";
-			context.fillText("CLICK TO START", width / 2, height / 2, width);
 			allPos.ballX = ballX;
 			allPos.ballY = ballY;
 			allPos.scoreLP = scoreLP;
@@ -251,11 +293,28 @@ const Game = (
 			allPos.vx = vx;
 			allPos.vy = vy;
 			allPos.speed = speed;
-			//if (user == 0)
-			//allPos.loginLP = ...;
-			//else
-			//allPos.loginLP = ...;
-			//TODO: Choix de la map PUIS ensuite cliquer pour démarrer la partie ?
+
+			context.fillStyle = "white";
+			context.fillText("CHOOSE THE MAP", width / 2, height / 3, width);
+			context.fillText(allPos.compteur.toString(), width / 2, height / 2.2);
+
+			context.fillStyle = color[0]; //TODO: changer la couleur selon la sélection
+			context.fillRect(width/2 - 610, 290, 320, 220);
+			context.drawImage(mignature0, width/2 - 600, 300, 300, 200);
+			context.fillText("CLASSIC", width/2 - 450, 560);
+
+			context.fillStyle = color[1]; //TODO: changer la couleur selon la sélection
+			context.fillRect(width/2 - 160, 390, 320, 220);
+			context.drawImage(mignature1, width/2 -150, 400, 300, 200);
+			context.fillText("THE WITCHER", width/2, 660);
+
+			context.fillStyle = color[2]; //TODO: changer la couleur selon la sélection
+			context.fillRect(width/2 + 290, 290, 320, 220);
+			context.drawImage(mignature2, width/2 + 300, 300, 300, 200);
+			context.fillText("POKEMON", width/2 + 450, 560);
+
+			//TODO: Si temps du compteur passé, definir la map avec Math.floor(Math.random() * 3);
+			//TODO: Ajouter au back la couleur du carré autour de l'image (vert?)
 		};
 
 		const pausePage = () => {
@@ -287,8 +346,13 @@ const Game = (
 			context.fillText("ABORT", width / 2, height / 2, width);
 		};
 
+		const waitingPage = () => {
+			context.fillStyle = "white";
+			context.fillText("Waiting for opponent", width / 2, height / 2, width);
+		};
+
 		/* ***************************************************************************** */
-		/*                   Affichage des boutons PAUSE/PLAY et STOP                    */
+		/*                            Affichage des boutons                              */
 		/* ***************************************************************************** */
 		const button = () => {
 			context.beginPath();
@@ -312,6 +376,20 @@ const Game = (
 			}
 		};
 
+		const mapButton = () => {
+			//
+		}
+
+		function tick() {//TODO: elle est exécuté deux fois, car les deux users l'appel
+			if (allPos.compteur == 0) {
+				window.clearInterval(timer);
+				socket.emit("state", State.PLAY);
+				allPos.compteur = 10;
+			}
+			else
+				socket.emit("compteur", allPos.compteur);
+		}
+
 		/* ***************************************************************************** */
 		/*                      Fonction principale de l'affichage                       */
 		/* ***************************************************************************** */
@@ -319,6 +397,7 @@ const Game = (
 			context.clearRect(0, 0, width, height);
 			context.fillStyle = "black";
 			context.fillRect(0, 50, width, height);
+			context.drawImage(allPos.img, 0, 50, width, height);
 			if (allPos.state === State.INIT) {
 				initPage();
 			} else if (allPos.state === State.PAUSE) {
@@ -355,14 +434,16 @@ const Game = (
 			context.fillText(allPos.scoreLP + " - " + allPos.scoreRP, width / 2, 45);
 			context.beginPath();
 			context.fillStyle = "white";
-			context.fillRect(allPos.ballX, allPos.ballY, allPos.ballW, allPos.ballH);
+			if (allPos.state != State.INIT)
+				context.fillRect(allPos.ballX, allPos.ballY, allPos.ballW, allPos.ballH);
 			context.fill();
 			context.fillRect(1, allPos.pLY, paddleW, paddleH);
 			context.fillRect(width - paddleW, allPos.pRY, paddleW - 1, paddleH);
 			context.strokeStyle = "white";
 			context.moveTo(width / 2, 50);
 			context.lineTo(width / 2, height);
-			context.stroke();
+			if (allPos.state != State.INIT && img.src != gameBoards[2])
+				context.stroke();
 			animationFrameId = window.requestAnimationFrame(render);
 		}
 		render();
@@ -377,8 +458,6 @@ const Game = (
 	/*                          balise HTML de la page web                           */
 	/* ***************************************************************************** */
 	return (
-		//afficher le plateau de jeu lorsque l'user click sur le bouton
-		//
 		<div>
 			{game ? null : <canvas
 				ref={canvasRef}
