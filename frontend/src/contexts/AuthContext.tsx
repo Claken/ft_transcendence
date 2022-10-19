@@ -6,34 +6,27 @@ const AuthContext = React.createContext(null);
 
 export const AuthProvider = ({ children }) => {
 	const [user, setUser] = useState<IUser>(null);
-	const [onlineUsers, setOnlineUsers] = useState<IUser[]>([]);
 
-	useEffect(() => {
-		const getCookie = async () => {
-			try {
-				const response = await axios.get("/me", {
-					withCredentials: true,
-				});
-				setUser(response.data);
+	const getCookie = async () => {
+		await axios
+			.get("/me", {
+				withCredentials: true,
+			})
+			.then((res) => {
+				setUser(res.data);
 				console.log("successful axios.get!");
-			} catch (error) {
-				if (error) {
-					console.log("error");
-					console.log(error);
-				}
-			}
-		};
+			})
+			.catch((error) => {
+				console.log("error");
+				console.log(error);
+			});
+	};
+	useEffect(() => {
 		getCookie();
 	}, []);
 
-	useEffect(() => {
-		const addOnlineUser = () => {
-			const cpyOnlineUsers = [...onlineUsers];
-			cpyOnlineUsers.push(user);
-			setOnlineUsers(cpyOnlineUsers);
-		};
-		addOnlineUser();
-	}, [user])
+	// useEffect(() => {
+	// }, [user])
 
 	const login = () => {
 		window.location.href = "http://localhost:3001/auth/42/login";
@@ -48,9 +41,7 @@ export const AuthProvider = ({ children }) => {
 	};
 
 	return (
-		<AuthContext.Provider
-			value={{ user, onlineUsers, login, loginAsGuest, logout }}
-		>
+		<AuthContext.Provider value={{ user, login, loginAsGuest, logout }}>
 			{children}
 		</AuthContext.Provider>
 	);

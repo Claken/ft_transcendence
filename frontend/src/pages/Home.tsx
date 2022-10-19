@@ -12,10 +12,10 @@ function Home() {
 			<h1>Home</h1>
 			<ul>
 				<li>debut</li>
-				{auth?.onlineUsers &&
+				{/* {auth?.onlineUsers &&
 					auth?.onlineUsers?.map((user: IUser) => (
 						<li>{user?.name}</li>
-					))}
+					))} */}
 				<li>fin</li>
 			</ul>
 		</div>
