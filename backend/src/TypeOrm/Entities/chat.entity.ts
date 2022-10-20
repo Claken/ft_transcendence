@@ -13,16 +13,16 @@ import { UsersEntity } from './users.entity';
 export class ChatRoomEntity {
 
 	@PrimaryGeneratedColumn()
-	id: number;
+	id?: number;
 
 	@Column({unique: true})
 	chatRoomName: string;
   
 	@ManyToOne(() => UsersEntity, User => User.ownedChannels)
-	owner: UsersEntity;
+	owner?: UsersEntity;
   
 	@Column()
-	administrators: string;
+	administrators?: string;
 
 	// @OneToMany(()=> ChatUserEntity, Member => Member.inChannel)
 	// members: ChatUserEntity;
@@ -31,19 +31,11 @@ export class ChatRoomEntity {
 	isPublic: boolean;
 
 	@Column({ default: ''})
-	password: string;
+	password?: string;
 
 	@CreateDateColumn()
-	createdAt: Date;
-}
+	createdAt?: Date;
 
-export interface IChatRoom {
-	id: number;
-	chatRoomName: string;
-	owner: UsersEntity;
-	administrators: string;
-	// members: ChatUserEntity;
-	isPublic: boolean;
-	password?: string;
-	createdAt: Date;
+	@Column()
+	messages: string;
 }

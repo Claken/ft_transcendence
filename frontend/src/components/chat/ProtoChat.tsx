@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import io, { Socket } from 'socket.io-client';
 import { isForOfStatement } from 'typescript';
+import {IChatRoom} from '../../interfaces/chat.interface'
 
 // const 	socket = io('http://localhost/3001');
 
@@ -137,7 +138,16 @@ const ProtoChat = () => {
 			name: askARoom || '',
 			messages: [],
 		};
+
+		const dbRoom: IChatRoom = {
+			chatRoomName: askARoom,
+			ownerLogin: username,
+			administratorLogin: username,
+			isPublic: true,
+		}
 		
+		socket?.emit('createChatRoom', dbRoom);
+
 		const roomsCopy = [...rooms];
 		roomsCopy.push(newRoom);
 

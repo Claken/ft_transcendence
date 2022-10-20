@@ -2,7 +2,8 @@ import { MessageBody, SubscribeMessage, WebSocketGateway, WebSocketServer, OnGat
 import { Server, Socket } from 'socket.io';
 import { Logger } from '@nestjs/common';
 import { ChatService } from './chat.service';
-import { IChatRoom } from 'src/TypeOrm/Entities/chat.entity';
+import { CreateRoomDto } from 'src/DTOs/chat.dto';
+import { string } from 'joi';
 
 // {cors: '*'} pour que chaque client dans le frontend puisse se connecter à notre gateway
 @WebSocketGateway({cors: '*'}) // decorator pour dire que la classe ChatGateway sera un gateway /
@@ -76,7 +77,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 	/* ************************************************************************* */
 
 	@SubscribeMessage('createChatRoom')
-	HandleCreationRoom(@MessageBody() room: IChatRoom): void {
+	HandleCreationRoom(@MessageBody() room: CreateRoomDto): void {
 
 		this.chatService.createChatRoom(room);
 	}
@@ -87,9 +88,9 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 		this.chatService.deleteChatRoom(room);
 	}
 
-	@SubscribeMessage('modifyChatRoom')
-	HandleModificationChannel(@MessageBody() room: IChatRoom): void {
+	// @SubscribeMessage('modifyChatRoom')
+	// HandleModificationChannel(@MessageBody() room: CreateRoomDto): void {
 		
-	}
+	// }
 
 }
