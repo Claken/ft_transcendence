@@ -8,13 +8,14 @@ const AuthContext = React.createContext(null);
 export const AuthProvider = ({ children }) => {
 	const [user, setUser] = useState<IUser>(null);
 	const [users, setUsers] = useState<IUser[]>(null);
+	const [cookie, setCookie] = useState<string>(null);
 
 	const getUsers = async () => {
 		await axios
 			.get("/users")
 			.then((res) => {
 				setUsers(res.data);
-				console.log(res.data);
+				console.log("getUsers: "+res.data);
 			})
 			.catch((error) => {
 				console.log(error);
@@ -28,18 +29,7 @@ export const AuthProvider = ({ children }) => {
 			})
 			.then((res) => {
 				setUser(res.data);
-				console.log("successful axios.get /me!");
-			})
-			.catch((error) => {
-				console.log(error);
-			});
-	};
-
-	const setUserStatus = async (status: string) => {
-		await axios
-			.put("/users/" + user.id, { status: status })
-			.then((res) => {
-				console.log(res.data);
+				console.log("getSessionCookie: "+res.data);
 			})
 			.catch((error) => {
 				console.log(error);
@@ -57,9 +47,10 @@ export const AuthProvider = ({ children }) => {
 				console.log(error);
 			});
 	};
+
 	const deleteGuestUser = async () => {
 		await axios
-			.delete("/users" + user.id)
+			.delete("/users/" + user.id)
 			.then((res) => {
 				console.log(res.data);
 			})
@@ -68,50 +59,47 @@ export const AuthProvider = ({ children }) => {
 			});
 	};
 
-
 	useEffect(() => {
 		getUsers();
 		getSessionCookie();
-		const data = window.localStorage.getItem('MY_PONG_APP');
-		if (data !== null){ setUser(JSON.parse(data)); console.log("useEffect() user: "+user);}
-	}, []);
-
-
-	useEffect(() => {
-		if (user !== undefined && user !== null) {
-			window.localStorage.setItem('MY_PONG_APP', JSON.stringify(user))
-			setUserStatus("online");
+		setTimeout(() => {
+			setCookie(localStorage.getItem('MY_PONG_APP'));
+		}, 50)
+		if (cookie && !user)
+		{
+			setUser(JSON.parse(cookie));
 		}
-	}, [user]);
+		console.log("user: "+ user);
+	}, []);
 
 	const login = () => {
 		window.location.href = "http://localhost:3001/auth/42/login";
 	};
-	const loginAsGuest = (guestName: string) => {
-		const user = {
+	const loginAsGuest = async (guestName: string) => {
+		const newUser = {
 			name: guestName,
 			pictureUrl: guestPic,
 			status: "online",
 		};
-		postGuestUser(user);
+		await postGuestUser(newUser);
+		localStorage.setItem("MY_PONG_APP", JSON.stringify(newUser));
 	};
 	const logout = async () => {
+		
 		//only Stud42 have a login field
-		const data = window.localStorage.getItem('MY_PONG_APP');
-		if (user.login) {
+		if (user.login && user.login.length > 0) {
 			window.location.href = "http://localhost:3001/auth/42/logout";
-			console.log('logout user.login exits');
 		} else {
 			//delete guestUser
+			console.log(user);
 			deleteGuestUser();
-			console.log('deleteGuestUser');
 		}
-		if (data !== null) {
+		if (cookie) {
 			// if (user !== undefined && user !== null)
-			setUserStatus("offline");
-			setUser(null);
-			window.localStorage.removeItem('MY_PONG_APP')
+			setUser(null);	
+			localStorage.removeItem("MY_PONG_APP");
 		}
+		setUser(null);
 	};
 
 	return (

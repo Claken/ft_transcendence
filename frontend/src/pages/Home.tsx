@@ -6,6 +6,7 @@ import "../styles/page.css";
 function Home() {
 	const auth = useAuth();
 
+
 	return (
 		<div>
 			<h1>Home</h1>

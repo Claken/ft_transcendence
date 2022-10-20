@@ -39,16 +39,16 @@ export class UsersController {
     return await this.usersService.getById(idToFind);
   }
 
-  @Put(':id')
+  @Put(':id/:status')
   async update(
     @Param('id') id: number,
-    @Body() user: IUser,
-  ): Promise<UpdateResult> {
-    return await this.usersService.updateUser(id, user);
+    @Param('status') status: string,
+  ): Promise<UsersEntity> {
+    return await this.usersService.updateStatusUser(id, status);
   }
 
   @Delete(':id')
-  async delete(@Param('id') id: number): Promise<DeleteResult> {
+  async delete(@Param('id') id: number): Promise<UsersEntity> {
     return await this.usersService.deleteUser(id);
   }
 }

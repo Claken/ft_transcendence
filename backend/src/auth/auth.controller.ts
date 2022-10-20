@@ -1,10 +1,11 @@
 import { Controller, Get, Redirect, Req, Res, UseGuards } from '@nestjs/common';
 import { Request, Response } from 'express';
+import { UsersService } from 'src/users/users.service';
 import { AuthenticatedGuard, FortyTwoAuthGuard } from './guards/fortytwo.guard';
 
 @Controller('auth/42')
 export class AuthController {
-  constructor() {}
+  constructor(private usersService: UsersService) {}
 
   @UseGuards(FortyTwoAuthGuard)
   @Get('login')
@@ -23,6 +24,7 @@ export class AuthController {
   @Redirect('http://localhost:3000')
   async logOut(@Req() req: Request) {
     // logOut() => removes the session from the memory of the webserver
+    //TODO: user==> offline
     if (req.user) {
       req.logOut((err) => {
         console.log(err);

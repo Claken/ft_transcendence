@@ -23,7 +23,7 @@ export class UsersEntity {
   @Column({ default: '' })
   pictureUrl?: string;
 
-  @Column({ default: '' })
+  @Column({ default: 'online' })
   status?: string;
 
   @CreateDateColumn()

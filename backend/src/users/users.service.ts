@@ -44,11 +44,14 @@ export class UsersService {
     });
   }
 
-  async updateUser(id: number, user: IUser): Promise<UpdateResult> {
-    return await this.userRepo.update(id, user);
+  async updateStatusUser(id: number, status: string): Promise<UsersEntity> {
+    const user = await this.getById(id);
+    user.status = status;
+    return await this.userRepo.save(user);
   }
 
-    async deleteUser(id: number): Promise<DeleteResult> {
-    return await this.userRepo.delete(id);
+  async deleteUser(id: number): Promise<UsersEntity> {
+    const user = await this.getById(id);
+    return await this.userRepo.remove(user);
   }
 }
