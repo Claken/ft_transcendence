@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DeleteResult, Repository, UpdateResult } from 'typeorm';
 import { ChatRoomEntity } from '../TypeOrm/Entities/chat.entity';
-import { CreateRoomDto } from '../DTOs/chat.dto'
+import { CreateRoomDto } from '../TypeOrm/DTOs/chat.dto'
 import { UsersService } from 'src/users/users.service';
 
 // import { Repository } from 'typeorm'

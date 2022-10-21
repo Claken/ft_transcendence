@@ -2,7 +2,7 @@ import { MessageBody, SubscribeMessage, WebSocketGateway, WebSocketServer, OnGat
 import { Server, Socket } from 'socket.io';
 import { Logger } from '@nestjs/common';
 import { ChatService } from './chat.service';
-import { CreateRoomDto } from 'src/DTOs/chat.dto';
+import { CreateRoomDto } from 'src/TypeOrm/DTOs/chat.dto';
 import { string } from 'joi';
 import { UsersService } from 'src/users/users.service';
 
