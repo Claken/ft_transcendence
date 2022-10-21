@@ -18,10 +18,10 @@ export class AuthController {
   @Get('callback')
   @Redirect('http://localhost:3000')
   login(@Req() req: Request) {
-	if (req.user) {
-		const { id } = req.user as IUser;
-		this.usersService.updateStatusUser(id, "online");
-	}
+    if (req.user) {
+      const { id } = req.user as IUser;
+      this.usersService.updateStatusUser(id, 'online');
+    }
     return req.user;
   }
 
@@ -29,10 +29,9 @@ export class AuthController {
   @Redirect('http://localhost:3000')
   async logOut(@Req() req: Request) {
     // logOut() => removes the session from the memory of the webserver
-	//TODO: user==> offline
     if (req.user) {
-		const { id } = req.user as IUser;
-		this.usersService.updateStatusUser(id, "offline");
+      const { id } = req.user as IUser;
+      this.usersService.updateStatusUser(id, 'offline');
       req.logOut((err) => {
         console.log(err);
       }); // without the callback an error occured...

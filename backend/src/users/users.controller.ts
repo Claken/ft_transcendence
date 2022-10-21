@@ -24,9 +24,7 @@ export class UsersController {
   }
 
   @Get(':name')
-  async findOneBy(
-    @Param('name') nameToFind: string,
-  ): Promise<UsersEntity> {
+  async findOneBy(@Param('name') nameToFind: string): Promise<UsersEntity> {
     return await this.usersService.getByName(nameToFind);
   }
 

@@ -8,14 +8,13 @@ const AuthContext = React.createContext(null);
 export const AuthProvider = ({ children }) => {
 	const [user, setUser] = useState<IUser>(null);
 	const [users, setUsers] = useState<IUser[]>(null);
-	const [isloading, setIsloading] = useState<boolean>(true);
 
 	const getUsers = async () => {
 		await axios
 			.get("/users")
 			.then((res) => {
 				setUsers(res.data);
-				console.log("getUsers: " + res.data);
+				console.log(res.data);
 			})
 			.catch((error) => {
 				console.log(error);
@@ -29,12 +28,13 @@ export const AuthProvider = ({ children }) => {
 				withCredentials: true,
 			})
 			.then((res) => {
-				if (res.data)
+				if (res.data) {
+					setUser(res.data);
 					localStorage.setItem(
 						"MY_PONG_APP",
 						JSON.stringify(res.data)
 					);
-				else console.log("getSessionCookie: empty res.data");
+				} else console.log("getSessionCookie: empty res.data");
 			})
 			.catch((error) => {
 				console.log(error);
@@ -45,6 +45,7 @@ export const AuthProvider = ({ children }) => {
 		await axios
 			.post("/users", user)
 			.then((res) => {
+				setUser(user);
 				localStorage.setItem("MY_PONG_APP", JSON.stringify(user));
 				console.log(res.data);
 			})
@@ -57,7 +58,21 @@ export const AuthProvider = ({ children }) => {
 		await axios
 			.delete("/users/" + user.id)
 			.then((res) => {
-				console.log("deleteGuestUser: "+res.data);
+				console.log(res.data);
+			})
+			.catch((error) => {
+				console.log(error);
+			});
+	};
+
+	const getUserByname = async (name: string) => {
+		await axios
+			.get("/users/" + name)
+			.then((res) => {
+				if (res.data) {
+					setUser(null);
+					setUser(res.data);
+				}
 			})
 			.catch((error) => {
 				console.log(error);
@@ -65,11 +80,15 @@ export const AuthProvider = ({ children }) => {
 	};
 
 	useEffect(() => {
-		if (isloading) {
-			getUsers();
-			getSessionCookie();
-			setIsloading(false);
+		const token = localStorage.getItem("MY_PONG_APP");
+
+		if (token) {
+			const { name } = JSON.parse(token);
+			getUserByname(name);
 		}
+		getUsers();
+		getSessionCookie();
+		console.log("Context UseEffect: " + JSON.stringify(user));
 	}, []);
 
 	const login = () => {
@@ -88,7 +107,7 @@ export const AuthProvider = ({ children }) => {
 		if (user.login) {
 			window.location.href = "http://localhost:3001/auth/42/logout";
 		} else {
-			console.log("user: " + JSON.stringify(user));
+			console.log("logout: " + JSON.stringify(user));
 			deleteGuestUser();
 		}
 		if (localStorage.getItem("MY_PONG_APP")) {

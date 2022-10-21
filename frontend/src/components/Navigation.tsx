@@ -19,7 +19,7 @@ function Navigation() {
 			//TODO: css change
 			setStylePic("profilePic");
 		}
-	}, [auth?.user]);
+	}, [auth.user]);
 
 	return (
 		<nav>
@@ -29,7 +29,7 @@ function Navigation() {
 						<button className="btngreen">Home</button>
 					</NavLink>
 				</li>
-				{(auth?.user && (
+				{(auth.user && (
 					<>
 						<li className="space">
 							<NavLink className="link" to="/pong">
@@ -57,7 +57,7 @@ function Navigation() {
 						<li className="space">
 							<img
 								className={stylePic}
-								src={auth?.user?.pictureUrl}
+								src={auth.user?.pictureUrl}
 								alt="profilePic"
 							/>
 						</li>
