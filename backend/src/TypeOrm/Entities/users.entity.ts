@@ -13,9 +13,8 @@ export class UsersEntity {
   @PrimaryGeneratedColumn()
   id?: number;
 
-  // tofix: authService return newDefaultUser
-  @Column({ default: '', unique: true })
-  login: string;
+  @Column({ default: '' })
+  login?: string;
 
   @Column({ default: '', unique: true })
   name?: string;
@@ -26,8 +25,8 @@ export class UsersEntity {
   @Column({ default: '' })
   pictureUrl?: string;
 
-  @OneToMany(() => ChatRoomEntity, Channel => Channel.owner)
-  ownedChannels?: ChatRoomEntity;
+  @Column({ default: 'online' })
+  status?: string;
 
   @CreateDateColumn()
   createdAt?: Date;
@@ -35,10 +34,10 @@ export class UsersEntity {
 
 export interface IUser {
   id?: number;
-  login: string;
+  login?: string;
   name?: string;
   email?: string;
   pictureUrl?: string;
+  status?: string;
   createdAt?: Date;
-  ownedChannels?: ChatRoomEntity;
 }

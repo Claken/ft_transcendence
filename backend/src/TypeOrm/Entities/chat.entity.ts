@@ -16,10 +16,12 @@ export class ChatRoomEntity {
 	id?: number;
 
 	@Column({unique: true})
-	chatRoomName: string;
+	chatRoomName?: string;
   
-	@ManyToOne(() => UsersEntity, User => User.ownedChannels)
-	owner?: UsersEntity;
+	// @ManyToOne(() => UsersEntity, User => User.ownedChannels)
+	// owner?: UsersEntity;
+	@Column()
+	owner?: string;
   
 	@Column()
 	administrators?: string;
@@ -35,7 +37,5 @@ export class ChatRoomEntity {
 
 	@CreateDateColumn()
 	createdAt?: Date;
-
-	@Column()
-	messages: string;
 }
+

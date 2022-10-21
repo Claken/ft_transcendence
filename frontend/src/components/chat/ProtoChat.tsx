@@ -141,8 +141,8 @@ const ProtoChat = () => {
 
 		const dbRoom: IChatRoom = {
 			chatRoomName: askARoom,
-			ownerLogin: username,
-			administratorLogin: username,
+			owner: username,
+			administrators: username,
 			isPublic: true,
 		}
 		
@@ -211,7 +211,7 @@ const ProtoChat = () => {
 
 	// USEFFECT POUR QUITTER UNE ROOM
 	useEffect(() => {
-		console.log('leftRoom');
+		// console.log('leftRoom');
 		socket?.on('leftRoom', leftRoom);
 		return () => {
 			socket?.off('leftRoom', leftRoom);
@@ -220,7 +220,7 @@ const ProtoChat = () => {
 
 	// USEFFECT POUR REJOINDRE UNE ROOM
 	useEffect(() => {
-		console.log('joinedRoom');
+		// console.log('joinedRoom');
 		socket?.on('joinedRoom', joinedRoom);
 		return () => {
 			socket?.off('joinedRoom', joinedRoom);

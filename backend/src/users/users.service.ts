@@ -25,10 +25,9 @@ export class UsersService {
     return await this.userRepo.find();
   }
 
-  // unuse
-  async getByLogin(loginToFind: string): Promise<UsersEntity> {
+  async getByName(nameToFind: string): Promise<UsersEntity> {
     return await this.userRepo.findOneBy({
-      login: loginToFind,
+      name: nameToFind,
     });
   }
 
@@ -45,9 +44,10 @@ export class UsersService {
     });
   }
 
-  // unuse
-  async updateUser(id: number, user: IUser): Promise<UpdateResult> {
-    return await this.userRepo.update(id, user);
+  async updateStatusUser(id: number, status: string): Promise<UsersEntity> {
+    const user = await this.getById(id);
+    user.status = status;
+    return await this.userRepo.save(user);
   }
 
   // async updateToken(id: number, access_token: string): Promise<UsersEntity> {
@@ -57,8 +57,8 @@ export class UsersService {
   //   return await this.getById(id);
   // }
 
-  // unuse
-  async deleteUser(id: number): Promise<DeleteResult> {
-    return await this.userRepo.delete(id);
+  async deleteUser(id: number): Promise<UsersEntity> {
+    const user = await this.getById(id);
+    return await this.userRepo.remove(user);
   }
 }

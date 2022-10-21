@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { DeleteResult, Repository, UpdateResult } from 'typeorm';
 import { ChatRoomEntity } from '../TypeOrm/Entities/chat.entity';
 import { CreateRoomDto } from '../DTOs/chat.dto'
+import { UsersService } from 'src/users/users.service';
 
 // import { Repository } from 'typeorm'
 
@@ -26,6 +27,7 @@ export class ChatService {
 	  }
 
 	  async createChatRoom(chatRoom: CreateRoomDto): Promise<ChatRoomEntity> {
+		
 		const newChat = this.chatRepo.create(chatRoom);
 		return this.chatRepo.save(chatRoom);
 	  }

@@ -4,12 +4,14 @@ import { Logger } from '@nestjs/common';
 import { ChatService } from './chat.service';
 import { CreateRoomDto } from 'src/DTOs/chat.dto';
 import { string } from 'joi';
+import { UsersService } from 'src/users/users.service';
 
 // {cors: '*'} pour que chaque client dans le frontend puisse se connecter à notre gateway
 @WebSocketGateway({cors: '*'}) // decorator pour dire que la classe ChatGateway sera un gateway /
 export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
 
-	constructor(private chatService: ChatService) {}
+	constructor(private chatService: ChatService,
+		private usersService: UsersService) {}
 
 	private logger: Logger = new Logger('ChatGateway');
 
@@ -58,6 +60,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
 	@SubscribeMessage('joinRoom')
 	HandleJoinRoom(client: Socket, room: string): void {
+		console.log('joinRoom');
 		client.join(room);
 		client.emit('joinedRoom', room);
 	}
@@ -68,6 +71,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
 	@SubscribeMessage('leaveRoom')
 	HandleLeaveRoom(client: Socket, room: string): void {
+		console.log('leaveRoom');
     	client.leave(room);
     	client.emit('leftRoom', room);
   }
@@ -79,6 +83,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 	@SubscribeMessage('createChatRoom')
 	HandleCreationRoom(@MessageBody() room: CreateRoomDto): void {
 
+		console.log('create here');
 		this.chatService.createChatRoom(room);
 	}
 

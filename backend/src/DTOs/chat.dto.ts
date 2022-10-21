@@ -3,15 +3,20 @@ import {
 
 export class CreateRoomDto {
 
-	chatRoomName: string;
+	id?: number;
 
-	ownerLogin?: string;
+	chatRoomName?: string;
+  
 
-	ownerId?: number;
+	owner?: string;
+  
+	administrators?: string;
 
-	administratorLogin?: string;
+
 
 	isPublic: boolean;
 
 	password?: string;
+
+	createdAt?: Date;
 }
