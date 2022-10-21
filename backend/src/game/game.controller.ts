@@ -21,7 +21,8 @@ export class GameController {
   // async findLoginLP(@Param('id') idToFind: number): Promise<string> {
   //   return await this.gameService.getLoginLPById(id);
   // }
-  @Get(':id')
+
+  @Get(':createGame')
   async getById(@Param('id') idToFind: number): Promise<Game> {
     return await this.gameService.getById(idToFind);
   }
