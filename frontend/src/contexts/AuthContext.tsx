@@ -8,28 +8,33 @@ const AuthContext = React.createContext(null);
 export const AuthProvider = ({ children }) => {
 	const [user, setUser] = useState<IUser>(null);
 	const [users, setUsers] = useState<IUser[]>(null);
-	const [cookie, setCookie] = useState<string>(null);
+	const [isloading, setIsloading] = useState<boolean>(true);
 
 	const getUsers = async () => {
 		await axios
 			.get("/users")
 			.then((res) => {
 				setUsers(res.data);
-				console.log("getUsers: "+res.data);
+				console.log("getUsers: " + res.data);
 			})
 			.catch((error) => {
 				console.log(error);
 			});
 	};
 
+	// getSessionCookie => check user42
 	const getSessionCookie = async () => {
 		await axios
 			.get("/me", {
 				withCredentials: true,
 			})
 			.then((res) => {
-				setUser(res.data);
-				console.log("getSessionCookie: "+res.data);
+				if (res.data)
+					localStorage.setItem(
+						"MY_PONG_APP",
+						JSON.stringify(res.data)
+					);
+				else console.log("getSessionCookie: empty res.data");
 			})
 			.catch((error) => {
 				console.log(error);
@@ -40,7 +45,7 @@ export const AuthProvider = ({ children }) => {
 		await axios
 			.post("/users", user)
 			.then((res) => {
-				setUser(user);
+				localStorage.setItem("MY_PONG_APP", JSON.stringify(user));
 				console.log(res.data);
 			})
 			.catch((error) => {
@@ -60,16 +65,11 @@ export const AuthProvider = ({ children }) => {
 	};
 
 	useEffect(() => {
-		getUsers();
-		getSessionCookie();
-		setTimeout(() => {
-			setCookie(localStorage.getItem('MY_PONG_APP'));
-		}, 50)
-		if (cookie && !user)
-		{
-			setUser(JSON.parse(cookie));
+		if (isloading) {
+			getUsers();
+			getSessionCookie();
+			setIsloading(false);
 		}
-		console.log("user: "+ user);
 	}, []);
 
 	const login = () => {
@@ -81,30 +81,25 @@ export const AuthProvider = ({ children }) => {
 			pictureUrl: guestPic,
 			status: "online",
 		};
-		await postGuestUser(newUser);
-		localStorage.setItem("MY_PONG_APP", JSON.stringify(newUser));
+		postGuestUser(newUser);
 	};
 	const logout = async () => {
-		
 		//only Stud42 have a login field
-		if (user.login && user.login.length > 0) {
+		if (user.login) {
 			window.location.href = "http://localhost:3001/auth/42/logout";
 		} else {
-			//delete guestUser
-			console.log(user);
+			console.log("user: " + JSON.stringify(user));
 			deleteGuestUser();
 		}
-		if (cookie) {
-			// if (user !== undefined && user !== null)
-			setUser(null);	
+		if (localStorage.getItem("MY_PONG_APP")) {
 			localStorage.removeItem("MY_PONG_APP");
+			setUser(null);
 		}
-		setUser(null);
 	};
 
 	return (
 		<AuthContext.Provider
-			value={{ user, users, login, loginAsGuest, logout }}
+			value={{ user, users, setUser, login, loginAsGuest, logout }}
 		>
 			{children}
 		</AuthContext.Provider>

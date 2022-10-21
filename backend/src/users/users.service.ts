@@ -24,17 +24,9 @@ export class UsersService {
     return await this.userRepo.find();
   }
 
-  // unuse
-  async getByLogin(loginToFind: string): Promise<UsersEntity> {
+  async getByName(nameToFind: string): Promise<UsersEntity> {
     return await this.userRepo.findOneBy({
-      login: loginToFind,
-    });
-  }
-
-  // unuse
-  async getByEmail(emailToFind: string): Promise<UsersEntity> {
-    return await this.userRepo.findOneBy({
-      email: emailToFind,
+      name: nameToFind,
     });
   }
 

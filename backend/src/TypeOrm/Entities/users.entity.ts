@@ -11,7 +11,7 @@ export class UsersEntity {
   @PrimaryGeneratedColumn()
   id?: number;
 
-  @Column({ default: '', unique: true })
+  @Column({ default: '' })
   login?: string;
 
   @Column({ default: '', unique: true })
