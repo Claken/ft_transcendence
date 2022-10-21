@@ -1,7 +1,6 @@
-/* eslint-disable prettier/prettier */
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DeleteResult, Repository, UpdateResult } from 'typeorm';
+import { Repository } from 'typeorm';
 import { IUser, UsersEntity } from '../TypeOrm/Entities/users.entity';
 
 @Injectable()

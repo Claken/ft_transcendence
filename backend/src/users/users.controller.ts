@@ -7,7 +7,6 @@ import {
   Post,
   Put,
 } from '@nestjs/common';
-import { DeleteResult, UpdateResult } from 'typeorm';
 import { UsersService } from './users.service';
 import { IUser, UsersEntity } from '../TypeOrm/Entities/users.entity';
 

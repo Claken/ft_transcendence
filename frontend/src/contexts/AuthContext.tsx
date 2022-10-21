@@ -57,7 +57,7 @@ export const AuthProvider = ({ children }) => {
 		await axios
 			.delete("/users/" + user.id)
 			.then((res) => {
-				console.log(res.data);
+				console.log("deleteGuestUser: "+res.data);
 			})
 			.catch((error) => {
 				console.log(error);
@@ -76,7 +76,7 @@ export const AuthProvider = ({ children }) => {
 		window.location.href = "http://localhost:3001/auth/42/login";
 	};
 	const loginAsGuest = async (guestName: string) => {
-		const newUser = {
+		const newUser: IUser = {
 			name: guestName,
 			pictureUrl: guestPic,
 			status: "online",
