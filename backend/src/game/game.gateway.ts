@@ -36,7 +36,7 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 	}
 
 	@SubscribeMessage('update')
-	async moveBall(client: any, allPos) { //TODO: quel est le premier param ?
+	async moveBall(client: any, allPos) {
 		/* ********************************************************************* */
 		/*          var pour facilement identifier les côtés de la balle         */
 		/* ********************************************************************* */
@@ -143,8 +143,8 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 		this.server.emit("compteurUpdated", currentSec);
 	}
 
-	@SubscribeMessage('notification')
-	async test() {
+	@SubscribeMessage('createNewGame')//TODO:
+	async CreateNewGame() {
 		console.log("tata");
 	}
 }

@@ -25,7 +25,7 @@ const Game = (
 	const [drawCanvas, setdrawCanvas] = useState(false);
 
 	const joinGame = () => {//TODO: Récupérer le User pour implémenter ses données
-		axios.get("http://localhost:3000/game/createGame", {withCredentials:true}).then((res) =>{})//then ???
+		// axios.get("http://localhost:3000/game/createGame", {withCredentials:true}).then((res) =>{})//then ???
 		// const cpyGames = [...games];
 		// setGame({loginLP: loginLP, loginRP: loginRP});
 		// cpyGames.push(game);
