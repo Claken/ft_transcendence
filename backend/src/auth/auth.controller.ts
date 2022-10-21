@@ -1,7 +1,8 @@
 import { Controller, Get, Redirect, Req, Res, UseGuards } from '@nestjs/common';
 import { Request, Response } from 'express';
+import { IUser } from 'src/TypeOrm/Entities/users.entity';
 import { UsersService } from 'src/users/users.service';
-import { AuthenticatedGuard, FortyTwoAuthGuard } from './guards/fortytwo.guard';
+import { FortyTwoAuthGuard } from './guards/fortytwo.guard';
 
 @Controller('auth/42')
 export class AuthController {
@@ -9,14 +10,18 @@ export class AuthController {
 
   @UseGuards(FortyTwoAuthGuard)
   @Get('login')
-  register(@Req() req: Request, @Res() res: Response) {
+  register(@Req() req: Request) {
     return req.user;
   }
 
   @UseGuards(FortyTwoAuthGuard)
   @Get('callback')
   @Redirect('http://localhost:3000')
-  login(@Req() req: Request, @Res() res: Response) {
+  login(@Req() req: Request) {
+	if (req.user) {
+		const { id } = req.user as IUser;
+		this.usersService.updateStatusUser(id, "online");
+	}
     return req.user;
   }
 
@@ -24,8 +29,10 @@ export class AuthController {
   @Redirect('http://localhost:3000')
   async logOut(@Req() req: Request) {
     // logOut() => removes the session from the memory of the webserver
-    //TODO: user==> offline
+	//TODO: user==> offline
     if (req.user) {
+		const { id } = req.user as IUser;
+		this.usersService.updateStatusUser(id, "offline");
       req.logOut((err) => {
         console.log(err);
       }); // without the callback an error occured...

@@ -41,7 +41,7 @@ export const AuthProvider = ({ children }) => {
 			.post("/users", user)
 			.then((res) => {
 				setUser(user);
-				console.log(res.data);
+				console.log("postGuestUser: "+res.data);
 			})
 			.catch((error) => {
 				console.log(error);
@@ -52,7 +52,7 @@ export const AuthProvider = ({ children }) => {
 		await axios
 			.delete("/users/" + user.id)
 			.then((res) => {
-				console.log(res.data);
+				console.log("deleteGuestUser: "+res.data);
 			})
 			.catch((error) => {
 				console.log(error);
@@ -62,21 +62,21 @@ export const AuthProvider = ({ children }) => {
 	useEffect(() => {
 		getUsers();
 		getSessionCookie();
-		setTimeout(() => {
-			setCookie(localStorage.getItem('MY_PONG_APP'));
-		}, 50)
+		// setTimeout(() => {
+			setCookie(JSON.parse(localStorage.getItem('MY_PONG_APP')));
+		// }, 50)
 		if (cookie && !user)
 		{
 			setUser(JSON.parse(cookie));
 		}
-		console.log("user: "+ user);
+		console.log("useEffect[]: "+ user);
 	}, []);
 
 	const login = () => {
 		window.location.href = "http://localhost:3001/auth/42/login";
 	};
 	const loginAsGuest = async (guestName: string) => {
-		const newUser = {
+		const newUser: IUser = {
 			name: guestName,
 			pictureUrl: guestPic,
 			status: "online",
@@ -90,9 +90,8 @@ export const AuthProvider = ({ children }) => {
 		if (user.login && user.login.length > 0) {
 			window.location.href = "http://localhost:3001/auth/42/logout";
 		} else {
-			//delete guestUser
-			console.log(user);
-			deleteGuestUser();
+			console.log("delete guestUser: "+ user);
+			await deleteGuestUser();
 		}
 		if (cookie) {
 			// if (user !== undefined && user !== null)
