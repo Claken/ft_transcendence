@@ -179,20 +179,13 @@ const ProtoChat = () => {
 			socket?.emit('joinRoom', activeRoom.name);
 	}
 
+	const ReceivedUserName = (name: string) => {
+		changeUsername(name);
+	}
+
 	/* ***************************************************************************** */
 	/*    						Les différents UseEffets    						 */
 	/* ***************************************************************************** */
-
-	// USEEFFECT POUR AVOIR NOM ET ROOM
-	useEffect(() => {
-		if (!ignore)
-		{
-			// console.log('here');
-			const newName = prompt('Enter your username: ');
-			changeUsername(newName || '');
-			ignore = true;
-		}
-	}, [])
 
 	// USEEFFECT POUR CREER UN SOCKET
 	useEffect(() => {
@@ -200,6 +193,17 @@ const ProtoChat = () => {
 		const newSocket = io('http://localhost:3001');
 		setSocket(newSocket);
 	}, [setSocket])
+
+	useEffect(() => {
+		if (!ignore)
+		{
+			console.log('here');
+		// 	const newName = prompt('Enter your username: ');joinedRoom
+		// 	changeUsername(newName || '');
+			socket?.emit('getUserName');
+			ignore = true;
+		}
+	}, [])
 
 	// USEFFECT POUR RECEVOIR UN MESSAGE POUR UNE ROOM
 	useEffect(() => {
@@ -222,6 +226,14 @@ const ProtoChat = () => {
 	useEffect(() => {
 		// console.log('joinedRoom');
 		socket?.on('joinedRoom', joinedRoom);
+		return () => {
+			socket?.off('joinedRoom', joinedRoom);
+		}
+	}, [joinedRoom])
+
+	useEffect(() => {
+		// console.log('joinedRoom');
+		socket?.on('receivedUserName', joinedRoom);
 		return () => {
 			socket?.off('joinedRoom', joinedRoom);
 		}

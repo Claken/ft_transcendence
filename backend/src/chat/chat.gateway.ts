@@ -76,6 +76,16 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     	client.emit('leftRoom', room);
   }
 
+  	/* ************************************************************************* */
+	/*						Pour avoir les infos sur un user   					 */
+	/* ************************************************************************* */
+
+	@SubscribeMessage('getUserName')
+	GetUserName(client: Socket): void {
+		console.log('client.id');
+		console.log(client.id);
+	}
+
     /* ************************************************************************* */
 	/*							POUR GERER LA DATABASE  						 */
 	/* ************************************************************************* */
