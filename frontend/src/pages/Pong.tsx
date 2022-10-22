@@ -1,14 +1,12 @@
-import React from "react";
-import Navigation from "../components/Navigation";
-import Game from "../components/Game"
+
 
 function Pong() {
-  return (
-    <div>
-      <Navigation />
-      <Game/ >;
-    </div>
-  );
+
+	return (
+		<div>
+			<h1>Pong</h1>
+		</div>
+	);
 }
 
 export default Pong;

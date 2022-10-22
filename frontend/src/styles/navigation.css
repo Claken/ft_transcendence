@@ -1,6 +1,6 @@
 nav {
   height: 121px;
-	width: 99vw;
+  width: 100vw;
   background: #333333;
 }
 
@@ -21,6 +21,12 @@ nav {
 
 .space {
   margin-right: 12vw;
+  margin-bottom: 2px;
+}
+
+.spacenotlog {
+  margin-right: calc(48vw + 360px);
+  margin-bottom: 2px;
 }
 
 .link {
@@ -58,8 +64,8 @@ nav {
   cursor: pointer;
   border: none;
   color: white;
-  background: green;
-  box-shadow: 0 0 5px green;
+  background: rgb(43, 102, 43);
+  box-shadow: 0 0 5px rgb(43, 102, 43);
 }
 
 .btngreen:hover {
@@ -70,12 +76,22 @@ nav {
   .space {
     margin-right: 1vw;
   }
-	.btn {
-		width: 80px;
-		font-size: 10px;
-	}
-	.btngreen {
-		width: 100px;
-		font-size: 13px;
-	}
+  .btn {
+    width: 80px;
+    font-size: 10px;
+  }
+  .btngreen {
+    width: 100px;
+    font-size: 13px;
+  }
+}
+
+@media all and (max-width: 500px) {
+  nav {
+    height: 331px;
+  }
+  .list {
+    height: 310px;
+    flex-direction: column;
+  }
 }
