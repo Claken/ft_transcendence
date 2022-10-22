@@ -9,6 +9,7 @@ export const AuthProvider = ({ children }) => {
 	const [user, setUser] = useState<IUser>(null);
 	const [users, setUsers] = useState<IUser[]>(null);
 
+	// GET all users
 	const getUsers = async () => {
 		await axios
 			.get("/users")
@@ -21,7 +22,7 @@ export const AuthProvider = ({ children }) => {
 			});
 	};
 
-	// getSessionCookie => check user42
+	// GET session/cookie42
 	const getSessionCookie = async () => {
 		await axios
 			.get("/me", {
@@ -45,7 +46,7 @@ export const AuthProvider = ({ children }) => {
 		await axios
 			.post("/users", user)
 			.then((res) => {
-				setUser(user);
+				setUser(res.data);
 				localStorage.setItem("MY_PONG_APP", JSON.stringify(user));
 				console.log(res.data);
 			})
@@ -79,6 +80,7 @@ export const AuthProvider = ({ children }) => {
 			});
 	};
 
+	// if localStorage exists, setUser in getUserByname()
 	useEffect(() => {
 		const token = localStorage.getItem("MY_PONG_APP");
 
@@ -88,27 +90,29 @@ export const AuthProvider = ({ children }) => {
 		}
 		getUsers();
 		getSessionCookie();
-		console.log("Context UseEffect: " + JSON.stringify(user));
 	}, []);
 
 	const login = () => {
 		window.location.href = "http://localhost:3001/auth/42/login";
 	};
+
 	const loginAsGuest = async (guestName: string) => {
 		const newUser: IUser = {
 			name: guestName,
 			pictureUrl: guestPic,
 			status: "online",
 		};
-		postGuestUser(newUser);
+		await postGuestUser(newUser);
 	};
+
+	// REMOVE localStorage on logout + if (Guest) deleteUser
 	const logout = async () => {
 		//only Stud42 have a login field
 		if (user.login) {
 			window.location.href = "http://localhost:3001/auth/42/logout";
 		} else {
 			console.log("logout: " + JSON.stringify(user));
-			deleteGuestUser();
+			await deleteGuestUser();
 		}
 		if (localStorage.getItem("MY_PONG_APP")) {
 			localStorage.removeItem("MY_PONG_APP");

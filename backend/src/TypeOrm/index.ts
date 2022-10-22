@@ -1,4 +1,4 @@
-import { IUser, UsersEntity } from "./Entities/users.entity";
+import { UsersEntity } from "./Entities/users.entity";
 
 export const entities = [ UsersEntity ];
 

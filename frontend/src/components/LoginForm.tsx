@@ -7,7 +7,7 @@ function LoginForm() {
 	const navigate = useNavigate();
 	const location = useLocation();
 
-	const from = location.state?.from?.path || "/";
+	const from = location.pathname || "/";
 
 	const handleLogin = () => {
 		auth.login();

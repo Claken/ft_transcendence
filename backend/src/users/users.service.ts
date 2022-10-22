@@ -1,7 +1,8 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { UserDTO } from 'src/TypeOrm/DTOs/User.dto';
 import { Repository } from 'typeorm';
-import { IUser, UsersEntity } from '../TypeOrm/Entities/users.entity';
+import { UsersEntity } from '../TypeOrm/Entities/users.entity';
 
 @Injectable()
 export class UsersService {
@@ -13,17 +14,9 @@ export class UsersService {
 
   // save() is a Repository Typeorm method to call INSERT query
   // TODO: handle users already exist
-  async create(user: IUser): Promise<UsersEntity> {
-    try {
+  async create(user: UserDTO): Promise<UsersEntity> {
       const newUser = this.userRepo.create(user);
       return await this.userRepo.save(newUser);
-    } catch (error) {
-      throw new HttpException({
-        status: HttpStatus.FORBIDDEN,
-        error: 'User already exists in Database. Please choose another name',
-      }, HttpStatus.FORBIDDEN);
-    
-    }
   }
 
   // find() is a Repository Typeorm method to call SELECT query
