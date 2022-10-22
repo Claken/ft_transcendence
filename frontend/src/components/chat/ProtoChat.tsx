@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import io, { Socket } from 'socket.io-client';
 import { isForOfStatement } from 'typescript';
+import '../../styles/chat.css'
 
 // const 	socket = io('http://localhost/3001');
 
@@ -219,11 +220,54 @@ const ProtoChat = () => {
 
 	return (
 		<div>
+			<div className="container">
+				<div className="full_chat">
+					<div className="left_side">
+						<div className="header">
+							<h4>Available rooms</h4>
+						</div>
+						<div className="room_box">
+						<table>
+							<tbody>
+								<tr>
+									{rooms.map((room: any, id: number) => <td key={id}><button onClick={() => setActiveForRoom(room.name)}>{room.name}</button></td>)}
+								</tr>
+							</tbody>
+						</table>
+						</div>
+						<div className="room_buttons">
+							<div className="add_room">
+								<form onSubmit={addARoom}>
+									<button type="submit"><strong>Add a room</strong></button>
+								</form>
+							</div>
+						</div>
+					</div>
+					<div className="middle">
+						<div className="room_name">{activeRoom}</div>
+						<div className="messages_box">
+							<ul>
+							</ul>
+						</div>
+						<div className="chat_box">
+							<form onSubmit={sendChatMessage}>
+								<input type="text" placeholder="Type a message" value={text} onChange={handleChange}/>
+								<button type="submit">Send</button>
+							</form>
+						</div>
+					</div>
+					<div className="right_side">
+						<div className="header">
+							<h3>Users  - user_count</h3>
+						</div>
+						<div className="users_box">
+
+						</div>
+					</div>
+				</div>
+			</div>
 			<h1>{title}</h1>
-			<form onSubmit={sendChatMessage}>
-				<input type="text" value={text} onChange={handleChange}/>
-				<button type="submit">Send</button>
-			</form>
+
 			<form onSubmit={addARoom}>
 				<button type="submit"><strong>Add a room</strong></button>
 			</form>
