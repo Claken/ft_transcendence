@@ -1,10 +1,12 @@
 import { MessageBody, SubscribeMessage, WebSocketGateway, WebSocketServer, OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect, WsResponse } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
-import { Logger } from '@nestjs/common';
+import { Logger, Req, UseGuards } from '@nestjs/common';
 import { ChatService } from './chat.service';
 import { CreateRoomDto } from 'src/TypeOrm/DTOs/chat.dto';
-import { string } from 'joi';
+import { IsUnion, string } from 'joi';
 import { UsersService } from 'src/users/users.service';
+import { IUser } from 'src/TypeOrm/Entities/users.entity';
+
 
 // {cors: '*'} pour que chaque client dans le frontend puisse se connecter à notre gateway
 @WebSocketGateway({cors: '*'}) // decorator pour dire que la classe ChatGateway sera un gateway /
@@ -75,16 +77,6 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     	client.leave(room);
     	client.emit('leftRoom', room);
   }
-
-  	/* ************************************************************************* */
-	/*						Pour avoir les infos sur un user   					 */
-	/* ************************************************************************* */
-
-	@SubscribeMessage('getUserName')
-	GetUserName(client: Socket): void {
-		console.log('client.id');
-		console.log(client.id);
-	}
 
     /* ************************************************************************* */
 	/*							POUR GERER LA DATABASE  						 */

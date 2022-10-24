@@ -51,6 +51,13 @@ export class UsersService {
     });
   }
 
+  async getLatestUser(): Promise<UsersEntity> {
+    return await this.userRepo.findOne({
+      where: {},
+      order: { id: 'DESC' },
+      });
+  }
+
   async updateStatusUser(id: number, status: string): Promise<UsersEntity> {
     const user = await this.getById(id);
     user.status = status;

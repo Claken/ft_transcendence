@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import io, { Socket } from 'socket.io-client';
 import { isForOfStatement } from 'typescript';
 import {IChatRoom} from '../../interfaces/chat.interface'
+import {useAuth} from '../../contexts/AuthContext'
 
 // const 	socket = io('http://localhost/3001');
 
@@ -31,7 +32,9 @@ const ProtoChat = () => {
 
 	const	[activeRoom, setActiveRoom] = useState<string>("");
 
-	let 	ignore = false;
+	const 	auth = useAuth();
+
+	// let 	ignore = false;
 
 	/* ***************************************************************************** */
 	/*    							Functions utiles		    					 */
@@ -179,10 +182,6 @@ const ProtoChat = () => {
 			socket?.emit('joinRoom', activeRoom.name);
 	}
 
-	const ReceivedUserName = (name: string) => {
-		changeUsername(name);
-	}
-
 	/* ***************************************************************************** */
 	/*    						Les différents UseEffets    						 */
 	/* ***************************************************************************** */
@@ -195,14 +194,7 @@ const ProtoChat = () => {
 	}, [setSocket])
 
 	useEffect(() => {
-		if (!ignore)
-		{
-			console.log('here');
-		// 	const newName = prompt('Enter your username: ');joinedRoom
-		// 	changeUsername(newName || '');
-			socket?.emit('getUserName');
-			ignore = true;
-		}
+		changeUsername(auth.user.name);
 	}, [])
 
 	// USEFFECT POUR RECEVOIR UN MESSAGE POUR UNE ROOM
