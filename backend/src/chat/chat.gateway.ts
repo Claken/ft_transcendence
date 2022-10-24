@@ -5,7 +5,6 @@ import { ChatService } from './chat.service';
 import { CreateRoomDto } from 'src/TypeOrm/DTOs/chat.dto';
 import { IsUnion, string } from 'joi';
 import { UsersService } from 'src/users/users.service';
-import { IUser } from 'src/TypeOrm/Entities/users.entity';
 
 
 // {cors: '*'} pour que chaque client dans le frontend puisse se connecter à notre gateway
