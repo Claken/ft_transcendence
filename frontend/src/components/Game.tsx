@@ -1,9 +1,10 @@
 import React, { useRef, useEffect, useState } from "react";
-import axios from "../axios.config";
+import axios from "../axios.config";//TODO:
 import { socket } from "./Socket";
 import "../styles/canvas.css";
 import { Server } from "tls"; //TODO:
 import { IGame } from '../interfaces/game.interface'
+import { useAuth } from "../contexts/AuthContext";
 
 const Game = (
 	props: JSX.IntrinsicAttributes &
@@ -23,9 +24,10 @@ const Game = (
 	const [games, setGames] = useState<IGame[]>([]);
 	const [game, setGame] = useState<IGame>(null);
 	const [drawCanvas, setdrawCanvas] = useState(false);
+	const auth = useAuth();
 
 	const joinGame = () => {//TODO: Récupérer le User pour implémenter ses données
-		// axios.get("http://localhost:3000/game/createGame", {withCredentials:true}).then((res) =>{})//then ???
+		console.log(auth.user);
 		// const cpyGames = [...games];
 		// setGame({loginLP: loginLP, loginRP: loginRP});
 		// cpyGames.push(game);
@@ -67,7 +69,7 @@ const Game = (
 		var ballY = height / 2 + EmptyGround / 2; //placement en Y de la balle
 		var vx = -1; //vitesse en X de la balle
 		var vy = -1; //vitesse en Y de la balle
-		var state = 6; //etat du jeu TODO: mettre l'état à 6
+		var state = 0; //etat du jeu TODO: mettre l'état à 6
 		var key = "";
 		var prev = "";
 		var curr = "";

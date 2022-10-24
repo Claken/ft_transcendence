@@ -26,6 +26,7 @@ export class GameController {
   async getById(@Param('id') idToFind: number): Promise<Game> {
     return await this.gameService.getById(idToFind);
   }
+
   @Put(':id')
   async update(
     @Param('id') id: number,
