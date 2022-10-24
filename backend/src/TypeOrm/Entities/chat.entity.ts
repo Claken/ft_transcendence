@@ -12,16 +12,16 @@ import { UsersEntity } from './users.entity';
 @Entity('ChatRoom')
 export class ChatRoomEntity {
 
-	@PrimaryGeneratedColumn()
-	id?: number;
+	@PrimaryGeneratedColumn('uuid')
+	id: string;
 
 	@Column({unique: true})
 	chatRoomName?: string;
   
-	// @ManyToOne(() => UsersEntity, User => User.ownedChannels)
-	// owner?: UsersEntity;
-	@Column()
-	owner?: string;
+	@ManyToOne(() => UsersEntity, User => User.ownedChannels)
+	owner?: UsersEntity;
+	// @Column()
+	// owner?: string;
   
 	@Column()
 	administrators?: string;

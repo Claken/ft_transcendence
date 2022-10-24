@@ -14,8 +14,7 @@ export class CreateRoomDto {
   
 	@IsOptional()
 	owner: string;
-	// owner: UsersEntity;
-  
+
 	@IsOptional()
 	administrators: string;
 	// administrators: UsersEntity;

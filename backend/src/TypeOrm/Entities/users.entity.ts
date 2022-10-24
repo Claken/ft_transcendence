@@ -28,6 +28,9 @@ export class UsersEntity {
   @Column({ default: 'online' })
   status?: string;
 
+  @OneToMany(() => ChatRoomEntity, Chat => Chat.owner)
+  ownedChannels?: ChatRoomEntity[];
+
   @CreateDateColumn()
   createdAt?: Date;
 }

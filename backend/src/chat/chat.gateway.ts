@@ -85,6 +85,18 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 	HandleCreationRoom(@MessageBody() room: CreateRoomDto): void {
 
 		console.log('create here');
+
+		const theOwner = this.usersService.getByName(room.owner);
+
+		const newChatRoom = {
+			id: "test",
+			chatRoomName: room.chatRoomName,
+			owner: theOwner,
+			administrators: room.administrators,
+			isPublic: room.isPublic,
+			password: room.password,
+			createdAt: Date.now(),
+		}
 		this.chatService.createChatRoom(room);
 	}
 
