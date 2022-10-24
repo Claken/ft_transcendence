@@ -8,14 +8,15 @@ import {
   Put,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { IUser, UsersEntity } from '../TypeOrm/Entities/users.entity';
+import { UsersEntity } from '../TypeOrm/Entities/users.entity';
+import { UserDTO } from 'src/TypeOrm/DTOs/User.dto';
 
 @Controller('users')
 export class UsersController {
   constructor(private usersService: UsersService) {}
 
   @Post()
-  async create(@Body() post: IUser): Promise<IUser> {
+  async create(@Body() post: UserDTO): Promise<UsersEntity> {
     return await this.usersService.create(post);
   }
   @Get()

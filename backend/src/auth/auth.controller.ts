@@ -1,6 +1,6 @@
 import { Controller, Get, Redirect, Req, Res, UseGuards } from '@nestjs/common';
-import { Request, Response } from 'express';
-import { IUser } from 'src/TypeOrm/Entities/users.entity';
+import { Request } from 'express';
+import { UserDTO } from 'src/TypeOrm/DTOs/User.dto';
 import { UsersService } from 'src/users/users.service';
 import { FortyTwoAuthGuard } from './guards/fortytwo.guard';
 
@@ -19,7 +19,7 @@ export class AuthController {
   @Redirect('http://localhost:3000')
   login(@Req() req: Request) {
     if (req.user) {
-      const { id } = req.user as IUser;
+      const { id } = req.user as UserDTO;
       this.usersService.updateStatusUser(id, 'online');
     }
     return req.user;
@@ -30,7 +30,7 @@ export class AuthController {
   async logOut(@Req() req: Request) {
     // logOut() => removes the session from the memory of the webserver
     if (req.user) {
-      const { id } = req.user as IUser;
+      const { id } = req.user as UserDTO;
       this.usersService.updateStatusUser(id, 'offline');
       req.logOut((err) => {
         console.log(err);
