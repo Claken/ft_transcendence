@@ -8,6 +8,7 @@ import { AuthModule } from './auth/auth.module';
 import { entities } from './TypeOrm';
 import { GameModule } from './game/game.module';
 import { PassportModule } from '@nestjs/passport';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
@@ -34,6 +35,7 @@ import { PassportModule } from '@nestjs/passport';
     PassportModule.register({
       session: true,
     }),
+    ScheduleModule.forRoot(),
     UsersModule,
     AuthModule,
     GameModule,
