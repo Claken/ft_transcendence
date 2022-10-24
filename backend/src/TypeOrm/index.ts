@@ -1,6 +1,6 @@
-import { IUser, Users } from './Entities/users.entity';
-import { Game } from './Entities/game.entity';
+import { UsersEntity } from "./Entities/users.entity";
+import { Game } from "./Entities/game.entity";
 
-export const entities = [Users, Game];
+export const entities = [UsersEntity, Game];
 
-export { Users, Game };
+export { UsersEntity, Game };

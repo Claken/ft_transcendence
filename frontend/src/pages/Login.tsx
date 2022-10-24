@@ -1,13 +1,12 @@
-import React, { useContext } from "react";
-import Navigation from "../components/Navigation";
+import React from "react";
 import GuestForm from "../components/GuestForm";
 import LoginForm from "../components/LoginForm";
 import "../styles/page.css";
 
 function Login() {
-  return (
-    <div className="background">
-      <Navigation />
+
+    return (
+    <div>
       <div className="rectanglelog">
         <LoginForm />
       </div>

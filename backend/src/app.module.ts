@@ -7,6 +7,7 @@ import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { entities } from './TypeOrm';
 import { GameModule } from './game/game.module';
+import { PassportModule } from '@nestjs/passport';
 
 @Module({
   imports: [
@@ -29,6 +30,9 @@ import { GameModule } from './game/game.module';
           synchronize: true,
         };
       },
+    }),
+    PassportModule.register({
+      session: true,
     }),
     UsersModule,
     AuthModule,

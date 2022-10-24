@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, useState } from "react";
-import axios from "axios"; //TODO:
+import axios from "../axios.config";
 import { socket } from "./Socket";
 import "../styles/canvas.css";
 import { Server } from "tls"; //TODO:

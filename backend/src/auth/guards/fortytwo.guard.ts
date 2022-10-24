@@ -5,9 +5,10 @@ import { AuthGuard } from '@nestjs/passport';
 export class FortyTwoAuthGuard extends AuthGuard('42') {
   // AuthGuard name's has to be equal to FortyTwoStrategy name's
   async canActivate(context: ExecutionContext): Promise<boolean> {
+    // check 42login and 42password
     const activate = (await super.canActivate(context)) as boolean;
+    // initialize the server-side session and save it in memory
     const request = context.switchToHttp().getRequest();
-    // logIn() => creates the session ans saves it in memory
     await super.logIn(request); 
     return activate;
   }
@@ -16,7 +17,8 @@ export class FortyTwoAuthGuard extends AuthGuard('42') {
 @Injectable()
 export class AuthenticatedGuard implements CanActivate {
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    const req = context.switchToHttp().getRequest();
-    return req.isAuthenticated();
+    const request = context.switchToHttp().getRequest();
+    // The isAuthenticated function is attached to request object by Passport
+    return request.isAuthenticated();
   }
 }

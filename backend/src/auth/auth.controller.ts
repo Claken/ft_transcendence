@@ -1,17 +1,12 @@
-import {
-  Controller,
-  Get,
-  Redirect,
-  Req,
-  UseGuards,
-} from '@nestjs/common';
+import { Controller, Get, Redirect, Req, Res, UseGuards } from '@nestjs/common';
 import { Request } from 'express';
-import { AuthenticatedGuard, FortyTwoAuthGuard } from './guards/fortytwo.guard';
-import { AuthService } from './auth.service';
+import { UserDTO } from 'src/TypeOrm/DTOs/User.dto';
+import { UsersService } from 'src/users/users.service';
+import { FortyTwoAuthGuard } from './guards/fortytwo.guard';
 
 @Controller('auth/42')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(private usersService: UsersService) {}
 
   @UseGuards(FortyTwoAuthGuard)
   @Get('login')
@@ -21,22 +16,27 @@ export class AuthController {
 
   @UseGuards(FortyTwoAuthGuard)
   @Get('callback')
-  @Redirect('/auth/42/test')
+  @Redirect('http://localhost:3000')
   login(@Req() req: Request) {
+    if (req.user) {
+      const { id } = req.user as UserDTO;
+      this.usersService.updateStatusUser(id, 'online');
+    }
     return req.user;
   }
 
-  @UseGuards(AuthenticatedGuard)
-  @Get('test')
-  mytest(@Req() req: Request) {
-    return "test";
-  }
-
-  @UseGuards(AuthenticatedGuard)
   @Get('logout')
+  @Redirect('http://localhost:3000')
   async logOut(@Req() req: Request) {
     // logOut() => removes the session from the memory of the webserver
-    req.logOut(() => void {}); // without the callback an error occured...
-    req.session.cookie.maxAge = 0;
+    if (req.user) {
+      const { id } = req.user as UserDTO;
+      this.usersService.updateStatusUser(id, 'offline');
+      req.logOut((err) => {
+        console.log(err);
+      }); // without the callback an error occured...
+      // set maxAge to 0 remove the cookie from the browser
+      req.session.cookie.maxAge = 0;
+    }
   }
 }
