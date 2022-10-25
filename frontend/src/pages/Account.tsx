@@ -35,7 +35,7 @@ function Account() {
               </h2>
             </div>
             <div className="profile-buttons">
-              <button onClick={toggle}>
+              <button onClick={toggle} >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   className="icon icon-tabler icon-tabler-settings"
@@ -55,7 +55,30 @@ function Account() {
               </button>
               <Modal isOpen={isOpen} toggle={toggle}>
                 <div className="modal-settings">
-				</div>
+                  <div className="picture-settings">
+                    <img
+                      src="https://placekitten.com/300/300
+				"
+                      height="150px"
+                      width="150px"
+                      alt="profile-picture"
+                      border-radius="50%"
+                    />
+                    <button>upload a file</button>
+                  </div>
+                  <div className="username-settings">
+                    <h2>{User}</h2>
+                    <form action="change username">
+                      <input type="text" />
+                      <button>  change usename</button>
+                    </form>
+                  </div>
+                  <div className="twoFA-settings">
+                    <h2>2FA status</h2>
+					<h3>Disable</h3>
+                    <button>2FA</button>
+                  </div>
+                </div>
               </Modal>
               <button onClick={handleLogout}>
                 <svg
