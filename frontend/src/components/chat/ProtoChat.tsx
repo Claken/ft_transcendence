@@ -265,7 +265,7 @@ const ProtoChat = () => {
       </div>
       <h1>{title}</h1>
 
-      <form onSubmit={addARoom}>
+      {/*<form onSubmit={addARoom}>
         <button type="submit">
           <strong>Add a room</strong>
         </button>
@@ -296,7 +296,7 @@ const ProtoChat = () => {
             <strong>{msg.sender}:</strong> {msg.message}
           </ul>
         ))}
-      </div>
+      </div> */}
     </div>
   );
 };
