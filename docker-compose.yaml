@@ -1,5 +1,5 @@
 version: "3.9"
-
+ 
 volumes:
   frontend-data:
     driver: local
@@ -25,9 +25,9 @@ volumes:
     #   type: none
     #   o: bind
     #   device:
-
+ 
 services:
-
+ 
   frontend:
     build: frontend/.
     image: frontend
@@ -40,7 +40,7 @@ services:
     container_name: frontend
     volumes:
       - frontend-data:/usr/src/app/src:rw
-
+ 
   backend:
     build: backend/.
     image: backend
@@ -56,7 +56,7 @@ services:
     container_name: backend
     volumes:
       - backend-data:/usr/src/app/src:rw
-
+ 
   postgres:
     image: postgres:14.4
     restart: always
@@ -80,8 +80,8 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-      
-
+ 
+ 
   pgadmin:
     image: dpage/pgadmin4:6.14
     restart: always
@@ -98,7 +98,7 @@ services:
     networks:
       - pong_network
     container_name: pgadmin
-
+ 
 networks:
   pong_network:
     driver: bridge
