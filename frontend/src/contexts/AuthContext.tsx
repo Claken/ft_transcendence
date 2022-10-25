@@ -79,6 +79,7 @@ export const AuthProvider = ({ children }) => {
 				console.log(error);
 			});
 	};
+	
 
 	// if localStorage exists, setUser in getUserByname()
 	useEffect(() => {

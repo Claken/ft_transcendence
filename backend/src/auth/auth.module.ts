@@ -7,6 +7,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersEntity } from 'src/TypeOrm';
 import { PassportModule } from '@nestjs/passport';
 import { SessionSerializer } from './serializer/session.serializer';
+import { TwoFactorAuthenticationModule } from './two-factor-authentication/two-factor-authentication.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { SessionSerializer } from './serializer/session.serializer';
       session: true,
     }),
     TypeOrmModule.forFeature([UsersEntity]),
+    TwoFactorAuthenticationModule,
   ],
   controllers: [AuthController],
   providers: [FortyTwoStrategy, AuthService, SessionSerializer],

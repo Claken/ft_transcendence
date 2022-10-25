@@ -21,6 +21,12 @@ export class UserDTO {
   status?: string;
 
   @IsOptional()
+  twoFA?: string;
+
+  @IsOptional()
   createdAt?: Date;
+
+  @IsOptional()
+  isTwoFA?: boolean;
 }
   

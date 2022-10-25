@@ -49,14 +49,24 @@ export class UsersService {
     return await this.userRepo.remove(user);
   }
 
-  // @Cron(CronExpression.EVERY_30_MINUTES)
+  @Cron(CronExpression.EVERY_30_MINUTES)
   async removeGuestUsers(): Promise<UsersEntity[]> {
     const guestUsers = await this.userRepo.findBy({
       login: '',
     });
-    if (!guestUsers)
-      return [];
+    if (!guestUsers) return [];
     return await this.userRepo.remove(guestUsers);
   }
 
+  async setTwoFASecret(secret: string, id: number): Promise<UsersEntity> {
+    const user = await this.getById(id);
+    user.twoFA = secret;
+    return await this.userRepo.save(user);
+  }
+
+  async turnOnTwoFA(id: number) {
+    const user = await this.getById(id);
+    user.isTwoFA = true;
+    return await this.userRepo.save(user);
+  }
 }
