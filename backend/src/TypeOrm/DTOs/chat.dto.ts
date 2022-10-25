@@ -17,13 +17,9 @@ export class CreateRoomDto {
 
 	@IsOptional()
 	administrators: string;
-	// administrators: UsersEntity;
 
 	isPublic: boolean;
 
 	@IsOptional()
 	password: string;
-
-	@IsOptional()
-	createdAt: Date;
 }

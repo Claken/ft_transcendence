@@ -2,9 +2,11 @@ import { MessageBody, SubscribeMessage, WebSocketGateway, WebSocketServer, OnGat
 import { Server, Socket } from 'socket.io';
 import { Logger, Req, UseGuards } from '@nestjs/common';
 import { ChatService } from './chat.service';
+import { IChatRoom } from 'src/TypeOrm/Entities/chat.entity';
 import { CreateRoomDto } from 'src/TypeOrm/DTOs/chat.dto';
 import { IsUnion, string } from 'joi';
 import { UsersService } from 'src/users/users.service';
+import { UsersEntity } from 'src/TypeOrm';
 
 
 // {cors: '*'} pour que chaque client dans le frontend puisse se connecter à notre gateway
@@ -86,18 +88,20 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
 		console.log('create here');
 
-		const theOwner = this.usersService.getByName(room.owner);
+		let theOwner: UsersEntity;
+		const ownerPromise = this.usersService.getByName(room.owner);
 
-		const newChatRoom = {
-			id: "test",
+		ownerPromise.then((value: UsersEntity) => theOwner = value);
+
+		const newChatRoom: IChatRoom = {
 			chatRoomName: room.chatRoomName,
 			owner: theOwner,
 			administrators: room.administrators,
 			isPublic: room.isPublic,
 			password: room.password,
-			createdAt: Date.now(),
+			createdAt: new Date(),
 		}
-		this.chatService.createChatRoom(room);
+		this.chatService.createChatRoom(newChatRoom);
 	}
 
 	@SubscribeMessage('deleteChatRoom')

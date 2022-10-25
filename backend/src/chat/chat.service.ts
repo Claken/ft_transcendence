@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DeleteResult, Repository, UpdateResult } from 'typeorm';
-import { ChatRoomEntity } from '../TypeOrm/Entities/chat.entity';
+import { IChatRoom, ChatRoomEntity } from '../TypeOrm/Entities/chat.entity';
 import { CreateRoomDto } from '../TypeOrm/DTOs/chat.dto'
 import { UsersService } from 'src/users/users.service';
 
@@ -22,11 +22,11 @@ export class ChatService {
 		return await this.chatRepo.findOneBy({chatRoomName: name});
 	  }
 
-	  async findOneChatRoomById(id: number): Promise<ChatRoomEntity> {
+	  async findOneChatRoomById(id: string): Promise<ChatRoomEntity> {
 		return await this.chatRepo.findOneBy({id});
 	  }
 
-	  async createChatRoom(chatRoom: CreateRoomDto): Promise<ChatRoomEntity> {
+	  async createChatRoom(chatRoom: IChatRoom): Promise<ChatRoomEntity> {
 		
 		const newChat = this.chatRepo.create(chatRoom);
 		return this.chatRepo.save(chatRoom);

@@ -18,7 +18,7 @@ export class ChatRoomEntity {
 	@Column({unique: true})
 	chatRoomName?: string;
   
-	@ManyToOne(() => UsersEntity, User => User.ownedChannels)
+	@ManyToOne(() => UsersEntity, (User: UsersEntity) => User.ownedChannels)
 	owner?: UsersEntity;
 	// @Column()
 	// owner?: string;
@@ -39,3 +39,12 @@ export class ChatRoomEntity {
 	createdAt?: Date;
 }
 
+export interface IChatRoom {
+	id?: string,
+	chatRoomName?: string,
+	owner?: UsersEntity,
+	administrators?: string,
+	isPublic?: boolean,
+	password?: string,
+	createdAt?: Date,
+}
