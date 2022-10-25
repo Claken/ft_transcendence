@@ -84,22 +84,21 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 	/* ************************************************************************* */
 
 	@SubscribeMessage('createChatRoom')
-	HandleCreationRoom(@MessageBody() room: CreateRoomDto): void {
+	async HandleCreationRoom(@MessageBody() room: CreateRoomDto): Promise<void> {
 
 		console.log('create here');
 
-		let theOwner: UsersEntity;
-		const ownerPromise = this.usersService.getByName(room.owner);
+		const theOwner = await this.usersService.getByName(room.owner);
+		// const ownerPromise = this.usersService.getByName(room.owner);
 
-		ownerPromise.then((value: UsersEntity) => theOwner = value);
+		// ownerPromise.then((value: UsersEntity) => theOwner = value);
 
 		const newChatRoom: IChatRoom = {
 			chatRoomName: room.chatRoomName,
 			owner: theOwner,
 			administrators: room.administrators,
 			isPublic: room.isPublic,
-			password: room.password,
-			createdAt: new Date(),
+			password: room.password,			
 		}
 		this.chatService.createChatRoom(newChatRoom);
 	}
