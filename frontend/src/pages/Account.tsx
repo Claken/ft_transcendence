@@ -35,7 +35,7 @@ function Account() {
               </h2>
             </div>
             <div className="profile-buttons">
-              <button onClick={toggle} >
+              <button onClick={toggle}>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   className="icon icon-tabler icon-tabler-settings"
@@ -70,12 +70,12 @@ function Account() {
                     <h2>{User}</h2>
                     <form action="change username">
                       <input type="text" />
-                      <button>  change usename</button>
+                      <button> change usename</button>
                     </form>
                   </div>
                   <div className="twoFA-settings">
                     <h2>2FA status</h2>
-					<h3>Disable</h3>
+                    <h3 style={{ color: "red" }}>Disabled</h3>
                     <button>2FA</button>
                   </div>
                 </div>

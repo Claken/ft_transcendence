@@ -121,7 +121,6 @@
 
 .picture-settings {
   flex: 33%;
-  background-color: red;
   display: flex;
   justify-content: space-around;
   align-items: center;
@@ -134,7 +133,6 @@
 
 .username-settings {
   flex: 33%;
-  background-color: green;
   display: flex;
   justify-content: space-around;
   align-items: center;
@@ -143,12 +141,12 @@
 
 .twoFA-settings {
   flex: 33%;
-  background-color: blue;
   display: flex;
   justify-content: space-around;
   align-items: center;
   flex-direction: column;
 }
+
 .modal-settings button {
   -webkit-border-radius: 5px;
   -moz-border-radius: 5px;
