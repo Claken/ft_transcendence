@@ -2,7 +2,7 @@ import { MessageBody, SubscribeMessage, WebSocketGateway, WebSocketServer, OnGat
 import { Server, Socket } from 'socket.io';
 import { Logger, Req, UseGuards } from '@nestjs/common';
 import { ChatService } from './chat.service';
-import { IChatRoom } from 'src/TypeOrm/Entities/chat.entity';
+import { ChatRoomEntity, IChatRoom } from 'src/TypeOrm/Entities/chat.entity';
 import { CreateRoomDto } from 'src/TypeOrm/DTOs/chat.dto';
 import { IsUnion, string } from 'joi';
 import { UsersService } from 'src/users/users.service';
@@ -86,12 +86,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 	@SubscribeMessage('createChatRoom')
 	async HandleCreationRoom(@MessageBody() room: CreateRoomDto): Promise<void> {
 
-		console.log('create here');
-
 		const theOwner = await this.usersService.getByName(room.owner);
-		// const ownerPromise = this.usersService.getByName(room.owner);
-
-		// ownerPromise.then((value: UsersEntity) => theOwner = value);
 
 		const newChatRoom: IChatRoom = {
 			chatRoomName: room.chatRoomName,
@@ -101,6 +96,13 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 			password: room.password,			
 		}
 		this.chatService.createChatRoom(newChatRoom);
+		const theChannel = await this.chatService.findOneChatRoomByName(room.chatRoomName);
+		theOwner.ownedChannels = [theChannel];
+		console.log('here');
+		console.log(theOwner.name);
+		console.log(theChannel);
+		this.usersService.updateUser(theOwner.id);
+
 	}
 
 	@SubscribeMessage('deleteChatRoom')

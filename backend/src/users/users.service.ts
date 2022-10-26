@@ -57,6 +57,11 @@ export class UsersService {
     return await this.userRepo.save(user);
   }
 
+  async updateUser(id: number): Promise<UsersEntity> {
+    const user = await this.getById(id);
+    return await this.userRepo.save(user);
+  }
+
   // async updateToken(id: number, access_token: string): Promise<UsersEntity> {
   //   const user = await this.getById(id);
   //   user.accessToken = access_token;

@@ -20,8 +20,6 @@ export class ChatRoomEntity {
   
 	@ManyToOne(() => UsersEntity, (User: UsersEntity) => User.ownedChannels)
 	owner?: UsersEntity;
-	// @Column()
-	// owner?: string;
   
 	@Column()
 	administrators?: string;

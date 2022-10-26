@@ -4,6 +4,7 @@ import {
   Entity,
   OneToMany,
   PrimaryGeneratedColumn,
+  JoinTable
 } from 'typeorm';
 import { ChatRoomEntity } from './chat.entity';
 
