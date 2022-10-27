@@ -31,6 +31,9 @@ export class Game implements IGame {
   @Column({ default: '' })
   abort?: string;
 
+  @Column({ default: false })
+  isFinish?: boolean;
+
   @CreateDateColumn()
   date?: Date;
 }
@@ -42,5 +45,6 @@ export interface IGame {
 	scoreLP?: number;
 	scoreRP?: number;
 	abort?: string;
+	isFinish?: boolean;
 	date?: Date;
 }

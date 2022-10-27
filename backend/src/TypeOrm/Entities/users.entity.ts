@@ -28,6 +28,12 @@ export class UsersEntity {
   @Column({ default: 'online' })
   status?: string;
 
+  @Column({ default: false })
+  inQueue: boolean;
+
+  @Column({ default: false })
+  inGame: boolean;
+
   @CreateDateColumn()
   createdAt?: Date;
 }

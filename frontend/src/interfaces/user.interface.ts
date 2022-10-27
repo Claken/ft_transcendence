@@ -4,6 +4,8 @@ export class IUser {
 	name?: string;
 	email?: string;
 	pictureUrl?: string;
+	inQueue: boolean;
+	inGame: boolean;
 	status?: string;
 	createdAt?: Date;
 }

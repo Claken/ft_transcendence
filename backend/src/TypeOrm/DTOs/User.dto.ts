@@ -1,4 +1,4 @@
-import { PartialType } from '@nestjs/swagger';
+import { PartialType } from '@nestjs/swagger'; //TODO: retirer ?
 import { IsOptional } from 'class-validator';
 
 export class UserDTO {
@@ -21,6 +21,11 @@ export class UserDTO {
   status?: string;
 
   @IsOptional()
+  inQueue: boolean;
+
+  @IsOptional()
+  inGame: boolean;
+
+  @IsOptional()
   createdAt?: Date;
 }
-  

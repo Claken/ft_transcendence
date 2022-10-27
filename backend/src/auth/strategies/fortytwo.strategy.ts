@@ -40,6 +40,8 @@ export class FortyTwoStrategy extends PassportStrategy(Strategy, '42') {
       name: username,
       email: emails[0].value,
       pictureUrl: photos[0].value,
+	  inQueue: false,
+	  inGame: false
     };
     return await this.authService.register(user);
   }

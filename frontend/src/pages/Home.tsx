@@ -1,5 +1,6 @@
 import { useAuth } from "../contexts/AuthContext";
 import { IUser } from "../interfaces/user.interface";
+import { IGame } from "../interfaces/game.interface";
 
 import "../styles/page.css";
 
@@ -18,6 +19,8 @@ function Home() {
 							{user?.name} : {user?.status}
 						</li>
 					))}
+				{auth.games.filter((game: IGame) => (
+					game.isFinish != true))}
 			</ul>
 		</div>
 	);

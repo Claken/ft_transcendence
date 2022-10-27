@@ -1,6 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Game, IGame } from 'src/TypeOrm/Entities/game.entity';
+import { Game } from 'src/TypeOrm/Entities/game.entity';
+import { GameDTO } from '../TypeOrm/DTOs/Game.dto';
+
 import { DeleteResult, Repository, UpdateResult } from 'typeorm';
 
 @Injectable()
@@ -11,7 +13,7 @@ export class GameService {
   ) {}
 
   // save() is a "Repository" method (from Typeorm) to call insert query
-  async create(game: IGame): Promise<Game> {
+  async create(game: GameDTO): Promise<Game> {
     const newGame = this.gameRepo.create(game);
     return await this.gameRepo.save(newGame);
   }
@@ -33,7 +35,7 @@ export class GameService {
   //   return game.loginLP;
   // }
 
-  async updateGame(id: number, game: IGame): Promise<UpdateResult> {
+  async updateGame(id: number, game: GameDTO): Promise<UpdateResult> {
     return await this.gameRepo.update(id, game);
   }
 

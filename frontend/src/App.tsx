@@ -1,10 +1,12 @@
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Pong from "./pages/Pong";
+import Game from "./components/game/Game";
 import Channel from "./pages/Channel";
 import Account from "./pages/Account";
 import { AuthProvider } from "./contexts/AuthContext";
 import RequiredAuth from "./components/auth/RequiredAuth";
+// import RequiredGameInstance from "./components/auth/RequiredGameInstance";
 import RequiredOffline from "./components/auth/RequiredOffline";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Layout from "./pages/Layout";
@@ -24,7 +26,11 @@ function App() {
 							<Route path="/channel" element={<Channel />} />
 							<Route path="/account" element={<Account />} />
 							<Route path="/pong" element={<Pong />} />
+							<Route path="/pong/:gameId" element={<Game />} />
+							{/* <Route element={<RequiredGameInstance />}> */}
+							{/* </Route> */}
 						</Route>
+						
 					</Route>
 				</Routes>
 			</BrowserRouter>

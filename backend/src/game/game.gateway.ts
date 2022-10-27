@@ -6,8 +6,12 @@ import {
 	OnGatewayDisconnect,
 	OnGatewayInit
 } from '@nestjs/websockets';
+import { UserDTO } from "../TypeOrm/DTOs/User.dto"
+import { GameDTO} from "../TypeOrm/DTOs/Game.dto"
+import { GameService } from './game.service';
+import { Socket } from 'dgram';
 
-var gameQueue = [];
+export var gameQueue = [];
 
 @WebSocketGateway({cors: "http://localhost:3000"})
 export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
@@ -17,6 +21,7 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
 	afterInit(server: any) {
 		console.log("Server Initialized");
+		this.server.to(1).emit("toto");//TODO:
 	}
 
 	async handleConnection(client) {//assigner un numéro dans la bdd pour l'utiliser ici
@@ -130,7 +135,7 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 	}
 
 /* ***************************************************************************** */
-/*                    Mouvement des paddles gauche et droite.                    */
+/*                         maj des images et du compteur                         */
 /* ***************************************************************************** */
 	@SubscribeMessage('image')
 	async Image(client: any, currentImg) {
@@ -143,8 +148,39 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 		this.server.emit("compteurUpdated", currentSec);
 	}
 
+/* ***************************************************************************** */
+/*                   Rejoindre la gameQueue et créer une game                    */
+/* ***************************************************************************** */
+	@SubscribeMessage('joinQueue')//TODO:
+	async JoinQueue(client: any, user: UserDTO) {
+		//TODO: dans ma gameQueue, je veux y trouver un ID sur chaque élément
+		//TODO: Si l'id n'est pas dans la GameQueue, alors l'ajouter.
+		gameQueue.push(user);
+		user.inQueue = true;
+		
+		if (gameQueue.length % 2 === 0) {
+			console.log("Création de la partie. Les deux joueurs se regrp");
+			// console.log("user name 0 = "+gameQueue[0].name)
+			// console.log("user name 1 = "+gameQueue[1].name)
+			await this.CreateNewGame(client, gameQueue[0], gameQueue[1]);
+		}
+	}
+
 	@SubscribeMessage('createNewGame')//TODO:
-	async CreateNewGame() {
-		console.log("tata");
+	async CreateNewGame(client: any, user1: UserDTO, user2: UserDTO) {
+		let gameService: GameService;
+		//gameQueue.slice(0)
+		console.log("CreateNewGame");
+		// console.log("user id 0 = "+user1.id);//TODO:
+		// console.log("user id 1 = "+user2.id);//TODO:
+		const game: GameDTO = {
+			loginLP: user1.name,
+			loginRP: user2.name,
+		}
+		user1.inQueue = false;
+		user2.inQueue = false;
+		user1.inGame = true;
+		user2.inGame = true;
+		this.server.emit("gameCreated", game);
 	}
 }

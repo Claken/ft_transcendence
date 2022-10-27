@@ -1,5 +1,6 @@
 import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
-import { Game, IGame } from 'src/TypeOrm/Entities/game.entity';
+import { Game } from 'src/TypeOrm/Entities/game.entity';
+import { GameDTO} from "../TypeOrm/DTOs/Game.dto"
 import { DeleteResult, UpdateResult } from 'typeorm';
 import { GameService } from './game.service';
 
@@ -8,7 +9,7 @@ export class GameController {
   constructor(private gameService: GameService) {}
 
   @Post()
-  async create(@Body() post: IGame): Promise<IGame> {
+  async create(@Body() post: GameDTO): Promise<GameDTO> {
     return await this.gameService.create(post);
   }
 
@@ -30,7 +31,7 @@ export class GameController {
   @Put(':id')
   async update(
     @Param('id') id: number,
-    @Body() user: IGame,
+    @Body() user: GameDTO,
   ): Promise<UpdateResult> {
     return await this.gameService.updateGame(id, user);
   }

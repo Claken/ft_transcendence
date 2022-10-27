@@ -1,13 +1,28 @@
 import axios from "../axios.config";
 import React, { useContext, useEffect, useState } from "react";
 import { IUser } from "../interfaces/user.interface";
+import { IGame } from "../interfaces/game.interface";
 import guestPic from "../assets/img/profile1.jpg";
 
 const AuthContext = React.createContext(null);
 
 export const AuthProvider = ({ children }) => {
 	const [user, setUser] = useState<IUser>(null);
-	const [users, setUsers] = useState<IUser[]>(null);
+	const [users, setUsers] = useState<IUser[]>([]);
+	const [games, setGames] = useState<IGame[]>([]);
+
+	// GET all users
+	const getGames = async () => {
+		await axios
+			.get("/game")
+			.then((res) => {
+				setGames(res.data);
+				console.log(res.data);
+			})
+			.catch((error) => {
+				console.log(error);
+			});
+	};
 
 	// GET all users
 	const getUsers = async () => {
@@ -88,6 +103,7 @@ export const AuthProvider = ({ children }) => {
 			const { name } = JSON.parse(token);
 			getUserByname(name);
 		}
+		getGames();
 		getUsers();
 		getSessionCookie();
 	}, []);
@@ -101,6 +117,8 @@ export const AuthProvider = ({ children }) => {
 			name: guestName,
 			pictureUrl: guestPic,
 			status: "online",
+			inGame: false,
+			inQueue: false,
 		};
 		await postGuestUser(newUser);
 	};
@@ -122,7 +140,7 @@ export const AuthProvider = ({ children }) => {
 
 	return (
 		<AuthContext.Provider
-			value={{ user, users, setUser, login, loginAsGuest, logout }}
+			value={{ user, users, setUser, games, setGames, login, loginAsGuest, logout }}
 		>
 			{children}
 		</AuthContext.Provider>
