@@ -32,8 +32,8 @@ export class ChatService {
 		return this.chatRepo.save(chatRoom);
 	  }
 
-	  async deleteChatRoom(name: string): Promise<void> {
-		await this.chatRepo.delete(name);
+	  async deleteChatRoomByName(name: string): Promise<void> {
+		await this.chatRepo.delete({ chatRoomName: name });
 	  }
 
 	//   async createAChatRoom() : 

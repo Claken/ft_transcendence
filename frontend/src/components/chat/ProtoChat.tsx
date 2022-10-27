@@ -157,6 +157,34 @@ const ProtoChat = () => {
 		setRooms(roomsCopy);
 	}
 
+	const deleteARoom = (event: any) =>
+	{
+		event.preventDefault();
+		let askARoom = "";
+		while (askARoom === "")
+		{
+			askARoom = prompt('Enter the name of the room you want to delete: ')!;
+			if (askARoom === null)
+				return ;
+			if (askARoom === "")
+				alert('This is not a right name for a room !');
+			else if (rooms.find(element => {return (element.name === askARoom)}) === undefined)
+			{
+				alert('This room does not exist');
+				askARoom = "";
+			}
+		}
+		let roomsCopy = [...rooms];
+		for (let i = 0; i < roomsCopy.length; i++)
+		{
+			if (roomsCopy[i].name === askARoom)
+				roomsCopy.splice(i, 1);
+		}
+		setRooms(roomsCopy);
+		socket?.emit('deleteChatRoom', askARoom);
+
+	}
+
 	const leftRoom = (room: string) => {
 		rooms.forEach((element: any) => {
 			if (element.name === room)
@@ -240,6 +268,9 @@ const ProtoChat = () => {
 			</form>
 			<form onSubmit={addARoom}>
 				<button type="submit"><strong>Add a room</strong></button>
+			</form>
+			<form onSubmit={deleteARoom}>
+				<button type="submit"><strong>Delete a room</strong></button>
 			</form>
 			<table>
     			<tbody>

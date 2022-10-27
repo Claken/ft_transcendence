@@ -4,7 +4,7 @@ import {
   Entity,
   OneToMany,
   PrimaryGeneratedColumn,
-  JoinTable
+  JoinColumn
 } from 'typeorm';
 import { ChatRoomEntity } from './chat.entity';
 
@@ -30,6 +30,7 @@ export class UsersEntity {
   status?: string;
 
   @OneToMany(() => ChatRoomEntity, Chat => Chat.owner)
+  @JoinColumn()
   ownedChannels?: ChatRoomEntity[];
 
   @CreateDateColumn()

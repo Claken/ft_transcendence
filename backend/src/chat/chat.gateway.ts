@@ -108,7 +108,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 	@SubscribeMessage('deleteChatRoom')
 	HandleDeletionRoom(client: Socket, room: string): void {
 		
-		this.chatService.deleteChatRoom(room);
+		this.chatService.deleteChatRoomByName(room);
 	}
 
 	// @SubscribeMessage('modifyChatRoom')

@@ -1,5 +1,6 @@
 import { PartialType } from '@nestjs/swagger';
 import { IsOptional } from 'class-validator';
+import { ChatRoomEntity } from '../Entities/chat.entity';
 
 export class UserDTO {
   @IsOptional()
@@ -19,6 +20,9 @@ export class UserDTO {
 
   @IsOptional()
   status?: string;
+
+  @IsOptional()
+  ownedChannels?: ChatRoomEntity[];
 
   @IsOptional()
   createdAt?: Date;
