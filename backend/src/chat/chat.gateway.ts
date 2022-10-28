@@ -98,9 +98,6 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 		this.chatService.createChatRoom(newChatRoom);
 		const theChannel = await this.chatService.findOneChatRoomByName(room.chatRoomName);
 		theOwner.ownedChannels = [theChannel];
-		console.log('here');
-		console.log(theOwner.name);
-		console.log(theChannel);
 		this.usersService.updateUser(theOwner.id);
 
 	}
@@ -111,9 +108,26 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 		this.chatService.deleteChatRoomByName(room);
 	}
 
-	// @SubscribeMessage('modifyChatRoom')
-	// HandleModificationChannel(@MessageBody() room: CreateRoomDto): void {
-		
-	// }
+	@SubscribeMessage('modifyChatRoom')
+	HandleModificationChannel(@MessageBody() room: CreateRoomDto): void {
+		const modifiedRoom: IChatRoom = {
+			chatRoomName: room.chatRoomName,
+			administrators: room.administrators,
+			isPublic: room.isPublic,
+			password: room.password,
+		}
+	}
+
+	@SubscribeMessage('getAllChannels')
+	async HandleGettingChannels(client: Socket) : Promise<void> {
+		console.log('all channels');
+		const Channels = await this.chatService.findAllChatRooms();
+		for (let i = 0; i < Channels.length; i++)
+		{
+			console.log('Channels[' + i + '].chatRoomName');
+			console.log(Channels[i].chatRoomName);
+		}
+		this.server.emit('sendAllChannels');
+	}
 
 }

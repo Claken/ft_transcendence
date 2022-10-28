@@ -34,7 +34,7 @@ const ProtoChat = () => {
 
 	const 	auth = useAuth();
 
-	// let 	ignore = false;
+	let 	ignore = false;
 
 	/* ***************************************************************************** */
 	/*    							Functions utiles		    					 */
@@ -210,6 +210,10 @@ const ProtoChat = () => {
 			socket?.emit('joinRoom', activeRoom.name);
 	}
 
+	// const receiveAllChannels = () => {
+	// 	alert('ok ta mere');
+	// }
+
 	/* ***************************************************************************** */
 	/*    						Les différents UseEffets    						 */
 	/* ***************************************************************************** */
@@ -224,6 +228,17 @@ const ProtoChat = () => {
 	useEffect(() => {
 		changeUsername(auth.user.name);
 	}, [])
+
+	// useEffect(() => {
+	// 	socket?.emit('getAllChannels');
+	// }, [changeUsername, setRooms])
+
+	// useEffect(() => {
+	// 	socket?.on('sendAllChannels', receiveAllChannels);
+	// 	return () => {
+	// 		socket?.off('sendAllChannels', receiveAllChannels);
+	// 	}
+	// }, [receiveAllChannels])
 
 	// USEFFECT POUR RECEVOIR UN MESSAGE POUR UNE ROOM
 	useEffect(() => {
