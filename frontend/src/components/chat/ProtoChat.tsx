@@ -3,20 +3,10 @@ import io, { Socket } from 'socket.io-client';
 import { isForOfStatement } from 'typescript';
 import {IChatRoom} from '../../interfaces/chat.interface'
 import {useAuth} from '../../contexts/AuthContext'
+import { IMessageToBack } from '../../interfaces/messageToBack.interface';
+import { IRoom } from '../../interfaces/room.interface';
 
 // const 	socket = io('http://localhost/3001');
-
-interface IMessageToBack {
-	sender: string;
-	message: string;
-}
-
-interface IRoom {
-	active: boolean;
-	member: boolean;
-	name: string;
-	messages: IMessageToBack[];
-}
 
 const ProtoChat = () => {
 
@@ -134,23 +124,20 @@ const ProtoChat = () => {
 			if (askARoom === "")
 				alert('This is not a right name for a room !');
 		}
-		
-		const newRoom: IRoom = {
-			active: false,
-			member: false,
-			name: askARoom || '',
-			messages: [],
-		};
-
 		const dbRoom: IChatRoom = {
 			chatRoomName: askARoom,
 			owner: username,
 			administrators: username,
 			isPublic: true,
 		}
-		
 		socket?.emit('createChatRoom', dbRoom);
 
+		const newRoom: IRoom = {
+			active: false,
+			member: false,
+			name: askARoom || '',
+			messages: [],
+		};
 		const roomsCopy = [...rooms];
 		roomsCopy.push(newRoom);
 
@@ -174,6 +161,7 @@ const ProtoChat = () => {
 				askARoom = "";
 			}
 		}
+		socket?.emit('deleteChatRoom', askARoom);
 		let roomsCopy = [...rooms];
 		for (let i = 0; i < roomsCopy.length; i++)
 		{
@@ -181,8 +169,6 @@ const ProtoChat = () => {
 				roomsCopy.splice(i, 1);
 		}
 		setRooms(roomsCopy);
-		socket?.emit('deleteChatRoom', askARoom);
-
 	}
 
 	const leftRoom = (room: string) => {
@@ -210,9 +196,20 @@ const ProtoChat = () => {
 			socket?.emit('joinRoom', activeRoom.name);
 	}
 
-	// const receiveAllChannels = () => {
-	// 	alert('ok ta mere');
-	// }
+	const receiveAllChannels = (channels: any[]) => {
+		let roomsCopy = [...rooms];
+		channels.forEach(element => {
+			const newRoom: IRoom = {
+				active: false,
+				member: false,
+				name: element.chatRoomName,
+				messages: [],
+			};
+			console.log('newRoom');
+			roomsCopy.push(newRoom);
+		});
+		setRooms(roomsCopy);
+	}
 
 	/* ***************************************************************************** */
 	/*    						Les différents UseEffets    						 */
@@ -227,18 +224,19 @@ const ProtoChat = () => {
 
 	useEffect(() => {
 		changeUsername(auth.user.name);
+		// socket?.emit('getAllChannels');
 	}, [])
 
-	// useEffect(() => {
-	// 	socket?.emit('getAllChannels');
-	// }, [changeUsername, setRooms])
+	useEffect(() => {
+		socket?.emit('getAllChannels');
+	}, [username])
 
-	// useEffect(() => {
-	// 	socket?.on('sendAllChannels', receiveAllChannels);
-	// 	return () => {
-	// 		socket?.off('sendAllChannels', receiveAllChannels);
-	// 	}
-	// }, [receiveAllChannels])
+	useEffect(() => {
+		socket?.on('sendAllChannels', receiveAllChannels);
+		return () => {
+			socket?.off('sendAllChannels', receiveAllChannels);
+		}
+	}, [receiveAllChannels])
 
 	// USEFFECT POUR RECEVOIR UN MESSAGE POUR UNE ROOM
 	useEffect(() => {

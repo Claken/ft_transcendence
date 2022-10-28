@@ -99,7 +99,6 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 		const theChannel = await this.chatService.findOneChatRoomByName(room.chatRoomName);
 		theOwner.ownedChannels = [theChannel];
 		this.usersService.updateUser(theOwner.id);
-
 	}
 
 	@SubscribeMessage('deleteChatRoom')
@@ -120,14 +119,8 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
 	@SubscribeMessage('getAllChannels')
 	async HandleGettingChannels(client: Socket) : Promise<void> {
-		console.log('all channels');
 		const Channels = await this.chatService.findAllChatRooms();
-		for (let i = 0; i < Channels.length; i++)
-		{
-			console.log('Channels[' + i + '].chatRoomName');
-			console.log(Channels[i].chatRoomName);
-		}
-		this.server.emit('sendAllChannels');
+		client.emit('sendAllChannels', Channels);
 	}
 
 }
