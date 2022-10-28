@@ -11,7 +11,7 @@ import { GameDTO} from "../TypeOrm/DTOs/Game.dto"
 import { GameService } from './game.service';
 import { Socket } from 'dgram';
 
-export var gameQueue = [];
+export var userQueue = [];
 
 @WebSocketGateway({cors: "http://localhost:3000"})
 export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
@@ -149,31 +149,33 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 	}
 
 /* ***************************************************************************** */
-/*                   Rejoindre la gameQueue et créer une game                    */
+/*                   Rejoindre la userQueue et créer une game                    */
 /* ***************************************************************************** */
 	@SubscribeMessage('joinQueue')//TODO:
 	async JoinQueue(client: any, user: UserDTO) {
-		//TODO: dans ma gameQueue, je veux y trouver un ID sur chaque élément
-		//TODO: Si l'id n'est pas dans la GameQueue, alors l'ajouter.
-		gameQueue.push(user);
+		let name = user.name
+		console.log("Name ="+name)
+		if (!userQueue.find(user => user.name === name)) {
+			console.log("Ajout du user: "+user.name)
+			userQueue.push(user);
+		}
 		user.inQueue = true;
-		
-		if (gameQueue.length % 2 === 0) {
-			console.log("Création de la partie. Les deux joueurs se regrp");
-			// console.log("user name 0 = "+gameQueue[0].name)
-			// console.log("user name 1 = "+gameQueue[1].name)
-			await this.CreateNewGame(client, gameQueue[0], gameQueue[1]);
+		console.log("userQueue.length: "+userQueue.length);
+		if (userQueue.length % 2 === 0) {
+			console.log("Création de la partie. Les deux joueurs se regrp");//TODO: retirer
+			console.log("user name 1 = "+userQueue[0].name)//TODO: retirer
+			console.log("user name 2 = "+userQueue[1].name)//TODO: retirer
+			await this.CreateNewGame(client, userQueue[0], userQueue[1]);
 		}
 	}
 
-	@SubscribeMessage('createNewGame')//TODO:
+	@SubscribeMessage('createNewGame')
 	async CreateNewGame(client: any, user1: UserDTO, user2: UserDTO) {
-		let gameService: GameService;
-		//gameQueue.slice(0)
+		userQueue.slice(0, 2);//TODO: vérifier de bien supprimer les users
 		console.log("CreateNewGame");
-		// console.log("user id 0 = "+user1.id);//TODO:
-		// console.log("user id 1 = "+user2.id);//TODO:
-		const game: GameDTO = {
+		console.log("user id 1 = "+user1.id);//TODO:
+		console.log("user id 2 = "+user2.id);//TODO:
+		const newGame: GameDTO = {
 			loginLP: user1.name,
 			loginRP: user2.name,
 		}
@@ -181,6 +183,6 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 		user2.inQueue = false;
 		user1.inGame = true;
 		user2.inGame = true;
-		this.server.emit("gameCreated", game);
+		this.server.emit("gameCreated", newGame);
 	}
 }

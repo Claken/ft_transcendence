@@ -18,26 +18,31 @@ export class GameController {
     return await this.gameService.findAllGames();
   }
 
-  // @Get(':id')
-  // async findLoginLP(@Param('id') idToFind: number): Promise<string> {
-  //   return await this.gameService.getLoginLPById(id);
-  // }
+  @Get('waitedGames')
+  async getWaitedGames(): Promise<Game[]> {
+    return await this.gameService.getWaitedGames();
+  }
 
-  @Get(':createGame')
+  @Get('loginLP/:loginLP')
+  async getByloginLP(@Param('loginLP') loginLP: string): Promise<Game> {
+    return await this.gameService.getByloginLP(loginLP);
+  }
+
+  @Get(':id')
   async getById(@Param('id') idToFind: number): Promise<Game> {
     return await this.gameService.getById(idToFind);
   }
 
   @Put(':id')
-  async update(
+  async updateGameReady(
     @Param('id') id: number,
-    @Body() user: GameDTO,
-  ): Promise<UpdateResult> {
-    return await this.gameService.updateGame(id, user);
+    @Body('loginRP') loginRP: string,
+  ): Promise<Game> {
+    return await this.gameService.updateGameReady(id, loginRP);
   }
 
   @Delete(':id')
-  async delete(@Param('id') id: number): Promise<DeleteResult> {
+  async delete(@Param('id') id: number): Promise<Game> {
     return await this.gameService.deleteGame(id);
   }
 }

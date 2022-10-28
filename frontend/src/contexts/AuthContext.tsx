@@ -10,6 +10,20 @@ export const AuthProvider = ({ children }) => {
 	const [user, setUser] = useState<IUser>(null);
 	const [users, setUsers] = useState<IUser[]>([]);
 	const [games, setGames] = useState<IGame[]>([]);
+	const [pendingGames, setPendingGames] = useState<IGame[]>([]);
+
+
+	const getWaitedGames = async () => {
+		await axios
+			.get("/game/waitedGames")
+			.then((res) => {
+				setPendingGames(res.data);
+				console.log(res.data);
+			})
+			.catch((error) => {
+				console.log(error);
+			});
+	};
 
 	// GET all users
 	const getGames = async () => {
@@ -104,6 +118,7 @@ export const AuthProvider = ({ children }) => {
 			getUserByname(name);
 		}
 		getGames();
+		getWaitedGames();
 		getUsers();
 		getSessionCookie();
 	}, []);
@@ -140,7 +155,7 @@ export const AuthProvider = ({ children }) => {
 
 	return (
 		<AuthContext.Provider
-			value={{ user, users, setUser, games, setGames, login, loginAsGuest, logout }}
+			value={{ user, users, setUser, games, setGames, pendingGames, setPendingGames, login, loginAsGuest, logout }}
 		>
 			{children}
 		</AuthContext.Provider>

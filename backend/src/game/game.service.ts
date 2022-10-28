@@ -28,6 +28,20 @@ export class GameService {
     });
   }
 
+  async getByloginLP(loginLP: string): Promise<Game> {
+    return await this.gameRepo.findOneBy({
+      loginLP: loginLP,
+    });
+  }
+
+  async getWaitedGames(): Promise<Game[]> {
+    return await this.gameRepo.find({
+      where : {
+        waitingForOppenent: true
+      }
+    });
+  }
+
   // async getLoginLPById(idToFind: number): Promise<string> {
   //   const game = await this.gameRepo.findOneBy({
   //     id: idToFind,
@@ -35,11 +49,21 @@ export class GameService {
   //   return game.loginLP;
   // }
 
-  async updateGame(id: number, game: GameDTO): Promise<UpdateResult> {
-    return await this.gameRepo.update(id, game);
+  async updateGameReady(id: number, loginRP: string): Promise<Game> {
+    const game = await this.getById(id);
+    game.waitingForOppenent = false;
+    game.loginRP = loginRP;
+    return await this.gameRepo.save(game);
   }
 
-  async deleteGame(id: number): Promise<DeleteResult> {
-    return await this.gameRepo.delete(id);
+  async deleteGame(id: number): Promise<Game> {
+    const game = await this.getById(id);
+    return await this.gameRepo.remove(game);
   }
+
+    // @Cron(CronExpression.EVERY_30_MINUTES)
+    async removePendingGames(): Promise<Game[]> {
+      const pendingGames = await this.getWaitedGames();
+      return await this.gameRepo.remove(pendingGames);
+    }
 }

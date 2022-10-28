@@ -34,6 +34,9 @@ export class Game implements IGame {
   @Column({ default: false })
   isFinish?: boolean;
 
+  @Column({ default: true })
+  waitingForOppenent?: boolean;
+
   @CreateDateColumn()
   date?: Date;
 }

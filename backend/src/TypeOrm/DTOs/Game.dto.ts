@@ -24,4 +24,7 @@ export class GameDTO {
 
 	@IsOptional()
 	date?: Date;
+
+	@IsOptional()
+	waitingForOppenent?: boolean;
 }

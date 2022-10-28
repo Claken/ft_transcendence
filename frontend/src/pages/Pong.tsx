@@ -1,47 +1,80 @@
-import Game from "../components/game/Game";
+import Game from "../components/game/Game";//TODO: retirer ?
+import { IUser } from "../interfaces/user.interface";
 import { socket } from "../components/Socket";
 import { useAuth } from "../contexts/AuthContext";
+import { useState, useEffect } from 'react';
 import axios from "../axios.config";
 import { IGame } from "../interfaces/game.interface"
-import { redirect } from "react-router-dom";
-
-var toto = true;
+import { redirect, useNavigate } from "react-router-dom";
 
 function Pong() {
 	const auth = useAuth();
+	// const [wait, setWait] = useState<boolean>(false)
+	const navigate = useNavigate();
 
-	socket.on("gameCreated", async (game: IGame) => {
-		const postGames = async (newGame: IGame) => {
-			await axios
-				.post("/game", newGame)
-				.then((res) => {
-					let cpyGames = [...auth.games];
-					cpyGames.push(res.data);
-					auth.setGames(cpyGames);
-					console.log(res.data);
-				})
-				.catch((error) => {
-					console.log(error);
-				});
-		};
-		await postGames(game);
-		return redirect("/pong/"+game.id);
-	})
+	const postGame = async (newGame: IGame) => {
+		await axios
+			.post("/game", newGame)
+			.then((res) => {
+				// console.log("Game created: "+JSON.stringify(res.data));
+				const cpyPendingGames = [...auth.pendingGames];
+				cpyPendingGames.push(res.data);
+				auth.setPendingGames(cpyPendingGames);
+			})
+			.catch((error) => {
+				console.log(error);
+			});
+	};
+
+	// socket.on("gameCreated", (newGame: IGame) => {
+	// 	console.log("user souhaitant entrer dans la condition: "+auth.user.name)
+	// 	if (newGame && auth.user.name === newGame.loginLP && game === null) {
+	// 		console.log("création de Game depuis le Front");
+	// 		console.log("user entrant dans la condition: "+auth.user.name)
+	// 		setGame(game);
+	// 		postGame(game);
+	// 	}
+	// })
+
+	const setGameAsReady = async () => {
+		await axios
+			.put("/game/" + auth.pendingGames[0].id, {
+				loginRP: auth.user.name
+			})
+			.then((res) => {
+				console.log(res.data);
+			})
+			.catch((error) => {
+				console.log(error);
+			});
+	};
+	
+	useEffect(() => {}, [])
 
 	const joinGame = () => {
-		// console.log("auth = "+JSON.stringify(auth.user));
-		// console.log("auth = "+auth.user.id);
 		// setdrawCanvas(true);
 		// setAbort(false);
 		// setScoreLP(0);
 		// setScoreRP(0);
-		socket.emit('joinQueue', auth.user);
-		toto = false;
+		console.log(auth.pendingGames.length);
+		if (auth.pendingGames.length > 0) {
+			setGameAsReady();
+			navigate('/pong/' + auth.pendingGames[0].id);
+		}
+		else {
+			postGame({ loginLP: auth.user.name, loginRP: '' });
+			navigate('/pong/waitingRoom');
+		}
+
+		// console.log("Clicked (JoinGame)")
+		// socket.emit('joinQueue', auth.user);
+		// setWait(true);
 	}
 
 	return (
 		<div>
-			{toto ? <div className="wrapper">
+			{/* {wait ? <div>Waiting for opponent...</div> : */}
+			<div className="wrapper">
 			<button className="cta" onClick={joinGame}>
 				<span>Join a Game</span>
 				<span>
@@ -55,8 +88,9 @@ function Pong() {
 					</svg>
 				</span>
 				</button>
-			</div> : <div>Waiting for opponent...</div>}
-			LIST HERE
+			</div>
+			{/* } */}
+			<h1>LIST HERE</h1>
 		</div>
 	);
 }

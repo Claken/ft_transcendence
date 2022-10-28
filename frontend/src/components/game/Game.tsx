@@ -24,7 +24,7 @@ const Game = (
 	const [drawCanvas, setdrawCanvas] = useState(false);
 	const [game, setGame] = useState<IGame>(null);
 	const auth = useAuth();
-	const params = useParams();
+	const { gameId } = useParams();
 	const [lock, setLock] = useState<boolean>(false);
 
 
@@ -48,7 +48,7 @@ const Game = (
 				});
 		};
 		if (!lock) {
-			getGameById(Number(params));
+			getGameById(Number(gameId));
 			console.log("connexion Client");
 		}
 		return setLock(true);

@@ -10,6 +10,7 @@ import RequiredAuth from "./components/auth/RequiredAuth";
 import RequiredOffline from "./components/auth/RequiredOffline";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Layout from "./pages/Layout";
+import WaitingRoom from "./components/game/WaitingRoom";
 
 function App() {
 	return (
@@ -25,9 +26,13 @@ function App() {
 						<Route element={<RequiredAuth />}>
 							<Route path="/channel" element={<Channel />} />
 							<Route path="/account" element={<Account />} />
-							<Route path="/pong" element={<Pong />} />
-							<Route path="/pong/:gameId" element={<Game />} />
 							{/* <Route element={<RequiredGameInstance />}> */}
+							<Route path="/pong" >
+								<Route index element={<Pong />} />
+								<Route path="matchmaking" element={<h1>Matchmaking</h1>} />
+								<Route path="waitingRoom" element={<WaitingRoom />} />
+								<Route path=":gameId" element={<Game />} />
+							</Route>
 							{/* </Route> */}
 						</Route>
 						

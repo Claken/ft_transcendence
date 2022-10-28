@@ -5,6 +5,7 @@ export interface IGame {
 	scoreLP?: number;
 	scoreRP?: number;
 	abort?: string;
-	isFinish?: boolean; 
+	isFinish?: boolean;
+	waitingForOppenent?: boolean;
 	date?: Date;
 }
