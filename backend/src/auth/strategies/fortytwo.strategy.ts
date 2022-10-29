@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy, Profile, VerifyCallback } from 'passport-42';
+import { UsersEntity } from 'src/TypeOrm';
 import { AuthService } from '../auth.service';
 
 @Injectable()
@@ -32,10 +33,10 @@ export class FortyTwoStrategy extends PassportStrategy(Strategy, '42') {
     refreshToken: string,
     profile: Profile,
     done: VerifyCallback,
-  ): Promise<any> {
-    const { username, id: userId, emails, photos } = profile;
+  ): Promise<UsersEntity> {
+    const { username, id: apiId, emails, photos } = profile;
     const user = {
-      userId,
+      apiId,
       login: username,
       name: username,
       email: emails[0].value,

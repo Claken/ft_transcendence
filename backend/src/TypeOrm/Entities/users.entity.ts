@@ -27,10 +27,10 @@ export class UsersEntity {
   status?: string;
 
   @Column({ nullable :true })
-  twoFA?: string;
+  hashTwoFASecret?: string;
 
   @Column({ default: false })
-  isTwoFA?: boolean;
+  isTwoFAEnabled?: boolean;
 
   @CreateDateColumn()
   createdAt?: Date;

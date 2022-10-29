@@ -1,5 +1,5 @@
-import { PartialType } from '@nestjs/swagger';
 import { IsOptional } from 'class-validator';
+import { Request } from 'express';
 
 export class UserDTO {
   @IsOptional()
@@ -21,12 +21,24 @@ export class UserDTO {
   status?: string;
 
   @IsOptional()
-  twoFA?: string;
+  hashTwoFASecret?: string;
 
   @IsOptional()
   createdAt?: Date;
 
   @IsOptional()
-  isTwoFA?: boolean;
+  isTwoFAEnabled?: boolean;
 }
-  
+
+export class TwoFACodeDto {
+  TwoFACode: string;
+}
+
+export interface RequestWithUser extends Request {
+  user?: UserDTO;
+}
+
+export class TokenPayload {
+  user?: UserDTO;
+  isSecondFactorAuthenticated: boolean;
+}

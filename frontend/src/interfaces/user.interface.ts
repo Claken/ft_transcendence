@@ -5,7 +5,7 @@ export class IUser {
 	email?: string;
 	pictureUrl?: string;
 	status?: string;
-	twoFA?: string;
-	isTwoFA?: boolean;
+	twoFASecret?: string;
+	isTwoFAEnabled?: boolean;
 	createdAt?: Date;
 }

@@ -3,8 +3,9 @@ import { ConfigService } from '@nestjs/config';
 import { authenticator } from 'otplib';
 import { UserDTO } from 'src/TypeOrm/DTOs/User.dto';
 import { UsersService } from 'src/users/users.service';
-import { toFileStream } from 'qrcode'
+import { toFileStream } from 'qrcode';
 import { Response } from 'express';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class TwoFactorAuthenticationService {
@@ -21,10 +22,12 @@ export class TwoFactorAuthenticationService {
       secret,
     );
 
-    await this.usersService.setTwoFASecret(secret, user.id);
+    const hashTwoFASecret = await bcrypt.hash(secret, 10);
+
+    await this.usersService.setTwoFASecret(hashTwoFASecret, user.id);
 
     return {
-      secret,
+      hashTwoFASecret,
       otpauthUrl,
     };
   }
@@ -32,4 +35,13 @@ export class TwoFactorAuthenticationService {
   public async pipeQrCodeStream(stream: Response, otpauthUrl: string) {
     return toFileStream(stream, otpauthUrl);
   }
+
+  public isTwoFACodeValid(twoFACode: string, user: UserDTO) {
+    
+    return authenticator.verify({
+      token: twoFACode,
+      secret: user.hashTwoFASecret, // TODO: bcrypt.compare necessary?
+    });
+  }
+
 }

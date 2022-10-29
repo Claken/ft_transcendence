@@ -7,40 +7,52 @@ const AuthContext = React.createContext(null);
 
 export const AuthProvider = ({ children }) => {
 	const [user, setUser] = useState<IUser>(null);
-	const [users, setUsers] = useState<IUser[]>(null);
 
-	// GET all users
-	const getUsers = async () => {
-		await axios
-			.get("/users")
-			.then((res) => {
-				setUsers(res.data);
-				console.log(res.data);
-			})
-			.catch((error) => {
-				console.log(error);
-			});
-	};
-
-	// GET session/cookie42
-	const getSessionCookie = async () => {
-		await axios
+	useEffect(() => {
+		let subscribed = true;
+		const token = localStorage.getItem("MY_PONG_APP");
+		// GET session/cookie42
+		axios
 			.get("/me", {
 				withCredentials: true,
 			})
 			.then((res) => {
-				if (res.data) {
-					setUser(res.data);
-					localStorage.setItem(
-						"MY_PONG_APP",
-						JSON.stringify(res.data)
-					);
-				} else console.log("getSessionCookie: empty res.data");
+				if (subscribed) {
+					if (res.data) {
+						setUser(res.data);
+						localStorage.setItem(
+							"MY_PONG_APP",
+							JSON.stringify(res.data)
+						);
+						console.log("getSessionCookie: " + res.data);
+					} else console.log("getSessionCookie: empty");
+				}
 			})
 			.catch((error) => {
 				console.log(error);
 			});
-	};
+		// Set User on refresh paged if localStorage unchanged
+		if (token) {
+			const { name } = JSON.parse(token);
+			if (name) {
+				axios
+					.get("/users/name/" + name)
+					.then((res) => {
+						if (subscribed) {
+							setUser(null);
+							setUser(res.data);
+						}
+					})
+					.catch((error) => {
+						console.log(error);
+					});
+			}
+		}
+		return () => {
+			subscribed = false;
+		};
+	}, []);
+
 
 	const postGuestUser = async (user: IUser) => {
 		await axios
@@ -66,33 +78,6 @@ export const AuthProvider = ({ children }) => {
 			});
 	};
 
-	const getUserByname = async (name: string) => {
-		await axios
-			.get("/users/name/" + name)
-			.then((res) => {
-				if (res.data) {
-					setUser(null);
-					setUser(res.data);
-				}
-			})
-			.catch((error) => {
-				console.log(error);
-			});
-	};
-	
-
-	// if localStorage exists, setUser in getUserByname()
-	useEffect(() => {
-		const token = localStorage.getItem("MY_PONG_APP");
-
-		if (token) {
-			const { name } = JSON.parse(token);
-			getUserByname(name);
-		}
-		getUsers();
-		getSessionCookie();
-	}, []);
-
 	const login = () => {
 		window.location.href = "http://localhost:3001/auth/42/login";
 	};
@@ -106,7 +91,7 @@ export const AuthProvider = ({ children }) => {
 		await postGuestUser(newUser);
 	};
 
-	// REMOVE localStorage on logout + if (Guest) deleteUser
+	// REMOVE localStorage on logout and if Guest deleteUser
 	const logout = async () => {
 		//only Stud42 have a login field
 		if (user.login) {
@@ -123,7 +108,7 @@ export const AuthProvider = ({ children }) => {
 
 	return (
 		<AuthContext.Provider
-			value={{ user, users, setUser, login, loginAsGuest, logout }}
+			value={{ user, setUser, login, loginAsGuest, logout }}
 		>
 			{children}
 		</AuthContext.Provider>

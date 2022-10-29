@@ -1,15 +1,19 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
+import { TwoFactorAuthenticationService } from '../two-factor-authentication/two-factor-authentication.service';
 
 @Injectable()
+// AuthGuard name's has to be equal to FortyTwoStrategy name's
 export class FortyTwoAuthGuard extends AuthGuard('42') {
-  // AuthGuard name's has to be equal to FortyTwoStrategy name's
+  // constructor(private readonly twoFAService: TwoFactorAuthenticationService) {
+  //   super();
+  // }
   async canActivate(context: ExecutionContext): Promise<boolean> {
     // check 42login and 42password
     const activate = (await super.canActivate(context)) as boolean;
     // initialize the server-side session and save it in memory
     const request = context.switchToHttp().getRequest();
-    await super.logIn(request); 
+    await super.logIn(request);
     return activate;
   }
 }

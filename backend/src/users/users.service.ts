@@ -27,13 +27,13 @@ export class UsersService {
   }
 
   async getByName(nameToFind: string): Promise<UsersEntity> {
-    return await this.userRepo.findOneBy({
+    return await this.userRepo.findOneByOrFail({
       name: nameToFind,
     });
   }
 
   async getById(idToFind: number): Promise<UsersEntity> {
-    return await this.userRepo.findOneBy({
+    return await this.userRepo.findOneByOrFail({
       id: idToFind,
     });
   }
@@ -60,13 +60,13 @@ export class UsersService {
 
   async setTwoFASecret(secret: string, id: number): Promise<UsersEntity> {
     const user = await this.getById(id);
-    user.twoFA = secret;
+    user.hashTwoFASecret = secret;
     return await this.userRepo.save(user);
   }
 
-  async turnOnTwoFA(id: number) {
+  async turnOnOffTwoFA(id: number) {
     const user = await this.getById(id);
-    user.isTwoFA = true;
+    user.isTwoFAEnabled = !user.isTwoFAEnabled;
     return await this.userRepo.save(user);
   }
 }
