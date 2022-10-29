@@ -1,39 +1,25 @@
-import React, {useEffect, useState} from 'react'
-import { useAuth } from '../../contexts/AuthContext';
+import React, { useEffect, useState } from "react";
+import { useAuth } from "../../contexts/AuthContext";
 import axios from "../../axios.config";
-import { IGame } from '../../interfaces/game.interface';
-import { useNavigate } from 'react-router-dom';
+import { IGame } from "../../interfaces/game.interface";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const WaitingRoom = () => {
-    const [myGame, setMyGame] = useState<IGame>(null);
-    const auth = useAuth();
-    const navigate = useNavigate();
+	const navigate = useNavigate();
+	const { state } = useLocation();
+	const { game } = state;
 
-    const getGameByLoginLP = async () => {
-		await axios
-			.get("/game/loginLP/" + auth.user.name)
-			.then((res) => {
-				if (res.data) {
-                    console.log(res.data);
-                    setMyGame(res.data);
-				}
-			})
-			.catch((error) => {
-				console.log(error);
-			});
-        }
-
-    useEffect(() => {
-        getGameByLoginLP();
-    }, [])
 	useEffect(() => {
-        if (myGame && myGame.loginRP && myGame.loginRP.length)
-            navigate('/pong/' + myGame.id);
-	}, [auth.pendingGames]);
+		console.log("game: "+game)
+	}, []); //TODO: on game change redirect to /pong/id
 
 	return (
-		<div>WaitingRoom...</div>
-	)
-}
+		<div>
+			<div>WaitingRoom...</div>
+			{/* <div>{myGame && JSON.stringify(myGame)}</div> */}
+			<div>{game && JSON.stringify(game)}</div>
+		</div>
+	);
+};
 
-export default WaitingRoom
+export default WaitingRoom;

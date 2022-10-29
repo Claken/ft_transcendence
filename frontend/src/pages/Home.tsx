@@ -13,14 +13,14 @@ function Home() {
 			<ul>
 				<li>auth.user : | {auth?.user?.name} | </li>
 				<li>__ List Users __</li>
-				{auth?.users &&
+				{/* {auth?.users &&
 					auth?.users?.map((user: IUser) => (
 						<li key={user.id}>
 							{user?.name} : {user?.status}
 						</li>
-					))}
-				{auth.games.filter((game: IGame) => (
-					game.isFinish != true))}
+					))} */}
+				{/* {auth.games.filter((game: IGame) => (
+					game.isFinish != true))} */}
 			</ul>
 		</div>
 	);
