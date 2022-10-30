@@ -10,8 +10,8 @@ import { ChatRoomEntity } from './chat.entity';
 @Entity('ChatUser')
 export class ChatUserEntity {
 
-	@PrimaryGeneratedColumn()
-	id: number;
+	@PrimaryGeneratedColumn('uuid')
+	id: string;
 
 	@Column()
 	name: string;
@@ -20,14 +20,24 @@ export class ChatUserEntity {
 	isMute: boolean;
 
 	@Column()
-	timeMute: number;
+	timeMute?: number;
 
 	@Column({ default: false })
 	isBan: boolean;
 
 	@Column()
-	timeBan: number;
+	timeBan?: number;
 
-	// @ManyToOne(() => ChatRoomEntity, Channel => Channel.members)
-	// inChannel: ChatRoomEntity;
+	@ManyToOne(() => ChatRoomEntity, (Channel: ChatRoomEntity) => Channel.members)
+	inChannel?: ChatRoomEntity;
+}
+
+export interface IChatUser {
+	id?: string,
+	name?: string,
+	isMute?: boolean,
+	timeMute?: number,
+	isBan?: boolean,
+	timeBan?: number,
+	inChannel?: ChatRoomEntity;
 }

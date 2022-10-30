@@ -3,6 +3,7 @@ import { Server, Socket } from 'socket.io';
 import { Logger, Req, UseGuards } from '@nestjs/common';
 import { ChatService } from './chat.service';
 import { ChatRoomEntity, IChatRoom } from 'src/TypeOrm/Entities/chat.entity';
+import { ChatUserEntity, IChatUser } from 'src/TypeOrm/Entities/chatUser.entity';
 import { CreateRoomDto } from 'src/TypeOrm/DTOs/chat.dto';
 import { IsUnion, string } from 'joi';
 import { UsersService } from 'src/users/users.service';
@@ -87,11 +88,17 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 	async HandleCreationRoom(@MessageBody() room: CreateRoomDto): Promise<void> {
 
 		const theOwner = await this.usersService.getByName(room.owner);
+		// const firstMember: IChatUser = {
+		// 	name: theOwner.name,
+		// 	isMute: false,
+		// 	isBan: false,
+		// }
 
 		const newChatRoom: IChatRoom = {
 			chatRoomName: room.chatRoomName,
 			owner: theOwner,
 			administrators: room.administrators,
+			// members: [firstMember],
 			isPublic: room.isPublic,
 			password: room.password,			
 		}
@@ -99,12 +106,14 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 		const theChannel = await this.chatService.findOneChatRoomByName(room.chatRoomName);
 		theOwner.ownedChannels = [theChannel];
 		this.usersService.updateUser(theOwner.id);
+		this.server.emit('sendNewChannel', newChatRoom);
 	}
 
 	@SubscribeMessage('deleteChatRoom')
 	HandleDeletionRoom(client: Socket, room: string): void {
 		
 		this.chatService.deleteChatRoomByName(room);
+		this.server.emit('sendDeleteMessage', room);
 	}
 
 	@SubscribeMessage('modifyChatRoom')

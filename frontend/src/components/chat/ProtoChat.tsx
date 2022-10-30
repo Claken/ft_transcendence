@@ -132,16 +132,16 @@ const ProtoChat = () => {
 		}
 		socket?.emit('createChatRoom', dbRoom);
 
-		const newRoom: IRoom = {
-			active: false,
-			member: false,
-			name: askARoom || '',
-			messages: [],
-		};
-		const roomsCopy = [...rooms];
-		roomsCopy.push(newRoom);
+		// const newRoom: IRoom = {
+		// 	active: false,
+		// 	member: false,
+		// 	name: askARoom || '',
+		// 	messages: [],
+		// };
+		// const roomsCopy = [...rooms];
+		// roomsCopy.push(newRoom);
 
-		setRooms(roomsCopy);
+		// setRooms(roomsCopy);
 	}
 
 	const deleteARoom = (event: any) =>
@@ -162,13 +162,13 @@ const ProtoChat = () => {
 			}
 		}
 		socket?.emit('deleteChatRoom', askARoom);
-		let roomsCopy = [...rooms];
-		for (let i = 0; i < roomsCopy.length; i++)
-		{
-			if (roomsCopy[i].name === askARoom)
-				roomsCopy.splice(i, 1);
-		}
-		setRooms(roomsCopy);
+		// let roomsCopy = [...rooms];
+		// for (let i = 0; i < roomsCopy.length; i++)
+		// {
+		// 	if (roomsCopy[i].name === askARoom)
+		// 		roomsCopy.splice(i, 1);
+		// }
+		// setRooms(roomsCopy);
 	}
 
 	const leftRoom = (room: string) => {
@@ -211,6 +211,31 @@ const ProtoChat = () => {
 		setRooms(roomsCopy);
 	}
 
+	const receiveNewChannel = (channel: any) => {
+			
+			const newRoom: IRoom = {
+			active: false,
+			member: false,
+			name: channel.chatRoomName,
+			messages: [],
+		};
+		const roomsCopy = [...rooms];
+		roomsCopy.push(newRoom);
+
+		setRooms(roomsCopy);
+	}
+
+	const deleteChannel = (channel: any) => {
+
+		let roomsCopy = [...rooms];
+		for (let i = 0; i < roomsCopy.length; i++)
+		{
+			if (roomsCopy[i].name === channel)
+				roomsCopy.splice(i, 1);
+		}
+		setRooms(roomsCopy);
+	}
+
 	/* ***************************************************************************** */
 	/*    						Les différents UseEffets    						 */
 	/* ***************************************************************************** */
@@ -238,7 +263,28 @@ const ProtoChat = () => {
 		}
 	}, [receiveAllChannels])
 
+	useEffect(() => {
+		socket?.on('sendNewChannel', receiveNewChannel);
+		return () => {
+			socket?.off('sendNewChannel', receiveNewChannel);
+		}
+	}, [receiveNewChannel])
+
+	useEffect(() => {
+		socket?.on('sendDeleteMessage', deleteChannel);
+		return () => {
+			socket?.off('sendDeleteMessage', deleteChannel);
+		}
+	}, [receiveAllChannels])
+
 	// USEFFECT POUR RECEVOIR UN MESSAGE POUR UNE ROOM
+	useEffect(() => {
+		socket?.on('chatToClient', receiveChatMessage);
+		return () => {
+			socket?.off('chatToClient', receiveChatMessage);
+		}
+	}, [receiveChatMessage])
+
 	useEffect(() => {
 		socket?.on('chatToClient', receiveChatMessage);
 		return () => {
