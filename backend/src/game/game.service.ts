@@ -34,7 +34,7 @@ export class GameService {
     });
   }
 
-  async getWaitedGames(): Promise<Game[]> {
+  async getPendingGames(): Promise<Game[]> {
     return await this.gameRepo.find({
       where : {
         waitingForOppenent: true
@@ -63,7 +63,7 @@ export class GameService {
 
     // @Cron(CronExpression.EVERY_30_MINUTES)
     async removePendingGames(): Promise<Game[]> {
-      const pendingGames = await this.getWaitedGames();
+      const pendingGames = await this.getPendingGames();
       return await this.gameRepo.remove(pendingGames);
     }
 }

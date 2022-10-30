@@ -185,4 +185,14 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 		user2.inGame = true;
 		this.server.emit("gameCreated", newGame);
 	}
+
+	@SubscribeMessage('checkGames')//TODO:
+	CheckGames(client: any, pendingGames: GameDTO[]) {
+		if (pendingGames.length > 0) {
+			this.server.emit("goPlay", pendingGames[0]);
+		}
+		else {
+			this.server.emit("waitForOpponent") //Waitroom?
+		}
+	}
 }
