@@ -4,8 +4,10 @@ import { IGame } from "../interfaces/game.interface";
 
 import "../styles/page.css";
 
+
 function Home() {
 	const auth = useAuth();
+
 
 	return (
 		<div>

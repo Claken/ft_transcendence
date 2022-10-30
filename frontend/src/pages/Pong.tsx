@@ -38,7 +38,7 @@ function Pong() {
 		return () => {
 			subscribed = false;
 		};
-	}, [game]);
+	}, [game?.loginLP]);
 
 	// POST game && waitingForOppenent = true
 	const postGame = async (newGame: IGame) => {
@@ -64,12 +64,14 @@ function Pong() {
 
 	// Redirect if pendingGames exist
 	useEffect(() => {
+		let subscribed = true;
 		if (pendingGames) {
 			const myGame = pendingGames.find(
 				(elet) => elet.loginRP === auth.user.name
 			);
-			if (myGame) navigate("/pong/" + myGame.id);
+			if (subscribed && myGame) navigate("/pong/" + myGame.id);
 		}
+		return () => { subscribed = false };
 	}, [pendingGames]);
 
 	const updatePendingGames = (game: IGame) => {
