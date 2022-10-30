@@ -10,7 +10,6 @@ const WaitingRoom = () => {
 	const { game } = state;
 
 	useEffect(() => {
-		console.log("game: "+game)
 	}, []); //TODO: on game change redirect to /pong/id
 
 	return (

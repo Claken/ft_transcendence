@@ -14,8 +14,8 @@ import WaitingRoom from "./components/game/WaitingRoom";
 
 function App() {
 	return (
-		<AuthProvider>
-			<BrowserRouter>
+		<BrowserRouter>
+			<AuthProvider>
 				<Routes>
 					<Route path="/" element={<Layout />}>
 						<Route index element={<Home />} />
@@ -27,19 +27,20 @@ function App() {
 							<Route path="/channel" element={<Channel />} />
 							<Route path="/account" element={<Account />} />
 							{/* <Route element={<RequiredGameInstance />}> */}
-							<Route path="/pong" >
+							<Route path="/pong">
 								<Route index element={<Pong />} />
-								<Route path="matchmaking" element={<h1>Matchmaking</h1>} />
-								<Route path="waitingRoom" element={<WaitingRoom />} />
+								<Route
+									path="waitingRoom"
+									element={<WaitingRoom />}
+								/>
 								<Route path=":gameId" element={<Game />} />
 							</Route>
 							{/* </Route> */}
 						</Route>
-						
 					</Route>
 				</Routes>
-			</BrowserRouter>
-		</AuthProvider>
+			</AuthProvider>
+		</BrowserRouter>
 	);
 }
 

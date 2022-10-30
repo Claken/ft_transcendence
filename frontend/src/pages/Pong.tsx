@@ -5,7 +5,7 @@ import { useAuth } from "../contexts/AuthContext";
 import { useState, useEffect } from "react";
 import axios from "../axios.config";
 import { IGame } from "../interfaces/game.interface";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 function Pong() {
 	const auth = useAuth();
@@ -14,32 +14,38 @@ function Pong() {
 	// const [wait, setWait] = useState<boolean>(false)
 	const navigate = useNavigate();
 
-	// GET Pending Games
+	// GET PendingGames
+	useEffect(() => {
+		axios
+		.get("/game/waitedGames")
+		.then((res) => {
+			if (res.data) {
+				setPendingGames(res.data);
+				console.log(res.data);
+			}
+		})
+		.catch((error) => {
+			console.log(error);
+		});
+	}, [])
+
+	// On POST add game in pendingGames + redirect to waiting room
 	useEffect(() => {
 		let subscribed = true;
-		axios
-			.get("/game/waitedGames")
-			.then((res) => {
-				if (subscribed) {
-					setPendingGames(res.data);
-					console.log(res.data);
-				}
-			})
-			.catch((error) => {
-				console.log(error);
-			});
+		if (subscribed && game) {
+			navigate("/pong/waitingRoom", { state: { game: game } });
+		}
 		return () => {
 			subscribed = false;
 		};
 	}, [game]);
 
-	// POST game and wait for opponent
+	// POST game && waitingForOppenent = true
 	const postGame = async (newGame: IGame) => {
 		await axios
 			.post("/game", newGame)
 			.then((res) => {
-				// console.log("Game created: "+JSON.stringify(res.data));
-				setGame(res.data); //TODO: only on render. solution is LAYOUT on top?
+				setGame(res.data);
 			})
 			.catch((error) => {
 				console.log(error);
@@ -56,32 +62,49 @@ function Pong() {
 	// 	}
 	// })
 
-	// UPDATE waitingForOppenent = FALSE and set loginRP
-	const setGameAsReady = async () => {
-		await axios
+	// Redirect if pendingGames exist
+	useEffect(() => {
+		if (pendingGames) {
+			const myGame = pendingGames.find(
+				(elet) => elet.loginRP === auth.user.name
+			);
+			if (myGame) navigate("/pong/" + myGame.id);
+		}
+	}, [pendingGames]);
+
+	const updatePendingGames = (game: IGame) => {
+		const cpyPendingGames = [...pendingGames];
+		// const game = {...pendingGames[0]} //TODO: same line as setGameAsReady?
+		game.loginRP = auth.user.name;
+		cpyPendingGames[0] = game;
+		setPendingGames(cpyPendingGames);
+	};
+
+	// UPDATE waitingForOppenent = FALSE && set loginRP
+	const setGameAsReady = () => {
+		axios
 			.put("/game/" + pendingGames[0].id, {
+				//TODO: same line as updatePendingGames?
 				loginRP: auth.user.name,
 			})
 			.then((res) => {
 				console.log(res.data);
+				updatePendingGames(pendingGames[0]);
 			})
 			.catch((error) => {
 				console.log(error);
 			});
 	};
 
-	const joinGame = () => {
+	const joinGame = async () => {
 		// setdrawCanvas(true);
 		// setAbort(false);
 		// setScoreLP(0);
 		// setScoreRP(0);
 		if (pendingGames?.length) {
 			setGameAsReady();
-			navigate("/pong/" + pendingGames[0].id);
 		} else {
 			postGame({ loginLP: auth.user.name, loginRP: "" });
-			console.log("game before send: "+ JSON.stringify(game));
-			navigate("/pong/waitingRoom", { state: { game: game } });
 		}
 
 		// console.log("Clicked (JoinGame)")
