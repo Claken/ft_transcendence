@@ -6,7 +6,7 @@ import {
 	ManyToOne,
 	OneToMany
 } from 'typeorm';
-import { ChatUserEntity } from './chatUser.entity';
+import { MemberEntity } from './member.entity';
 import { UsersEntity } from './users.entity';
 
 @Entity('ChatRoom')
@@ -24,8 +24,8 @@ export class ChatRoomEntity {
 	@Column()
 	administrators?: string;
 
-	@OneToMany(()=> ChatUserEntity, (Member: ChatUserEntity) => Member.inChannel)
-	members: ChatUserEntity[];
+	@OneToMany(()=> MemberEntity, (Member: MemberEntity) => Member.inChannel)
+	members: MemberEntity[];
 
 	@Column({ default: true })
 	isPublic: boolean;
@@ -42,7 +42,7 @@ export interface IChatRoom {
 	chatRoomName?: string,
 	owner?: UsersEntity,
 	administrators?: string,
-	members?: ChatUserEntity[];
+	members?: MemberEntity[];
 	isPublic?: boolean,
 	password?: string,
 	createdAt?: Date,

@@ -7,8 +7,8 @@ import {
 } from 'typeorm';
 import { ChatRoomEntity } from './chat.entity';
 
-@Entity('ChatUser')
-export class ChatUserEntity {
+@Entity('Member')
+export class MemberEntity {
 
 	@PrimaryGeneratedColumn('uuid')
 	id: string;
@@ -32,7 +32,7 @@ export class ChatUserEntity {
 	inChannel?: ChatRoomEntity;
 }
 
-export interface IChatUser {
+export interface IMember {
 	id?: string,
 	name?: string,
 	isMute?: boolean,

@@ -131,17 +131,6 @@ const ProtoChat = () => {
 			isPublic: true,
 		}
 		socket?.emit('createChatRoom', dbRoom);
-
-		// const newRoom: IRoom = {
-		// 	active: false,
-		// 	member: false,
-		// 	name: askARoom || '',
-		// 	messages: [],
-		// };
-		// const roomsCopy = [...rooms];
-		// roomsCopy.push(newRoom);
-
-		// setRooms(roomsCopy);
 	}
 
 	const deleteARoom = (event: any) =>
@@ -162,13 +151,6 @@ const ProtoChat = () => {
 			}
 		}
 		socket?.emit('deleteChatRoom', askARoom);
-		// let roomsCopy = [...rooms];
-		// for (let i = 0; i < roomsCopy.length; i++)
-		// {
-		// 	if (roomsCopy[i].name === askARoom)
-		// 		roomsCopy.splice(i, 1);
-		// }
-		// setRooms(roomsCopy);
 	}
 
 	const leftRoom = (room: string) => {
@@ -205,7 +187,6 @@ const ProtoChat = () => {
 				name: element.chatRoomName,
 				messages: [],
 			};
-			console.log('newRoom');
 			roomsCopy.push(newRoom);
 		});
 		setRooms(roomsCopy);
