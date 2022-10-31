@@ -21,7 +21,7 @@ export class UserDTO {
   status?: string;
 
   @IsOptional()
-  hashTwoFASecret?: string;
+  twoFASecret?: string;
 
   @IsOptional()
   createdAt?: Date;

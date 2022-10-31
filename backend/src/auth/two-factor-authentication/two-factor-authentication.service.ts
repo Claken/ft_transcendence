@@ -22,12 +22,10 @@ export class TwoFactorAuthenticationService {
       secret,
     );
 
-    const hashTwoFASecret = await bcrypt.hash(secret, 10);
-
-    await this.usersService.setTwoFASecret(hashTwoFASecret, user.id);
+    await this.usersService.setTwoFASecret(secret, user.id);
 
     return {
-      hashTwoFASecret,
+      secret,// TODO: bcrypt necessary?
       otpauthUrl,
     };
   }
@@ -40,7 +38,7 @@ export class TwoFactorAuthenticationService {
     
     return authenticator.verify({
       token: twoFACode,
-      secret: user.hashTwoFASecret, // TODO: bcrypt.compare necessary?
+      secret: user.twoFASecret, 
     });
   }
 

@@ -27,7 +27,7 @@ export class UsersEntity {
   status?: string;
 
   @Column({ nullable :true })
-  hashTwoFASecret?: string;
+  twoFASecret?: string;
 
   @Column({ default: false })
   isTwoFAEnabled?: boolean;

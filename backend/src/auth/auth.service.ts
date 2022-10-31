@@ -19,7 +19,7 @@ export class AuthService {
     
       // if (2FAenabled)
       // {
-      //     if compare(hashTwoFASecret)
+      //     if compare(twoFASecret)
       //        connect
       //     else
       //        null

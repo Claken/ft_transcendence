@@ -36,7 +36,7 @@ export class TwoFactorAuthenticationController {
     return this.twoFAService.pipeQrCodeStream(response, otpauthUrl); //TODO: return otpauthUrl? and generate href in frontend
   }
 
-  @Post('turn-on-off')
+  @Post('turn-on')
   @HttpCode(200)
   @UseGuards(AuthenticatedGuard)
   async turnOnTwoFA(
@@ -51,7 +51,7 @@ export class TwoFactorAuthenticationController {
       throw new UnauthorizedException('Wrong authentication code');
     }
 
-    await this.usersService.turnOnOffTwoFA(request.user.id);
+    await this.usersService.turnOnTwoFA(request.user.id);
   }
 /*
   @Post('authenticate')
@@ -74,9 +74,9 @@ export class TwoFactorAuthenticationController {
     //TODO: redirect to LoginWithTwoFA
     //TODO: redirect to front if succeed;
 
-    // const hashTwoFASecret = ;
+    // const twoFASecret = ;
  
-    // res.cookie('twoFASecret', hashTwoFASecret);
+    // res.cookie('twoFASecret', twoFASecret);
  
     return request.user;
   }

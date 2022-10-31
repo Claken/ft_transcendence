@@ -60,13 +60,13 @@ export class UsersService {
 
   async setTwoFASecret(secret: string, id: number): Promise<UsersEntity> {
     const user = await this.getById(id);
-    user.hashTwoFASecret = secret;
+    user.twoFASecret = secret;
     return await this.userRepo.save(user);
   }
 
-  async turnOnOffTwoFA(id: number) {
+  async turnOnTwoFA(id: number) {
     const user = await this.getById(id);
-    user.isTwoFAEnabled = !user.isTwoFAEnabled;
+    user.isTwoFAEnabled = user.isTwoFAEnabled;
     return await this.userRepo.save(user);
   }
 }
