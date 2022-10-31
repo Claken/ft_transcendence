@@ -16,7 +16,6 @@ import { TwoFactorAuthenticationModule } from './two-factor-authentication/two-f
       session: true,
     }),
     TypeOrmModule.forFeature([UsersEntity]),
-    TwoFactorAuthenticationModule,
   ],
   controllers: [AuthController],
   providers: [FortyTwoStrategy, AuthService, SessionSerializer],

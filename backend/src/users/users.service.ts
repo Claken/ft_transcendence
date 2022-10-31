@@ -27,13 +27,13 @@ export class UsersService {
   }
 
   async getByName(nameToFind: string): Promise<UsersEntity> {
-    return await this.userRepo.findOneByOrFail({
+    return await this.userRepo.findOneBy({
       name: nameToFind,
     });
   }
 
   async getById(idToFind: number): Promise<UsersEntity> {
-    return await this.userRepo.findOneByOrFail({
+    return await this.userRepo.findOneBy({
       id: idToFind,
     });
   }

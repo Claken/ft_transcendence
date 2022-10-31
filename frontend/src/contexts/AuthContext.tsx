@@ -9,7 +9,7 @@ export const AuthProvider = ({ children }) => {
 	const [user, setUser] = useState<IUser>(null);
 
 	useEffect(() => {
-		let subscribed = true;
+		let subscribed = true; //TODO: subscribe only in dev_mode strictmode => double render
 		const token = localStorage.getItem("MY_PONG_APP");
 		// GET session/cookie42
 		axios
@@ -17,15 +17,12 @@ export const AuthProvider = ({ children }) => {
 				withCredentials: true,
 			})
 			.then((res) => {
-				if (subscribed) {
-					if (res.data) {
-						setUser(res.data);
-						localStorage.setItem(
-							"MY_PONG_APP",
-							JSON.stringify(res.data)
-						);
-						console.log("getSessionCookie: " + res.data);
-					} else console.log("getSessionCookie: empty");
+				if (subscribed && res.data) {
+					setUser(res.data);
+					localStorage.setItem(
+						"MY_PONG_APP",
+						JSON.stringify(res.data)
+					);
 				}
 			})
 			.catch((error) => {

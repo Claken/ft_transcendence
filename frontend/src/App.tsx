@@ -8,6 +8,7 @@ import RequiredAuth from "./components/auth/RequiredAuth";
 import RequiredOffline from "./components/auth/RequiredOffline";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Layout from "./pages/Layout";
+import TwoFa from "./pages/TwoFa";
 
 function App() {
 	return (
@@ -19,6 +20,7 @@ function App() {
 						<Route path="*" element={<Home />} />
 						<Route element={<RequiredOffline />}>
 							<Route path="/login" element={<Login />} />
+							<Route path="/login" element={<TwoFa />} />
 						</Route>
 						<Route element={<RequiredAuth />}>
 							<Route path="/channel" element={<Channel />} />
