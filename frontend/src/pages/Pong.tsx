@@ -22,18 +22,17 @@ function Pong() {
 	// 	}
 	// })
 
-	// DIRECTLY REDIRECT games are pending
+    /**** Join user in Queue and play ****/
 	socket.on("goPlay", (gameToPlay) => {
 		navigate("/pong/" + gameToPlay.id);
 	});
 
-	// User who was waiting go play
+	/**** Triggered when Opponent found and Game updated ****/
 	useEffect(() => {
 		if (game?.loginRP) navigate("/pong/" + game.id);
 	}, [game?.loginRP]);
 
-	// WAIT for opponent
-	// Game created on socket joinQueue
+    /**** Waiting For Opponent ****/
 	useEffect(() => {
 		if (wait) {
 			const interval = setInterval(() => {
@@ -65,6 +64,7 @@ function Pong() {
 		}
 	});
 
+	/**** Create game and wait in UserQueue OR update Game and launchGame ****/
 	const joinGame = () => {
 		// setdrawCanvas(true);
 		// setAbort(false);

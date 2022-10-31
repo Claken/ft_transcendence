@@ -9,8 +9,9 @@ import {
 import { UserDTO } from '../TypeOrm/DTOs/User.dto';
 import { GameDTO } from '../TypeOrm/DTOs/Game.dto';
 import { GameService } from './game.service';
+import { map } from 'rxjs';
 
-export var userQueue = [];
+export var userQueue: UserDTO[] = [];
 
 @WebSocketGateway({ cors: 'http://localhost:3000' })
 export class GameGateway
@@ -168,32 +169,37 @@ export class GameGateway
   /* ***************************************************************************** */
   /*                   Rejoindre la userQueue et créer une game                    */
   /* ***************************************************************************** */
-  
+
   @SubscribeMessage('joinQueue')
   async JoinQueue(client: any, user: UserDTO) {
     if (!userQueue.find((elet: UserDTO) => elet.name === user.name)) {
       console.log('Ajout du user: ' + user.name);
       userQueue.push(user);
     }
-    console.log('userQueue: ' + JSON.stringify(userQueue));
     if (userQueue.length % 2 === 0) {
+      /**** Take the first pending Game ****/
       const games: GameDTO[] = await this.gameService.getPendingGames();
-      const firstGameUserLp: UserDTO = userQueue.find(
-        (elet: UserDTO) => elet.name === games[0].loginLP,
-      );
+      /**** Update Game: waitingForOppenent=false AND loginRP=user ****/
       const updatedGame: GameDTO = await this.gameService.updateGameReady(
         games[0].id,
         user.name,
       );
-    //   const indexLP = userQueue.findIndex(
-    //     (elet: UserDTO) => elet.name === firstGameUserLp.name,
-    //   );
-    //   const indexRP = userQueue.findIndex(
-    //     (elet: UserDTO) => elet.name === user.name,
-    //   );
-    //   userQueue.slice(indexLP, 1);
-    //   userQueue.slice(indexRP, 1);
-      userQueue.slice(0, 2); // TODO: slice the 2 RIGHTS indexUsers
+      /**** Find loginLP in UserQueue ****/
+      const firstGameUserLp: UserDTO = userQueue.find(
+        (elet: UserDTO) => elet.name === games[0].loginLP,
+      );
+      /**** Delete the 2 users in UserQueue ****/
+      const indexLP = userQueue.findIndex(
+        (elet: UserDTO) => elet.name === firstGameUserLp.name,
+      );
+      userQueue.splice(indexLP, 1);
+      console.log('userQueue.length: ' + userQueue.length);
+      const indexRP = userQueue.findIndex(
+        (elet: UserDTO) => elet.name === user.name,
+      );
+      userQueue.splice(indexRP, 1);
+      console.log('userQueue.length: ' + userQueue.length);
+      /**** Redirect in the Frontend to <Game /> ****/
       this.server.emit('goPlay', updatedGame);
     } else {
       const newGame = await this.gameService.create({
@@ -222,5 +228,4 @@ export class GameGateway
     await this.gameService.create(newGame);
     this.server.emit('createdGame', newGame);
   }
-
 }

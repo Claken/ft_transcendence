@@ -35,33 +35,37 @@ const Game = (
 	//TODO: Si la partie existe déjà, il faut y retourner
 	//TODO: Retourner dans la Queue si l'instance de la partie a déjà été crée
 	/* Vérifier à chaque connexion client s'il était en partie */
-	useEffect(() => {
-		console.log("useEffect pour connexion")
-		const getGameById = async (id: number) => {
-			await axios
-				.get("/game/" + id)
-				.then((res) => {
-					setGame(res.data);
-				})
-				.catch((error) => {
-					console.log(error);
-				});
-		};
-		if (!lock) {
-			getGameById(Number(gameId));
-			console.log("connexion Client");
-		}
-		return setLock(true);
-	}, [])
 
+	/* ***************************************************************************** */
+	/*                 Initialisation de la Game et des 2 joueurs                    */
+	/* ***************************************************************************** */
 	useEffect(() => {
-		setLoginLP(game.loginLP);
-		setLoginRP(game.loginRP);
+		if (game)
+		{
+			setLoginLP(game.loginLP);
+			setLoginRP(game.loginRP);
+		}
 	}, [game])
 
-	/* ***************************************************************************** */
-	/*                             requête axios                              */
-	/* ***************************************************************************** */
+	const getGameById = async () => {
+		await axios
+			.get("/game/" + gameId)
+			.then((res) => {
+				setGame(res.data);
+			})
+			.catch((error) => {
+				console.log(error);
+			});
+	};
+
+	useEffect(() => {
+		console.log("useEffect pour connexion")
+		getGameById();
+	}, [])
+
+	/* *********************************************************************** */
+	/*                             requête axios                               */
+	/* *********************************************************************** */
 	
 	// socket.on("gameCreated", (game) => {
 	// 	// setLoginLP(game.loginLP);
@@ -107,7 +111,7 @@ const Game = (
 		var ballY = height / 2 + EmptyGround / 2; //placement en Y de la balle
 		var vx = -1; //vitesse en X de la balle
 		var vy = -1; //vitesse en Y de la balle
-		var state = 6; //etat du jeu TODO: mettre l'état à 6
+		var state = 0; //etat du jeu TODO: mettre l'état à 0
 		var key = "";
 		var prev = "";
 		var curr = "";
@@ -501,7 +505,7 @@ const Game = (
 			document.removeEventListener("keyup", stopPlayer);
 			document.removeEventListener("click", clickInterpreter);
 		};
-	},[drawCanvas]);
+	},[drawCanvas, loginRP]);
 
 	/* ***************************************************************************** */
 	/*                          balise HTML de la page web                           */
