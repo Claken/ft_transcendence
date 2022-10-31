@@ -1,4 +1,3 @@
-import Game from "../components/game/Game"; //TODO: retirer ?
 import { IUser } from "../interfaces/user.interface";
 import { socket } from "../components/Socket";
 import { useAuth } from "../contexts/AuthContext";
@@ -10,7 +9,6 @@ import { useNavigate } from "react-router-dom";
 function Pong() {
 	const auth = useAuth();
 	const [game, setGame] = useState<IGame>(null);
-	const [pendingGames, setPendingGames] = useState<IGame[]>([]);
 	const [wait, setWait] = useState<boolean>(false);
 	const navigate = useNavigate();
 
@@ -25,46 +23,30 @@ function Pong() {
 	// })
 
 	// DIRECTLY REDIRECT games are pending
-	socket.on("goPlay", (game: IGame) => {
-		navigate("/pong/" + game.id);
-	})
+	socket.on("goPlay", (gameToPlay) => {
+		navigate("/pong/" + gameToPlay.id);
+	});
 
-	// REDIRECT TO GAME Finally opponent came!
+	// User who was waiting go play
 	useEffect(() => {
-		if (wait === false && game?.loginRP?.length)
-			navigate("/pong/" + game.id);
-	}, [wait, game?.loginRP])
+		if (game?.loginRP) navigate("/pong/" + game.id);
+	}, [game?.loginRP]);
 
-	// UPDATE loginRP
-	const setGameAsReady = (waitedUser : string) => {
-		axios
-			.put("/game/" + pendingGames[0].id, {
-				//TODO: same line as updatePendingGames?
-				loginRP: waitedUser,
-			})
-			.then((res) => {
-				setGame(res.data)
-				console.log(res.data);
-			})
-			.catch((error) => {
-				console.log(error);
-			});
-	};
-
-	// On creation you are alone SO WAIT
+	// WAIT for opponent
+	// Game created on socket joinQueue
 	useEffect(() => {
 		if (wait) {
-			// const interval = setInterval(() => {
+			const interval = setInterval(() => {
 				axios
 					.get("/game/loginLP/" + auth.user.name)
 					.then((res) => {
 						if (res.data) {
-							console.log(res.data)
-							const { loginRP } = JSON.parse(res.data);
+							const { loginLP, loginRP } = JSON.parse(res.data);
+							console.log(loginLP);
 							if (loginRP.length > 0) {
-								setGameAsReady(loginRP);
 								setWait(false);
-								// return () => clearInterval(interval);
+								setGame(res.data); // TODO: Clear interval before?
+								return () => clearInterval(interval);
 							}
 						}
 						console.log(JSON.stringify(res.data));
@@ -72,55 +54,24 @@ function Pong() {
 					.catch((error) => {
 						console.log(error);
 					});
-			// }, 1000);
-			// return () => clearInterval(interval);
+			}, 1000);
+			return () => clearInterval(interval);
 		}
 	}, [wait]);
 
-	// Trigger Wait
-	useEffect(() => {
-		if (game)
+	socket.on("waitForOpponent", (gameCreated: IGame) => {
+		if (auth.user.name === gameCreated.loginLP) {
 			setWait(true);
-	}, [game])
-
-	// POST game
-	const postGame = (newGame: IGame) => {
-		axios
-			.post("/game", newGame)
-			.then((res) => {
-				setGame(res.data);
-			})
-			.catch((error) => {
-				console.log(error);
-			});
-	};
-	socket.on("waitForOpponent", () => {
-		postGame({ loginLP: auth.user.name, loginRP: "" });
+		}
 	});
 
-	// GET pending games
-	const getPendingGames = async () => {
-		await axios
-			.get("/game/pendingGames/")
-			.then((res) => {
-				if (res.data) setPendingGames(res.data);
-			})
-			.catch((error) => {
-				console.log(error);
-			});
-	};
-	// setPendingGames() when 1st coming on this page.
-	useEffect(() => {
-		getPendingGames();
-	}, [])
-	
 	const joinGame = () => {
 		// setdrawCanvas(true);
 		// setAbort(false);
 		// setScoreLP(0);
 		// setScoreRP(0);
 		// console.log("Clicked (JoinGame)")
-		socket.emit("checkGames", pendingGames);
+		socket.emit("joinQueue", auth.user);
 		// setWait(true);
 	};
 
