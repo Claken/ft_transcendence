@@ -4,7 +4,8 @@ import {
 	PrimaryGeneratedColumn,
 	CreateDateColumn,
 	ManyToOne,
-	OneToMany
+	OneToMany,
+	JoinTable
 } from 'typeorm';
 import { MemberEntity } from './member.entity';
 import { UsersEntity } from './users.entity';
@@ -19,13 +20,14 @@ export class ChatRoomEntity {
 	chatRoomName?: string;
   
 	@ManyToOne(() => UsersEntity, (User: UsersEntity) => User.ownedChannels)
+	@JoinTable()
 	owner?: UsersEntity;
   
 	@Column()
 	administrators?: string;
 
-	@OneToMany(()=> MemberEntity, (Member: MemberEntity) => Member.inChannel)
-	members: MemberEntity[];
+	// @OneToMany(()=> MemberEntity, (Member: MemberEntity) => Member.inChannel)
+	// members: MemberEntity[];
 
 	@Column({ default: true })
 	isPublic: boolean;

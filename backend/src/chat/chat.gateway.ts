@@ -3,7 +3,7 @@ import { Server, Socket } from 'socket.io';
 import { Logger, Req, UseGuards } from '@nestjs/common';
 import { ChatService } from './chat.service';
 import { ChatRoomEntity, IChatRoom } from 'src/TypeOrm/Entities/chat.entity';
-import { ChatUserEntity, IChatUser } from 'src/TypeOrm/Entities/chatUser.entity';
+import { MemberEntity, IMember } from 'src/TypeOrm/Entities/member.entity';
 import { CreateRoomDto } from 'src/TypeOrm/DTOs/chat.dto';
 import { IsUnion, string } from 'joi';
 import { UsersService } from 'src/users/users.service';

@@ -34,6 +34,7 @@ const ProtoChat = () => {
 		let activeRoom: IRoom = {
 			active: false,
 			member: false,
+			owner: '',
 			name: '',
 			messages: [],
 		};
@@ -137,6 +138,7 @@ const ProtoChat = () => {
 	{
 		event.preventDefault();
 		let askARoom = "";
+		let findRoom: IRoom = undefined;
 		while (askARoom === "")
 		{
 			askARoom = prompt('Enter the name of the room you want to delete: ')!;
@@ -144,10 +146,15 @@ const ProtoChat = () => {
 				return ;
 			if (askARoom === "")
 				alert('This is not a right name for a room !');
-			else if (rooms.find(element => {return (element.name === askARoom)}) === undefined)
+			else if ((findRoom = rooms.find(element => {if (element.name === askARoom) return element})) === undefined)
 			{
 				alert('This room does not exist');
 				askARoom = "";
+			}
+			else if (findRoom.owner !== username)
+			{
+				alert('You are not the owner of this channel !');
+				return ;
 			}
 		}
 		socket?.emit('deleteChatRoom', askARoom);
@@ -184,6 +191,7 @@ const ProtoChat = () => {
 			const newRoom: IRoom = {
 				active: false,
 				member: false,
+				owner: element.owner.name,
 				name: element.chatRoomName,
 				messages: [],
 			};
@@ -197,6 +205,7 @@ const ProtoChat = () => {
 			const newRoom: IRoom = {
 			active: false,
 			member: false,
+			owner: channel.owner.name,
 			name: channel.chatRoomName,
 			messages: [],
 		};
@@ -230,7 +239,6 @@ const ProtoChat = () => {
 
 	useEffect(() => {
 		changeUsername(auth.user.name);
-		// socket?.emit('getAllChannels');
 	}, [])
 
 	useEffect(() => {

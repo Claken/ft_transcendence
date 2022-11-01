@@ -1,3 +1,6 @@
+import {IMessageToBack} from './messageToBack.interface'
+import { IUser } from './user.interface';
+
 export interface IChatRoom {
 	id?: number;
 
@@ -12,4 +15,10 @@ export interface IChatRoom {
 	password?: string;
 
 	createdAt?: Date;
+
+	// active?: boolean;
+
+	// member?: boolean;
+
+	// messages?: IMessageToBack[];
 }
