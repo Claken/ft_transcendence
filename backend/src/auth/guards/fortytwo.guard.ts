@@ -11,8 +11,8 @@ export class FortyTwoAuthGuard extends AuthGuard('42') {
   async canActivate(context: ExecutionContext): Promise<boolean> {
     // check 42login and 42password
     const activate = (await super.canActivate(context)) as boolean;
-    // initialize the server-side session and save it in memory
     const request = context.switchToHttp().getRequest();
+    // initialize the server-side session and save it in memory
     await super.logIn(request);
     return activate;
   }

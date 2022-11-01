@@ -10,16 +10,13 @@ export class AuthController {
 
   @UseGuards(FortyTwoAuthGuard)
   @Get('login')
-  register(@Req() req: RequestWithUser) {
-    return req.user;
-  }
+  register() {}
 
   @UseGuards(FortyTwoAuthGuard)
   @Get('callback')
   @Redirect('http://localhost:3000')
   login(@Req() req: RequestWithUser) {
     if (req.user) {
-      // const { id } = req.user as UserDTO;
       this.usersService.updateStatusUser(req.user.id, 'online');
     }
     return req.user;

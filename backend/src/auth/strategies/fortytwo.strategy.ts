@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy, Profile, VerifyCallback } from 'passport-42';
 import { UsersEntity } from 'src/TypeOrm';
+import { TokenPayload } from 'src/TypeOrm/DTOs/User.dto';
 import { AuthService } from '../auth.service';
 
 @Injectable()
@@ -35,13 +36,20 @@ export class FortyTwoStrategy extends PassportStrategy(Strategy, '42') {
     done: VerifyCallback,
   ): Promise<UsersEntity> {
     const { username, id: apiId, emails, photos } = profile;
-    const user = {
+    const userApi = {
       apiId,
       login: username,
       name: username,
       email: emails[0].value,
       pictureUrl: photos[0].value,
     };
-    return await this.authService.register(user);
+    const { user, isSecondFactorAuthenticated } = await this.authService.register(userApi);
+    if (!user.isTwoFAEnabled) {
+      return user;
+    }
+    if (isSecondFactorAuthenticated) {
+      return user;
+    }
+    return null;
   }
 }

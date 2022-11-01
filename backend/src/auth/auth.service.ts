@@ -1,30 +1,32 @@
 import { Injectable, Res } from '@nestjs/common';
 import { UsersEntity } from 'src/TypeOrm';
-import { UserDTO } from 'src/TypeOrm/DTOs/User.dto';
+import { TokenPayload, UserDTO } from 'src/TypeOrm/DTOs/User.dto';
 import { UsersService } from 'src/users/users.service';
 
 @Injectable()
 export class AuthService {
   constructor(private usersService: UsersService) {}
 
-  async register(user: UserDTO): Promise<UsersEntity> {
+  // async register(user: UserDTO): Promise<UsersEntity> {
+  //   const { id } = user;
+  //   const userFound = await this.usersService.getById(id);
+  //   if (userFound) return userFound;
+  //   return await this.usersService.create(user);
+  // }
+  async register(user: UserDTO): Promise<TokenPayload> {
     const { id } = user;
     const userFound = await this.usersService.getById(id);
+    let tokenPayload: TokenPayload = {
+      user: userFound,
+      isSecondFactorAuthenticated: false
+    };
     if (userFound) {
-      // if (userFound.isTwoFAEnabled)
-        // res.redirect("http://localhost:3000/");
-      // elseqq
-        return(userFound);
+      if (userFound.isTwoFAEnabled) {
+        tokenPayload.isSecondFactorAuthenticated = true;
+      }
+      return tokenPayload;
     }
-    
-      // if (2FAenabled)
-      // {
-      //     if compare(twoFASecret)
-      //        connect
-      //     else
-      //        null
-      // }
-     
-    return await this.usersService.create(user);
+    tokenPayload.user = await this.usersService.create(user);
+    return tokenPayload;
   }
 }

@@ -53,7 +53,7 @@ export class TwoFactorAuthenticationController {
 
     await this.usersService.turnOnTwoFA(request.user.id);
   }
-/*
+
   @Post('authenticate')
   @HttpCode(200)
   @UseGuards(AuthenticatedGuard)
@@ -80,6 +80,5 @@ export class TwoFactorAuthenticationController {
  
     return request.user;
   }
-*/
 
 }
