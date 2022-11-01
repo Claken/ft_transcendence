@@ -15,7 +15,7 @@ export class ChatService {
 	  	) {}
 
 	  async findAllChatRooms(): Promise<ChatRoomEntity[]> {
-		return await this.chatRepo.find({relations: ['owner']});
+		return await this.chatRepo.find({relations: ['owner'/*, 'members'*/]});
 	  }
 
 	  async findOneChatRoomByName(name: string): Promise<ChatRoomEntity> {
@@ -29,7 +29,7 @@ export class ChatService {
 	  async createChatRoom(chatRoom: IChatRoom): Promise<ChatRoomEntity> {
 		
 		const newChat = this.chatRepo.create(chatRoom);
-		return this.chatRepo.save(chatRoom);
+		return await this.chatRepo.save(chatRoom);
 	  }
 
 	  async deleteChatRoomByName(name: string): Promise<void> {

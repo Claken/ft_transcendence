@@ -12,12 +12,20 @@ import { UsersService } from 'src/users/users.service';
 export class MemberService {
 	constructor(
 		@InjectRepository(MemberEntity)
-		private readonly chatRepo: Repository<MemberEntity>,
+		private readonly memberRepo: Repository<MemberEntity>,
 	  	) {}
 
 	  async createMember(chatRoom: IMember): Promise<MemberEntity> {
 		
-		const newMember = this.chatRepo.create(chatRoom);
-		return this.chatRepo.save(chatRoom);
+		const newMember = this.memberRepo.create(chatRoom);
+		return await this.memberRepo.save(chatRoom);
+	  }
+
+	  async deleteMemberByName(name: string) : Promise<void> {
+		await this.memberRepo.delete({name: name});
+	  }
+
+	  async deleteMemberById(id: string) : Promise<void> {
+		await this.memberRepo.delete({id: id});
 	  }
 }
