@@ -15,17 +15,28 @@ export class MemberService {
 		private readonly memberRepo: Repository<MemberEntity>,
 	  	) {}
 
-	  async createMember(chatRoom: IMember): Promise<MemberEntity> {
-		
-		const newMember = this.memberRepo.create(chatRoom);
-		return await this.memberRepo.save(chatRoom);
-	  }
+		async findAllMembers(): Promise<MemberEntity[]> {
+			return await this.memberRepo.find({relations: ['inChannel']});
+		} 
 
-	  async deleteMemberByName(name: string) : Promise<void> {
-		await this.memberRepo.delete({name: name});
-	  }
+		async getMemberById(memberId: string) : Promise<MemberEntity> {
+			return await this.memberRepo.findOneBy({id: memberId});
+		}
 
-	  async deleteMemberById(id: string) : Promise<void> {
-		await this.memberRepo.delete({id: id});
-	  }
+		async getMemberByName(memberName: string) : Promise<MemberEntity> {
+			return await this.memberRepo.findOneBy({name: memberName});
+		}
+
+		async createMember(chatRoom: IMember): Promise<MemberEntity> {
+			const newMember = this.memberRepo.create(chatRoom);
+			return await this.memberRepo.save(chatRoom);
+		}
+
+	  	async deleteMemberByName(name: string) : Promise<void> {
+			await this.memberRepo.delete({name: name});
+		}
+
+		async deleteMemberById(id: string) : Promise<void> {
+			await this.memberRepo.delete({id: id});
+		}
 }

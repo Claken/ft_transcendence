@@ -25,8 +25,8 @@ export class ChatRoomEntity {
 	@Column()
 	administrators?: string;
 
-	// @OneToMany(()=> MemberEntity, (Member: MemberEntity) => Member.inChannel)
-	// members: MemberEntity[];
+	@OneToMany(()=> MemberEntity, (Member: MemberEntity) => Member.inChannel)
+	members: MemberEntity[];
 
 	@Column({ default: true })
 	isPublic: boolean;
@@ -43,7 +43,7 @@ export interface IChatRoom {
 	chatRoomName?: string,
 	owner?: UsersEntity,
 	administrators?: string,
-	// members?: MemberEntity[];
+	members?: MemberEntity[];
 	isPublic?: boolean,
 	password?: string,
 	createdAt?: Date,

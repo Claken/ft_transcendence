@@ -8,6 +8,8 @@ import { CreateRoomDto } from 'src/TypeOrm/DTOs/chat.dto';
 import { IsUnion, string } from 'joi';
 import { UsersService } from 'src/users/users.service';
 import { UsersEntity } from 'src/TypeOrm';
+import { MemberService } from './member.service';
+import { combineLatest } from 'rxjs';
 
 
 // {cors: '*'} pour que chaque client dans le frontend puisse se connecter à notre gateway
@@ -15,7 +17,8 @@ import { UsersEntity } from 'src/TypeOrm';
 export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
 
 	constructor(private chatService: ChatService,
-		private usersService: UsersService) {}
+		private usersService: UsersService,
+		private memberService: MemberService) {}
 
 	private logger: Logger = new Logger('ChatGateway');
 
@@ -88,17 +91,20 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 	async HandleCreationRoom(@MessageBody() room: CreateRoomDto): Promise<void> {
 
 		const theOwner = await this.usersService.getByName(room.owner);
-		// const firstMember: IChatUser = {
-		// 	name: theOwner.name,
-		// 	isMute: false,
-		// 	isBan: false,
-		// }
+		
+		const firstMember = new MemberEntity();
+		firstMember.name = theOwner.name;
+		firstMember.isBan = false;
+		firstMember.isMute = false;
+		this.memberService.createMember(firstMember);
+
+		const memberCreated = await this.memberService.getMemberByName(theOwner.name);
 
 		const newChatRoom: IChatRoom = {
 			chatRoomName: room.chatRoomName,
 			owner: theOwner,
 			administrators: room.administrators,
-			// members: [firstMember],
+			members: [memberCreated],
 			isPublic: room.isPublic,
 			password: room.password,			
 		}
