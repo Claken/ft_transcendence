@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import io, { Socket } from "socket.io-client";
 import { isForOfStatement } from "typescript";
 import "../../styles/chat.css";
+import UserList from "../dm/DmList";
 
 // const 	socket = io('http://localhost/3001');
 
@@ -163,14 +164,14 @@ const ProtoChat = () => {
   /* ***************************************************************************** */
 
   // USEEFFECT POUR AVOIR NOM ET ROOM
-  useEffect(() => {
+  /*useEffect(() => {
     if (!ignore) {
       // console.log('here');
       const newName = prompt("Enter your username: ");
       changeUsername(newName || "");
       ignore = true;
     }
-  }, []);
+  }, []);*/
 
   // USEEFFECT POUR CREER UN SOCKET
   useEffect(() => {
@@ -259,13 +260,12 @@ const ProtoChat = () => {
             <div className="header">
               <h3>Users - user_count</h3>
             </div>
-            <div className="users_box">oui</div>
+            <div className="users_box"></div>
           </div>
         </div>
       </div>
-      <h1>{title}</h1>
-
-      {/*<form onSubmit={addARoom}>
+			<h1>{title}</h1>
+      <form onSubmit={addARoom}>
         <button type="submit">
           <strong>Add a room</strong>
         </button>
@@ -296,7 +296,7 @@ const ProtoChat = () => {
             <strong>{msg.sender}:</strong> {msg.message}
           </ul>
         ))}
-      </div> */}
+      </div>
     </div>
   );
 };

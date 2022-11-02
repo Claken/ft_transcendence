@@ -3,6 +3,7 @@ import Login from "./pages/Login";
 import Pong from "./pages/Pong";
 import Channel from "./pages/Channel";
 import Account from "./pages/Account";
+import DirectMessages from "./pages/DirectMessages";
 import { AuthProvider } from "./contexts/AuthContext";
 import RequiredAuth from "./components/auth/RequiredAuth";
 import RequiredOffline from "./components/auth/RequiredOffline";
@@ -24,6 +25,7 @@ function App() {
 							<Route path="/channel" element={<Channel />} />
 							<Route path="/account" element={<Account />} />
 							<Route path="/pong" element={<Pong />} />
+							<Route path="/directmessages" element={<DirectMessages />} />
 						</Route>
 					</Route>
 				</Routes>

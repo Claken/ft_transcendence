@@ -9,6 +9,7 @@ import { entities } from './TypeOrm';
 import { GameModule } from './game/game.module';
 import { PassportModule } from '@nestjs/passport';
 import { ScheduleModule } from '@nestjs/schedule';
+import { DmModule } from './dm/dm.module';
 
 @Module({
   imports: [
@@ -39,6 +40,7 @@ import { ScheduleModule } from '@nestjs/schedule';
     UsersModule,
     AuthModule,
     GameModule,
+		DmModule,
   ],
   controllers: [AppController],
   providers: [AppService],

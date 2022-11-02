@@ -61,6 +61,11 @@ function Navigation() {
 								alt="profilePic"
 							/>
 						</li>
+						<li className="space">
+							<NavLink className="link" to="/directmessages">
+								<button className="btn">Dm</button>
+							</NavLink>
+						</li>
 					</>
 				)) || (
 					<>

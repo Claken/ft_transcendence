@@ -5,8 +5,7 @@ import AppTestSockets from "../components/chat/webSocketTester";
 function Channel() {
   return (
     <div>
-      <h1>Channel</h1>
-      < ProtoChat />
+      <ProtoChat />
       {/* < AppTestSockets /> */}
     </div>
   );
