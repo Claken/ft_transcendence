@@ -10,7 +10,6 @@ export const AuthProvider = ({ children }) => {
 
 	useEffect(() => {
 		let subscribed = true; //TODO: subscribe only in dev_mode strictmode => double render
-		const token = localStorage.getItem("MY_PONG_APP");
 		// GET session/cookie42
 		axios
 			.get("/me", {
@@ -19,6 +18,7 @@ export const AuthProvider = ({ children }) => {
 			.then((res) => {
 				if (subscribed && res.data) {
 					setUser(res.data);
+					// console.log(res.data);
 					localStorage.setItem(
 						"MY_PONG_APP",
 						JSON.stringify(res.data)
@@ -28,23 +28,6 @@ export const AuthProvider = ({ children }) => {
 			.catch((error) => {
 				console.log(error);
 			});
-		// Set User on refresh paged if localStorage unchanged
-		if (token) {
-			const { name } = JSON.parse(token);
-			if (name) {
-				axios
-					.get("/users/name/" + name)
-					.then((res) => {
-						if (subscribed) {
-							setUser(null);
-							setUser(res.data);
-						}
-					})
-					.catch((error) => {
-						console.log(error);
-					});
-			}
-		}
 		return () => {
 			subscribed = false;
 		};
@@ -75,10 +58,6 @@ export const AuthProvider = ({ children }) => {
 			});
 	};
 
-	const login = () => {
-		window.location.href = "http://localhost:3001/auth/42/login";
-	};
-
 	const loginAsGuest = async (guestName: string) => {
 		const newUser: IUser = {
 			name: guestName,
@@ -105,7 +84,7 @@ export const AuthProvider = ({ children }) => {
 
 	return (
 		<AuthContext.Provider
-			value={{ user, setUser, login, loginAsGuest, logout }}
+			value={{ user, setUser, loginAsGuest, logout }}
 		>
 			{children}
 		</AuthContext.Provider>
