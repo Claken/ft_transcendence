@@ -22,46 +22,17 @@ function Pong() {
 	// 	}
 	// })
 
+	useEffect(() => {
+		if (game?.waitingForOppenent === false
+			&& (game?.loginLP === auth.user.name
+			|| game?.loginRP === auth.user.name))
+			navigate("/pong/" + game.id);
+	}, [game?.waitingForOppenent])
+
     /**** Join user in Queue and play ****/
 	socket.on("goPlay", (gameToPlay) => {
-		navigate("/pong/" + gameToPlay.id);
-	});
-
-	/**** Triggered when Opponent found and Game updated ****/
-	useEffect(() => {
-		if (game?.loginRP) navigate("/pong/" + game.id);
-	}, [game?.loginRP]);
-
-    /**** Waiting For Opponent ****/
-	useEffect(() => {
-		if (wait) {
-			const interval = setInterval(() => {
-				axios
-					.get("/game/loginLP/" + auth.user.name)
-					.then((res) => {
-						if (res.data) {
-							const { loginLP, loginRP } = JSON.parse(res.data);
-							console.log(loginLP);
-							if (loginRP.length > 0) {
-								setWait(false);
-								setGame(res.data); // TODO: Clear interval before?
-								return () => clearInterval(interval);
-							}
-						}
-						console.log(JSON.stringify(res.data));
-					})
-					.catch((error) => {
-						console.log(error);
-					});
-			}, 1000);
-			return () => clearInterval(interval);
-		}
-	}, [wait]);
-
-	socket.on("waitForOpponent", (gameCreated: IGame) => {
-		if (auth.user.name === gameCreated.loginLP) {
-			setWait(true);
-		}
+		setWait(false);
+		setGame(gameToPlay);
 	});
 
 	/**** Create game and wait in UserQueue OR update Game and launchGame ****/
@@ -71,8 +42,8 @@ function Pong() {
 		// setScoreLP(0);
 		// setScoreRP(0);
 		// console.log("Clicked (JoinGame)")
+		setWait(true);
 		socket.emit("joinQueue", auth.user);
-		// setWait(true);
 	};
 
 	return (

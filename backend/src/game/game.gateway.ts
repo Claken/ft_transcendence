@@ -10,6 +10,7 @@ import { UserDTO } from '../TypeOrm/DTOs/User.dto';
 import { GameDTO } from '../TypeOrm/DTOs/Game.dto';
 import { GameService } from './game.service';
 import { map } from 'rxjs';
+import { Cron, CronExpression } from '@nestjs/schedule';
 
 export var userQueue: UserDTO[] = [];
 
@@ -206,26 +207,6 @@ export class GameGateway
         loginLP: user.name,
         loginRP: '',
       });
-
-      this.server.emit('waitForOpponent', newGame);
     }
-  }
-
-  @SubscribeMessage('createNewGame')
-  async CreateNewGame(client: any, user1: UserDTO, user2: UserDTO) {
-    userQueue.slice(0, 2); //TODO: vérifier de bien supprimer les users
-    console.log('CreateNewGame');
-    console.log('user id 1 = ' + user1.id); //TODO:
-    console.log('user id 2 = ' + user2.id); //TODO:
-    const newGame: GameDTO = {
-      loginLP: user1.name,
-      loginRP: user2.name,
-    };
-    user1.inQueue = false;
-    user2.inQueue = false;
-    user1.inGame = true;
-    user2.inGame = true;
-    await this.gameService.create(newGame);
-    this.server.emit('createdGame', newGame);
   }
 }

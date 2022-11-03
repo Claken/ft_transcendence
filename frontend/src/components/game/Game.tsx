@@ -23,6 +23,7 @@ const Game = (
 	const [abort, setAbort] = useState(false);
 	const [drawCanvas, setdrawCanvas] = useState(false);
 	const [game, setGame] = useState<IGame>(null);
+	const [games, setGames] = useState<IGame[]>([]);
 	const auth = useAuth();
 	const { gameId } = useParams();
 	const [lock, setLock] = useState<boolean>(false);
