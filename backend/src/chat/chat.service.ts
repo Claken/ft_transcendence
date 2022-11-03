@@ -5,8 +5,6 @@ import { IChatRoom, ChatRoomEntity } from '../TypeOrm/Entities/chat.entity';
 import { CreateRoomDto } from '../TypeOrm/DTOs/chat.dto'
 import { UsersService } from 'src/users/users.service';
 
-// import { Repository } from 'typeorm'
-
 @Injectable()
 export class ChatService {
 	constructor(
@@ -15,15 +13,15 @@ export class ChatService {
 	  	) {}
 
 	  async findAllChatRooms(): Promise<ChatRoomEntity[]> {
-		return await this.chatRepo.find({relations: ['owner'/*, 'members'*/]});
+		return await this.chatRepo.find({relations: ['owner', 'members']});
 	  }
 
 	  async findOneChatRoomByName(name: string): Promise<ChatRoomEntity> {
-		return await this.chatRepo.findOneBy({chatRoomName: name});
+		return await this.chatRepo.findOne({where: {chatRoomName: name}, relations: ['owner', 'members'],});
 	  }
 
 	  async findOneChatRoomById(id: string): Promise<ChatRoomEntity> {
-		return await this.chatRepo.findOneBy({id});
+		return await this.chatRepo.findOne({where: {id: id}, relations: ['owner', 'members'],});
 	  }
 
 	  async createChatRoom(chatRoom: IChatRoom): Promise<ChatRoomEntity> {

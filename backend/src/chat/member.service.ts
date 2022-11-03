@@ -6,8 +6,6 @@ import { IMember, MemberEntity } from '../TypeOrm/Entities/member.entity'
 import { CreateRoomDto } from '../TypeOrm/DTOs/chat.dto'
 import { UsersService } from 'src/users/users.service';
 
-// import { Repository } from 'typeorm'
-
 @Injectable()
 export class MemberService {
 	constructor(

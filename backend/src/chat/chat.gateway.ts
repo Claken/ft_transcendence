@@ -90,13 +90,11 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 	@SubscribeMessage('createChatRoom')
 	async HandleCreationRoom(@MessageBody() room: CreateRoomDto): Promise<void> {
 
-		const theOwner = await this.usersService.getByName(room.owner);
-		
-		const firstMember = new MemberEntity();
-		firstMember.name = theOwner.name;
-		firstMember.isBan = false;
-		firstMember.isMute = false;
-		this.memberService.createMember(firstMember);
+		const 	theOwner = await this.usersService.getByName(room.owner);
+		// const 	firstMember = new MemberEntity();
+
+		// firstMember.name = theOwner.name;
+		// this.memberService.createMember(firstMember);
 
 		const memberCreated = await this.memberService.getMemberByName(theOwner.name);
 
@@ -104,7 +102,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 			chatRoomName: room.chatRoomName,
 			owner: theOwner,
 			administrators: room.administrators,
-			members: [memberCreated],
+			// members: [memberCreated],
 			isPublic: room.isPublic,
 			password: room.password,			
 		}
@@ -112,7 +110,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 		const theChannel = await this.chatService.findOneChatRoomByName(room.chatRoomName);
 		theOwner.ownedChannels = [theChannel];
 		this.usersService.updateUser(theOwner.id);
-		this.server.emit('sendNewChannel', newChatRoom);
+		this.server.emit('sendNewChannel', theChannel);
 	}
 
 	@SubscribeMessage('deleteChatRoom')
@@ -135,6 +133,9 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 	@SubscribeMessage('getAllChannels')
 	async HandleGettingChannels(client: Socket) : Promise<void> {
 		const Channels = await this.chatService.findAllChatRooms();
+		// console.log('member 0 name');
+		// console.log(Channels[0].owner.name);
+		// console.log(Channels[0].members[0].name);
 		client.emit('sendAllChannels', Channels);
 	}
 

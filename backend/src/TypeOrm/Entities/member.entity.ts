@@ -19,13 +19,13 @@ export class MemberEntity {
 	@Column({ default: false })
 	isMute: boolean;
 
-	@Column()
+	@Column({ nullable: true, default: 0 })
 	timeMute?: number;
 
 	@Column({ default: false })
 	isBan: boolean;
 
-	@Column()
+	@Column({ nullable: true, default: 0 })
 	timeBan?: number;
 
 	@ManyToOne(() => ChatRoomEntity, (Channel: ChatRoomEntity) => Channel.members)
@@ -39,5 +39,5 @@ export interface IMember {
 	timeMute?: number,
 	isBan?: boolean,
 	timeBan?: number,
-	// inChannel?: ChatRoomEntity;
+	inChannel?: ChatRoomEntity;
 }

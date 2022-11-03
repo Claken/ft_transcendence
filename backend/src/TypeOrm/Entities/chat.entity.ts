@@ -5,7 +5,8 @@ import {
 	CreateDateColumn,
 	ManyToOne,
 	OneToMany,
-	JoinTable
+	JoinTable,
+	JoinColumn
 } from 'typeorm';
 import { MemberEntity } from './member.entity';
 import { UsersEntity } from './users.entity';
@@ -26,6 +27,7 @@ export class ChatRoomEntity {
 	administrators?: string;
 
 	@OneToMany(()=> MemberEntity, (Member: MemberEntity) => Member.inChannel)
+	@JoinColumn()
 	members: MemberEntity[];
 
 	@Column({ default: true })

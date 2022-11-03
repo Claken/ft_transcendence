@@ -188,6 +188,7 @@ const ProtoChat = () => {
 	const receiveAllChannels = (channels: any[]) => {
 		let roomsCopy = [...rooms];
 		channels.forEach(element => {
+			// console.log(element.members[0].name);
 			const newRoom: IRoom = {
 				active: false,
 				member: false,
@@ -201,7 +202,8 @@ const ProtoChat = () => {
 	}
 
 	const receiveNewChannel = (channel: any) => {
-			
+		
+		// console.log(channel.members[0].name);
 			const newRoom: IRoom = {
 			active: false,
 			member: false,
