@@ -68,10 +68,8 @@ function Account() {
                   </div>
                   <div className="username-settings">
                     <h2>{User}</h2>
-                    <form action="change username">
                       <input type="text" />
                       <button> change usename</button>
-                    </form>
                   </div>
                   <div className="twoFA-settings">
                     <h2>2FA status</h2>
@@ -100,7 +98,6 @@ function Account() {
               </button>
             </div>
           </div>
-
           <div className="right-container">
             <div className="match-history">
               <div className="header">

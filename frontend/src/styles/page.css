@@ -17,23 +17,24 @@ body {
 }
 
 .rectanglelog {
-  border: 1px solid black;
+  border: 1px solid whitesmoke;
   margin-left: auto;
   margin-right: auto;
+  margin-top: 10%;
   width: 310px;
   height: 85px;
   border-radius: 30px;
-  background: rgb(43, 102, 43);
+  background: #196F9F;
 }
 
 .rectangleguest {
-  border: 1px solid black;
+  border: 1px solid whitesmoke;
   margin-left: auto;
   margin-right: auto;
   width: 310px;
   height: 200px;
   border-radius: 30px;
-  background: rgb(43, 102, 43);
+  background: #196F9F;
 }
 
 .login {
@@ -52,6 +53,7 @@ body {
   border-radius: 75px;
   text-align: center;
   background: #3b3b3b;
+  color: whitesmoke;
 }
 
 .blank {
@@ -75,11 +77,11 @@ body {
   cursor: pointer;
   border: none;
   color: white;
-  background: #3b3b3b;
+  background: #523B82;
 }
 
 .btnconfirm:hover {
-  box-shadow: 0 5px 35px 0 #272727;
+  box-shadow: 0 5px 35px 0 whitesmoke;
 }
 
 .profilePic {

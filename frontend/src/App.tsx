@@ -1,6 +1,7 @@
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Pong from "./pages/Pong";
+import Social from "./pages/Social";
 import Channel from "./pages/Channel";
 import Account from "./pages/Account";
 import { AuthProvider } from "./contexts/AuthContext";
@@ -21,8 +22,9 @@ function App() {
 							<Route path="/login" element={<Login />} />
 						</Route>
 						<Route element={<RequiredAuth />}>
-							<Route path="/channel" element={<Channel />} />
 							<Route path="/account" element={<Account />} />
+							<Route path="/social" element={<Social />} />
+							<Route path="/channel" element={<Channel />} />
 							<Route path="/pong" element={<Pong />} />
 						</Route>
 					</Route>
