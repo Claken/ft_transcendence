@@ -24,7 +24,7 @@ async function bootstrap() {
   // app.use(cookieParser());
   app.use(
     session({
-      name: "Pong_Session_Cookie",
+      name: "_Pong_",
       secret: configService.get<string>('SESSION_SECRET'),
       resave: false,
       saveUninitialized: false,

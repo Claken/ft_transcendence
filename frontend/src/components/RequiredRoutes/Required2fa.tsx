@@ -1,15 +1,13 @@
 import { Navigate, useLocation, Outlet } from "react-router-dom";
-import { useAuth } from "../../contexts/AuthContext";
 
-const RequiredAuth = () => {
+const Required2fa = ({ isTwofaEnabled }) => {
 	const location = useLocation();
-	const auth = useAuth();
 
-	return auth.user ? (
+	return isTwofaEnabled.current ? (
 		<Outlet />
 	) : (
 		<Navigate to="/login" state={{ from: location }} replace />
 	);
 };
 
-export default RequiredAuth;
+export default Required2fa

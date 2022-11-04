@@ -7,6 +7,7 @@ import {
   WebSocketServer,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
+import { UserDTO } from 'src/TypeOrm/DTOs/User.dto';
 
 @WebSocketGateway({ cors: '*' })
 export class AuthGateway
@@ -18,13 +19,20 @@ export class AuthGateway
   server: Server;
 
   afterInit(server: Server) {
-    console.log('Auth Server Initialized');
   }
 
   async handleConnection(client: Socket) {}
 
   async handleDisconnect(client: Socket) {}
 
-  @SubscribeMessage('getUser')
-  Login(client: Socket) {}
+  // @SubscribeMessage('sendUser')
+  // Login(client: Socket, user) {
+  //   console.log(user);
+  //   console.log('Imhere!')
+  // }
+
+  @SubscribeMessage('generate-2fa')
+  Login(client: Socket, user: UserDTO) {
+    console.log('Imhere!')
+  }
 }
