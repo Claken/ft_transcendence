@@ -13,7 +13,6 @@ import {
 import { Request, Response } from 'express';
 import { UserDTO, TwoFACodeDto, RequestWithUser } from 'src/TypeOrm/DTOs/User.dto';
 import { UsersService } from 'src/users/users.service';
-import { AuthService } from '../auth.service';
 import { AuthenticatedGuard } from '../guards/fortytwo.guard';
 import { TwoFactorAuthenticationService } from './two-factor-authentication.service';
 
@@ -23,18 +22,16 @@ export class TwoFactorAuthenticationController {
   constructor(
     private readonly twoFAService: TwoFactorAuthenticationService,
     private readonly usersService: UsersService,
-    private readonly authService: AuthService,
   ) {}
 
-  @Post('generate')
-  @UseGuards(AuthenticatedGuard)
-  async register(@Res() response: Response, @Req() request: Request) {
-    const { otpauthUrl } = await this.twoFAService.generateTwoFASecret(
-      request.user,
-    );
-
-    return this.twoFAService.pipeQrCodeStream(response, otpauthUrl); //TODO: return otpauthUrl? and generate href in frontend
-  }
+  // @Post('generate')
+  // @UseGuards(AuthenticatedGuard)
+  // async register(@Res() response: Response, @Req() request: Request) {
+  //   const { otpauthUrl } = await this.twoFAService.generateTwoFASecret(
+  //     request.user,
+  //   );
+  //   return this.twoFAService.pipeQrCodeStream(response, otpauthUrl);
+  // }
 
   @Post('turn-on')
   @HttpCode(200)
@@ -51,7 +48,7 @@ export class TwoFactorAuthenticationController {
       throw new UnauthorizedException('Wrong authentication code');
     }
 
-    await this.usersService.turnOnTwoFA(request.user.id);
+    await this.usersService.turnOnOffTwoFA(request.user.id);
   }
 
   @Post('authenticate')
