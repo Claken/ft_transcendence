@@ -8,7 +8,6 @@ import {
   WebSocketServer,
 } from '@nestjs/websockets';
 import { authenticator } from 'otplib';
-import { toBuffer, toCanvas, toDataURL, toString } from 'qrcode';
 import { Server, Socket } from 'socket.io';
 import { UserDTO } from 'src/TypeOrm/DTOs/User.dto';
 import { UsersService } from 'src/users/users.service';
@@ -35,29 +34,31 @@ export class AuthGateway
 
   @SubscribeMessage('generate-2fa')
   async generate2fa(client: Socket, user: UserDTO) {
-    if (user.isTwoFAEnabled) {
       const { otpauthUrl } = await this.twoFAService.generateTwoFASecret(user);
-      this.server.emit('twofa-generated', otpauthUrl);
-    }
-    else
-      this.server.emit('twofa-generated', null);
+      this.server.emit('2fa-generated', otpauthUrl);
   }
 
   @SubscribeMessage('toggle-2fa')
   async toggle2fa(client: Socket, user: UserDTO) {
     await this.usersService.turnOnOffTwoFA(user.id);
     const newUser = await this.usersService.getById(user.id);
-    console.log(newUser.isTwoFAEnabled);
+    if (newUser.isTwoFAEnabled && !newUser.twoFASecret) {
+      this.generate2fa(client, user);
+    }
     this.server.emit('twofa-toggled', newUser);
   }
 
-  @SubscribeMessage('setFirst-2fa')
-  async setFirstTwoFa(client: Socket, user: UserDTO) {
-    const otpauthUrl = authenticator.keyuri(
-      user.name,
-      this.configService.get('TWO_FACTOR_AUTHENTICATION_APP_NAME'),
-      user.twoFASecret,
-    );
-    this.server.emit('first-2fa-set', otpauthUrl);
+  @SubscribeMessage('set-2fa-url')
+  async setTwoFaUrl(client: Socket, user: UserDTO) {
+    if (user.twoFASecret) {
+      const otpauthUrl = authenticator.keyuri(
+        user.name,
+        this.configService.get('TWO_FACTOR_AUTHENTICATION_APP_NAME'),
+        user.twoFASecret,
+      );
+      this.server.emit('2fa-url-set', otpauthUrl);
+    }
+    else
+      this.server.emit('2fa-url-set', null);
   }
 }
