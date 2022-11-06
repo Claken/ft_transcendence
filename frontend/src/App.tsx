@@ -9,27 +9,30 @@ import RequiredAuth from "./components/auth/RequiredAuth";
 import RequiredOffline from "./components/auth/RequiredOffline";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Layout from "./pages/Layout";
+import { ChatProvider } from "./contexts/ChatContext";
 
 function App() {
 	return (
 		<AuthProvider>
-			<BrowserRouter>
-				<Routes>
-					<Route path="/" element={<Layout />}>
-						<Route index element={<Home />} />
-						<Route path="*" element={<Home />} />
-						<Route element={<RequiredOffline />}>
-							<Route path="/login" element={<Login />} />
+			<ChatProvider>
+				<BrowserRouter>
+					<Routes>
+						<Route path="/" element={<Layout />}>
+							<Route index element={<Home />} />
+							<Route path="*" element={<Home />} />
+							<Route element={<RequiredOffline />}>
+								<Route path="/login" element={<Login />} />
+							</Route>
+							<Route element={<RequiredAuth />}>
+								<Route path="/channel" element={<Channel />} />
+								<Route path="/account" element={<Account />} />
+								<Route path="/pong" element={<Pong />} />
+								<Route path="/directmessages" element={<DirectMessages />} />
+							</Route>
 						</Route>
-						<Route element={<RequiredAuth />}>
-							<Route path="/channel" element={<Channel />} />
-							<Route path="/account" element={<Account />} />
-							<Route path="/pong" element={<Pong />} />
-							<Route path="/directmessages" element={<DirectMessages />} />
-						</Route>
-					</Route>
-				</Routes>
-			</BrowserRouter>
+					</Routes>
+				</BrowserRouter>
+			</ChatProvider>
 		</AuthProvider>
 	);
 }

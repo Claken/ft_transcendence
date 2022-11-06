@@ -1,52 +1,58 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
-import { useAuth } from "../../contexts/AuthContext";
+import axios from "../../axios.config";
+import { useChat } from "../../contexts/ChatContext";
 import DmChat from "./DmChat";
+import DmUserButton from "./DmUserButton";
 import { IUser } from "../../interfaces/user.interface";
+import DmSearch from "./DmSearch";
 import "../../styles/dmchat.css";
 
 function DmList() {
   const [Users, setUsers] = useState<IUser[]>([]);
-  const [IdUser, setIdUser] = useState(0);
   const [ShowDm, setShowDm] = useState(false);
-  const auth = useAuth();
+  const chat = useChat();
 
   useEffect(() => {
     const getData = async () => {
-      const res = await axios("http://localhost:3001/users");
-      setUsers(res.data);
+      await axios
+        .get("/users")
+        .then((res) => {
+          setUsers(res.data);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
     };
     getData();
   }, []);
 
-  const Show = (id: number) => {
-    setIdUser(id);
+  const isMe = (id): boolean => {
+    if (id === chat.me.id) return true;
+    return false;
+  };
+
+  const Show = (user: IUser) => {
+    chat.changeDm(user);
     setShowDm(true);
   };
 
   return (
     <div>
-      <ul>
-        {Users.map((user) =>
-          ShowDm
-            ? user.id === IdUser && <DmChat key={user.id} user={user} />
-            : user.status === "online"
-            ? auth.user.name !== user.name && (
-                <li key={user.id}>
-                  <button className="btn" onClick={() => Show(user.id)}>
-                    <div className="cercleconnect">{user.name}</div>
-                  </button>
-                </li>
-              )
-            : auth.user.name !== user.name && (
-                <li key={user.id}>
-                  <button className="btn" onClick={() => Show(user.id)}>
-									<div className="cercledisconnect">{user.name}</div>
-                  </button>
-                </li>
-              )
-        )}
-      </ul>
+      {ShowDm ? (
+        <DmChat />
+      ) : (
+				<div className="">
+					<DmSearch changeUsers={setUsers} />
+        	<ul>
+        	  {Users.map(
+        	    (user) =>
+        	      !isMe(user.id) && (
+        	        <DmUserButton key={user.id} user={user} show={Show} />
+        	      )
+        	  )}
+        	</ul>
+				</div>
+      )}
     </div>
   );
 }

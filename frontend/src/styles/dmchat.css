@@ -1,23 +1,33 @@
 .cercleconnect {
   display: flex;
+	width: 150px;
+	height: 50px;
+	justify-content: center;
+  align-items: center;
+  text-align: center;
 }
 
 .cercleconnect::after {
   content: " ";
-  height: 5px;
-  width: 5px;
+  height: 7px;
+  width: 7px;
   border-radius: 100%;
   background-color: rgb(40, 129, 40);
 }
 
 .cercledisconnect {
   display: flex;
+	width: 150px;
+	height: 50px;
+	justify-content: center;
+  align-items: center;
+  text-align: center;
 }
 
 .cercledisconnect::after {
   content: " ";
-  height: 5px;
-  width: 5px;
+  height: 7px;
+  width: 7px;
   border-radius: 100%;
   background-color: rgb(170, 28, 40);
 }
@@ -45,11 +55,10 @@
   margin-right: auto;
   background: #3b3b3b;
   border: 1px solid #000000;
-
 }
 
 .scroll {
-	height: 100%;
+  height: 100%;
   width: 100%;
   overflow-y: scroll;
   overflow-x: hidden;
@@ -60,9 +69,9 @@
 }
 
 .dmcenter {
-	height: 100%;
+  height: 100%;
   width: 100%;
-	display: flex;
+  display: flex;
   flex-direction: column;
 }
 
@@ -106,4 +115,100 @@
   border-radius: 5px;
   background-color: #333333;
   color: #fff;
+}
+
+.btnbody {
+	min-height: 50px;
+	margin-top: 1vh;
+	display: flex;
+	flex-direction: column;
+	width: 200px;
+  height: 50px;
+	border-radius: 75px 75px 75px 75px;
+	overflow: hidden;
+	background: #333333;
+	transition: height 1s;
+}
+
+.btnbody:hover {
+	height: 100px;
+	border-radius: 25px 25px 25px 25px;
+}
+
+.btnuser {
+	display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+	width: 200px;
+  height: 50px;
+  border-radius: 75px 75px 75px 75px;
+  font-size: 20px;
+  cursor: pointer;
+  border: none;
+  color: white;
+	background: #2e2e2e;
+}
+
+.tourne {
+	width: 30px;
+	height: 30px;
+}
+
+.tourneanim {
+	animation-name: slide;
+	animation-duration: 1s;
+}
+
+@keyframes slide {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.overlay {
+	width: 200px;
+	display: flex;
+	flex-direction: row;
+}
+
+.overlayleft {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  width: 100px;
+  height: 50px;
+  border-radius: 75px 0px 0px 75px;
+  font-size: 15px;
+  cursor: pointer;
+  border: none;
+  color: white;
+  background: #2e2e2e;
+}
+
+.overlayright {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  width: 100px;
+  height: 50px;
+  border-radius: 0px 75px 75px 0px;
+  font-size: 15px;
+  cursor: pointer;
+  border: none;
+  color: white;
+  background: #2e2e2e;
+}
+
+.overlayleft:hover {
+	opacity: 0.5;
+}
+
+.overlayright:hover {
+	opacity: 0.5;
 }
