@@ -44,14 +44,14 @@ function DmChat() {
 
   useEffect(() => {
     const getData = async () => {
-			await axios
-      .get("/dm")
-      .then((res) => {
-        setMessages(res.data);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+      await axios
+        .get("/dm")
+        .then((res) => {
+          setMessages(res.data);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
     };
     getData();
   }, []);
@@ -70,8 +70,8 @@ function DmChat() {
         <ScrollToBottom className="scroll" key={chat.toChat.id}>
           <div className="dmcenter">
             {messages.map((m, i) =>
-              checkDm(m.sender, m.receiver) ? (
-                m.sender === chat.toChat.name ? (
+                checkDm(m.sender, m.receiver) &&
+                (m.sender === chat.toChat.name ? (
                   <p className="displaydm" key={i}>
                     {m.message}
                   </p>
@@ -79,10 +79,7 @@ function DmChat() {
                   <p className="displaymydm" key={i}>
                     {m.message}
                   </p>
-                )
-              ) : (
-                <></>
-              )
+                ))
             )}
           </div>
         </ScrollToBottom>
