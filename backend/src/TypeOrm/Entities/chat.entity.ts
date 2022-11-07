@@ -27,7 +27,7 @@ export class ChatRoomEntity {
 	administrators?: string;
 
 	@OneToMany(()=> MemberEntity, (Member: MemberEntity) => Member.inChannel)
-	@JoinColumn()
+	@JoinColumn() // permet de dire où se trouve l'id des members. Ici; il se trouve dans l'entité Member. Ainsi, on va avoir une colonne MembersId dans notre table
 	members: MemberEntity[];
 
 	@Column({ default: true })

@@ -3,7 +3,8 @@ import {
 	Column,
 	PrimaryGeneratedColumn,
 	CreateDateColumn,
-	ManyToOne
+	ManyToOne,
+	onDelete,
 } from 'typeorm';
 import { ChatRoomEntity } from './chat.entity';
 
@@ -28,7 +29,7 @@ export class MemberEntity {
 	@Column({ nullable: true, default: 0 })
 	timeBan?: number;
 
-	@ManyToOne(() => ChatRoomEntity, (Channel: ChatRoomEntity) => Channel.members)
+	@ManyToOne(() => ChatRoomEntity, (Channel: ChatRoomEntity) => Channel.members, {onDelete: 'CASCADE'})
 	inChannel?: ChatRoomEntity;
 }
 
