@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { io, Socket } from "socket.io-client";
+import { useEffect, useState } from "react";
+import { socket } from "../components/Socket";
 import { useAuth } from "../contexts/AuthContext";
 import "../styles/account.css";
 import { IUser } from "../interfaces/user.interface";
@@ -7,36 +7,28 @@ import { QRCodeCanvas } from "qrcode.react";
 
 function Account() {
 	const auth = useAuth();
-	const [socket, setSocket] = useState<Socket>();
 	const [twoFaUrl, setTwoFaUrl] = useState<string>(null);
-
-	/* ********************************************************* */
-	/*                			Create SOCKET	                 */
-	/* ********************************************************* */
-	useEffect(() => {
-		console.log("connect");
-		const newSocket = io("http://localhost:3001");
-		setSocket(newSocket);
-	}, [setSocket]);
 
 	/* ********************************************************* */
 	/*                Set first time TwoFA URL                   */
 	/* ********************************************************* */
 	useEffect(() => {
-		socket?.emit("set-2fa-url", auth.user);
-	}, [auth?.user?.isTwoFAEnabled]);
+		console.log(socket)
+		socket.emit("set-2fa-url", auth.user);
+	}, [auth.user.isTwoFAEnabled]);
 
-	socket?.on("2fa-url-set", (otpauthUrl: string) => {
+	socket.on("2fa-url-set", (otpauthUrl: string) => {
 		setTwoFaUrl(otpauthUrl);
+		console.log("2fa-url-set");
 	});
 
 	/* ********************************************************* */
 	/*                     Set TwoFA URL                         */
 	/* ********************************************************* */
 	const generateTwoFa = () => {
-		socket?.emit("generate-2fa", auth.user);
+		socket.emit("generate-2fa", auth.user);
 	};
-	socket?.on("2fa-generated", (otpauthUrl: string) => {
+	socket.on("2fa-generated", (otpauthUrl: string) => {
 		setTwoFaUrl(otpauthUrl);
 	});
 
@@ -45,10 +37,10 @@ function Account() {
 	/* ********************************************************* */
 	const toggleTwoFa = () => {
 		if (auth?.user) {
-			socket?.emit("toggle-2fa", auth.user);
+			socket.emit("toggle-2fa", auth.user);
 		}
 	};
-	socket?.on("twofa-toggled", (user: IUser) => {
+	socket.on("twofa-toggled", (user: IUser) => {
 		auth.setUser(user);
 	});
 
@@ -65,10 +57,11 @@ function Account() {
 				>
 					2fa
 				</button>
-				{auth?.user?.isTwoFAEnabled ? (
+				
+				{auth.user.isTwoFAEnabled ? (
 					<>
 						<QRCodeCanvas
-							// size={84}
+							size={84}
 							level="Q"
 							bgColor="#254642"
 							value={twoFaUrl}
