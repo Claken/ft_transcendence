@@ -30,6 +30,11 @@ export class MemberService {
 			return await this.memberRepo.save(chatRoom);
 		}
 
+		async updateMember(id: string): Promise<MemberEntity> {
+			const member = await this.getMemberById(id);
+			return await this.memberRepo.save(member);
+		}
+
 	  	async deleteMemberByName(name: string) : Promise<void> {
 			await this.memberRepo.delete({name: name});
 		}

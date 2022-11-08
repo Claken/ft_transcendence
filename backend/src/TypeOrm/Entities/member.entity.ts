@@ -4,7 +4,6 @@ import {
 	PrimaryGeneratedColumn,
 	CreateDateColumn,
 	ManyToOne,
-	onDelete,
 } from 'typeorm';
 import { ChatRoomEntity } from './chat.entity';
 
