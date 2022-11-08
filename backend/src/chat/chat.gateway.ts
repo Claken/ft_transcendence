@@ -92,16 +92,6 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
 		const 	theOwner = await this.usersService.getByName(room.owner);
 
-		// const	firstMember : IMember = {
-		// 	name: theOwner.name,
-		// 	isMute: false,
-		// 	isBan: false,
-		// }
-
-		// this.memberService.createMember(firstMember);
-
-		const memberCreated = await this.memberService.getMemberByName(theOwner.name);
-
 		const newChatRoom: IChatRoom = {
 			chatRoomName: room.chatRoomName,
 			owner: theOwner,
@@ -113,7 +103,14 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 		this.chatService.createChatRoom(newChatRoom);
 		const theChannel = await this.chatService.findOneChatRoomByName(room.chatRoomName);
 		theOwner.ownedChannels = [theChannel];
-		// memberCreated.inChannel = theChannel;
+
+		this.memberService.createMember({name: theOwner.name, isMute: false, isBan: false, inChannel: theChannel});
+
+		const memberCreated = await this.memberService.getMemberByName(theOwner.name);
+
+		theChannel.members = [memberCreated];
+
+
 		this.usersService.updateUser(theOwner.id);
 		// this.memberService.updateMember(memberCreated.id);
 		this.server.emit('sendNewChannel', theChannel);
