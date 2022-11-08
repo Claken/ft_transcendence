@@ -95,3 +95,7 @@ body {
   max-height: 17%;
   border-radius: 50%;
 }
+.homeContainer {
+  text-align: center;
+  color: whitesmoke;
+}

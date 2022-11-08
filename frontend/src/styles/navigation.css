@@ -18,8 +18,8 @@
 	list-style: none;
 	display: flex;
 	width: 100%;
-  gap: 20%;
-  margin: 10px 20px;
+  	gap: 10%;
+  	margin: 10px 20px;
 
 }
 .nav li {
@@ -28,6 +28,7 @@
 	align-items: center;
 	height: 100%;
 	width: 50%;
+	max-width: 50%;
 	background-color: #196F9F;
 	border-radius: 70px;
 	text-align: center;

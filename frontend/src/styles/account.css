@@ -1,15 +1,19 @@
+* {
+  box-sizing: border-box;
+  font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif
+}
+
 .container {
-  width: 80%;
-  max-width: 100%;
-  margin-top: 50px;
-  height: calc(100vh - 250px);
+  width: 90%;
+  margin-top: 3%;
+  height: 83vh;
   background-color: #333333;
   display: flex;
   border-radius: 30px;
   border: 2px solid whitesmoke;
   justify-content: center;
-  margin-left: 10%;
-  background-color: #279cdd;
+  margin-left: 5%;
+  background-color: #5cb4e5;
 }
 
 .profile-container {
