@@ -1,4 +1,5 @@
-import { Controller, Get, Redirect, Req, UseGuards } from '@nestjs/common';
+import { Controller, Get, Redirect, Req, Res, UseGuards } from '@nestjs/common';
+import { Response } from 'express';
 import { RequestWithUser } from 'src/TypeOrm/DTOs/User.dto';
 import { UsersService } from 'src/users/users.service';
 import { FortyTwoAuthGuard } from './guards/fortytwo.guard';
@@ -15,11 +16,21 @@ export class AuthController {
 
   @UseGuards(FortyTwoAuthGuard)
   @Get('callback')
-  @Redirect('http://localhost:3000')
+  @Redirect('verify2fa')
   login(@Req() req: RequestWithUser) {
     if (req.user) {
       this.usersService.updateStatusUser(req.user.id, 'online');
     }
+    return req.user;
+  }
+
+  @Get('verify2fa')
+  verify2fa(@Req() req: RequestWithUser, @Res() res: Response) {
+    const { isTwoFAEnabled } = req.user;
+    if (isTwoFAEnabled)
+      res.redirect('http://localhost:3000/Twofa')
+    else
+      res.redirect('http://localhost:3000/')
     return req.user;
   }
 

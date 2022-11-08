@@ -13,6 +13,7 @@ export class FortyTwoAuthGuard extends AuthGuard('42') {
     const activate = (await super.canActivate(context)) as boolean;
     const request = context.switchToHttp().getRequest();
     // initialize the server-side session and save it in memory
+    console.log("FortyTwoAuthGuard")
     await super.logIn(request);
     return activate;
   }

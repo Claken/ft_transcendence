@@ -44,12 +44,6 @@ export class FortyTwoStrategy extends PassportStrategy(Strategy, '42') {
       pictureUrl: photos[0].value,
     };
     const { user, isSecondFactorAuthenticated } = await this.authService.register(userApi);
-    if (!user.isTwoFAEnabled) {
-      return user;
-    }
-    if (isSecondFactorAuthenticated) {
-      return user;
-    }
-    return null;
+    return user;
   }
 }

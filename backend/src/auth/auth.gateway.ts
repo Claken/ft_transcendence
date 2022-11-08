@@ -1,3 +1,4 @@
+import { ParseIntPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import {
   OnGatewayConnection,
@@ -60,5 +61,10 @@ export class AuthGateway
     }
     else
       this.server.emit('2fa-url-set', null);
+  }
+
+  @SubscribeMessage('check-secret-code')
+  checkSecretCode(client: Socket, pair) {
+      console.log(pair[0].isTwoFAEnabled+": "+pair[1]);
   }
 }
