@@ -8,7 +8,7 @@ function Home() {
 
 	return (
 		<div className="homeContainer">
-			<h1>Home</h1>
+			<h1>Home</h1>			
 			<ul>
 				<li>auth.user : | {auth?.user?.name} | </li>
 				<li>__ List Users __</li>

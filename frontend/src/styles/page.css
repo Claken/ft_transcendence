@@ -84,12 +84,6 @@ body {
   box-shadow: 0 5px 35px 0 whitesmoke;
 }
 
-.profilePic {
-  max-width: 9%;
-  max-height: 9%;
-  border-radius: 50%;
-}
-
 .guestPic {
   max-width: 17%;
   max-height: 17%;

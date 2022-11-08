@@ -8,10 +8,6 @@ import "../styles/navigation.css";
 function Navigation() {
   const auth = useAuth();
 
-  const handleLogout = () => {
-    auth.logout();
-  };
-
   const [stylePic, setStylePic] = useState<string>("guestPic");
   // TODO: change the fact that stylepic depends on size upload
 
@@ -27,8 +23,8 @@ function Navigation() {
       {(auth.user && (
         <>
           <ul>
-				<CustomLink to="/Social">Social</CustomLink>
-				<CustomLink to="/Account">Profil</CustomLink>
+            <CustomLink to="/Social">Social</CustomLink>
+            <CustomLink to="/Account">Profile</CustomLink>
           </ul>
           <div className="logo">
             <Link to="/pong" style={{ padding: "0.5px", margin: "0.5px" }}>
@@ -41,6 +37,7 @@ function Navigation() {
               <div className="userName">
                 <h3>{auth.user.name}</h3>
               </div>
+
               <div className="userProfilePicture">
                 <img
                   className={stylePic}
