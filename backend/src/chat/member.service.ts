@@ -25,9 +25,12 @@ export class MemberService {
 			return await this.memberRepo.findOneBy({name: memberName});
 		}
 
-		async createMember(chatRoom: IMember): Promise<MemberEntity> {
-			const newMember = this.memberRepo.create(chatRoom);
-			return await this.memberRepo.save(chatRoom);
+		async createMember(member: IMember): Promise<MemberEntity> {
+			return this.memberRepo.create(member);
+		}
+
+		async saveMember(member: MemberEntity) : Promise<MemberEntity> {
+			return await this.memberRepo.save(member);
 		}
 
 		async updateMember(id: string): Promise<MemberEntity> {

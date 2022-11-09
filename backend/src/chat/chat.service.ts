@@ -25,8 +25,10 @@ export class ChatService {
 	  }
 
 	  async createChatRoom(chatRoom: IChatRoom): Promise<ChatRoomEntity> {
-		
-		const newChat = this.chatRepo.create(chatRoom);
+		return this.chatRepo.create(chatRoom);
+	  }
+
+	  async saveChatRoom(chatRoom: ChatRoomEntity) : Promise<ChatRoomEntity> {
 		return await this.chatRepo.save(chatRoom);
 	  }
 
