@@ -27,7 +27,6 @@ volumes:
     #   device:
 
 services:
-
   frontend:
     build: frontend/.
     image: frontend
@@ -47,7 +46,7 @@ services:
     ports:
       - 3001:3001
     # depends_on:
-      # - postgres
+    # - postgres
     depends_on:
       postgres:
         condition: service_healthy
@@ -80,10 +79,9 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-      
 
   pgadmin:
-    image: dpage/pgadmin4:6.14
+    image: dpage/pgadmin4:6.15
     restart: always
     env_file:
       - ./.env

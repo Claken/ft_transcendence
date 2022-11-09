@@ -1,7 +1,7 @@
 import axios from "../axios.config";
 import React, { useContext, useEffect, useState } from "react";
 import { IUser } from "../interfaces/user.interface";
-import guestPic from "../assets/img/profile1.jpg";
+import guestPic from "../assets/img/profile.jpeg";
 
 const AuthContext = React.createContext(null);
 
