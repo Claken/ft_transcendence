@@ -66,10 +66,20 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 	/* ************************************************************************* */
 
 	@SubscribeMessage('joinRoom')
-	HandleJoinRoom(client: Socket, room: string): void {
+	async HandleJoinRoom(client: Socket, infos: {room: string, user: string}): Promise<void> {
 		console.log('joinRoom');
-		client.join(room);
-		client.emit('joinedRoom', room);
+		client.join(infos.room);
+
+		let	channelJoined = await this.chatService.findOneChatRoomByName(infos.room);
+
+		const memberCreated = await this.memberService.createMember({name: infos.user, isMute: false, isBan: false});
+		await this.memberService.saveMember(memberCreated);
+
+		channelJoined.members.push(memberCreated);
+
+		await this.chatService.saveChatRoom(channelJoined);
+		
+		client.emit('joinedRoom', infos.room);
 	}
 
   	/* ************************************************************************* */

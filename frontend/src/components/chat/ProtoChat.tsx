@@ -182,16 +182,21 @@ const ProtoChat = () => {
 		if (activeRoom.member)
 			socket?.emit('leaveRoom', activeRoom.name);
 		else
-			socket?.emit('joinRoom', activeRoom.name);
+			socket?.emit('joinRoom', {room: activeRoom.name, user: username});
 	}
 
 	const receiveAllChannels = (channels: any[]) => {
 		let roomsCopy = [...rooms];
+
 		channels.forEach(element => {
-			// console.log(element.members[0].name);
+			
+			let isMemberOrNot: boolean = false;
+			if (element.members.find((member: any) => member.name === username) !== undefined)
+				isMemberOrNot = true;
+
 			const newRoom: IRoom = {
 				active: false,
-				member: false,
+				member: isMemberOrNot,
 				owner: element.owner.name,
 				name: element.chatRoomName,
 				messages: [],
@@ -203,13 +208,16 @@ const ProtoChat = () => {
 
 	const receiveNewChannel = (channel: any) => {
 		
-		// console.log(channel.members[0].name);
-			const newRoom: IRoom = {
-			active: false,
-			member: false,
-			owner: channel.owner.name,
-			name: channel.chatRoomName,
-			messages: [],
+		let isMemberOrNot: boolean = false;
+		if (channel.members.find((member: any) => member.name === username) !== undefined)
+			isMemberOrNot = true;
+
+		const newRoom: IRoom = {
+		active: false,
+		member: isMemberOrNot,
+		owner: channel.owner.name,
+		name: channel.chatRoomName,
+		messages: [],
 		};
 		const roomsCopy = [...rooms];
 		roomsCopy.push(newRoom);
