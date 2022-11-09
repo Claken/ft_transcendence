@@ -1,14 +1,12 @@
 import React from "react";
-import ProtoChat from "../components/chat/ProtoChat";
-import AppTestSockets from "../components/chat/webSocketTester";
 
 function Channel() {
-  return (
-    <div>
-      <ProtoChat />
-      {/* < AppTestSockets /> */}
-    </div>
-  );
+
+	return (
+		<div>
+			<h1>Channel</h1>
+		</div>
+	);
 }
 
 export default Channel;

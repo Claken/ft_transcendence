@@ -24,17 +24,18 @@ function DmSearch(props) {
   const modifyDmInput = (event) => {
     const input = event.currentTarget.value;
     setSearchInput(input);
-    props.changeUsers(users.filter((user) => !(user.name.search(input))));
+    props.changeUsers(users.filter((user) => !user.name.search(input)));
   };
 
   return (
-    <input
-      className="searchinput"
-      type="text"
-      placeholder="search players..."
-      value={searchInput}
-      onChange={modifyDmInput}
-    ></input>
+    <div className="bodysearchinput">
+      <input className="searchinput"
+        type="text"
+        placeholder="search players..."
+        value={searchInput}
+        onChange={modifyDmInput}
+      ></input>
+    </div>
   );
 }
 

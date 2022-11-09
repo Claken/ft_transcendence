@@ -9,7 +9,6 @@ import "../../styles/dmchat.css";
 
 function DmList() {
   const [Users, setUsers] = useState<IUser[]>([]);
-  const [ShowDm, setShowDm] = useState(false);
   const chat = useChat();
 
   useEffect(() => {
@@ -31,28 +30,25 @@ function DmList() {
     return false;
   };
 
-  const Show = (user: IUser) => {
-    chat.changeDm(user);
-    setShowDm(true);
+  const changeTarget = (user: IUser) => {
+    chat.setTarget(user);
+		chat.setHaveTarget(true);
+		chat.setLoading(true);
   };
 
   return (
     <div>
-      {ShowDm ? (
-        <DmChat />
-      ) : (
-				<div className="">
+      <ul className="btndisplay">
+				<li className="addspace">
 					<DmSearch changeUsers={setUsers} />
-        	<ul>
-        	  {Users.map(
-        	    (user) =>
-        	      !isMe(user.id) && (
-        	        <DmUserButton key={user.id} user={user} show={Show} />
-        	      )
-        	  )}
-        	</ul>
-				</div>
-      )}
+				</li>
+        {Users.map(
+          (user) =>
+            !isMe(user.id) && (
+              <DmUserButton key={user.id} user={user} changeTarget={changeTarget} />
+            )
+        )}
+      </ul>
     </div>
   );
 }

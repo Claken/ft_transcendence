@@ -68,7 +68,7 @@ export const AuthProvider = ({ children }) => {
 
 	const getUserByname = async (name: string) => {
 		await axios
-			.get("/users/name/" + name)
+			.get("/users/" + name)
 			.then((res) => {
 				if (res.data) {
 					setUser(null);

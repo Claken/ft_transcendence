@@ -8,7 +8,6 @@ import { AuthModule } from './auth/auth.module';
 import { entities } from './TypeOrm';
 import { GameModule } from './game/game.module';
 import { PassportModule } from '@nestjs/passport';
-import { ScheduleModule } from '@nestjs/schedule';
 import { DmModule } from './dm/dm.module';
 
 @Module({
@@ -36,11 +35,10 @@ import { DmModule } from './dm/dm.module';
     PassportModule.register({
       session: true,
     }),
-    ScheduleModule.forRoot(),
     UsersModule,
     AuthModule,
     GameModule,
-		DmModule,
+		DmModule
   ],
   controllers: [AppController],
   providers: [AppService],

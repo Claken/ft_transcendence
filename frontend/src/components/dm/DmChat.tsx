@@ -15,15 +15,16 @@ function DmChat() {
 
   const checkDm = (checkSender: string, checkReceiver: string): boolean => {
     if (
-      (checkSender === chat.toChat.name && checkReceiver === chat.me.name) ||
-      (checkSender === chat.me.name && checkReceiver === chat.toChat.name)
+      (checkSender === chat.target.name && checkReceiver === chat.me.name) ||
+      (checkSender === chat.me.name && checkReceiver === chat.target.name)
     )
       return true;
     return false;
   };
 
   const receiveMessage = (dm: Dm) => {
-    if (checkDm(dm.sender, dm.receiver)) setMessages([...messages, dm]);
+    if (dm.receiver === chat.me.name || dm.sender === chat.me.name)
+      setMessages([...messages, dm]);
   };
 
   const modifyDmInput = (event) => {
@@ -32,9 +33,11 @@ function DmChat() {
   };
 
   const enterDmInput = (sender: string, receiver: string) => {
-    const dm: Dm = { sender, receiver, message: dmInput };
-    socket?.emit("message_dm", dm);
-    setDmInput("");
+    if (dmInput !== "") {
+      const dm: Dm = { sender, receiver, message: dmInput };
+      socket.emit("message_dm", dm);
+      setDmInput("");
+    }
   };
 
   useEffect(() => {
@@ -45,16 +48,17 @@ function DmChat() {
   useEffect(() => {
     const getData = async () => {
       await axios
-        .get("/dm")
+        .get(`/dm/${chat.me.name}/${chat.target.name}`)
         .then((res) => {
           setMessages(res.data);
+          chat.setLoading(false);
         })
         .catch((error) => {
           console.log(error);
         });
     };
     getData();
-  }, []);
+  }, [chat.target, chat.me]);
 
   useEffect(() => {
     socket?.on("message_dm", receiveMessage);
@@ -65,13 +69,15 @@ function DmChat() {
 
   return (
     <div className="dmbody">
-      <div className="dmheader">{chat.toChat.name}</div>
+      <div className="dmheader">{chat.target.name}</div>
       <div className="dmchat">
-        <ScrollToBottom className="scroll" key={chat.toChat.id}>
-          <div className="dmcenter">
-            {messages.map((m, i) =>
-                checkDm(m.sender, m.receiver) &&
-                (m.sender === chat.toChat.name ? (
+        {chat.loading ? (
+          <p className="loadingbody">Loading...</p>
+        ) : (
+          <ScrollToBottom className="scroll" key={chat.target.id}>
+            <div className="dmcenter">
+              {messages.map((m, i) =>
+                m.sender === chat.target.name ? (
                   <p className="displaydm" key={i}>
                     {m.message}
                   </p>
@@ -79,23 +85,28 @@ function DmChat() {
                   <p className="displaymydm" key={i}>
                     {m.message}
                   </p>
-                ))
-            )}
-          </div>
-        </ScrollToBottom>
+                )
+              )}
+            </div>
+          </ScrollToBottom>
+        )}
       </div>
-      <div className="dminput">
+      <div className="dminputbody">
         <input
+          className="dminput"
           type="text"
-          placeholder="..."
+          placeholder="write messages..."
           value={dmInput}
           onChange={modifyDmInput}
           onKeyPress={(event) => {
             event.key === "Enter" &&
-              enterDmInput(chat.me.name, chat.toChat.name);
+              enterDmInput(chat.me.name, chat.target.name);
           }}
         ></input>
-        <button onClick={() => enterDmInput(chat.me.name, chat.toChat.name)}>
+        <button
+          className="btnsend"
+          onClick={() => enterDmInput(chat.me.name, chat.target.name)}
+        >
           send
         </button>
       </div>

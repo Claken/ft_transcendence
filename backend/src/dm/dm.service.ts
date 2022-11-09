@@ -17,4 +17,13 @@ export class DmService {
 	async historyDm(): Promise<DmEntity[]> {
     return await this.dmRepo.find();
   }
+
+	async getByName(me: string, target: string): Promise<DmEntity[]> {
+    return await this.dmRepo.find({
+			where: [
+				{sender: me, receiver: target},
+				{sender: target, receiver: me},
+			]
+		});
+  }
 }

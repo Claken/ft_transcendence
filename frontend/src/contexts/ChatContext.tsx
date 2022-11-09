@@ -6,20 +6,18 @@ const ChatContext = React.createContext(null);
 
 export const ChatProvider = ({ children }) => {
 	const auth = useAuth();
-	const [toChat, setToChat] = useState<IUser>();
+	const [target, setTarget] = useState<IUser>();
+	const [haveTarget, setHaveTarget] = useState<boolean>(false);
 	const [me, setMe] = useState<IUser>(auth.user);
+	const [loading, setLoading] = useState<boolean>(false);
 
 	useEffect(() => {
 		setMe(auth.user);
 	}, [auth.user]);
 
-	const changeDm = (user: IUser) => {
-		setToChat(user);
-	};
-
 	return (
 		<ChatContext.Provider
-			value={{ me, toChat, changeDm }}
+			value={{ me, target, setTarget , haveTarget, setHaveTarget, loading, setLoading}}
 		>
 			{children}
 		</ChatContext.Provider>
