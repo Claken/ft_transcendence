@@ -10,7 +10,6 @@ function Account() {
   const handleLogout = () => {
     auth.logout();
   };
-<<<<<<< HEAD
   const [stylePic, setStylePic] = useState<string>("guestPic");
   useEffect(() => {
     if (auth.user && auth.user.login) {
@@ -18,8 +17,6 @@ function Account() {
     }
   }, [auth.user]);
 
-=======
->>>>>>> vileleu
   const { isOpen, toggle } = useModal();
   const User = "Edouard";
   const Win = "10";
