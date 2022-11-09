@@ -11,6 +11,7 @@ COPY package.json package-lock.json ./
 RUN npm install
 RUN npm install -S react-router-dom
 RUN npm install axios
+RUN npm install -S react-scroll-to-bottom
 # RUN npm cache clear –force
 # RUN npm i sass --save-dev (pour le scss)
 # If you are building your code for production
