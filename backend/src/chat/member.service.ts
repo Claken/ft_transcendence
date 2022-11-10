@@ -38,8 +38,10 @@ export class MemberService {
 			return await this.memberRepo.save(member);
 		}
 
-	  	async deleteMemberByName(name: string) : Promise<void> {
-			await this.memberRepo.delete({name: name});
+	  	async deleteMemberByNameInChannel(name: string, roomId: string) : Promise<void> {
+			const member = await this.memberRepo.findOne({where: {name: name, inChannelId: roomId}, relations: ['inChannel']})
+			await this.memberRepo.delete({member});
+
 		}
 
 		async deleteMemberById(id: string) : Promise<void> {

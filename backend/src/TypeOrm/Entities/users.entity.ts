@@ -29,7 +29,7 @@ export class UsersEntity {
   @Column({ default: 'online' })
   status?: string;
 
-  @OneToMany(() => ChatRoomEntity, Chat => Chat.owner)
+  @OneToMany(() => ChatRoomEntity, (Chat: ChatRoomEntity) => Chat.owner)
   @JoinColumn()
   ownedChannels?: ChatRoomEntity[];
 

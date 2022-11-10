@@ -180,7 +180,7 @@ const ProtoChat = () => {
 		event.preventDefault();
 		const activeRoom = findActiveRoom();
 		if (activeRoom.member)
-			socket?.emit('leaveRoom', activeRoom.name);
+			socket?.emit('leaveRoom', {room: activeRoom.name, user: username});
 		else
 			socket?.emit('joinRoom', {room: activeRoom.name, user: username});
 	}

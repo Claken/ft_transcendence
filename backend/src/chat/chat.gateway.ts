@@ -72,7 +72,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
 		let	channelJoined = await this.chatService.findOneChatRoomByName(infos.room);
 
-		const memberCreated = await this.memberService.createMember({name: infos.user, isMute: false, isBan: false});
+		const memberCreated = await this.memberService.createMember({name: infos.user});
 		await this.memberService.saveMember(memberCreated);
 
 		channelJoined.members.push(memberCreated);
@@ -87,10 +87,15 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 	/* ************************************************************************* */
 
 	@SubscribeMessage('leaveRoom')
-	HandleLeaveRoom(client: Socket, room: string): void {
+	async HandleLeaveRoom(client: Socket, infos: {room: string, user: string}): Promise<void> {
 		console.log('leaveRoom');
-    	client.leave(room);
-    	client.emit('leftRoom', room);
+    	client.leave(infos.room);
+
+		let	channelLeft = await this.chatService.findOneChatRoomByName(infos.room);
+
+		await this.memberService.deleteMemberByNameInChannel(infos.user, channelLeft.id);
+		
+    	client.emit('leftRoom', infos.room);
   }
 
     /* ************************************************************************* */
@@ -111,7 +116,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 		}
 		let ChannelCreated = await this.chatService.createChatRoom(newChatRoom);
 
-		const memberCreated = await this.memberService.createMember({name: theOwner.name, isMute: false, isBan: false});
+		const memberCreated = await this.memberService.createMember({name: theOwner.name});
 		await this.memberService.saveMember(memberCreated);
 
 		ChannelCreated.members = [memberCreated];
