@@ -1,0 +1,94 @@
+* {
+	box-sizing: border-box;
+	font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif
+}
+
+.socialContainer {
+	margin-top: 3%;
+	margin-left: 5%;
+	width: 90%;
+	max-width: 100%;
+	height: 83vh;
+	background-color: #5cb4e5;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	flex-direction: column;
+	border: 2px solid whitesmoke;
+	border-radius: 30px;
+	position: relative;
+
+}
+
+.socialContainer .sortButtons {
+	max-width: 100%;
+	width: 100%;
+	margin-top: 2%;
+	height: 10%;
+	display: flex;
+	justify-content: center;
+	gap: 10%;
+}
+.socialContainer .sortButtons button {
+	display: inline-block;
+	height: 100%;
+	border-radius: 10px;
+	border: none;
+	max-width: 100%;
+	background-color: transparent;
+	color: whitesmoke;
+	font-size: 24px;
+	font-style: bold;
+	width: 20%;
+
+}
+.socialContainer .sortButtons button:hover {
+	display: inline-block;
+	height: 100%;
+	border-radius: 70px;
+	border: none;
+	max-width: 100%;
+	background-color: #523B82;
+	color: whitesmoke;
+	font-size: 24px;
+	font-style: bold;
+
+}
+
+.socialContainer .searchBar {
+	position: relative;
+	display: flex;
+	justify-content: center;
+	height: 10%;
+	width: 100%;
+}
+
+.socialContainer .leaderboard {
+	margin-top: 10px;
+	position: relative;
+	display: flex;
+	justify-content: center;
+	height: 90%;
+
+}
+
+/* Search Bar */
+.searchContainer {
+	margin-top: 10px;
+	position: relative;
+	display: flex;
+	justify-content: center;
+	height: 90%;
+	width: 60%;
+}
+
+/* FriendList */
+
+.socialContainer .friendListContainer {
+	margin-top: 10px;
+	position: relative;
+	display: flex;
+	justify-content: center;
+	height: 90%;
+
+}

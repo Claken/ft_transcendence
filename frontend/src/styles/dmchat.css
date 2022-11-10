@@ -1,21 +1,21 @@
 .loadingbody {
-	color: white;
-	justify-content: center;
+  color: white;
+  justify-content: center;
   align-items: center;
   text-align: center;
-	font-size: 30px;
-	font-family:'Lucida Sans'
+  font-size: 30px;
+  font-family: "Lucida Sans";
 }
 
 .cercleconnect {
   display: flex;
   width: 150px;
   height: 50px;
-	font-size: 25px;
+  font-size: 25px;
   justify-content: center;
   align-items: center;
   text-align: center;
-	font-family:'Lucida Sans'
+  font-family: "Lucida Sans";
 }
 
 .cercleconnect::after {
@@ -30,11 +30,11 @@
   display: flex;
   width: 150px;
   height: 50px;
-	font-size: 25px;
+  font-size: 25px;
   justify-content: center;
   align-items: center;
   text-align: center;
-	font-family:'Lucida Sans'
+  font-family: "Lucida Sans";
 }
 
 .cercledisconnect::after {
@@ -46,18 +46,23 @@
 }
 
 .btndisplay {
-	display: flex;
+  display: flex;
 	flex-direction: column;
-	list-style: none;
+  list-style: none;
+	width: 100%;
+	height: 100%;
 }
 
-.addspace {
-	margin-bottom: 10px;
+.dmsearchbar {
+	display: flex;
+	justify-content: center;
+	width: 100%;
+	height: 10%;
 }
 
 .dmbody {
-	margin-top: 5vh;
-	justify-content: center;
+  margin-top: 5vh;
+  justify-content: center;
   align-items: center;
   text-align: center;
 }
@@ -72,16 +77,16 @@
   align-items: center;
   text-align: center;
   width: 90%;
-	height: 10vh;
+  height: 10vh;
   color: white;
-  background: #196F9F;
+  background: #196f9f;
   border-radius: 30px 30px 0px 0px;
-	font-family:'Lucida Sans'
+  font-family: "Lucida Sans";
 }
 
 .dmchat {
   width: 90%;
-	height: 60vh;
+  height: 60vh;
   margin-left: auto;
   margin-right: auto;
   background: #3b3b3b;
@@ -115,52 +120,52 @@
   align-items: center;
   text-align: center;
   width: 90%;
-	height: 10vh;
-  background: #196F9F;
+  height: 10vh;
+  background: #196f9f;
   border-radius: 0px 0px 30px 30px;
 }
 
 .dminput {
-	width: 30%;
-	color: white;
-	border-color: white;
-	border-width: 2px;
-	justify-content: center;
+  width: 30%;
+  color: white;
+  border-color: white;
+  border-width: 2px;
+  justify-content: center;
   align-items: center;
   text-align: center;
-	font-size: 20px;
-	border-radius: 10px 0px 0px 10px;
-	background: #196F9F;
+  font-size: 20px;
+  border-radius: 10px 0px 0px 10px;
+  background: #196f9f;
 }
 
 .displaymydm {
-	align-self: flex-start;
-	color: #fff;
-	background-color: #196F9F;
+  align-self: flex-start;
+  color: #fff;
+  background-color: #196f9f;
   font-size: 30px;
   max-width: 20vw;
   overflow-wrap: break-word;
   margin: 0;
   width: fit-content;
-	border: 10px solid #196F9F;
+  border: 10px solid #196f9f;
   border-radius: 5px;
-	margin-left: 1%;
-	margin-top: 1%;
+  margin-left: 1%;
+  margin-top: 1%;
 }
 
 .displaydm {
-	align-self: flex-end;
-	color: #fff;
-	background-color: #333333;
+  align-self: flex-end;
+  color: #fff;
+  background-color: #333333;
   font-size: 30px;
   max-width: 20vw;
   overflow-wrap: break-word;
   margin: 0;
   width: fit-content;
-	border: 10px solid #333333;
+  border: 10px solid #333333;
   border-radius: 5px;
-	margin-top: 1%;
-	margin-right: 1%;
+  margin-top: 1%;
+  margin-right: 1%;
 }
 
 .btnbody {
@@ -172,7 +177,7 @@
   height: 50px;
   border-radius: 75px 75px 75px 75px;
   overflow: hidden;
-  background: #333333;
+  background: #5cb4e5;
   transition: height 1s;
 }
 
@@ -183,7 +188,7 @@
 
 .btnuser {
   display: flex;
-	flex-direction: row;
+  flex-direction: row;
   width: 100%;
   height: 50px;
   border-radius: 75px 75px 75px 75px;
@@ -191,13 +196,14 @@
   cursor: pointer;
   border: none;
   color: white;
-  background: #2e2e2e;
+  background: #523b82;
 }
 
 .tourne {
-	margin-left: auto;
-	margin-top: auto;
-	margin-bottom: auto;
+  margin-left: auto;
+  margin-top: auto;
+  margin-bottom: auto;
+	margin-right: 5%;
   width: 30px;
   height: 30px;
 }
@@ -234,7 +240,7 @@
   cursor: pointer;
   border: none;
   color: white;
-  background: #2e2e2e;
+  background: #523b82;
 }
 
 .overlayright {
@@ -249,7 +255,7 @@
   cursor: pointer;
   border: none;
   color: white;
-  background: #2e2e2e;
+  background: #523b82;
 }
 
 .overlayleft:hover {
@@ -261,40 +267,41 @@
 }
 
 .bodysearchinput {
-	width: 100%;
-	margin-top: 5vh;
-	justify-content: center;
+  width: 100%;
+	margin-top: 2vh;
+  margin-bottom: 3vh;
+  justify-content: center;
   align-items: center;
   text-align: center;
 }
 
 .searchinput {
-	width: 100%;
-	color: white;
-	border-color: white;
-	border-width: 2px;
-	justify-content: center;
+  width: 80%;
+  color: white;
+  border-color: white;
+  border-width: 2px;
+  justify-content: center;
   align-items: center;
   text-align: center;
-	text-decoration: none;
-	font-size: 20px;
-	border-radius: 10px;
-	background-color: #333333;
+  text-decoration: none;
+  font-size: 20px;
+  border-radius: 10px;
+  background-color: #5cb4e5;
 }
 
 .btnsend {
-	color: white;
-	border-color: white;
-	border-width: 2px;
-	justify-content: center;
+  color: white;
+  border-color: white;
+  border-width: 2px;
+  justify-content: center;
   align-items: center;
   text-align: center;
-	font-size: 20px;
-	border-radius: 0px 10px 10px 0px;
-	background: #196F9F;
-	font-family:'Lucida Sans'
+  font-size: 20px;
+  border-radius: 0px 10px 10px 0px;
+  background: #196f9f;
+  font-family: "Lucida Sans";
 }
 
 .btnsend:hover {
-	opacity: 0.5;
+  opacity: 0.5;
 }

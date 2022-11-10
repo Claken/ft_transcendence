@@ -1,4 +1,4 @@
-import React from "react";
+import { useEffect, useState } from "react";
 import "../styles/account.css";
 import Modal from "../components/modal";
 import useModal from "../hooks/useModal";
@@ -10,6 +10,13 @@ function Account() {
   const handleLogout = () => {
     auth.logout();
   };
+  const [stylePic, setStylePic] = useState<string>("guestPic");
+  useEffect(() => {
+    if (auth.user && auth.user.login) {
+      setStylePic("profilePic");
+    }
+  }, [auth.user]);
+
   const { isOpen, toggle } = useModal();
   const User = "Edouard";
   const Win = "10";
@@ -21,17 +28,15 @@ function Account() {
           <div className="left-container">
             <div className="profile-picture">
               <img
-                src="https://placekitten.com/300/300
-				"
-                height="300px"
-                width="300px"
-                alt="profile-picture"
+                className={stylePic}
+                src={auth.user?.pictureUrl}
+                alt="profilePic"
               />
             </div>
             <div className="profile-stats">
-              <h1> {User}</h1>
+              <h1> {auth?.user?.name}</h1>
               <h2>
-                Win - lose : {Win} - {Lose}{" "}
+                Win - lose : {auth?.user?.win} - {auth?.user?.lose}{" "}
               </h2>
             </div>
             <div className="profile-buttons">
@@ -56,20 +61,21 @@ function Account() {
               <Modal isOpen={isOpen} toggle={toggle}>
                 <div className="modal-settings">
                   <div className="picture-settings">
-                    <img
-                      src="https://placekitten.com/300/300
-				"
-                      height="150px"
-                      width="150px"
-                      alt="profile-picture"
-                      border-radius="50%"
-                    />
-                    <button>upload a file</button>
+                    <div className="profile-picture">
+                      <img
+                        className={stylePic}
+                        src={auth.user?.pictureUrl}
+                        alt="profilePic"
+                      />
+                    </div>
+                    <div className="uploadButton">
+                      <input type="file" />
+                    </div>
                   </div>
                   <div className="username-settings">
-                    <h2>{User}</h2>
-                      <input type="text" />
-                      <button> change usename</button>
+                    <h2>{auth.user?.name}</h2>
+                    <input type="text" />
+                    <button> change usename</button>
                   </div>
                   <div className="twoFA-settings">
                     <h2>2FA status</h2>
@@ -99,10 +105,11 @@ function Account() {
             </div>
           </div>
           <div className="right-container">
-            <div className="match-history">
-              <div className="header">
+            <div className="matchHistory">
+              <div className="matchHistory-header">
                 <h1>Match History</h1>
               </div>
+              <div className="matchHistory-content"></div>
             </div>
           </div>
         </div>

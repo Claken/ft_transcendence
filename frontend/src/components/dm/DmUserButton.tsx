@@ -41,7 +41,7 @@ function DmUserButton(props) {
           onMouseEnter={onMouseEnter}
           onMouseLeave={onMouseLeave}
         >
-          <button className="overlayleft" onClick={() => props.changeTarget(props.user)}>
+          <button className="overlayleft">
             Messages
           </button>
           <button className="overlayright">Profile</button>
