@@ -4,7 +4,7 @@ import { useAuth } from "../contexts/AuthContext";
 
 const TwoFa = () => {
 	const [code, setCode] = useState("");
-	const auth = useAuth();
+	const { user } = useAuth();
 
 	const modifyCode = (event) => {
 		const input = event.currentTarget.value;
@@ -13,15 +13,16 @@ const TwoFa = () => {
 
 	const validateCode = (event) => {
 		event.preventDefault();
-		socket.emit("check-secret-code", auth.user, code);
+		socket.emit("check-secret-code", {user: user, code: code});
 		setCode("");
 	};
 
+	// socket.on('secret-code-checked', () => {});
+
 	return (
 		<div>
-			
 			<form className="items">
-        <h3>2-Factor-Authentication</h3>
+				<h3>2-Factor-Authentication</h3>
 				<input
 					className="input"
 					type="code"

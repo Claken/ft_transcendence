@@ -3,13 +3,12 @@ import { useAuth } from "../../contexts/AuthContext";
 
 const RequiredAuth = () => {
 	const location = useLocation();
-	const auth = useAuth();
+	const { user } = useAuth();
 
-	return auth.user ? (
-		<Outlet />
-	) : (
-		<Navigate to="/login" state={{ from: location }} replace />
-	);
+	console.log(JSON.stringify(user));
+	if (!user /*|| (user.isTwoFAEnabled && !user.isTwoFAValidated)*/)
+		return  <Navigate to="/login" state={{ from: location }} replace />
+	return <Outlet />
 };
 
 export default RequiredAuth;

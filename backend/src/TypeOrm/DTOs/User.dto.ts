@@ -1,4 +1,5 @@
-import { IsOptional } from 'class-validator';
+import { Type } from 'class-transformer';
+import { IsOptional, Length } from 'class-validator';
 import { Request } from 'express';
 
 export class UserDTO {
@@ -24,14 +25,15 @@ export class UserDTO {
   twoFASecret?: string;
 
   @IsOptional()
-  createdAt?: Date;
+  isTwoFAEnabled?: boolean;
 
   @IsOptional()
-  isTwoFAEnabled?: boolean;
+  isTwoFAValidated?: boolean;
 }
 
-export class TwoFACodeDto {
-  TwoFACode: string;
+export interface TwoFAValidation {
+  code: string;
+  user: UserDTO;
 }
 
 export interface RequestWithUser extends Request {

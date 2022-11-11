@@ -11,7 +11,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
-import { UserDTO, TwoFACodeDto, RequestWithUser } from 'src/TypeOrm/DTOs/User.dto';
+import { RequestWithUser } from 'src/TypeOrm/DTOs/User.dto';
 import { UsersService } from 'src/users/users.service';
 import { AuthenticatedGuard } from '../guards/fortytwo.guard';
 import { TwoFactorAuthenticationService } from './two-factor-authentication.service';
@@ -33,49 +33,49 @@ export class TwoFactorAuthenticationController {
   //   return this.twoFAService.pipeQrCodeStream(response, otpauthUrl);
   // }
 
-  @Post('turn-on')
-  @HttpCode(200)
-  @UseGuards(AuthenticatedGuard)
-  async turnOnTwoFA(
-    @Req() request: RequestWithUser,
-    @Body() { TwoFACode }: TwoFACodeDto,
-  ) {
-    const isCodeValid = this.twoFAService.isTwoFACodeValid(
-      TwoFACode,
-      request.user,
-    );
-    if (!isCodeValid) {
-      throw new UnauthorizedException('Wrong authentication code');
-    }
+  // @Post('turn-on')
+  // @HttpCode(200)
+  // @UseGuards(AuthenticatedGuard)
+  // async turnOnTwoFA(
+  //   @Req() request: RequestWithUser,
+  //   @Body() { TwoFACode }: TwoFACodeDto,
+  // ) {
+  //   const isCodeValid = this.twoFAService.isTwoFACodeValid(
+  //     TwoFACode,
+  //     request.user,
+  //   );
+  //   if (!isCodeValid) {
+  //     throw new UnauthorizedException('Wrong authentication code');
+  //   }
 
-    await this.usersService.turnOnOffTwoFA(request.user.id);
-  }
+  //   await this.usersService.turnOnOffTwoFA(request.user.id);
+  // }
 
-  @Post('authenticate')
-  @HttpCode(200)
-  @UseGuards(AuthenticatedGuard)
-  async authenticate(
-    @Req() request: RequestWithUser,
-    @Body() { TwoFACode } : TwoFACodeDto,
-    @Res() res: Response
-  ) {
-    const isCodeValid = this.twoFAService.isTwoFACodeValid(
-      TwoFACode, request.user
-    );
-    if (!isCodeValid) {
-      throw new UnauthorizedException('Wrong authentication code');
-    }
+  // @Post('authenticate')
+  // @HttpCode(200)
+  // @UseGuards(AuthenticatedGuard)
+  // async authenticate(
+  //   @Req() request: RequestWithUser,
+  //   @Body() { TwoFACode } : TwoFACodeDto,
+  //   @Res() res: Response
+  // ) {
+  //   const isCodeValid = this.twoFAService.isTwoFACodeValid(
+  //     TwoFACode, request.user
+  //   );
+  //   if (!isCodeValid) {
+  //     throw new UnauthorizedException('Wrong authentication code');
+  //   }
 
-    //TODO: register hashed twoFASecret in database
-    //TODO: pass it as a cookie
-    //TODO: redirect to LoginWithTwoFA
-    //TODO: redirect to front if succeed;
+  //   //TODO: register hashed twoFASecret in database
+  //   //TODO: pass it as a cookie
+  //   //TODO: redirect to LoginWithTwoFA
+  //   //TODO: redirect to front if succeed;
 
-    // const twoFASecret = ;
+  //   // const twoFASecret = ;
  
-    // res.cookie('twoFASecret', twoFASecret);
+  //   // res.cookie('twoFASecret', twoFASecret);
  
-    return request.user;
-  }
+  //   return request.user;
+  // }
 
 }

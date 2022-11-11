@@ -69,4 +69,10 @@ export class UsersService {
     user.isTwoFAEnabled = !user.isTwoFAEnabled;
     return await this.userRepo.save(user);
   }
+
+  async setTwoFAValidation(id: number, val: boolean): Promise<UsersEntity> {
+    const user = await this.getById(id);
+    user.isTwoFAValidated = val;
+    return await this.userRepo.save(user);
+  }
 }

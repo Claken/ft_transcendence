@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from "react";
 import { socket } from "../components/Socket";
 import { useAuth } from "../contexts/AuthContext";
@@ -6,44 +7,49 @@ import { IUser } from "../interfaces/user.interface";
 import { QRCodeCanvas } from "qrcode.react";
 
 function Account() {
-	const auth = useAuth();
-	const [twoFaUrl, setTwoFaUrl] = useState<string>(null);
-
-	/* ********************************************************* */
-	/*                Set first time TwoFA URL                   */
-	/* ********************************************************* */
-	useEffect(() => {
-		console.log(socket)
-		socket.emit("set-2fa-url", auth.user);
-	}, [auth.user.isTwoFAEnabled]);
-
-	socket.on("2fa-url-set", (otpauthUrl: string) => {
-		setTwoFaUrl(otpauthUrl);
-		console.log("2fa-url-set");
-	});
-
+	const { user, setUser } = useAuth();
+	const [url, setUrl] = useState<string>("");
+	
 	/* ********************************************************* */
 	/*                     Set TwoFA URL                         */
 	/* ********************************************************* */
+	useEffect(() => {
+		if (user?.twoFASecret)
+			socket.emit('set-2fa-url', user);
+	}, [])
+	const setTwoFaUrl = (otpauthUrl: string) => {
+		setUrl(otpauthUrl);
+		// setTwoFaUrl(user.otpauthUrl)
+	}
+	useEffect(() => {
+		socket.on("2fa-url-set", setTwoFaUrl);
+		return () => {
+			socket.off("2fa-url-set", setTwoFaUrl);
+		}
+	}, [setTwoFaUrl])
+	/* ********************************************************* */
+	/*                   Generate TwoFA URL                      */
+	/* ********************************************************* */
 	const generateTwoFa = () => {
-		socket.emit("generate-2fa", auth.user);
+		socket.emit("generate-2fa", user);
 	};
-	socket.on("2fa-generated", (otpauthUrl: string) => {
-		setTwoFaUrl(otpauthUrl);
-	});
-
 	/* ********************************************************* */
 	/*                 TwoFA Enabled/Disabled                    */
 	/* ********************************************************* */
 	const toggleTwoFa = () => {
-		if (auth?.user) {
-			socket.emit("toggle-2fa", auth.user);
-		}
+		socket.emit("toggle-2fa", user);
 	};
-	socket.on("twofa-toggled", (user: IUser) => {
-		auth.setUser(user);
-	});
-
+	const modifyUser = (current: IUser) => {
+		setUser(current);
+		// setTwoFaUrl(user.otpauthUrl)
+	}
+	useEffect(() => {
+		socket.on("maj-user-2fa", modifyUser);
+		return () => {
+			socket.off("maj-user-2fa", modifyUser);
+		}
+	}, [modifyUser])
+	console.log(JSON.stringify(user));
 	return (
 		<div>
 			<div className="rectangleprofile">
@@ -57,18 +63,15 @@ function Account() {
 				>
 					2fa
 				</button>
-				
-				{auth.user.isTwoFAEnabled ? (
+				{user?.isTwoFAEnabled && (
 					<>
 						<QRCodeCanvas
-							size={84}
+							size={104}
 							level="Q"
 							bgColor="#254642"
-							value={twoFaUrl}
+							value={url}
 						/>
 					</>
-				) : (
-					<>twoFa = null</>
 				)}
 				<button
 					className="btn btn-primary"

@@ -20,15 +20,15 @@ function App() {
 					<Route path="/" element={<Layout />}>
 						<Route path="/" element={<Home />} />
 						<Route path="*" element={<Home />} />
-						<Route element={<RequiredOffline />}>
-							<Route path="/login" element={<Login />} />
-						</Route>
-						<Route element={<RequiredAuth />}>
-							<Route path="/channel" element={<Channel />} />
-							<Route path="/account" element={<Account />} />
-							<Route path="/pong" element={<Pong />} />
-						</Route>
-						<Route path="/Twofa" element={<TwoFa />} />
+						{/* <Route element={<RequiredOffline />}> */}
+							<Route path="login" element={<Login />} />
+						{/* </Route> */}
+						{/* <Route element={<RequiredAuth />}> */}
+							<Route path="channel" element={<Channel />} />
+							<Route path="account" element={<Account />} />
+							<Route path="pong" element={<Pong />} />
+						{/* </Route> */}
+						<Route path="twofa" element={<TwoFa />} />
 						{/* <Route element={<Required2fa isTwofaEnabled={isTwofaEnabled} />}>
 							<Route path="/Twofa" element={<TwoFa />} />
 						</Route> */}

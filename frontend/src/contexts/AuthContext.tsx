@@ -2,8 +2,9 @@ import axios from "../axios.config";
 import React, { useContext, useEffect, useState } from "react";
 import { IUser } from "../interfaces/user.interface";
 import guestPic from "../assets/img/profile1.jpg";
+import { IAuthContext } from "../interfaces/authcontext.interface";
 
-const AuthContext = React.createContext(null);
+const AuthContext = React.createContext<IAuthContext>(null);
 
 export const AuthProvider = ({ children }) => {
 	const [user, setUser] = useState<IUser>(null);
@@ -32,7 +33,6 @@ export const AuthProvider = ({ children }) => {
 			subscribed = false;
 		};
 	}, []);
-
 
 	const postGuestUser = async (user: IUser) => {
 		await axios
@@ -83,9 +83,7 @@ export const AuthProvider = ({ children }) => {
 	};
 
 	return (
-		<AuthContext.Provider
-			value={{ user, setUser, loginAsGuest, logout }}
-		>
+		<AuthContext.Provider value={{ user, setUser, loginAsGuest, logout }}>
 			{children}
 		</AuthContext.Provider>
 	);

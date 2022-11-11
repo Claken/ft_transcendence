@@ -26,12 +26,15 @@ export class UsersEntity {
   @Column({ default: 'online' })
   status?: string;
 
-  @Column({ nullable :true })
+  @Column({ default: '' })
   twoFASecret?: string;
 
   @Column({ default: false })
   isTwoFAEnabled?: boolean;
 
-  @CreateDateColumn()
-  createdAt?: Date;
+  @Column({ default: false })
+  isTwoFAValidated?: boolean;
+
+
+
 }

@@ -7,5 +7,5 @@ export class IUser {
 	status?: string;
 	twoFASecret?: string;
 	isTwoFAEnabled?: boolean;
-	createdAt?: Date;
+	isTwoFAValidated?: boolean;
 }

@@ -14,32 +14,29 @@ export class TwoFactorAuthenticationService {
     private readonly configService: ConfigService,
   ) {}
 
-  public async generateTwoFASecret(user: UserDTO) {
-    const secret = authenticator.generateSecret();
-    const otpauthUrl = authenticator.keyuri(
-      user.name,
+  public setOtpauthUrl(name: string, secret: string) {
+    return authenticator.keyuri(
+      name,
       this.configService.get('TWO_FACTOR_AUTHENTICATION_APP_NAME'),
       secret,
     );
+  }
+  public async generateTwoFASecret(user: UserDTO) {
+    const secret = authenticator.generateSecret();
+    const otpauthUrl = this.setOtpauthUrl(user.name, user.twoFASecret);
 
     await this.usersService.setTwoFASecret(secret, user.id);
 
     return {
-      secret,// TODO: bcrypt necessary?
+      secret, // TODO: bcrypt necessary?
       otpauthUrl,
     };
   }
 
-  public async pipeQrCodeStream(stream: Response, otpauthUrl: string) {
-    return toFileStream(stream, otpauthUrl);
-  }
-
   public isTwoFACodeValid(twoFACode: string, user: UserDTO) {
-    
     return authenticator.verify({
       token: twoFACode,
-      secret: user.twoFASecret, 
+      secret: user.twoFASecret,
     });
   }
-
 }

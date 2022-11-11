@@ -28,9 +28,9 @@ export class AuthController {
   verify2fa(@Req() req: RequestWithUser, @Res() res: Response) {
     const { isTwoFAEnabled } = req.user;
     if (isTwoFAEnabled)
-      res.redirect('http://localhost:3000/Twofa')
+      res.redirect('http://localhost:3000/twofa')
     else
-      res.redirect('http://localhost:3000/')
+      res.redirect('http://localhost:3000/account')
     return req.user;
   }
 
@@ -40,6 +40,8 @@ export class AuthController {
     // logOut() => removes the session from the memory of the webserver
     if (req.user) {
       this.usersService.updateStatusUser(req.user.id, 'offline');
+      if (req.user.isTwoFAValidated)
+        this.usersService.setTwoFAValidation(req.user.id, false);
       req.logOut((err) => {
         if (err)
           console.log(err);
