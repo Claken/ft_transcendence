@@ -52,8 +52,6 @@ export class AuthController {
       req.logOut((err) => {
         if (err)
           console.log(err);
-        else
-          console.log("Delete UserSessionCookie");
       }); // without the callback an error occured...
       // set maxAge to 0 remove the cookie from the browser
       req.session.cookie.maxAge = 0;

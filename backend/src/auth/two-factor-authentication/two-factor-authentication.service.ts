@@ -33,10 +33,11 @@ export class TwoFactorAuthenticationService {
     };
   }
 
-  public isTwoFACodeValid(twoFACode: string, user: UserDTO) {
+  public async isTwoFACodeValid(twoFACode: string, user: UserDTO) {
+    const { twoFASecret } = await this.usersService.getById(user.id);
     return authenticator.verify({
       token: twoFACode,
-      secret: user.twoFASecret,
+      secret: twoFASecret,
     });
   }
 }
