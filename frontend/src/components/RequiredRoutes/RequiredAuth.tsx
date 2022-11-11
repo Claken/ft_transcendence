@@ -6,7 +6,7 @@ const RequiredAuth = () => {
 	const { user } = useAuth();
 
 	console.log(JSON.stringify(user));
-	if (!user /*|| (user.isTwoFAEnabled && !user.isTwoFAValidated)*/)
+	if (!user || (user.isTwoFAEnabled && !user.isTwoFAValidated))
 		return  <Navigate to="/login" state={{ from: location }} replace />
 	return <Outlet />
 };

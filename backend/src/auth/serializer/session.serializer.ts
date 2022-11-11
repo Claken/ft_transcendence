@@ -11,7 +11,6 @@ export class SessionSerializer extends PassportSerializer {
   // serialize is like write a post-it
   serializeUser(user: any, done: (err: Error, user: UsersEntity) => void) {
     // user.id the data stored inside the session
-    console.log("serializeUser");
     done(null, user.id);
   }
 
@@ -20,7 +19,6 @@ export class SessionSerializer extends PassportSerializer {
     userId: string,
     done: (err: Error, user: UsersEntity) => void,
   ) {
-    console.log("deserializeUser");
     const user = await this.usersService.getById(Number(userId));
     // callback make req.user acessible through controller
     done(null, user);

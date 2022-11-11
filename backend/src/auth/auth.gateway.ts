@@ -35,6 +35,7 @@ export class AuthGateway
   /* ********************************************************* */
 	/*                     Account.tsx                           */
 	/* ********************************************************* */
+
   @SubscribeMessage('set-2fa-url')
   set2faUrl(client: Socket, user: UserDTO) {
     const otpauthUrl = this.twoFAService.setOtpauthUrl(user.name, user.twoFASecret);
@@ -44,7 +45,7 @@ export class AuthGateway
   @SubscribeMessage('generate-2fa')
   async generate2fa(client: Socket, user: UserDTO) {
     const { secret, otpauthUrl } = await this.twoFAService.generateTwoFASecret(user);
-    user.twoFASecret = secret
+    user.twoFASecret = secret;
     this.set2faUrl(client, user);
     this.server.emit('maj-user-2fa', user);
   }
@@ -54,10 +55,13 @@ export class AuthGateway
     await this.usersService.turnOnOffTwoFA(user.id);
     const newUser = await this.usersService.getById(user.id);
     if (newUser.isTwoFAEnabled) {
-      if (!newUser.twoFASecret)
-        await this.generate2fa(client, newUser);
-      else
-        this.set2faUrl(client, newUser);
+      this.usersService.setTwoFACertif(newUser.id, true);
+      newUser.isTwoFAValidated = true;
+      if (!newUser.twoFASecret) {
+        const { secret, otpauthUrl } = await this.twoFAService.generateTwoFASecret(newUser);
+        newUser.twoFASecret = secret;
+      }
+      this.set2faUrl(client, newUser);
     }
     this.server.emit('maj-user-2fa', newUser);
   }
@@ -65,11 +69,15 @@ export class AuthGateway
   /* ********************************************************* */
 	/*                     TwoFa.tsx                             */
 	/* ********************************************************* */
+
   @SubscribeMessage('check-secret-code')
   checkSecretCode(client: Socket, twofa: TwoFAValidation) {
-    const isValid = this.twoFAService.isTwoFACodeValid(twofa.code, twofa.user);
-    if (isValid) this.usersService.setTwoFAValidation(twofa.user.id, true);
-    this.server.emit('secret-code-checked', twofa.user);
-    console.log(JSON.stringify(twofa.user));
+    const {code, user} = twofa;
+    const isCodeValid = this.twoFAService.isTwoFACodeValid(code, user);
+    if (isCodeValid) {
+      this.usersService.setTwoFACertif(user.id, true);
+      user.isTwoFAValidated = true;
+    }
+    this.server.emit('secret-code-checked', user);
   }
 }

@@ -3,9 +3,9 @@ import { useAuth } from "../../contexts/AuthContext";
 
 const RequiredOffline = () => {
 	const location = useLocation();
-	const auth = useAuth();
+	const { user } = useAuth();
 
-	return !auth?.user ? (
+	return !user ? (
 		<Outlet />
 	) : (
 		<Navigate to="/" state={{ from: location }} replace />

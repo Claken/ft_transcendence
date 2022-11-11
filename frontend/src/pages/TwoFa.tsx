@@ -1,10 +1,14 @@
-import { useState } from "react";
+/* eslint-disable react-hooks/exhaustive-deps */
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { socket } from "../components/Socket";
 import { useAuth } from "../contexts/AuthContext";
+import { IUser } from "../interfaces/user.interface";
 
 const TwoFa = () => {
 	const [code, setCode] = useState("");
-	const { user } = useAuth();
+	const { user, setUser } = useAuth();
+	const navigate = useNavigate();
 
 	const modifyCode = (event) => {
 		const input = event.currentTarget.value;
@@ -14,10 +18,23 @@ const TwoFa = () => {
 	const validateCode = (event) => {
 		event.preventDefault();
 		socket.emit("check-secret-code", {user: user, code: code});
-		setCode("");
+		// setCode("");
 	};
 
-	// socket.on('secret-code-checked', () => {});
+	const checkCode = (current: IUser) => {
+		setUser(current);
+		if (current.isTwoFAValidated) {
+			navigate("/");
+		}
+		else
+			alert("Wrong two faCode");
+	}
+	useEffect(() => {
+		socket.on("secret-code-checked", checkCode);
+		return () => {
+			socket.off("secret-code-checked", checkCode);
+		}
+	}, [checkCode])
 
 	return (
 		<div>

@@ -41,7 +41,7 @@ export class AuthController {
     if (req.user) {
       this.usersService.updateStatusUser(req.user.id, 'offline');
       if (req.user.isTwoFAValidated)
-        this.usersService.setTwoFAValidation(req.user.id, false);
+        this.usersService.setTwoFACertif(req.user.id, false);
       req.logOut((err) => {
         if (err)
           console.log(err);

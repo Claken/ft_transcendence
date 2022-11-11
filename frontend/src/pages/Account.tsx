@@ -19,7 +19,6 @@ function Account() {
 	}, [])
 	const setTwoFaUrl = (otpauthUrl: string) => {
 		setUrl(otpauthUrl);
-		// setTwoFaUrl(user.otpauthUrl)
 	}
 	useEffect(() => {
 		socket.on("2fa-url-set", setTwoFaUrl);
@@ -27,12 +26,14 @@ function Account() {
 			socket.off("2fa-url-set", setTwoFaUrl);
 		}
 	}, [setTwoFaUrl])
+
 	/* ********************************************************* */
 	/*                   Generate TwoFA URL                      */
 	/* ********************************************************* */
 	const generateTwoFa = () => {
 		socket.emit("generate-2fa", user);
 	};
+
 	/* ********************************************************* */
 	/*                 TwoFA Enabled/Disabled                    */
 	/* ********************************************************* */
@@ -41,7 +42,6 @@ function Account() {
 	};
 	const modifyUser = (current: IUser) => {
 		setUser(current);
-		// setTwoFaUrl(user.otpauthUrl)
 	}
 	useEffect(() => {
 		socket.on("maj-user-2fa", modifyUser);
@@ -49,7 +49,7 @@ function Account() {
 			socket.off("maj-user-2fa", modifyUser);
 		}
 	}, [modifyUser])
-	console.log(JSON.stringify(user));
+	
 	return (
 		<div>
 			<div className="rectangleprofile">
