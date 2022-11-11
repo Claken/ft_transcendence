@@ -28,10 +28,9 @@ function App() {
 							<Route path="account" element={<Account />} />
 							<Route path="pong" element={<Pong />} />
 						{/* </Route> */}
-						<Route path="twofa" element={<TwoFa />} />
-						{/* <Route element={<Required2fa isTwofaEnabled={isTwofaEnabled} />}>
-							<Route path="/Twofa" element={<TwoFa />} />
-						</Route> */}
+						{/* <Route element={<Required2fa />}> */}
+							<Route path="twofa" element={<TwoFa />} />
+						{/* </Route> */}
 					</Route>
 				</Routes>
 			</BrowserRouter>

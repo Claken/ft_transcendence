@@ -1,4 +1,5 @@
-import { Controller, Get, Redirect, Req, Res, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Redirect, Req, Res, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { Response } from 'express';
 import { RequestWithUser } from 'src/TypeOrm/DTOs/User.dto';
 import { UsersService } from 'src/users/users.service';
@@ -30,9 +31,15 @@ export class AuthController {
     if (isTwoFAEnabled)
       res.redirect('http://localhost:3000/twofa')
     else
-      res.redirect('http://localhost:3000/account')
+      res.redirect('http://localhost:3000')
     return req.user;
   }
+
+  // @Post('upload')
+  // @UseInterceptors(FileInterceptor('avatar', {limits: { fileSize: 2500000}})) //TODO: 2mo
+  // uploadFile(@UploadedFile() file: Express.Multer.File) {
+  //   console.log(file);
+  // }
 
   @Get('logout')
   @Redirect('http://localhost:3000')

@@ -3,7 +3,7 @@ export class IUser {
 	login?: string;
 	name?: string;
 	email?: string;
-	pictureUrl?: string;
+	avatar?: string;
 	status?: string;
 	twoFASecret?: string;
 	isTwoFAEnabled?: boolean;

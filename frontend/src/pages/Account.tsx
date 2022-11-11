@@ -49,7 +49,7 @@ function Account() {
 			socket.off("maj-user-2fa", modifyUser);
 		}
 	}, [modifyUser])
-	
+
 	return (
 		<div>
 			<div className="rectangleprofile">
@@ -80,6 +80,7 @@ function Account() {
 				>
 					Generate 2fa
 				</button>
+				
 				<div className="rectanglestats"></div>
 			</div>
 		</div>

@@ -41,9 +41,8 @@ export class FortyTwoStrategy extends PassportStrategy(Strategy, '42') {
       login: username,
       name: username,
       email: emails[0].value,
-      pictureUrl: photos[0].value,
+      avatar: photos[0].value,
     };
-    const { user, isSecondFactorAuthenticated } = await this.authService.register(userApi);
-    return user;
+    return await this.authService.register(userApi);
   }
 }

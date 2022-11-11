@@ -10,10 +10,14 @@ import { SessionSerializer } from './serializer/session.serializer';
 import { AuthGateway } from './auth.gateway';
 import { TwoFactorAuthenticationModule } from './two-factor-authentication/two-factor-authentication.module';
 import { TwoFactorAuthenticationService } from './two-factor-authentication/two-factor-authentication.service';
+import { MulterModule } from '@nestjs/platform-express';
 
 @Module({
   imports: [
     UsersModule,
+    // MulterModule.register({
+    //   dest: './avatar',
+    // }),    
     PassportModule.register({
       session: true,
     }),

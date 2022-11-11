@@ -61,7 +61,7 @@ export const AuthProvider = ({ children }) => {
 	const loginAsGuest = async (guestName: string) => {
 		const newUser: IUser = {
 			name: guestName,
-			pictureUrl: guestPic,
+			avatar: guestPic,
 			status: "online",
 		};
 		await postGuestUser(newUser);

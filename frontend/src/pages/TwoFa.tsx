@@ -18,14 +18,12 @@ const TwoFa = () => {
 	const validateCode = (event) => {
 		event.preventDefault();
 		socket.emit("check-secret-code", {user: user, code: code});
-		// setCode("");
 	};
 
 	const checkCode = (current: IUser) => {
 		setUser(current);
-		if (current.isTwoFAValidated) {
+		if (current.isTwoFAValidated)
 			navigate("/");
-		}
 		else
 			alert("Wrong two faCode");
 	}

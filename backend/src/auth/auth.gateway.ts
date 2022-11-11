@@ -1,5 +1,3 @@
-import { ParseIntPipe } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import {
   OnGatewayConnection,
   OnGatewayDisconnect,
@@ -8,7 +6,6 @@ import {
   WebSocketGateway,
   WebSocketServer,
 } from '@nestjs/websockets';
-import { authenticator } from 'otplib';
 import { Server, Socket } from 'socket.io';
 import { TwoFAValidation, UserDTO } from 'src/TypeOrm/DTOs/User.dto';
 import { UsersService } from 'src/users/users.service';
