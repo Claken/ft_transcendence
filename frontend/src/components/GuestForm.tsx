@@ -9,26 +9,28 @@ function GuestForm() {
 	const [errorMsg, setErrorMsg] = useState("");
 	const navigate = useNavigate();
 
-	const modifyGuestInput = (event) => {
+	const modifyGuestInput = (event: React.ChangeEvent<HTMLInputElement>) => {
 		const input = event.currentTarget.value;
 		setGuestInput(input);
 	};
 
-	const guestClient = (event) => {
+	const guestClient = (
+		event: React.MouseEvent<HTMLButtonElement, MouseEvent>
+	) => {
 		event.preventDefault();
 		setErrorMsg("");
 		if (guestInput === "") setErrorMsg("you need to write a name");
 		else {
 			loginAsGuest(guestInput);
 			setGuestInput("");
-			navigate('/');
+			navigate("/");
 		}
 	};
 
 	return (
 		<div>
 			<h1 className="login">Play as guest</h1>
-			<form className="items" onSubmit={guestClient}>
+			<form className="items">
 				<input
 					className="input"
 					type="text"
@@ -36,11 +38,11 @@ function GuestForm() {
 					value={guestInput}
 					onChange={modifyGuestInput}
 				></input>
+				<div className="blank">{errorMsg}</div>
+				<button className="btnconfirm" onClick={guestClient}>
+					become a guest
+				</button>
 			</form>
-			<div className="blank">{errorMsg}</div>
-			<button className="btnconfirm" onClick={guestClient}>
-				become a guest
-			</button>
 		</div>
 	);
 }

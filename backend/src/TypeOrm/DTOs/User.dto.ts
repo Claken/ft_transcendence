@@ -16,7 +16,7 @@ export class UserDTO {
   email?: string;
 
   @IsOptional()
-  avatar?: string;
+  avatarUrl?: string;
 
   @IsOptional()
   status?: string;

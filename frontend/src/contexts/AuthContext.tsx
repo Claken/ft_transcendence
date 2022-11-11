@@ -12,23 +12,25 @@ export const AuthProvider = ({ children }) => {
 	useEffect(() => {
 		let subscribed = true; //TODO: subscribe only in dev_mode strictmode => double render
 		// GET session/cookie42
-		axios
-			.get("/me", {
-				withCredentials: true,
-			})
-			.then((res) => {
-				if (subscribed && res.data) {
-					setUser(res.data);
-					// console.log(res.data);
-					localStorage.setItem(
-						"MY_PONG_APP",
-						JSON.stringify(res.data)
-					);
-				}
-			})
-			.catch((error) => {
-				console.log(error);
-			});
+		if (subscribed) {
+			axios
+				.get("/me", {
+					withCredentials: true,
+				})
+				.then((res) => {
+					if (res.data) {
+						setUser(res.data);
+						// console.log(res.data);
+						localStorage.setItem(
+							"MY_PONG_APP",
+							JSON.stringify(res.data)
+						);
+					}
+				})
+				.catch((error) => {
+					console.log(error);
+				});
+		}
 		return () => {
 			subscribed = false;
 		};
@@ -61,7 +63,7 @@ export const AuthProvider = ({ children }) => {
 	const loginAsGuest = async (guestName: string) => {
 		const newUser: IUser = {
 			name: guestName,
-			avatar: guestPic,
+			avatarUrl: guestPic,
 			status: "online",
 		};
 		await postGuestUser(newUser);

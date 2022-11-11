@@ -21,7 +21,7 @@ export class UsersEntity {
   email?: string;
 
   @Column({ default: '' })
-  avatar?: string;
+  avatarUrl?: string;
 
   @Column({ default: 'online' })
   status?: string;

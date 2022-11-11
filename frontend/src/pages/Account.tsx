@@ -5,27 +5,28 @@ import { useAuth } from "../contexts/AuthContext";
 import "../styles/account.css";
 import { IUser } from "../interfaces/user.interface";
 import { QRCodeCanvas } from "qrcode.react";
+import axios from "../axios.config";
 
 function Account() {
 	const { user, setUser } = useAuth();
 	const [url, setUrl] = useState<string>("");
-	
+	const [file, setFile] = useState<File>(null);
+
 	/* ********************************************************* */
 	/*                     Set TwoFA URL                         */
 	/* ********************************************************* */
 	useEffect(() => {
-		if (user?.twoFASecret)
-			socket.emit('set-2fa-url', user);
-	}, [])
+		if (user?.twoFASecret) socket.emit("set-2fa-url", user);
+	}, []);
 	const setTwoFaUrl = (otpauthUrl: string) => {
 		setUrl(otpauthUrl);
-	}
+	};
 	useEffect(() => {
 		socket.on("2fa-url-set", setTwoFaUrl);
 		return () => {
 			socket.off("2fa-url-set", setTwoFaUrl);
-		}
-	}, [setTwoFaUrl])
+		};
+	}, [setTwoFaUrl]);
 
 	/* ********************************************************* */
 	/*                   Generate TwoFA URL                      */
@@ -42,14 +43,37 @@ function Account() {
 	};
 	const modifyUser = (current: IUser) => {
 		setUser(current);
-	}
+	};
 	useEffect(() => {
 		socket.on("maj-user-2fa", modifyUser);
 		return () => {
 			socket.off("maj-user-2fa", modifyUser);
-		}
-	}, [modifyUser])
+		};
+	}, [modifyUser]);
 
+	/* ********************************************************* */
+	/*                 Avatar Upload		                     */
+	/* ********************************************************* */
+	const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+		setFile(e.target.files[0]);
+		console.log(user.avatarUrl);
+	};
+
+	const uploadFile = async () => {
+		if (file) {
+			const formData = new FormData();
+			formData.append("avatar", file, file.name);
+			await axios
+				.post("/auth/42/upload", formData)
+				.then((res) => {
+					console.log(res.data);
+				})
+				.catch((error) => {
+					console.log(error);
+				});
+		}
+	};
+	console.log(file);
 	return (
 		<div>
 			<div className="rectangleprofile">
@@ -80,8 +104,16 @@ function Account() {
 				>
 					Generate 2fa
 				</button>
-				
-				<div className="rectanglestats"></div>
+				<div className="blank"></div>
+				<input
+					className="photo"
+					type="file"
+					accept=".png, .jpg, .jpeg"
+					onChange={handleFile}
+				></input>
+				<button className="btn btn-primary" onClick={uploadFile}>
+					upload
+				</button>
 			</div>
 		</div>
 	);

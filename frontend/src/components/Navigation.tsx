@@ -62,7 +62,7 @@ function Navigation() {
 							<li className="space">
 								<img
 									className={stylePic}
-									src={user?.avatar}
+									src={user?.avatarUrl}
 									alt="profilePic"
 								/>
 							</li>

@@ -41,7 +41,7 @@ export class FortyTwoStrategy extends PassportStrategy(Strategy, '42') {
       login: username,
       name: username,
       email: emails[0].value,
-      avatar: photos[0].value,
+      avatarUrl: photos[0].value,
     };
     return await this.authService.register(userApi);
   }

@@ -1,9 +1,11 @@
-import { Controller, Get, Post, Redirect, Req, Res, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import { Controller, Get, HttpStatus, ParseFilePipeBuilder, Post, Redirect, Req, Res, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Response } from 'express';
 import { RequestWithUser } from 'src/TypeOrm/DTOs/User.dto';
 import { UsersService } from 'src/users/users.service';
 import { FortyTwoAuthGuard } from './guards/fortytwo.guard';
+import { diskStorage } from 'multer';
+import { extname } from 'path';
 
 @Controller('auth/42')
 export class AuthController {
@@ -35,11 +37,32 @@ export class AuthController {
     return req.user;
   }
 
-  // @Post('upload')
-  // @UseInterceptors(FileInterceptor('avatar', {limits: { fileSize: 2500000}})) //TODO: 2mo
-  // uploadFile(@UploadedFile() file: Express.Multer.File) {
-  //   console.log(file);
-  // }
+  @Post('upload')
+  @UseInterceptors(FileInterceptor('avatar', {
+    storage: diskStorage ({
+      destination: './avatarUploads',
+      filename: (req, file, cb) => {
+        // Generating a 32 random chars long string
+        const randomName = Array(32).fill(null).map(() => (Math.round(Math.random() * 16)).toString(16)).join('')
+        //Calling the callback passing the random name generated with the original extension name
+        cb(null, `${randomName}${extname(file.originalname)}`)
+      }
+    })
+  }))
+  async uploadFile(@UploadedFile(
+    new ParseFilePipeBuilder()
+    .addFileTypeValidator({
+      fileType: /(jpe?g|png|gif|bmp)$/,
+    })
+    .addMaxSizeValidator({
+      maxSize: 1000000 //1mo
+    })
+    .build({
+      errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY
+    })
+  ) file: Express.Multer.File) {
+    console.log(file);
+  }
 
   @Get('logout')
   @Redirect('http://localhost:3000')
