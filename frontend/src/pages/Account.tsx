@@ -18,9 +18,6 @@ function Account() {
   }, [auth.user]);
 
   const { isOpen, toggle } = useModal();
-  const User = "Edouard";
-  const Win = "10";
-  const Lose = "0";
   return (
     <div>
       <div className="container">

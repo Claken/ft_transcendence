@@ -41,10 +41,12 @@ function DmUserButton(props) {
           onMouseEnter={onMouseEnter}
           onMouseLeave={onMouseLeave}
         >
-          <button className="overlayleft">
-            Messages
-          </button>
-          <button className="overlayright">Profile</button>
+          <button className="overlayleft">Messages</button>
+          <div className="overlayright">
+            <Link to={"/profile/" + props.user.name}>
+              <button className="overlayright">Profile</button>
+            </Link>
+          </div>
         </div>
       </div>
     </li>

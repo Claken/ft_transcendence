@@ -24,8 +24,8 @@ function Navigation() {
       {(auth.user && (
         <>
           <ul>
-            <CustomLink to="/Social">Social</CustomLink>
-            <CustomLink to="/Account">Profile</CustomLink>
+				<CustomLink to="/Social">Social</CustomLink>
+				<CustomLink to="/Account">Account</CustomLink>
           </ul>
           <div className="logo">
             <Link to="/pong" style={{ padding: "0.5px", margin: "0.5px" }}>
@@ -34,12 +34,10 @@ function Navigation() {
           </div>
           <ul>
             <CustomLink to="/Channel">Chat</CustomLink>
-            <ButtonProfile />
-            {/* <li className="userListElement">
+            <li className="userListElement">
               <div className="userName">
                 <h3>{auth.user.name}</h3>
               </div>
-
               <div className="userProfilePicture">
                 <img
                   className={stylePic}
@@ -47,7 +45,7 @@ function Navigation() {
                   alt="profilePic"
                 />
               </div>
-            </li> */}
+            </li>
           </ul>
         </>
       )) || (

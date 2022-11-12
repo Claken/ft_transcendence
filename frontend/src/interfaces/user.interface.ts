@@ -6,4 +6,6 @@ export class IUser {
 	pictureUrl?: string;
 	status?: string;
 	createdAt?: Date;
+	win?: number;
+	lose?: number;
 }

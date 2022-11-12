@@ -11,6 +11,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Layout from "./pages/Layout";
 import { ChatProvider } from "./contexts/ChatContext";
 import Profile from "./pages/Profile";
+import ProfileDetails from "./pages/ProfileDetails";
 
 function App() {
   return (
@@ -30,6 +31,7 @@ function App() {
                 <Route path="/channel" element={<Channel />} />
                 <Route path="/pong" element={<Pong />} />
                 <Route path="/profile" element={<Profile />} />
+                <Route path="profile/:userId" element={<ProfileDetails />} />
               {/* </Route> */}
             </Route>
           </Routes>

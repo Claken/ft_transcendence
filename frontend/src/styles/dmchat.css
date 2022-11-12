@@ -177,7 +177,7 @@
   height: 50px;
   border-radius: 75px 75px 75px 75px;
   overflow: hidden;
-  background: #5cb4e5;
+  background: transparent;
   transition: height 1s;
 }
 
@@ -277,7 +277,8 @@
 
 .searchinput {
   width: 80%;
-  color: white;
+  background-color: whitesmoke;
+  color: black;
   border-color: white;
   border-width: 2px;
   justify-content: center;
@@ -286,7 +287,6 @@
   text-decoration: none;
   font-size: 20px;
   border-radius: 10px;
-  background-color: #5cb4e5;
 }
 
 .btnsend {

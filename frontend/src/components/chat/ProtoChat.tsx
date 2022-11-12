@@ -247,19 +247,6 @@ const ProtoChat = () => {
 						<div className="room_name">{activeRoom}</div>
 						<div className="messages_box">
 							<ul>
-							<li>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Perspiciatis expedita tenetur similique, ab accusantium cupiditate quaerat debitis modi consequuntur, exercitationem dicta illo quis ullam quidem eos ratione facilis minima? Animi?</li>
-							<li>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Perspiciatis expedita tenetur similique, ab accusantium cupiditate quaerat debitis modi consequuntur, exercitationem dicta illo quis ullam quidem eos ratione facilis minima? Animi?</li>
-							<li>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Perspiciatis expedita tenetur similique, ab accusantium cupiditate quaerat debitis modi consequuntur, exercitationem dicta illo quis ullam quidem eos ratione facilis minima? Animi?</li>
-							<li>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Perspiciatis expedita tenetur similique, ab accusantium cupiditate quaerat debitis modi consequuntur, exercitationem dicta illo quis ullam quidem eos ratione facilis minima? Animi?</li>
-							<li>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Perspiciatis expedita tenetur similique, ab accusantium cupiditate quaerat debitis modi consequuntur, exercitationem dicta illo quis ullam quidem eos ratione facilis minima? Animi?</li>
-							<li>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Perspiciatis expedita tenetur similique, ab accusantium cupiditate quaerat debitis modi consequuntur, exercitationem dicta illo quis ullam quidem eos ratione facilis minima? Animi?</li>
-							<li>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Perspiciatis expedita tenetur similique, ab accusantium cupiditate quaerat debitis modi consequuntur, exercitationem dicta illo quis ullam quidem eos ratione facilis minima? Animi?</li>
-							<li>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Perspiciatis expedita tenetur similique, ab accusantium cupiditate quaerat debitis modi consequuntur, exercitationem dicta illo quis ullam quidem eos ratione facilis minima? Animi?</li>
-							<li>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Perspiciatis expedita tenetur similique, ab accusantium cupiditate quaerat debitis modi consequuntur, exercitationem dicta illo quis ullam quidem eos ratione facilis minima? Animi?</li>
-							<li>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Perspiciatis expedita tenetur similique, ab accusantium cupiditate quaerat debitis modi consequuntur, exercitationem dicta illo quis ullam quidem eos ratione facilis minima? Animi?</li>
-							<li>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Perspiciatis expedita tenetur similique, ab accusantium cupiditate quaerat debitis modi consequuntur, exercitationem dicta illo quis ullam quidem eos ratione facilis minima? Animi?</li>
-							<li>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Perspiciatis expedita tenetur similique, ab accusantium cupiditate quaerat debitis modi consequuntur, exercitationem dicta illo quis ullam quidem eos ratione facilis minima? Animi?</li>
-							<li>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Perspiciatis expedita tenetur similique, ab accusantium cupiditate quaerat debitis modi consequuntur, exercitationem dicta illo quis ullam quidem eos ratione facilis minima? Animi?</li>
 							</ul>
 						</div>
 						<div className="chat_box">

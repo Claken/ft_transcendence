@@ -1,6 +1,7 @@
 * {
   box-sizing: border-box;
-  font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif
+  font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
+    "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
 }
 
 .container {
@@ -12,7 +13,23 @@
   border: 2px solid whitesmoke;
   justify-content: center;
   margin-left: 5%;
-  background-color: #5cb4e5;
+  background: rgb(0, 138, 214);
+  background: -moz-radial-gradient(
+    circle,
+    rgba(0, 138, 214, 1) 35%,
+    rgba(92, 180, 229, 1) 100%
+  );
+  background: -webkit-radial-gradient(
+    circle,
+    rgba(0, 138, 214, 1) 35%,
+    rgba(92, 180, 229, 1) 100%
+  );
+  background: radial-gradient(
+    circle,
+    rgba(0, 138, 214, 1) 35%,
+    rgba(92, 180, 229, 1) 100%
+  );
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#008ad6",endColorstr="#5cb4e5",GradientType=1);
 }
 
 .profile-container {
@@ -182,5 +199,3 @@
   align-items: center;
   flex-direction: column;
 }
-
-
