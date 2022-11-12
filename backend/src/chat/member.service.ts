@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DeleteResult, Repository, UpdateResult } from 'typeorm';
 import { IMember, MemberEntity } from '../TypeOrm/Entities/member.entity'
+import { ChatRoomEntity } from 'src/TypeOrm';
 
 import { CreateRoomDto } from '../TypeOrm/DTOs/chat.dto'
 import { UsersService } from 'src/users/users.service';
@@ -25,6 +26,11 @@ export class MemberService {
 			return await this.memberRepo.findOneBy({name: memberName});
 		}
 
+		async getMemberByNameAndChannel(memberName: string, channel: ChatRoomEntity) : Promise<MemberEntity> {
+			const members = await this.findAllMembers();
+			return members.find((member: MemberEntity) => member.name === memberName && member.inChannel.id === channel.id);
+		}
+
 		async createMember(member: IMember): Promise<MemberEntity> {
 			return this.memberRepo.create(member);
 		}
@@ -38,13 +44,7 @@ export class MemberService {
 			return await this.memberRepo.save(member);
 		}
 
-	  	async deleteMemberByNameInChannel(name: string, roomId: string) : Promise<void> {
-			const member = await this.memberRepo.findOne({where: {name: name, inChannelId: roomId}, relations: ['inChannel']})
-			await this.memberRepo.delete({member});
-
-		}
-
-		async deleteMemberById(id: string) : Promise<void> {
+	  	async deleteMemberById(id: string) : Promise<void> {
 			await this.memberRepo.delete({id: id});
 		}
 }

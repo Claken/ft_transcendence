@@ -4,6 +4,7 @@ import { DeleteResult, Repository, UpdateResult } from 'typeorm';
 import { IChatRoom, ChatRoomEntity } from '../TypeOrm/Entities/chat.entity';
 import { CreateRoomDto } from '../TypeOrm/DTOs/chat.dto'
 import { UsersService } from 'src/users/users.service';
+import { MemberEntity } from 'src/TypeOrm';
 
 @Injectable()
 export class ChatService {

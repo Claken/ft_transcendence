@@ -68,17 +68,17 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 	@SubscribeMessage('joinRoom')
 	async HandleJoinRoom(client: Socket, infos: {room: string, user: string}): Promise<void> {
 		console.log('joinRoom');
-		client.join(infos.room);
 
-		let	channelJoined = await this.chatService.findOneChatRoomByName(infos.room);
+		let		channelJoined = await this.chatService.findOneChatRoomByName(infos.room);
 
-		const memberCreated = await this.memberService.createMember({name: infos.user});
-		await this.memberService.saveMember(memberCreated);
+		const	memberCreated = await this.memberService.createMember({name: infos.user});
+		await	this.memberService.saveMember(memberCreated);
 
 		channelJoined.members.push(memberCreated);
 
-		await this.chatService.saveChatRoom(channelJoined);
-		
+		await	this.chatService.saveChatRoom(channelJoined);
+
+		client.join(infos.room);		
 		client.emit('joinedRoom', infos.room);
 	}
 
@@ -89,13 +89,11 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 	@SubscribeMessage('leaveRoom')
 	async HandleLeaveRoom(client: Socket, infos: {room: string, user: string}): Promise<void> {
 		console.log('leaveRoom');
+		const	channelLeft = await this.chatService.findOneChatRoomByName(infos.room);
+		const	member = await this.memberService.getMemberByNameAndChannel(infos.user, channelLeft);
+		await	this.memberService.deleteMemberById(member.id);
     	client.leave(infos.room);
-
-		let	channelLeft = await this.chatService.findOneChatRoomByName(infos.room);
-
-		await this.memberService.deleteMemberByNameInChannel(infos.user, channelLeft.id);
-		
-    	client.emit('leftRoom', infos.room);
+		client.emit('leftRoom', infos.room);
   }
 
     /* ************************************************************************* */
