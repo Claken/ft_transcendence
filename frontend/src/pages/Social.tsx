@@ -15,9 +15,9 @@ function Social() {
           <button onClick={() => setActive("FriendList")}>Friend List</button>
           <button onClick={() => setActive("Search")}>Search</button>
         </div>
-		{active === "Leaderboard" && <Leaderboard />}
-		{active === "FriendList" && <FriendList />}
-		{active === "Search" && <Search />}
+        {active === "Leaderboard" && <Leaderboard />}
+        {active === "FriendList" && <FriendList />}
+        {active === "Search" && <Search />}
       </div>
     </div>
   );

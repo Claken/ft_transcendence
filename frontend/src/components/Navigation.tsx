@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useResolvedPath, useMatch } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import pongLogo from "../assets/logo/white_pong.png";
+import ButtonProfile from "./ButtonProfile";
 
 import "../styles/navigation.css";
 
@@ -33,7 +34,8 @@ function Navigation() {
           </div>
           <ul>
             <CustomLink to="/Channel">Chat</CustomLink>
-            <li className="userListElement">
+            <ButtonProfile />
+            {/* <li className="userListElement">
               <div className="userName">
                 <h3>{auth.user.name}</h3>
               </div>
@@ -45,7 +47,7 @@ function Navigation() {
                   alt="profilePic"
                 />
               </div>
-            </li>
+            </li> */}
           </ul>
         </>
       )) || (

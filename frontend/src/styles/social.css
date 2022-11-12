@@ -12,6 +12,7 @@
 	background-color: #5cb4e5;
 	display: flex;
 	justify-content: center;
+	align-items: center;
 	flex-direction: column;
 	border: 2px solid whitesmoke;
 	border-radius: 30px;
@@ -78,15 +79,7 @@
 	display: flex;
 	justify-content: center;
 	height: 90%;
-}
-
-.searchContainer .searchBar input {
-	width: 80%;
-	height: 25px;
-	background-color: whitesmoke;
-	border-radius: 10px;
-	color: black;
-	border: none;
+	width: 60%;
 }
 
 /* FriendList */
