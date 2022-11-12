@@ -72,8 +72,6 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 		let		channelJoined = await this.chatService.findOneChatRoomByName(infos.room);
 
 		const	memberCreated = await this.memberService.createMember({name: infos.user});
-		await	this.memberService.saveMember(memberCreated);
-
 		channelJoined.members.push(memberCreated);
 
 		await	this.chatService.saveChatRoom(channelJoined);
@@ -103,7 +101,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 	@SubscribeMessage('createChatRoom')
 	async HandleCreationRoom(@MessageBody() room: CreateRoomDto): Promise<void> {
 
-		const 	theOwner = await this.usersService.getByName(room.owner);
+		const	theOwner = await this.usersService.getByName(room.owner);
 
 		const newChatRoom: IChatRoom = {
 			chatRoomName: room.chatRoomName,
@@ -112,12 +110,12 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 			isPublic: room.isPublic,
 			password: room.password,			
 		}
-		let ChannelCreated = await this.chatService.createChatRoom(newChatRoom);
+		let		ChannelCreated = await this.chatService.createChatRoom(newChatRoom);
 
-		const memberCreated = await this.memberService.createMember({name: theOwner.name});
-		await this.memberService.saveMember(memberCreated);
+		const	memberCreated = await this.memberService.createMember({name: theOwner.name});
 
 		ChannelCreated.members = [memberCreated];
+		// ChannelCreated.administrators = [memberCreated];
 		await this.chatService.saveChatRoom(ChannelCreated);
 
 		theOwner.ownedChannels = [ChannelCreated];

@@ -28,7 +28,8 @@ export class MemberService {
 
 		async getMemberByNameAndChannel(memberName: string, channel: ChatRoomEntity) : Promise<MemberEntity> {
 			const members = await this.findAllMembers();
-			return members.find((member: MemberEntity) => member.name === memberName && member.inChannel.id === channel.id);
+			return members.find((member: MemberEntity) =>
+			member.name === memberName && member.inChannel.id === channel.id);
 		}
 
 		async createMember(member: IMember): Promise<MemberEntity> {

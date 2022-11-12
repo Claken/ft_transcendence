@@ -14,15 +14,15 @@ export class ChatService {
 	  	) {}
 
 	  async findAllChatRooms(): Promise<ChatRoomEntity[]> {
-		return await this.chatRepo.find({relations: ['owner', 'members']});
+		return await this.chatRepo.find({relations: ['owner', 'members', 'administrators']});
 	  }
 
 	  async findOneChatRoomByName(name: string): Promise<ChatRoomEntity> {
-		return await this.chatRepo.findOne({where: {chatRoomName: name}, relations: ['owner', 'members'],});
+		return await this.chatRepo.findOne({where: {chatRoomName: name}, relations: ['owner', 'members', 'administrators'],});
 	  }
 
 	  async findOneChatRoomById(id: string): Promise<ChatRoomEntity> {
-		return await this.chatRepo.findOne({where: {id: id}, relations: ['owner', 'members'],});
+		return await this.chatRepo.findOne({where: {id: id}, relations: ['owner', 'members', 'administrators'],});
 	  }
 
 	  async createChatRoom(chatRoom: IChatRoom): Promise<ChatRoomEntity> {
@@ -35,6 +35,10 @@ export class ChatService {
 
 	  async deleteChatRoomByName(name: string): Promise<void> {
 		await this.chatRepo.delete({ chatRoomName: name });
+	  }
+
+	  async deleteChatRoomById(id: string): Promise<void> {
+		await this.chatRepo.delete({ id: id });
 	  }
 
 	//   async updateChatRoom(chatRoomId: string): Promise<ChatRoomEntity> {
