@@ -10,6 +10,7 @@ import RequiredOffline from "./components/auth/RequiredOffline";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Layout from "./pages/Layout";
 import { ChatProvider } from "./contexts/ChatContext";
+import Profile from "./pages/Profile";
 
 function App() {
   return (
@@ -23,12 +24,13 @@ function App() {
               <Route element={<RequiredOffline />}>
                 <Route path="/login" element={<Login />} />
               </Route>
-              <Route element={<RequiredAuth />}>
+              {/* <Route element={<RequiredAuth />}> */}
                 <Route path="/account" element={<Account />} />
                 <Route path="/social" element={<Social />} />
                 <Route path="/channel" element={<Channel />} />
                 <Route path="/pong" element={<Pong />} />
-              </Route>
+                <Route path="/profile" element={<Profile />} />
+              {/* </Route> */}
             </Route>
           </Routes>
         </BrowserRouter>
