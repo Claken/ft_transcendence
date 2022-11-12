@@ -106,16 +106,14 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 		const newChatRoom: IChatRoom = {
 			chatRoomName: room.chatRoomName,
 			owner: theOwner,
-			administrators: room.administrators,
 			isPublic: room.isPublic,
-			password: room.password,			
+			password: room.password,
 		}
 		let		ChannelCreated = await this.chatService.createChatRoom(newChatRoom);
 
-		const	memberCreated = await this.memberService.createMember({name: theOwner.name});
+		const	memberCreated = await this.memberService.createMember({name: theOwner.name, isAdmin: true});
 
 		ChannelCreated.members = [memberCreated];
-		// ChannelCreated.administrators = [memberCreated];
 		await this.chatService.saveChatRoom(ChannelCreated);
 
 		theOwner.ownedChannels = [ChannelCreated];
@@ -135,7 +133,6 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 	HandleModificationChannel(@MessageBody() room: CreateRoomDto): void {
 		const modifiedRoom: IChatRoom = {
 			chatRoomName: room.chatRoomName,
-			administrators: room.administrators,
 			isPublic: room.isPublic,
 			password: room.password,
 		}

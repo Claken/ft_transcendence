@@ -17,6 +17,9 @@ export class MemberEntity {
 	name: string;
 
 	@Column({ default: false })
+	isAdmin: boolean;
+
+	@Column({ default: false })
 	isMute: boolean;
 
 	@Column({ nullable: true, default: 0 })
@@ -35,6 +38,7 @@ export class MemberEntity {
 export interface IMember {
 	id?: string,
 	name?: string,
+	isAdmin?: boolean,
 	isMute?: boolean,
 	timeMute?: number,
 	isBan?: boolean,
