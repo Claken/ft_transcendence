@@ -116,7 +116,8 @@ const ProtoChat = () => {
 
 	const addARoom = (event: any) => {
 		event.preventDefault();
-		let askARoom = "";
+		let		askARoom: string = "";
+		let		isPublicOrNot: boolean;
 		while (askARoom === "")
 		{
 			askARoom = prompt('Enter a name for your room: ')!;
@@ -125,11 +126,11 @@ const ProtoChat = () => {
 			if (askARoom === "")
 				alert('This is not a right name for a room !');
 		}
+		isPublicOrNot = window.confirm('If you want your room to be public, press OK. Otherwise, press Cancel');
 		const dbRoom: IChatRoom = {
 			chatRoomName: askARoom,
 			owner: username,
-			administrators: username,
-			isPublic: true,
+			isPublic: isPublicOrNot,
 		}
 		socket?.emit('createChatRoom', dbRoom);
 	}
