@@ -56,29 +56,27 @@ function Account() {
 	/* ********************************************************* */
 	const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
 		setFile(e.target.files[0]);
-		
 	};
 
 	const uploadFile = async () => {
 		if (file) {
-			console.log(file);
 			const formData = new FormData();
 			// Generating a 10 random chars long string
 			const randomNb = Math.random().toString(36).substring(2, 12);
 			const fileCustomName = user.name+randomNb;
-			console.log(fileCustomName);
 			formData.append("avatar", file, fileCustomName);
 			await axios
 				.post("/auth/42/upload", formData)
 				.then((res) => {
 					console.log(res.data);
-					setUser(res.data)
+					// setUser(res.data)
 				})
 				.catch((error) => {
 					console.log(error);
 				});
 		}
 	};
+	console.log(file);
 	
 	return (
 		<div>
@@ -114,7 +112,7 @@ function Account() {
 				<input
 					className="photo"
 					type="file"
-					accept=".png, .jpg, .jpeg"
+					accept=".png, .jpg, .jpeg, .bmp, .gif"
 					onChange={handleFile}
 				></input>
 				<button className="btn btn-primary" onClick={uploadFile}>

@@ -55,8 +55,9 @@ export class AuthController {
         filename: (req: RequestWithUser, file, cb) => {
           // Calling the callback passing the
           // originalname created in frontend
-          console.log(file);
-          cb(null, `${(file.originalname)}`);
+          const pos: number = file.mimetype.lastIndexOf('/');
+          const extension = "."+file.mimetype.slice(pos+1, file.mimetype.length);
+          cb(null, file.originalname+extension);
         },
       }),
     }),
@@ -76,14 +77,14 @@ export class AuthController {
     )
     file: Express.Multer.File,
   ): Promise<UserDTO> {
-    // file.name = user.name+10randomNb
+    // find user.name with file.name 
+    // because file.name = user.name+10randomNb
     const len = file.filename.length - 10;
     const username = file.filename.substring(0, len);
     let user = await this.usersService.getByName(username);
     // update user => AvatarUrl
-    user = await this.usersService.updateAvatarUrl(user.id, "/mnt/nfs/homes/aderose/Documents/cursus/project_ft_transcendence/ft_transcendence/backend/"+file.path);
-    console.log(file);
-    console.log(user.avatarUrl);
+    // user = await this.usersService.updateAvatarUrl(user.id, "/mnt/nfs/homes/aderose/Documents/cursus/project_ft_transcendence/ft_transcendence/backend/"+file.path);
+    // console.log(user.avatarUrl);
     return user;
   }
 
