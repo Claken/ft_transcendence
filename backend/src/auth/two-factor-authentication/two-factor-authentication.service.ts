@@ -3,9 +3,6 @@ import { ConfigService } from '@nestjs/config';
 import { authenticator } from 'otplib';
 import { UserDTO } from 'src/TypeOrm/DTOs/User.dto';
 import { UsersService } from 'src/users/users.service';
-import { toFileStream } from 'qrcode';
-import { Response } from 'express';
-import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class TwoFactorAuthenticationService {
