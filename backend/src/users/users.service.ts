@@ -75,4 +75,10 @@ export class UsersService {
     user.isTwoFAValidated = val;
     return await this.userRepo.save(user);
   }
+
+  async updateAvatarUrl(id: number, avatarUrl: string): Promise<UsersEntity> {
+    const user = await this.getById(id);
+    user.avatarUrl = avatarUrl;
+    return await this.userRepo.save(user);
+  }
 }

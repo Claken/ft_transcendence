@@ -1,7 +1,21 @@
-import { Controller, Get, HttpStatus, ParseFilePipeBuilder, Post, Redirect, Req, Res, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpStatus,
+  ParseFilePipeBuilder,
+  Patch,
+  Post,
+  Redirect,
+  Req,
+  Res,
+  UploadedFile,
+  UseGuards,
+  UseInterceptors,
+} from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { Response } from 'express';
-import { RequestWithUser } from 'src/TypeOrm/DTOs/User.dto';
+import { Request, Response } from 'express';
+import { RequestWithUser, UserDTO } from 'src/TypeOrm/DTOs/User.dto';
 import { UsersService } from 'src/users/users.service';
 import { FortyTwoAuthGuard } from './guards/fortytwo.guard';
 import { diskStorage } from 'multer';
@@ -9,9 +23,7 @@ import { extname } from 'path';
 
 @Controller('auth/42')
 export class AuthController {
-  constructor(
-    private usersService: UsersService,
-  ) {}
+  constructor(private usersService: UsersService) {}
 
   @UseGuards(FortyTwoAuthGuard)
   @Get('login')
@@ -30,38 +42,49 @@ export class AuthController {
   @Get('verify2fa')
   verify2fa(@Req() req: RequestWithUser, @Res() res: Response) {
     const { isTwoFAEnabled } = req.user;
-    if (isTwoFAEnabled)
-      res.redirect('http://localhost:3000/twofa')
-    else
-      res.redirect('http://localhost:3000')
+    if (isTwoFAEnabled) res.redirect('http://localhost:3000/twofa');
+    else res.redirect('http://localhost:3000');
     return req.user;
   }
 
   @Post('upload')
-  @UseInterceptors(FileInterceptor('avatar', {
-    storage: diskStorage ({
-      destination: './avatarUploads',
-      filename: (req, file, cb) => {
-        // Generating a 32 random chars long string
-        const randomName = Array(32).fill(null).map(() => (Math.round(Math.random() * 16)).toString(16)).join('')
-        //Calling the callback passing the random name generated with the original extension name
-        cb(null, `${randomName}${extname(file.originalname)}`)
-      }
-    })
-  }))
-  async uploadFile(@UploadedFile(
-    new ParseFilePipeBuilder()
-    .addFileTypeValidator({
-      fileType: /(jpe?g|png|gif|bmp)$/,
-    })
-    .addMaxSizeValidator({
-      maxSize: 1000000 //1mo
-    })
-    .build({
-      errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY
-    })
-  ) file: Express.Multer.File) {
+  @UseInterceptors(
+    FileInterceptor('avatar', {
+      storage: diskStorage({
+        destination: './src/avatarUploads',
+        filename: (req: RequestWithUser, file, cb) => {
+          // Calling the callback passing the
+          // originalname created in frontend
+          console.log(file);
+          cb(null, `${(file.originalname)}`);
+        },
+      }),
+    }),
+  )
+  async uploadFile(
+    @UploadedFile(
+      new ParseFilePipeBuilder()
+        .addFileTypeValidator({
+          fileType: /(jpe?g|png|gif|bmp)$/,
+        })
+        .addMaxSizeValidator({
+          maxSize: 1000000, //1mo
+        })
+        .build({
+          errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
+        }),
+    )
+    file: Express.Multer.File,
+  ): Promise<UserDTO> {
+    // file.name = user.name+10randomNb
+    const len = file.filename.length - 10;
+    const username = file.filename.substring(0, len);
+    let user = await this.usersService.getByName(username);
+    // update user => AvatarUrl
+    user = await this.usersService.updateAvatarUrl(user.id, "/mnt/nfs/homes/aderose/Documents/cursus/project_ft_transcendence/ft_transcendence/backend/"+file.path);
     console.log(file);
+    console.log(user.avatarUrl);
+    return user;
   }
 
   @Get('logout')
@@ -73,8 +96,7 @@ export class AuthController {
       if (req.user.isTwoFAValidated)
         this.usersService.setTwoFACertif(req.user.id, false);
       req.logOut((err) => {
-        if (err)
-          console.log(err);
+        if (err) console.log(err);
       }); // without the callback an error occured...
       // set maxAge to 0 remove the cookie from the browser
       req.session.cookie.maxAge = 0;

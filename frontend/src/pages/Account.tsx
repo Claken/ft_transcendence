@@ -56,24 +56,30 @@ function Account() {
 	/* ********************************************************* */
 	const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
 		setFile(e.target.files[0]);
-		console.log(user.avatarUrl);
+		
 	};
 
 	const uploadFile = async () => {
 		if (file) {
+			console.log(file);
 			const formData = new FormData();
-			formData.append("avatar", file, file.name);
+			// Generating a 10 random chars long string
+			const randomNb = Math.random().toString(36).substring(2, 12);
+			const fileCustomName = user.name+randomNb;
+			console.log(fileCustomName);
+			formData.append("avatar", file, fileCustomName);
 			await axios
 				.post("/auth/42/upload", formData)
 				.then((res) => {
 					console.log(res.data);
+					setUser(res.data)
 				})
 				.catch((error) => {
 					console.log(error);
 				});
 		}
 	};
-	console.log(file);
+	
 	return (
 		<div>
 			<div className="rectangleprofile">
