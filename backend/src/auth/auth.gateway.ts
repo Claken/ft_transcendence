@@ -68,9 +68,9 @@ export class AuthGateway
 	/* ********************************************************* */
 
   @SubscribeMessage('check-secret-code')
-  checkSecretCode(client: Socket, twofa: TwoFAValidation) {
+  async checkSecretCode(client: Socket, twofa: TwoFAValidation) {
     const {code, user} = twofa;
-    const isCodeValid = this.twoFAService.isTwoFACodeValid(code, user);
+    const isCodeValid = await this.twoFAService.isTwoFACodeValid(code, user);
     if (isCodeValid) {
       this.usersService.setTwoFACertif(user.id, true);
       user.isTwoFAValidated = true;

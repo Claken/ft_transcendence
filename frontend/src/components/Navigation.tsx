@@ -5,7 +5,7 @@ import { useAuth } from "../contexts/AuthContext";
 import "../styles/navigation.css";
 
 function Navigation() {
-	const { user, setUser, logout } = useAuth();
+	const { user, logout } = useAuth();
 
 	const handleLogout = () => {
 		logout();
