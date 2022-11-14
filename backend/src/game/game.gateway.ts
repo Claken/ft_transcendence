@@ -11,6 +11,8 @@ import { GameDTO } from '../TypeOrm/DTOs/Game.dto';
 import { GameService } from './game.service';
 import { map } from 'rxjs';
 import { Cron, CronExpression } from '@nestjs/schedule';
+import { Socket } from 'dgram';
+import { threadId } from 'worker_threads';
 
 export var userQueue: UserDTO[] = [];
 
@@ -22,10 +24,10 @@ export class GameGateway
 
   @WebSocketServer() server;
   users: number = 0;
+//   mapPlayer = {login : "", index : -1};//TODO: faire un tab en fct de gameID
 
   afterInit(server: any) {
     console.log('Server Initialized');
-    this.server.to(1).emit('toto'); //TODO:
   }
 
   async handleConnection(client) {
@@ -62,7 +64,6 @@ export class GameGateway
     //Colisions haut et bas
     if (top - allPos.EmptyGround < 0 || bot > allPos.height) {
       allPos.vy *= -1;
-      //TODO: emmettre un son
     }
 
     //Colisions joueur Gauche
@@ -72,7 +73,6 @@ export class GameGateway
         allPos.ballY <= allPos.pLY + allPos.paddleH
       ) {
         allPos.vx = 1;
-        //TODO: emmettre un son
         allPos.speed < 5 ? (allPos.speed += 0.2) : null;
         console.log('speed = ' + allPos.speed); //TODO: retirer
       }
@@ -85,34 +85,39 @@ export class GameGateway
         allPos.ballY <= allPos.pRY + allPos.paddleH
       ) {
         allPos.vx = -1;
-        //TODO: emmettre un son
         allPos.speed < 5 ? (allPos.speed += 0.2) : null;
         console.log('speed = ' + allPos.speed); //TODO: retirer
       }
     }
 
-    // Si l'état du jeu est différent de WIN ou LOSE
-    if (allPos.state != 3 && allPos.state != 4) {
       // Si la balle sort du terrain de droite
       if (right > allPos.width) {
         allPos.scoreLP++;
-        if (allPos.scoreLP >= allPos.score) allPos.state = 4; //TODO: gagnant/perdant en fonction de joueur et pas du side.
-        if (allPos.state != 3 && allPos.state != 4)
-          allPos.ballX = allPos.width / 2;
+        if (allPos.scoreLP >= allPos.score) {
+			allPos.state = 3;
+			this.server.emit('updatedData', allPos);
+			this.server.emit("endGame", allPos.loginLP, "");
+			return;
+		}
+		else
+			allPos.ballX = allPos.width / 2;
         allPos.speed = 2;
-        allPos.vx *= -1; //TODO: à retirer.
       }
       // Si la balle sort du terrain de gauche
       if (left < 0) {
         allPos.scoreRP++;
-        if (allPos.scoreRP >= allPos.score) allPos.state = 3; //TODO: gagnant/perdant en fonction de joueur et pas du side.
-        if (allPos.state != 3 && allPos.state != 4)
-          allPos.ballX = allPos.width / 2;
+        if (allPos.scoreRP >= allPos.score) {
+			allPos.state = 3;
+			this.server.emit('updatedData', allPos);
+			this.server.emit("endGame", allPos.loginRP, "");
+			return ;
+		}
+		else
+			allPos.ballX = allPos.width / 2;
         allPos.speed = 2;
       }
       allPos.ballX += allPos.vx * allPos.speed;
       allPos.ballY += allPos.vy * allPos.speed;
-    }
     this.server.emit('updatedData', allPos);
   }
 
@@ -120,29 +125,30 @@ export class GameGateway
   /*                    Mouvement des paddles gauche et droite.                    */
   /* ***************************************************************************** */
   @SubscribeMessage('movePlayer')
-  async PaddleUp(client: any, allPos) {
-    //TODO: En fonction de l'userID, le paddle Gauche ou Droit bouge
-    if (
-      allPos.key === 'ArrowUp' ||
-      allPos.key === 'w' ||
-      allPos.key === 'W' ||
-      allPos.key === 'z' ||
-      allPos.key === 'Z'
-    ) {
-      allPos.pLY -= 6;
-      if (allPos.pLY < 0 + allPos.EmptyGround)
-        allPos.pLY = 0 + allPos.EmptyGround;
-    }
-    if (
-      allPos.key === 'ArrowDown' ||
-      allPos.key === 's' ||
-      allPos.key === 'S'
-    ) {
-      allPos.pLY += 6;
-      if (allPos.pLY + allPos.paddleH > allPos.height)
-        allPos.pLY = allPos.height - allPos.paddleH;
-    }
-    this.server.emit('updatedPlayer', allPos);
+  async PaddleUp(client: any, infos) {
+	//TODO: En fonction de l'userID, le paddle Gauche ou Droit bouge
+	console.log("appel de la fct");
+	if (infos[0].key === 'ArrowUp'
+	|| infos[0].key === 'w'
+	|| infos[0].key === 'W'
+	|| infos[0].key === 'z'
+	|| infos[0].key === 'Z') {
+		infos[1] === infos[0].loginLP ? infos[0].pLY -= 6 : infos[0].pRY -= 6 ;
+		if (infos[0].pLY < 0 + infos[0].EmptyGround)
+			infos[0].pLY = 0 + infos[0].EmptyGround;
+		else if (infos[0].pRY < 0 + infos[0].EmptyGround)
+			infos[0].pRY = 0 + infos[0].EmptyGround;
+	}
+	if ( infos[0].key === 'ArrowDown'
+		|| infos[0].key === 's'
+		|| infos[0].key === 'S') {
+		infos[1] === infos[0].loginLP ? infos[0].pLY += 6 : infos[0].pRY += 6 ;
+		if (infos[0].pLY + infos[0].paddleH > infos[0].height)
+			infos[0].pLY = infos[0].height - infos[0].paddleH;
+		else if (infos[0].pRY + infos[0].paddleH > infos[0].height)
+			infos[0].pRY = infos[0].height - infos[0].paddleH;
+	}
+    this.server.emit('updatedPlayer', infos[0]);
   }
 
   /* ***************************************************************************** */
@@ -153,18 +159,37 @@ export class GameGateway
     this.server.emit('updatedState', currentState);
   }
 
+  @SubscribeMessage('pause&play')
+  async PauseAndPlay(client: any, currentState, name) {
+    this.server.emit('PauseAndPlay', currentState, name);
+  }
+
   /* ***************************************************************************** */
   /*                         maj des images et du compteur                         */
   /* ***************************************************************************** */
   @SubscribeMessage('image')
-  async Image(client: any, currentImg) {
-    this.server.emit('updateImg', currentImg);
+  async Image(client: any, infos) {
+	let mapPlayer = {login : infos[0], index : infos[2]}
+
+	if (mapPlayer.index === infos[1].map) {
+		console.log("même map, on lance la game")
+		this.server.emit("launchGame", mapPlayer.index)
+		return;
+	}
+	console.log("attribut de la nouvelle map")
+	this.server.emit('updateImg', mapPlayer);
+  }
+
+  @SubscribeMessage('randomMap')
+  async RandomMap(client: any) {
+	let map: number;
+	map = Math.floor(Math.random() * 3);
+	this.server.emit("launchGame", map);
   }
 
   @SubscribeMessage('compteur')
-  async UpdateCompteur(client: any, currentSec) {
-    currentSec -= 1;
-    this.server.emit('compteurUpdated', currentSec);
+  async UpdateCompteur(client: any, compteur: number) {
+	this.server.emit('compteurUpdated', compteur);
   }
 
   /* ***************************************************************************** */
