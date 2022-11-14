@@ -1,15 +1,35 @@
+* {
+  box-sizing: border-box;
+  font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
+    "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
+}
+
 .container {
-  width: 80%;
-  max-width: 100%;
-  margin-top: 50px;
-  height: calc(100vh - 250px);
-  background-color: #333333;
+  width: 90%;
+  margin-top: 3%;
+  height: 83vh;
   display: flex;
   border-radius: 30px;
   border: 2px solid whitesmoke;
   justify-content: center;
-  margin-left: 10%;
-  background-color: #279cdd;
+  margin-left: 5%;
+  background: rgb(0, 138, 214);
+  background: -moz-radial-gradient(
+    circle,
+    rgba(0, 138, 214, 1) 35%,
+    rgba(92, 180, 229, 1) 100%
+  );
+  background: -webkit-radial-gradient(
+    circle,
+    rgba(0, 138, 214, 1) 35%,
+    rgba(92, 180, 229, 1) 100%
+  );
+  background: radial-gradient(
+    circle,
+    rgba(0, 138, 214, 1) 35%,
+    rgba(92, 180, 229, 1) 100%
+  );
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#008ad6",endColorstr="#5cb4e5",GradientType=1);
 }
 
 .profile-container {
@@ -40,54 +60,68 @@
   flex-direction: column;
 }
 
+.left-container .profile-buttons {
+  width: 100%;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.left-container .profile-buttons button {
+  border: none;
+  background-color: rgba(255, 255, 255, 0);
+  color: whitesmoke;
+  zoom: 2;
+}
+
 .right-container {
   flex: 70%;
   height: 100%;
   border-bottom-right-radius: 30px;
   border-top-right-radius: 30px;
   display: flex;
-  justify-content: center;
-  align-items: flex-start;
+  flex-wrap: wrap;
 }
 
-.right-container .match-history {
-  width: 80%;
-  height: 85%;
+.right-container .matchHistory {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  width: 100%;
+  height: 90%;
   background-color: #7355b1;
-  margin-top: 5%;
+  margin: 5%;
   border-radius: 20px;
   border: 2px solid whitesmoke;
 }
 
-.right-container .match-history .header {
+.right-container .matchHistory .matchHistory-header {
   width: 100%;
   height: 10%;
   background-color: #5c4290;
   display: flex;
   justify-content: center;
-  align-items: center;
   border-top-left-radius: 20px;
   border-top-right-radius: 20px;
   color: whitesmoke;
+}
+.right-container .matchHistory .matchHistory-content {
+  display: flex;
+  justify-content: center;
+  height: 90%;
+  background-color: #5c4290;
+}
+
+.profile-picture {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .profile-picture img {
   border-radius: 50%;
   border: 2px solid whitesmoke;
-  resize: both;
-}
-
-.profile-buttons {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.profile-buttons button {
-  border: none;
-  background-color: rgba(255, 255, 255, 0);
-  color: whitesmoke;
-  zoom: 2;
+  height: 200px;
 }
 
 .modal-overlay {
@@ -104,13 +138,14 @@
 }
 
 .modal-box {
-  display: block;
+  display: flex;
   background: #333333;
   width: 50%;
   height: 50%;
   padding: 1rem;
   border-radius: 1rem;
   border: 2px solid whitesmoke;
+  color: whitesmoke;
 }
 
 .modal-box .modal-settings {
@@ -126,11 +161,29 @@
   align-items: center;
   flex-direction: column;
 }
-
-.picture-settings img {
-  border-radius: 50%;
+.picture-settings .profile-picture {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 50%;
 }
 
+.picture-settings img {
+  height: 150px;
+}
+.uploadButton {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 50%;
+}
+.uploadButton {
+  width: 100%;
+  max-width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: column;
+}
 .username-settings {
   flex: 33%;
   display: flex;
@@ -145,31 +198,4 @@
   justify-content: space-around;
   align-items: center;
   flex-direction: column;
-}
-
-.modal-settings button {
-  -webkit-border-radius: 5px;
-  -moz-border-radius: 5px;
-  border-radius: 5px;
-  background-image: -webkit-gradient(
-    linear,
-    left bottom,
-    left top,
-    color-stop(0.16, rgb(207, 207, 207)),
-    color-stop(0.79, rgb(252, 252, 252))
-  );
-  background-image: -moz-linear-gradient(
-    center bottom,
-    rgb(207, 207, 207) 16%,
-    rgb(252, 252, 252) 79%
-  );
-  background-image: linear-gradient(
-    to top,
-    rgb(207, 207, 207) 16%,
-    rgb(252, 252, 252) 79%
-  );
-  padding: 3px;
-  border: 1px solid #000;
-  color: black;
-  text-decoration: none;
 }

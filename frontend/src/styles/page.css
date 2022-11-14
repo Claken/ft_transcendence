@@ -84,15 +84,11 @@ body {
   box-shadow: 0 5px 35px 0 whitesmoke;
 }
 
-.socialbody {
-	display: flex;
-	flex-direction: row;
-}
+.guestPic {
 
-.socialbody-left {
-	width: 25%;
+  border-radius: 50%;
 }
-
-.socialbody-right {
-	width: 75%;
+.homeContainer {
+  text-align: center;
+  color: whitesmoke;
 }

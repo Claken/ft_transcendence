@@ -1,10 +1,12 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import Rouage from "../../assets/img/rouage.png";
+import { useChat } from "../../contexts/ChatContext";
 import "../../styles/dmchat.css";
 
 function DmUserButton(props) {
   const [dropDown, setDropDown] = useState(false);
+	const chat = useChat();
 
   const isConnect = (user): boolean => {
     if (user.status === "online") return true;
@@ -41,10 +43,16 @@ function DmUserButton(props) {
           onMouseEnter={onMouseEnter}
           onMouseLeave={onMouseLeave}
         >
-          <button className="overlayleft" onClick={() => props.changeTarget(props.user)}>
-            Messages
-          </button>
-          <button className="overlayright">Profile</button>
+          <div className="overlayleft">
+            <Link to="/channel">
+              <button className="overlayleft" onClick={() => chat.changeTarget(props.user)}>Messages</button>
+            </Link>
+          </div>
+          <div className="overlayright">
+            <Link to={"/profile/" + props.user.name}>
+              <button className="overlayright">Profile</button>
+            </Link>
+          </div>
         </div>
       </div>
     </li>

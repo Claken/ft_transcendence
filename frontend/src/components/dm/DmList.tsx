@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
 import axios from "../../axios.config";
 import { useChat } from "../../contexts/ChatContext";
-import DmChat from "./DmChat";
 import DmUserButton from "./DmUserButton";
 import { IUser } from "../../interfaces/user.interface";
 import DmSearch from "./DmSearch";
 import "../../styles/dmchat.css";
+import "../../styles/social.css";
 
 function DmList() {
   const [Users, setUsers] = useState<IUser[]>([]);
@@ -30,26 +30,21 @@ function DmList() {
     return false;
   };
 
-  const changeTarget = (user: IUser) => {
-    chat.setTarget(user);
-		chat.setHaveTarget(true);
-		chat.setLoading(true);
-  };
-
   return (
-    <div>
-      <ul className="btndisplay">
-				<li className="addspace">
-					<DmSearch changeUsers={setUsers} />
-				</li>
-        {Users.map(
-          (user) =>
-            !isMe(user.id) && (
-              <DmUserButton key={user.id} user={user} changeTarget={changeTarget} />
-            )
-        )}
-      </ul>
-    </div>
+    <ul className="btndisplay">
+      <li className="dmsearchbar">
+        <DmSearch changeUsers={setUsers} />
+      </li>
+      {Users.map(
+        (user) =>
+          !isMe(user.id) && (
+            <DmUserButton
+              key={user.id}
+              user={user}
+            />
+          )
+      )}
+    </ul>
   );
 }
 
