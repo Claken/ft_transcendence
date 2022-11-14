@@ -11,6 +11,7 @@ export const AuthProvider = ({ children }) => {
 
 	useEffect(() => {
 		let subscribed = true; //TODO: subscribe only in dev_mode strictmode => double render
+		const token = localStorage.getItem("MY_PONG_APP");
 		// GET session/cookie42
 		axios
 			.get("/me", {
@@ -63,6 +64,8 @@ export const AuthProvider = ({ children }) => {
 			name: guestName,
 			avatar: guestPic,
 			status: "online",
+			inGame: false,
+			inQueue: false,
 		};
 		await postGuestUser(newUser);
 	};

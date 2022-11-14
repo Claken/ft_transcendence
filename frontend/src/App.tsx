@@ -1,6 +1,7 @@
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Pong from "./pages/Pong";
+import Game from "./components/game/Game";
 import Channel from "./pages/Channel";
 import Account from "./pages/Account";
 import { AuthProvider } from "./contexts/AuthContext";
@@ -14,8 +15,8 @@ import RequiredOffline from "./components/RequiredRoutes/RequiredOffline";
 function App() {
 
 	return (
-		<AuthProvider>
-			<BrowserRouter>
+		<BrowserRouter>
+			<AuthProvider>
 				<Routes>
 					<Route path="/" element={<Layout />}>
 						<Route path="/" element={<Home />} />
@@ -33,8 +34,8 @@ function App() {
 						{/* </Route> */}
 					</Route>
 				</Routes>
-			</BrowserRouter>
-		</AuthProvider>
+			</AuthProvider>
+		</BrowserRouter>
 	);
 }
 
