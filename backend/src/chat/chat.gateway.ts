@@ -61,16 +61,16 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 	@SubscribeMessage('chatToServer')
 	async HandleMessageToRoom(@MessageBody() message: {sender: string, room: string, msg: string}): Promise<void> {
 
-		// console.log('message.msg = ' + message.msg);
-		// console.log('message.room = ' + message.room);
-		// let theRoom = await this.chatService.findOneChatRoomByName(message.room);
+		console.log('message.msg = ' + message.msg);
+		console.log('message.room = ' + message.room);
+		let theRoom = await this.chatService.findOneChatRoomByName(message.room);
 
-		// const messageCreated = await this.messageService.createMessage({sender: message.sender, content: message.msg})
-		// theRoom.messages.push(messageCreated);
+		const messageCreated = await this.messageService.createMessage({sender: message.sender, content: message.msg})
+		theRoom.messages.push(messageCreated);
 		
-		// await this.chatService.saveChatRoom(theRoom);
+		await this.chatService.saveChatRoom(theRoom);
 		
-		// console.log('oui');
+		console.log('oui');
 		this.server.to(message.room).emit('chatToClient', message);
 	}
 
@@ -112,7 +112,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 	/* ************************************************************************* */
 
 	@SubscribeMessage('createChatRoom')
-	async HandleCreationRoom(@MessageBody() room: CreateRoomDto): Promise<void> {
+	async HandleCreationRoom(client: Socket, room: CreateRoomDto): Promise<void> {
 
 		const	theOwner = await this.usersService.getByName(room.owner);
 
@@ -132,6 +132,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 		theOwner.ownedChannels = [ChannelCreated];
 		await this.usersService.updateUser(theOwner.id);
 
+		client.join(room.chatRoomName);
 		this.server.emit('sendNewChannel', ChannelCreated);
 	}
 
