@@ -12,16 +12,26 @@ import {
   @Entity('Message')
   export class MessageEntity {
 
-	@PrimaryGeneratedColumn('uuid')
-	id: string;
+	@PrimaryGeneratedColumn()
+	id?: number;
 
 	@Column()
 	sender: string;
 
 	@ManyToOne(() => ChatRoomEntity, (Channel: ChatRoomEntity) => Channel.messages, {onDelete: 'CASCADE'})
-	channel: ChatRoomEntity;
+	channel?: ChatRoomEntity;
 
 	@Column()
 	content: string;
-	
+
+	@CreateDateColumn()
+	createdAt?: Date;
   }
+
+  export interface IChatMessage {
+	id?: number,
+	sender?: string,
+	channel?: ChatRoomEntity,
+	content?: string,
+	createdAt?: Date,
+}

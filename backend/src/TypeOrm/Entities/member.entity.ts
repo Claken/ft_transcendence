@@ -33,6 +33,9 @@ export class MemberEntity {
 
 	@ManyToOne(() => ChatRoomEntity, (Channel: ChatRoomEntity) => Channel.members, {onDelete: 'CASCADE'})
 	inChannel?: ChatRoomEntity;
+
+	@CreateDateColumn()
+	createdAt?: Date;
 }
 
 export interface IMember {

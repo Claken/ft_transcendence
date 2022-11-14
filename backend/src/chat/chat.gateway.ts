@@ -10,6 +10,7 @@ import { UsersService } from 'src/users/users.service';
 import { UsersEntity } from 'src/TypeOrm';
 import { MemberService } from './member.service';
 import { combineLatest } from 'rxjs';
+import { MessageService } from './chatMessage.service';
 
 
 // {cors: '*'} pour que chaque client dans le frontend puisse se connecter à notre gateway
@@ -18,7 +19,8 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
 	constructor(private chatService: ChatService,
 		private usersService: UsersService,
-		private memberService: MemberService) {}
+		private memberService: MemberService,
+		private messageService: MessageService) {}
 
 	private logger: Logger = new Logger('ChatGateway');
 
@@ -57,7 +59,18 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 	/* ************************************************************************* */
 
 	@SubscribeMessage('chatToServer')
-	HandleMessageToRoom(@MessageBody() message: {sender: string, room: string, msg: string}): void {
+	async HandleMessageToRoom(@MessageBody() message: {sender: string, room: string, msg: string}): Promise<void> {
+
+		// console.log('message.msg = ' + message.msg);
+		// console.log('message.room = ' + message.room);
+		// let theRoom = await this.chatService.findOneChatRoomByName(message.room);
+
+		// const messageCreated = await this.messageService.createMessage({sender: message.sender, content: message.msg})
+		// theRoom.messages.push(messageCreated);
+		
+		// await this.chatService.saveChatRoom(theRoom);
+		
+		// console.log('oui');
 		this.server.to(message.room).emit('chatToClient', message);
 	}
 
@@ -141,9 +154,10 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 	@SubscribeMessage('getAllChannels')
 	async HandleGettingChannels(client: Socket) : Promise<void> {
 		const Channels = await this.chatService.findAllChatRooms();
-		// console.log('member 0 name');
+		console.log('member 0 name');
+		console.log(Channels[0]);
 		// console.log(Channels[0].owner.name);
-		// console.log(Channels[0].members[0].name);
+		// console.log(Channels[0].messages);
 		client.emit('sendAllChannels', Channels);
 	}
 

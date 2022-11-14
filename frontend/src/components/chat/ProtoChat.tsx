@@ -91,7 +91,7 @@ const ProtoChat = () => {
 		console.log('sendChat:   ' + text);
 		if (activeRoom.member)
 		{
-			socket?.emit('chatToServer', {sender: username, room: activeRoom.name, message: text});
+			socket?.emit('chatToServer', {sender: username, room: activeRoom.name, msg: text});
 		}
 		else
 		{
@@ -100,11 +100,12 @@ const ProtoChat = () => {
 		}
 	}
 
-	const receiveChatMessage = (obj: {sender: string, room: string, message: string}) => {
+	const receiveChatMessage = (obj: {sender: string, room: string, msg: string}) => {
 	
+		console.log('recv');
 		const theroom: IMessageToBack = {
 			sender: obj.sender,
-			message: obj.message,
+			message: obj.msg,
 		};
 
 		rooms.forEach((element: IRoom) => {
@@ -278,13 +279,6 @@ const ProtoChat = () => {
 	}, [receiveAllChannels])
 
 	// USEFFECT POUR RECEVOIR UN MESSAGE POUR UNE ROOM
-	useEffect(() => {
-		socket?.on('chatToClient', receiveChatMessage);
-		return () => {
-			socket?.off('chatToClient', receiveChatMessage);
-		}
-	}, [receiveChatMessage])
-
 	useEffect(() => {
 		socket?.on('chatToClient', receiveChatMessage);
 		return () => {

@@ -14,15 +14,15 @@ export class ChatService {
 	  	) {}
 
 	  async findAllChatRooms(): Promise<ChatRoomEntity[]> {
-		return await this.chatRepo.find({relations: ['owner', 'members']});
+		return await this.chatRepo.find({relations: ['owner', 'members', 'messages']});
 	  }
 
 	  async findOneChatRoomByName(name: string): Promise<ChatRoomEntity> {
-		return await this.chatRepo.findOne({where: {chatRoomName: name}, relations: ['owner', 'members'],});
+		return await this.chatRepo.findOne({where: {chatRoomName: name}, relations: ['owner', 'members', 'messages'],});
 	  }
 
 	  async findOneChatRoomById(id: string): Promise<ChatRoomEntity> {
-		return await this.chatRepo.findOne({where: {id: id}, relations: ['owner', 'members'],});
+		return await this.chatRepo.findOne({where: {id: id}, relations: ['owner', 'members', 'messages'],});
 	  }
 
 	  async createChatRoom(chatRoom: IChatRoom): Promise<ChatRoomEntity> {

@@ -9,7 +9,7 @@ import {
 	JoinColumn
 } from 'typeorm';
 import { MemberEntity } from './member.entity';
-import { MessageEntity } from './messageChat.entity';
+import { MessageEntity } from './chatMessage.entity';
 import { UsersEntity } from './users.entity';
 
 @Entity('ChatRoom')
