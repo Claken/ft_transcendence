@@ -29,7 +29,7 @@ export class AuthController {
   verify2fa(@Req() req: RequestWithUser, @Res() res: Response) {
     const { isTwoFAEnabled } = req.user;
     if (isTwoFAEnabled)
-      res.redirect('http://localhost:3000/twofa')
+      res.redirect('http://localhost:3000/twofa-validation')
     else
       res.redirect('http://localhost:3000')
     return req.user;

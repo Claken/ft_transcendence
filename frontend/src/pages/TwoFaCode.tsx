@@ -5,7 +5,7 @@ import { socket } from "../components/Socket";
 import { useAuth } from "../contexts/AuthContext";
 import { IUser } from "../interfaces/user.interface";
 
-const TwoFa = () => {
+const TwoFaCode = () => {
 	const [code, setCode] = useState("");
 	const { user, setUser } = useAuth();
 	const navigate = useNavigate();
@@ -53,4 +53,4 @@ const TwoFa = () => {
 	);
 };
 
-export default TwoFa;
+export default TwoFaCode;

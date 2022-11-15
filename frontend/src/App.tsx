@@ -6,13 +6,11 @@ import Account from "./pages/Account";
 import { AuthProvider } from "./contexts/AuthContext";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Layout from "./pages/Layout";
-import TwoFa from "./pages/TwoFa";
 import RequiredAuth from "./components/RequiredRoutes/RequiredAuth";
 import RequiredOffline from "./components/RequiredRoutes/RequiredOffline";
-
+import TwoFaCode from "./pages/TwoFaCode";
 
 function App() {
-
 	return (
 		<AuthProvider>
 			<BrowserRouter>
@@ -21,15 +19,15 @@ function App() {
 						<Route path="/" element={<Home />} />
 						<Route path="*" element={<Home />} />
 						{/* <Route element={<RequiredOffline />}> */}
-							<Route path="login" element={<Login />} />
+						<Route path="login" element={<Login />} />
 						{/* </Route> */}
 						{/* <Route element={<RequiredAuth />}> */}
-							<Route path="channel" element={<Channel />} />
-							<Route path="account" element={<Account />} />
-							<Route path="pong" element={<Pong />} />
+						<Route path="channel" element={<Channel />} />
+						<Route path="account" element={<Account />} />
+						<Route path="pong" element={<Pong />} />
 						{/* </Route> */}
 						{/* <Route element={<Required2fa />}> */}
-							<Route path="twofa" element={<TwoFa />} />
+						<Route path="twofa-validation" element={<TwoFaCode />} />
 						{/* </Route> */}
 					</Route>
 				</Routes>
