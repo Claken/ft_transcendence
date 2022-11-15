@@ -138,7 +138,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
 	@SubscribeMessage('deleteChatRoom')
 	HandleDeletionRoom(client: Socket, room: string): void {
-		
+		client.leave(room);
 		this.chatService.deleteChatRoomByName(room);
 		this.server.emit('sendDeleteMessage', room);
 	}
@@ -155,8 +155,8 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 	@SubscribeMessage('getAllChannels')
 	async HandleGettingChannels(client: Socket) : Promise<void> {
 		const Channels = await this.chatService.findAllChatRooms();
-		console.log('member 0 name');
-		console.log(Channels[0]);
+		
+		
 		// console.log(Channels[0].owner.name);
 		// console.log(Channels[0].messages);
 		client.emit('sendAllChannels', Channels);
