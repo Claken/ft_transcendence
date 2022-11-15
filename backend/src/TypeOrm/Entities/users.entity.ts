@@ -2,8 +2,10 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { Game } from './game.entity';
 
 // Table in the DB
 @Entity('Users')
@@ -35,6 +37,12 @@ export class UsersEntity {
   @Column({ default: false })
   isTwoFAValidated?: boolean;
 
+  @Column({ default: false })
+  inQueue: boolean;
 
+  @Column({ default: false })
+  inGame: boolean;
 
+  @CreateDateColumn()
+  createdAt?: Date;
 }

@@ -3,7 +3,7 @@ import { NavLink } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 
 import "../styles/navigation.css";
-import test from '../../../backend/src/avatarUploads/aderosejwnl1r32uy.jpeg'
+// import test from '../../../backend/src/avatarUploads/aderosejwnl1r32uy.jpeg'
 
 
 function Navigation() {
@@ -64,7 +64,7 @@ function Navigation() {
 							<li className="space">
 								<img
 									className={stylePic}
-									src={test}
+									// src={test}
 									alt="profilePic"
 								/>
 							</li>

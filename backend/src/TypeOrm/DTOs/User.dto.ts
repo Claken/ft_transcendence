@@ -29,6 +29,15 @@ export class UserDTO {
 
   @IsOptional()
   isTwoFAValidated?: boolean;
+
+  @IsOptional()
+  inQueue: boolean;
+
+  @IsOptional()
+  inGame: boolean;
+
+  @IsOptional()
+  createdAt?: Date;
 }
 
 export interface TwoFAValidation {
@@ -44,3 +53,4 @@ export class TokenPayload {
   user?: UserDTO;
   isSecondFactorAuthenticated: boolean;
 }
+

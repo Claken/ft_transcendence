@@ -1,6 +1,8 @@
 import "../styles/page.css";
 
+
 function Home() {
+
 
 	return (
 		<div>
