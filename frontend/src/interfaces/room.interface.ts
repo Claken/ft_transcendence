@@ -5,5 +5,5 @@ export interface IRoom {
 	member: boolean;
 	owner: string;
 	name: string;
-	messages: IMessageToBack[];
+	messages?: IMessageToBack[];
 }

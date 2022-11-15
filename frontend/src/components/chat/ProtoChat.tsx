@@ -203,6 +203,10 @@ const ProtoChat = () => {
 				name: element.chatRoomName,
 				messages: [],
 			};
+			[...element.messages].reverse().forEach((oneMessage: any) => {
+				console.log(oneMessage.id);
+				newRoom.messages.push({sender: oneMessage.sender, message: oneMessage.content});
+			})
 			roomsCopy.push(newRoom);
 		});
 		setRooms(roomsCopy);
@@ -221,6 +225,11 @@ const ProtoChat = () => {
 		name: channel.chatRoomName,
 		messages: [],
 		};
+		if (channel.messages !== undefined) {
+			channel.messages.forEach((oneMessage: any) => {
+				newRoom.messages.push({sender: oneMessage.sender, message: oneMessage.content});
+			});
+		}
 		const roomsCopy = [...rooms];
 		roomsCopy.push(newRoom);
 
