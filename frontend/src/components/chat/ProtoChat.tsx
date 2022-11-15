@@ -102,7 +102,7 @@ const ProtoChat = () => {
 
 	const receiveChatMessage = (obj: {sender: string, room: string, msg: string}) => {
 	
-		console.log('recv');
+		console.log('receiveChatMessage + ' + username);
 		const theroom: IMessageToBack = {
 			sender: obj.sender,
 			message: obj.msg,
@@ -112,6 +112,8 @@ const ProtoChat = () => {
 			if (element.name === obj.room)
 				element.messages.push(theroom);
 		})
+		const roomsCopy = [...rooms];
+		setRooms(roomsCopy);
 		changeText("");
 	}
 
@@ -224,6 +226,13 @@ const ProtoChat = () => {
 		name: channel.chatRoomName,
 		messages: [],
 		};
+		if (channel.messages !== undefined) {
+			[...channel.messages].reverse().forEach((oneMessage: any) => {
+				newRoom.messages.push({sender: oneMessage.sender, message: oneMessage.content});
+			});
+			
+		}
+
 		const roomsCopy = [...rooms];
 		roomsCopy.push(newRoom);
 		setRooms(roomsCopy);
@@ -284,7 +293,7 @@ const ProtoChat = () => {
 	useEffect(() => {
 		socket?.on('chatToClient', receiveChatMessage);
 		return () => {
-			console.log('name === ' + username);
+			console.log('chatToClient name === ' + username);
 			socket?.off('chatToClient', receiveChatMessage);
 		}
 	}, [receiveChatMessage])
