@@ -56,11 +56,14 @@
         display: flex;
         justify-content: center;
         align-items: center;
+        height: 100%;
+        width: 100%;
+        flex: 1;
         img {
           border-radius: 50%;
           border: 2px solid whitesmoke;
-          height: 300px;
-          width: 300px;
+          height: 80%;
+          width: 80%;
         }
       }
 
@@ -70,13 +73,15 @@
         justify-content: center;
         align-items: center;
         flex-direction: column;
+        flex: 1;
       }
 
       .profile-buttons {
         width: 100%;
         display: flex;
         justify-content: space-around;
-        align-items: center;
+        align-items: flex-end;
+        flex: 1;
         button {
           border: none;
           background-color: rgba(255, 255, 255, 0);

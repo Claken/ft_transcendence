@@ -30,7 +30,7 @@ function Navigation() {
           </div>
           <div className="logo">
             <Link to="/pong" style={{ padding: "0.5px", margin: "0.5px" }}>
-              <img src={pongLogo} height="90px" alt="game logo" />
+              <img src={pongLogo} alt="game logo" />
             </Link>
           </div>
           <div className="right-list">
@@ -51,9 +51,9 @@ function Navigation() {
           </div>
         </>
       )) || (
-        <div className="">
+        <div className="logo">
           <Link to="/login" style={{ padding: "0.5px", margin: "0.5px" }}>
-            <img src={pongLogo} height="70px" alt="game logo" />
+            <img src={pongLogo} alt="game logo" />
           </Link>
         </div>
       )}

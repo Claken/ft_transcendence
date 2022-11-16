@@ -41,7 +41,7 @@
       display: flex;
       height: 100%;
       width: 100%;
-      justify-content: space-around;
+      justify-content: space-evenly;
       font-weight: bold;
 
 
@@ -85,7 +85,7 @@
   
       .userName {
         display: flex;
-        justify-content: center;
+        justify-content: flex-start;
         align-items: center;
         flex: 2;
         cursor: pointer;
@@ -121,10 +121,6 @@
     padding: 0.25rem;
     font-size: 200%;
   }
-
-
-
-
 
   .logo img {
     height: 90%;
