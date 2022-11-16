@@ -14,21 +14,42 @@ const AvatarUpload = () => {
 		if (file) {
 			const formData = new FormData();
 			// Generating a 10 random chars long string
-			const randomNb = Math.random().toString(36).substring(2, 12);
-			const fileCustomName = user.name + randomNb;
-			formData.append("avatar", file, fileCustomName);
-			await axios
-				.post("/auth/42/upload", formData)
-				.then((res) => {
-					console.log(res.data);
-					// setUser(res.data)
-				})
-				.catch((error) => {
-					console.log(error);
-				});
+			// const randomNb = Math.random().toString(36).substring(2, 12);
+			// const fileCustomName = user.name + randomNb;
+			let fileConvert64;
+			await getBase64(file, (res: string | ArrayBuffer) => {
+				fileConvert64 = res;
+			});
+			console.log(fileConvert64);
+
+            
+			// formData.append("avatar", file, file.name);
+			// await axios
+			// 	.post("/auth/42/upload", formData)
+			// 	.then((res) => {
+			// 		console.log(res.data);
+			// 		// setUser(res.data)
+			// 	})
+			// 	.catch((error) => {
+			// 		console.log(error);
+			// 	});
 		}
 	};
 	console.log(file);
+
+	const getBase64 = async (
+		file: File,
+		cb: (res: string | ArrayBuffer) => void
+	) => {
+		let reader = new FileReader();
+		reader.readAsDataURL(file);
+		reader.onload = () => {
+			cb(reader.result);
+		};
+		reader.onerror = (error) => {
+			console.log("Error: ", error);
+		};
+	};
 
 	return (
 		<div>

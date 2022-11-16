@@ -2,9 +2,12 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
   OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { Avatar } from './avatar.entity';
 import { Game } from './game.entity';
 
 // Table in the DB
@@ -23,7 +26,7 @@ export class UsersEntity {
   email?: string;
 
   @Column({ default: '' })
-  avatarUrl?: string;
+  firstAvatarUrl?: string;
 
   @Column({ default: 'online' })
   status?: string;
@@ -43,6 +46,14 @@ export class UsersEntity {
   @Column({ default: false })
   inGame: boolean;
 
-  @CreateDateColumn()
-  createdAt?: Date;
+  @OneToOne(() => Avatar, (avatar) => avatar.user, { nullable: true })
+  @JoinColumn()
+  avatar?: Avatar;
+
+  // TODO: friends
+  // @OneToMany(() => UsersEntity, (friends) => friends.id, {
+  //   onDelete: 'SET NULL',
+  // })
+  // friends: UsersEntity[];
+
 }

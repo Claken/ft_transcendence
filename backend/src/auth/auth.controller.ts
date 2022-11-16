@@ -42,51 +42,14 @@ export class AuthController {
   @Get('verify2fa')
   verify2fa(@Req() req: RequestWithUser, @Res() res: Response) {
     const { isTwoFAEnabled } = req.user;
-    if (isTwoFAEnabled) res.redirect('http://localhost:3000/twofa');
-    else res.redirect('http://localhost:3000');
+    if (isTwoFAEnabled)
+      res.redirect('http://localhost:3000/twofa-validation')
+    else
+      res.redirect('http://localhost:3000')
     return req.user;
   }
 
-  @Post('upload')
-  @UseInterceptors(
-    FileInterceptor('avatar', {
-      storage: diskStorage({
-        destination: './src/avatarUploads',
-        filename: (req: RequestWithUser, file, cb) => {
-          // Calling the callback passing the
-          // originalname created in frontend
-          const pos: number = file.mimetype.lastIndexOf('/');
-          const extension = "."+file.mimetype.slice(pos+1, file.mimetype.length);
-          cb(null, file.originalname+extension);
-        },
-      }),
-    }),
-  )
-  async uploadFile(
-    @UploadedFile(
-      new ParseFilePipeBuilder()
-        .addFileTypeValidator({
-          fileType: /(jpe?g|png|gif|bmp)$/,
-        })
-        .addMaxSizeValidator({
-          maxSize: 1000000, //1mo
-        })
-        .build({
-          errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
-        }),
-    )
-    file: Express.Multer.File,
-  ): Promise<UserDTO> {
-    // find user.name with file.name 
-    // because file.name = user.name+10randomNb
-    const len = file.filename.length - 10;
-    const username = file.filename.substring(0, len);
-    let user = await this.usersService.getByName(username);
-    // update user => AvatarUrl
-    // user = await this.usersService.updateAvatarUrl(user.id, "/mnt/nfs/homes/aderose/Documents/cursus/project_ft_transcendence/ft_transcendence/backend/"+file.path);
-    // console.log(user.avatarUrl);
-    return user;
-  }
+
 
   @Get('logout')
   @Redirect('http://localhost:3000')

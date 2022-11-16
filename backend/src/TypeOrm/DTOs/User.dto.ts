@@ -1,6 +1,7 @@
 import { Type } from 'class-transformer';
 import { IsOptional, Length } from 'class-validator';
 import { Request } from 'express';
+import { Avatar } from '../Entities/avatar.entity';
 
 export class UserDTO {
   @IsOptional()
@@ -16,7 +17,7 @@ export class UserDTO {
   email?: string;
 
   @IsOptional()
-  avatarUrl?: string;
+  firstAvatarUrl?: string;
 
   @IsOptional()
   status?: string;
@@ -37,7 +38,7 @@ export class UserDTO {
   inGame: boolean;
 
   @IsOptional()
-  createdAt?: Date;
+  avatar?:Avatar;
 }
 
 export interface TwoFAValidation {
