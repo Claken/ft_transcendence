@@ -6,16 +6,10 @@ import {
   Param,
   Post,
   Put,
-  Req,
-  UploadedFile,
-  UseGuards,
-  UseInterceptors,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { UsersEntity } from '../TypeOrm/Entities/users.entity';
-import { RequestWithUser, UserDTO } from 'src/TypeOrm/DTOs/User.dto';
-import { AuthenticatedGuard } from 'src/auth/guards/fortytwo.guard';
-import { FileInterceptor } from '@nestjs/platform-express';
+import { UserDTO } from 'src/TypeOrm/DTOs/User.dto';
 
 @Controller('users')
 export class UsersController {
@@ -52,23 +46,5 @@ export class UsersController {
   async delete(@Param('id') id: number): Promise<UsersEntity> {
     return await this.usersService.deleteUser(id);
   }
-
-  /* ********************************************************* */
-	/*                          Avatar                           */
-	/* ********************************************************* */
-
-  @Post('avatar')
-  // @UseGuards(AuthenticatedGuard)
-  @UseInterceptors(FileInterceptor('image'))
-  async addAvatar(
-    @Req() req: RequestWithUser,
-    @UploadedFile() file: Express.Multer.File,
-  ) {
-    console.log(file);
-    return this.usersService.addAvatar(
-      req.user.id,
-      file.buffer,
-      file.originalname,
-    );
-  }
+  
 }
