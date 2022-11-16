@@ -11,6 +11,6 @@ export class MessageService {
 	  	) {}
 
         async createMessage(message: IChatMessage) : Promise<MessageEntity> {
-            return await this.messageRepo.create(message);
+            return this.messageRepo.create(message);
         }
     }
