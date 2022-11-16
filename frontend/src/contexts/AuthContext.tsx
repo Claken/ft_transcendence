@@ -50,8 +50,8 @@ export const AuthProvider = ({ children }) => {
 			});
 	};
 
-	const deleteGuestUser = async () => {
-		await axios
+	const deleteGuestUser = () => {
+		axios
 			.delete("/users/" + user.id)
 			.then((res) => {
 				console.log(res.data);
@@ -73,13 +73,13 @@ export const AuthProvider = ({ children }) => {
 	};
 
 	// REMOVE localStorage on logout and if Guest deleteUser
-	const logout = async () => {
+	const logout = () => {
 		//only Stud42 have a login field
 		if (user.login) {
 			window.location.href = "http://localhost:3001/auth/42/logout";
 		} else {
 			console.log("logout: " + JSON.stringify(user));
-			await deleteGuestUser();
+			deleteGuestUser();
 		}
 		if (localStorage.getItem("MY_PONG_APP")) {
 			localStorage.removeItem("MY_PONG_APP");
