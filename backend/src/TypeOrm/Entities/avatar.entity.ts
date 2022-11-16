@@ -7,7 +7,7 @@ export class Avatar {
   id: number;
 
   @Column()
-  name: string;
+  filename: string;
 
   @Column({
     type: 'bytea',

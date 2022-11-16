@@ -4,7 +4,7 @@ export class AvatarDTO {
     @IsOptional()
     id: number;
   
-    name: string;
+    filename: string;
     data: string | ArrayBuffer;
     mimeType: string;
   }

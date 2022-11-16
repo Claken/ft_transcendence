@@ -49,8 +49,6 @@ export class AuthController {
     return req.user;
   }
 
-
-
   @Get('logout')
   @Redirect('http://localhost:3000')
   async logOut(@Req() req: RequestWithUser) {

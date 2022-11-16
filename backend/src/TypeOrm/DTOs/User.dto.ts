@@ -45,6 +45,9 @@ export class UserDTO {
 
   @IsOptional()
   lose?: number;
+
+  @IsOptional()
+  avatarId?: number;
 }
 
 export interface TwoFAValidation {

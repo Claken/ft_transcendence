@@ -4,6 +4,7 @@ import { UserDTO } from 'src/TypeOrm/DTOs/User.dto';
 import { Repository } from 'typeorm';
 import { UsersEntity } from '../TypeOrm/Entities/users.entity';
 import { Cron, CronExpression } from '@nestjs/schedule';
+import { AvatarService } from 'src/avatar/avatar.service';
 
 @Injectable()
 export class UsersService {
@@ -11,6 +12,7 @@ export class UsersService {
   constructor(
     @InjectRepository(UsersEntity)
     private readonly userRepo: Repository<UsersEntity>,
+    private readonly avatarService: AvatarService
   ) {}
 
   // save() is a Repository Typeorm method to call INSERT query
@@ -58,6 +60,11 @@ export class UsersService {
     return await this.userRepo.remove(guestUsers);
   }
 
+
+	/* ********************************************************* */
+	/*                          TwoFA                            */
+	/* ********************************************************* */
+
   async setTwoFASecret(secret: string, id: number): Promise<UsersEntity> {
     const user = await this.getById(id);
     user.twoFASecret = secret;
@@ -76,9 +83,19 @@ export class UsersService {
     return await this.userRepo.save(user);
   }
 
-  // async updateAvatarUrl(id: number, avatarUrl: string): Promise<UsersEntity> {
-  //   const user = await this.getById(id);
-  //   user.avatarUrl = avatarUrl;
-  //   return await this.userRepo.save(user);
-  // }
+  /* ********************************************************* */
+	/*                          Avatar                           */
+	/* ********************************************************* */
+
+  async updateAvatarId(id: number, avatarId: number): Promise<UsersEntity> {
+    const user = await this.getById(id);
+    user.avatarId = avatarId;
+    return await this.userRepo.save(user);
+  }
+
+  async addAvatar(userId: number, imageBuffer: Buffer, filename: string) {
+    const avatar = await this.avatarService.uploadAvatar(imageBuffer, filename);
+    await this.updateAvatarId(userId, avatar.id);
+    return avatar;
+  }
 }

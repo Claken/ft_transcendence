@@ -13,4 +13,5 @@ export class IUser {
 	createdAt?: Date;
 	win?: number;
 	lose?: number;
+	avatarId?: number;
 }
