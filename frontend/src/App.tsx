@@ -13,6 +13,7 @@ import ProfileDetails from "./pages/ProfileDetails";
 import RequiredOffline from "./components/RequiredRoutes/RequiredOffline";
 import TwoFaCode from "./pages/TwoFaCode";
 import LayoutPong from "./pages/LayoutPong";
+import Game from "./components/game/Game";
 
 function App() {
   return (
