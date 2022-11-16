@@ -39,6 +39,12 @@ export class UserDTO {
 
   @IsOptional()
   avatar?:Avatar;
+
+  @IsOptional()
+  win?: number;
+
+  @IsOptional()
+  lose?: number;
 }
 
 export interface TwoFAValidation {

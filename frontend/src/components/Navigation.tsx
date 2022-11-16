@@ -1,87 +1,76 @@
 import { useEffect, useState } from "react";
-import { NavLink } from "react-router-dom";
+import { Link, useResolvedPath, useMatch } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
-
-import "../styles/navigation.css";
-// import test from '../../../backend/src/avatarUploads/aderosejwnl1r32uy.jpeg'
-
+import pongLogo from "../assets/logo/white_pong.png";
+import ButtonProfile from "./ButtonProfile";
+import guestPic from "../assets/img/profile1.jpg"
+import "../styles/navigation.scss";
 
 function Navigation() {
-	const { user, logout } = useAuth();
+  const auth = useAuth();
 
-	const handleLogout = () => {
-		logout();
-	};
+  const [stylePic, setStylePic] = useState<string>(guestPic);
 
-	const [stylePic, setStylePic] = useState<string>("guestPic");
-	// TODO: change the fact that stylepic depends on size upload
+  useEffect(() => {
+    if (auth.user && auth.user.login) {
+      //TODO: css change
+      setStylePic(auth.user.firstAvatarUrl);
+    }
+  }, [auth.user]);
 
-	useEffect(() => {
-		if (user && user.login) {
-			//TODO: css change
-			setStylePic("profilePic");
-		}
-	}, [user]);
+  return (
+    <nav className="nav">
+      {(auth.user && (
+        <>
+          <div className="left-list">
+          <ul>
+            <CustomLink to="/Social">Social</CustomLink>
+            <CustomLink to="/Account">Account</CustomLink>
+          </ul>
+          </div>
+          <div className="logo">
+            <Link to="/pong" style={{ padding: "0.5px", margin: "0.5px" }}>
+              <img src={pongLogo} height="90px" alt="game logo" />
+            </Link>
+          </div>
+          <div className="right-list">
+            <ul>
+              <CustomLink to="/Channel">Chat</CustomLink>
+              <li className="userListElement">
+                <div className="userName">
+                  <h3>{auth.user.name}</h3>
+                </div>
+                <div className="userProfilePicture">
+                  <img
+                    src={stylePic}
+                    alt="profilePic"
+                  />
+                </div>
+              </li>
+            </ul>
+          </div>
+        </>
+      )) || (
+        <div className="">
+          <Link to="/login" style={{ padding: "0.5px", margin: "0.5px" }}>
+            <img src={pongLogo} height="70px" alt="game logo" />
+          </Link>
+        </div>
+      )}
+    </nav>
+  );
+}
 
-	return (
-		<nav>
-			<ul className="list">
-				<li className="space">
-					<NavLink className="link" to="/">
-						<button className="btngreen">Home</button>
-					</NavLink>
-				</li>
-				{(user &&
-					(!user.isTwoFAEnabled ||
-						(user.isTwoFAEnabled && user.isTwoFAValidated)) && (
-						<>
-							<li className="space">
-								<NavLink className="link" to="/pong">
-									<button className="btn">Pong</button>
-								</NavLink>
-							</li>
-							<li className="space">
-								<NavLink className="link" to="/Channel">
-									<button className="btn">Channel</button>
-								</NavLink>
-							</li>
-							<li className="space">
-								<NavLink className="link" to="/account">
-									<button className="btn">Account</button>
-								</NavLink>
-							</li>
-							<li className="space">
-								<button
-									className="btngreen"
-									onClick={handleLogout}
-								>
-									Logout
-								</button>
-							</li>
-							<li className="space">
-								<h3>{user.name}</h3>
-							</li>
-							<li className="space">
-								<img
-									className={stylePic}
-									// src={test}
-									alt="profilePic"
-								/>
-							</li>
-						</>
-					)) || (
-					<>
-						<li>
-							<NavLink className="link" to="/login">
-								<button className="btngreen">Login</button>
-							</NavLink>
-						</li>
-					</>
-				)}
-			</ul>
-			<div className="separate"></div>
-		</nav>
-	);
+function CustomLink({ to, children, ...props }) {
+  const resolvedPath = useResolvedPath(to);
+  const isActive = useMatch({ path: resolvedPath.pathname, end: true });
+  return (
+    <li className={isActive ? "active" : ""}>
+      <Link to={to} {...props}>
+        {children}
+      </Link>
+    </li>
+  );
 }
 
 export default Navigation;

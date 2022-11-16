@@ -45,6 +45,11 @@ export class UsersEntity {
 
   @Column({ default: false })
   inGame: boolean;
+  @Column({ nullable: true, default: 0})
+  win?: number;
+
+  @Column({ nullable: true, default: 0})
+  lose?: number;
 
   @OneToOne(() => Avatar, (avatar) => avatar.user, { nullable: true })
   @JoinColumn()

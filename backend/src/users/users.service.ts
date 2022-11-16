@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserDTO } from 'src/TypeOrm/DTOs/User.dto';
 import { Repository } from 'typeorm';
@@ -16,8 +16,8 @@ export class UsersService {
   // save() is a Repository Typeorm method to call INSERT query
   // TODO: handle users already exist
   async create(user: UserDTO): Promise<UsersEntity> {
-    const newUser = this.userRepo.create(user);
-    return await this.userRepo.save(newUser);
+      const newUser = this.userRepo.create(user);
+      return await this.userRepo.save(newUser);
   }
 
   // find() is a Repository Typeorm method to call SELECT query
