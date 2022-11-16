@@ -1,0 +1,100 @@
+
+.socialContainer {
+  width: 90%;
+  height: 80vh;
+  margin-top: 5vh;
+  margin-left: 5%;
+  background: rgb(0, 138, 214);
+  background: -moz-radial-gradient(
+    circle,
+    rgba(0, 138, 214, 1) 35%,
+    rgba(92, 180, 229, 1) 100%
+  );
+  background: -webkit-radial-gradient(
+    circle,
+    rgba(0, 138, 214, 1) 35%,
+    rgba(92, 180, 229, 1) 100%
+  );
+  background: radial-gradient(
+    circle,
+    rgba(0, 138, 214, 1) 35%,
+    rgba(92, 180, 229, 1) 100%
+  );
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#008ad6",endColorstr="#5cb4e5",GradientType=1);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  border: 2px solid whitesmoke;
+  border-radius: 30px;
+  position: relative;
+}
+
+.socialContainer .sortButtons {
+  max-width: 100%;
+  width: 100%;
+  margin-top: 2%;
+  height: 10%;
+  display: flex;
+  justify-content: center;
+  gap: 10%;
+}
+.socialContainer .sortButtons button {
+  display: inline-block;
+  height: 100%;
+  border-radius: 10px;
+  border: none;
+  max-width: 100%;
+  background-color: transparent;
+  color: whitesmoke;
+  font-size: 24px;
+  font-style: bold;
+  width: 20%;
+}
+.socialContainer .sortButtons button:hover {
+  display: inline-block;
+  height: 100%;
+  border-radius: 70px;
+  border: none;
+  max-width: 100%;
+  background-color: #523b82;
+  color: whitesmoke;
+  font-size: 24px;
+  font-style: bold;
+}
+
+.socialContainer .searchBar {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  height: 10%;
+  width: 100%;
+}
+
+.socialContainer .leaderboard {
+  margin-top: 10px;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  height: 90%;
+}
+
+/* Search Bar */
+.searchContainer {
+  margin-top: 10px;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  height: 90%;
+  width: 60%;
+}
+
+/* FriendList */
+
+.socialContainer .friendListContainer {
+  margin-top: 10px;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  height: 90%;
+}

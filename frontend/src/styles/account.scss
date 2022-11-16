@@ -1,0 +1,225 @@
+* {
+  box-sizing: border-box;
+  font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
+    "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
+}
+
+.account-container {
+  display: flex;
+  justify-content: center;
+  width: 90%;
+  height: 80vh;
+  margin-top: 5vh;
+  margin-left: 5%;
+  border: 2px solid whitesmoke;
+  border-radius: 30px;
+  background: rgb(0, 138, 214);
+  background: -moz-radial-gradient(
+    circle,
+    rgba(0, 138, 214, 1) 35%,
+    rgba(92, 180, 229, 1) 100%
+  );
+  background: -webkit-radial-gradient(
+    circle,
+    rgba(0, 138, 214, 1) 35%,
+    rgba(92, 180, 229, 1) 100%
+  );
+  background: radial-gradient(
+    circle,
+    rgba(0, 138, 214, 1) 35%,
+    rgba(92, 180, 229, 1) 100%
+  );
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#008ad6",endColorstr="#5cb4e5",GradientType=1);
+
+  .profile-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    border-radius: 30px;
+
+    .left-container {
+      flex: 30%;
+      height: 100%;
+      border-bottom-left-radius: 30px;
+      border-top-left-radius: 30px;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      flex-direction: column;
+
+      .profile-picture {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        img {
+          border-radius: 50%;
+          border: 2px solid whitesmoke;
+          height: 300px;
+        }
+      }
+
+      .profile-stats {
+        color: whitesmoke;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+      }
+
+      .profile-buttons {
+        width: 100%;
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        button {
+          border: none;
+          background-color: rgba(255, 255, 255, 0);
+          color: whitesmoke;
+          zoom: 2;
+          cursor: pointer;
+        }
+      }
+    }
+  }
+
+  .right-container {
+    flex: 70%;
+    height: 100%;
+    border-bottom-right-radius: 30px;
+    border-top-right-radius: 30px;
+    display: flex;
+    flex-wrap: wrap;
+
+    .matchHistory {
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      width: 90%;
+      height: 90%;
+      background-color: #7355b1;
+      margin: 5%;
+      border-radius: 20px;
+      border: 2px solid whitesmoke;
+      overflow: hidden;
+
+      .matchHistory-header {
+        width: 100%;
+        height: 10%;
+        background-color: #5c4290;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: whitesmoke;
+      }
+
+      .matchHistory-content {
+        display: flex;
+        justify-content: center;
+        height: 90%;
+        background-color: #5c4290;
+      }
+    }
+  }
+
+  .modal-overlay {
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100vw;
+    height: calc(100vh - 10vh);
+    backdrop-filter: blur(10px);
+    background: rgba(255, 255, 255, 0.05);
+    top: 10%;
+    left: 0%;
+
+    .modal-box {
+      display: flex;
+      background: #333333;
+      width: 50%;
+      height: 50%;
+      padding: 1rem;
+      border-radius: 1rem;
+      border: 2px solid whitesmoke;
+      color: whitesmoke;
+
+      .modal-settings {
+        width: 100%;
+        height: 100%;
+        display: flex;
+
+        .picture-settings {
+          flex: 1;
+          display: flex;
+          width: 33%;
+          justify-content: space-between;
+          align-items: center;
+          flex-direction: column;
+
+          .profile-picture {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 50%;
+
+            img {
+              height: 100px;
+            }
+          }
+
+          .uploadButton {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 50%;
+            width: 100%;
+            max-width: 100%;
+            display: flex;
+            font-size: 24px;
+            svg {
+              width: 50px;
+              height: 50px;
+            }
+            label {
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              flex-direction: column;
+              cursor: pointer;
+            }
+          }
+        }
+
+        .username-settings {
+          flex: 1;
+          width: 33%;
+          display: flex;
+          justify-content: space-around;
+          align-items: center;
+          flex-direction: column;
+          button {
+            cursor: pointer;
+            color: whitesmoke;
+            border-radius: 10px;
+            font-size: 14px;
+          }
+        }
+
+        .twoFA-settings {
+          flex: 1;
+          width: 33%;
+          display: flex;
+          justify-content: space-around;
+          align-items: center;
+          flex-direction: column;
+
+          button {
+            cursor: pointer;
+          }
+        }
+      }
+    }
+  }
+}

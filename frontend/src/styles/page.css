@@ -17,23 +17,27 @@ body {
 }
 
 .rectanglelog {
-  border: 1px solid black;
+  border: 1px solid whitesmoke;
   margin-left: auto;
   margin-right: auto;
+  margin-top: 10%;
   width: 310px;
   height: 85px;
   border-radius: 30px;
-  background: rgb(43, 102, 43);
+  background: #196f9f;
 }
 
 .rectangleguest {
-  border: 1px solid black;
-  margin-left: auto;
-  margin-right: auto;
+  border: 1px solid whitesmoke;
+  margin: auto;
   width: 310px;
   height: 200px;
   border-radius: 30px;
-  background: rgb(43, 102, 43);
+  background: #196f9f;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
 }
 
 .login {
@@ -52,13 +56,14 @@ body {
   border-radius: 75px;
   text-align: center;
   background: #3b3b3b;
+  color: whitesmoke;
 }
 
 .blank {
-	text-align: center;
-	color: rgb(155, 0, 0);
-	font-size: 13px;
-	height: 18px;
+  text-align: center;
+  color: rgb(155, 0, 0);
+  font-size: 13px;
+  height: 18px;
 }
 
 .btnconfirm {
@@ -75,21 +80,17 @@ body {
   cursor: pointer;
   border: none;
   color: white;
-  background: #3b3b3b;
+  background: #523b82;
 }
 
 .btnconfirm:hover {
-  box-shadow: 0 5px 35px 0 #272727;
-}
-
-.profilePic {
-  max-width: 9%;
-  max-height: 9%;
-  border-radius: 50%;
+  box-shadow: 0 5px 35px 0 whitesmoke;
 }
 
 .guestPic {
-  max-width: 17%;
-  max-height: 17%;
   border-radius: 50%;
+}
+.homeContainer {
+  text-align: center;
+  color: whitesmoke;
 }

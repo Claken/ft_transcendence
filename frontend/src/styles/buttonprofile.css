@@ -1,0 +1,42 @@
+.btnprofile {
+  color: white;
+  display: flex;
+  flex-direction: row;
+	justify-content: center;
+	align-items: center;
+	text-align: center;
+  height: 50%;
+  width: 50%;
+  background-color: #196f9f;
+  border-radius: 70px;
+	font-size: 30px;
+  cursor: pointer;
+  border: none;
+}
+.btnprofile:hover {
+	background-color: #14577d ;
+}
+
+.btnprofile-left {
+	display: flex;
+  width: 80%;
+	height: 100%;
+  text-align: center;
+	justify-content: center;
+	align-items: center;
+	font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif
+}
+
+.btnprofile-right {
+	display: flex;
+  width: 20%;
+	height: 100%;
+	align-items: center;
+}
+
+.profilePic {
+	display: flex;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+}

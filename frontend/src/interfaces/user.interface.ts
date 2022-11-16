@@ -11,4 +11,7 @@ export class IUser {
 	twoFASecret?: string;
 	isTwoFAEnabled?: boolean;
 	isTwoFAValidated?: boolean;
+	createdAt?: Date;
+	win?: number;
+	lose?: number;
 }

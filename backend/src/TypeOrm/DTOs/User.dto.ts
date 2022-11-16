@@ -38,6 +38,12 @@ export class UserDTO {
 
   @IsOptional()
   createdAt?: Date;
+
+  @IsOptional()
+  win?: number;
+
+  @IsOptional()
+  lose?: number;
 }
 
 export interface TwoFAValidation {
