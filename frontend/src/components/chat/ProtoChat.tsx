@@ -100,12 +100,13 @@ const ProtoChat = () => {
 		}
 	}
 
-	const receiveChatMessage = (obj: {sender: string, room: string, msg: string}) => {
+	const receiveChatMessage = (obj: {sender: string, room: string, content: string, date: Date}) => {
 	
 		console.log('receiveChatMessage + ' + username);
 		const theroom: IMessageToBack = {
 			sender: obj.sender,
-			message: obj.msg,
+			message: obj.content,
+			date: obj.date,
 		};
 
 		rooms.forEach((element: IRoom) => {
@@ -134,6 +135,7 @@ const ProtoChat = () => {
 			chatRoomName: askARoom,
 			owner: username,
 			isPublic: isPublicOrNot,
+			// password: 
 		}
 		socket?.emit('createChatRoom', dbRoom);
 	}
@@ -206,7 +208,7 @@ const ProtoChat = () => {
 				messages: [],
 			};
 			[...element.messages].reverse().forEach((oneMessage: any) => {
-				newRoom.messages.push({sender: oneMessage.sender, message: oneMessage.content});
+				newRoom.messages.push({sender: oneMessage.sender, message: oneMessage.content, date: oneMessage.createdAt});
 			});
 			roomsCopy.push(newRoom);
 		});
@@ -228,7 +230,7 @@ const ProtoChat = () => {
 		};
 		if (channel.messages !== undefined) {
 			[...channel.messages].reverse().forEach((oneMessage: any) => {
-				newRoom.messages.push({sender: oneMessage.sender, message: oneMessage.content});
+				newRoom.messages.push({sender: oneMessage.sender, message: oneMessage.content, date: oneMessage.createdAt});
 			});
 			
 		}
@@ -353,7 +355,7 @@ const ProtoChat = () => {
 					</p>
 				</div>
 			<div>
-				{findActiveRoom().messages.map((msg: any, id: number) => <ul key={id}><strong>{msg.sender}:</strong> {msg.message}</ul>)}
+				{findActiveRoom().messages.map((msg: any, id: number) => <ul key={id}><strong>{msg.sender}:</strong> {msg.message} - - - <i>{msg.date}</i></ul>)}
 			</div>
 		</div>
 	)

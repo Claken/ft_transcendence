@@ -35,6 +35,9 @@ export class ChatRoomEntity {
 	@Column({ default: true })
 	isPublic: boolean;
 
+	// @Column({nullable: true}) 1 = PUBLIC, 2 = PRIVATE, 3 = PROTECTED
+	// type: number;
+
 	@Column({ nullable: true, default: ''})
 	password?: string;
 
