@@ -59,8 +59,7 @@ function Account() {
                   <div className="picture-settings">
                     <div className="profile-picture">
                       <img
-                        className={stylePic}
-                        src={auth.user?.pictureUrl}
+                        src={stylePic}
                         alt="profilePic"
                       />
                     </div>
