@@ -16,36 +16,42 @@ import LayoutPong from "./pages/LayoutPong";
 import Game from "./components/game/Game";
 
 function App() {
-  return (
-    <AuthProvider>
-      <ChatProvider>
-        <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<Layout />}>
-              <Route index element={<Home />} />
-              <Route path="*" element={<Home />} />
-              <Route element={<RequiredOffline />}>
-                <Route path="/login" element={<Login />} />
-              </Route>
-              {/* <Route element={<RequiredAuth />}> */}
-                <Route path="/account" element={<Account />} />
-                <Route path="/social" element={<Social />} />
-                <Route path="/channel" element={<Channel />} />
-                <Route path="/pong" element={<LayoutPong />}>
-					<Route index element={<Pong />} />
-					<Route path=":gameId" element={<Game />} />
-				</Route>
-                <Route path="/profile" element={<Profile />} />
-                <Route path="profile/:userId" element={<ProfileDetails />} />
-                {/* pim la page */}
-                <Route path="twofa-validation" element={<TwoFaCode />} />
-              </Route>
-            {/* </Route> */}
-          </Routes>
-        </BrowserRouter>
-      </ChatProvider>
-    </AuthProvider>
-  );
+	return (
+		<AuthProvider>
+			<ChatProvider>
+				<BrowserRouter>
+					<Routes>
+						<Route path="/" element={<Layout />}>
+							<Route index element={<Home />} />
+							<Route path="*" element={<Home />} />
+							<Route element={<RequiredOffline />}>
+								<Route path="/login" element={<Login />} />
+							</Route>
+							{/* <Route element={<RequiredAuth />}> */}
+							<Route path="/account" element={<Account />} />
+							<Route path="/social" element={<Social />} />
+							<Route path="/channel" element={<Channel />} />
+							<Route path="/pong" element={<LayoutPong />}>
+								<Route index element={<Pong />} />
+								<Route path=":gameId" element={<Game />} />
+							</Route>
+							<Route path="/profile" element={<Profile />} />
+							<Route
+								path="profile/:userId"
+								element={<ProfileDetails />}
+							/>
+							{/* pim la page */}
+							<Route
+								path="twofa-validation"
+								element={<TwoFaCode />}
+							/>
+						</Route>
+						{/* </Route> */}
+					</Routes>
+				</BrowserRouter>
+			</ChatProvider>
+		</AuthProvider>
+	);
 }
 
 export default App;

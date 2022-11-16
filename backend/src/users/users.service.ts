@@ -60,7 +60,6 @@ export class UsersService {
     return await this.userRepo.remove(guestUsers);
   }
 
-
 	/* ********************************************************* */
 	/*                          TwoFA                            */
 	/* ********************************************************* */

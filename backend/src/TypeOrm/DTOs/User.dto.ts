@@ -56,7 +56,7 @@ export interface TwoFAValidation {
 }
 
 export interface RequestWithUser extends Request {
-  user?: UserDTO;
+  user: UserDTO;
 }
 
 export class TokenPayload {

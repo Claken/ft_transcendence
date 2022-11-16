@@ -11,7 +11,7 @@ export class AvatarService {
   ) {}
 
   async uploadAvatar(dataBuffer: Buffer, filename: string) {
-    const newFile = await this.avatar.create({
+    const newFile = this.avatar.create({
       filename,
       data: dataBuffer,
     });

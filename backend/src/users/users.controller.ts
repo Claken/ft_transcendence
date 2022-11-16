@@ -59,13 +59,14 @@ export class UsersController {
 
   @Post('avatar')
   // @UseGuards(AuthenticatedGuard)
-  @UseInterceptors(FileInterceptor('file'))
+  @UseInterceptors(FileInterceptor('image'))
   async addAvatar(
-    @Req() request: RequestWithUser,
+    @Req() req: RequestWithUser,
     @UploadedFile() file: Express.Multer.File,
   ) {
+    console.log(file);
     return this.usersService.addAvatar(
-      request.user.id,
+      req.user.id,
       file.buffer,
       file.originalname,
     );
