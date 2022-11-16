@@ -26,6 +26,13 @@ export class UsersEntity {
   @Column({ default: 'online' })
   status?: string;
 
+  @Column({ nullable: true, default: 0})
+  win?: number;
+
+  @Column({ nullable: true, default: 0})
+  lose?: number;
+
   @CreateDateColumn()
   createdAt?: Date;
+
 }

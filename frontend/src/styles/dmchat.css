@@ -305,3 +305,7 @@
 .btnsend:hover {
   opacity: 0.5;
 }
+
+a {
+  text-decoration: none;
+}

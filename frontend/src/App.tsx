@@ -25,14 +25,14 @@ function App() {
               <Route element={<RequiredOffline />}>
                 <Route path="/login" element={<Login />} />
               </Route>
-              {/* <Route element={<RequiredAuth />}> */}
+              <Route element={<RequiredAuth />}>
                 <Route path="/account" element={<Account />} />
                 <Route path="/social" element={<Social />} />
                 <Route path="/channel" element={<Channel />} />
                 <Route path="/pong" element={<Pong />} />
                 <Route path="/profile" element={<Profile />} />
                 <Route path="profile/:userId" element={<ProfileDetails />} />
-              {/* </Route> */}
+              </Route>
             </Route>
           </Routes>
         </BrowserRouter>

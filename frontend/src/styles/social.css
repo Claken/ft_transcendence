@@ -1,15 +1,9 @@
-* {
-  box-sizing: border-box;
-  font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
-    "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
-}
 
 .socialContainer {
-  margin-top: 3%;
-  margin-left: 5%;
   width: 90%;
-  max-width: 100%;
-  height: 83vh;
+  height: 80vh;
+  margin-top: 5vh;
+  margin-left: 5%;
   background: rgb(0, 138, 214);
   background: -moz-radial-gradient(
     circle,

@@ -8,7 +8,7 @@ WORKDIR /usr/src/app
 # where available (npm@5+)
 COPY package.json package-lock.json ./
 
-RUN npm install
+RUN npm install sass
 RUN npm install -S react-scroll-to-bottom
 # RUN npm cache clear –force
 # If you are building your code for production
