@@ -5,6 +5,8 @@ import { useState, useEffect } from "react";
 import axios from "../axios.config";
 import { IGame } from "../interfaces/game.interface";
 import { useNavigate } from "react-router-dom";
+import "../styles/canvas.css"
+
 
 function Pong() {
 	const auth = useAuth();
