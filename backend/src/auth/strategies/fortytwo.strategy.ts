@@ -2,6 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy, Profile, VerifyCallback } from 'passport-42';
+import { UsersEntity } from 'src/TypeOrm';
+import { TokenPayload } from 'src/TypeOrm/DTOs/User.dto';
 import { AuthService } from '../auth.service';
 
 @Injectable()
@@ -32,15 +34,18 @@ export class FortyTwoStrategy extends PassportStrategy(Strategy, '42') {
     refreshToken: string,
     profile: Profile,
     done: VerifyCallback,
-  ): Promise<any> {
-    const { username, id: userId, emails, photos } = profile;
-    const user = {
-      userId,
+  ): Promise<UsersEntity> {
+    const { username, id: apiId, emails, photos } = profile;
+    const userApi = {
+      apiId,
       login: username,
       name: username,
       email: emails[0].value,
+      avatar: photos[0].value,
       pictureUrl: photos[0].value,
+	  inQueue: false,
+	  inGame: false
     };
-    return await this.authService.register(user);
+    return await this.authService.register(userApi);
   }
 }

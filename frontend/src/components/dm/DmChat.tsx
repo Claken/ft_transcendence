@@ -13,6 +13,15 @@ function DmChat() {
   const [dmInput, setDmInput] = useState<string>("");
   const chat = useChat();
 
+  const checkDm = (checkSender: string, checkReceiver: string): boolean => {
+    if (
+      (checkSender === chat.target.name && checkReceiver === chat.me.name) ||
+      (checkSender === chat.me.name && checkReceiver === chat.target.name)
+    )
+      return true;
+    return false;
+  };
+
   const receiveMessage = (dm: Dm) => {
     if (dm.receiver === chat.me.name || dm.sender === chat.me.name)
       setMessages([...messages, dm]);
@@ -65,10 +74,10 @@ function DmChat() {
         {chat.loading ? (
           <p className="loadingbody">Loading...</p>
         ) : (
-          <ScrollToBottom className="scroll" key={chat.me.id}>
+          <ScrollToBottom className="scroll" key={chat.target.id}>
             <div className="dmcenter">
               {messages.map((m, i) =>
-                m.receiver === chat.me.name ? (
+                m.sender === chat.target.name ? (
                   <p className="displaydm" key={i}>
                     {m.message}
                   </p>

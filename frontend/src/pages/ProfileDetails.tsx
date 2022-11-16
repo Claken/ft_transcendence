@@ -2,17 +2,41 @@ import React, { useState, useEffect } from "react";
 import axios from "../axios.config";
 import { IUser } from "../interfaces/user.interface";
 import { useAuth } from "../contexts/AuthContext";
+import UserNotFound from "../components/social/UserNotFound";
 
 function ProfileDetails() {
   const auth = useAuth();
   const [user, setUser] = useState<IUser>();
-  const userProfile = window.location.pathname.substring(
-    window.location.pathname.lastIndexOf("/") + 1
+  const [users, setUsers] = useState<IUser[]>([]);
+  const [userProfile, setUserProfile] = useState(
+    window.location.pathname.substring(
+      window.location.pathname.lastIndexOf("/") + 1
+    )
   );
-  const names = auth?.users && auth?.users?.map((user: IUser) => user?.name);
-  const isValidName = names && names.includes(userProfile);
+  const [names, setNames] = useState(
+    users && users.map((user: IUser) => user?.name)
+  );
+
+  const [isValidName, setIsValidName] = useState(
+    names && names.includes(userProfile)
+  );
+
   useEffect(() => {
     const getData = async () => {
+      await axios
+        .get("/users")
+        .then((res) => {
+          setUsers(res.data);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    };
+    getData();
+  }, []);
+
+  useEffect(() => {
+    const getUserData = async () => {
       await axios
         .get("/users/" + userProfile)
         .then((res) => {
@@ -25,22 +49,20 @@ function ProfileDetails() {
           console.log(error);
         });
     };
-    getData();
-  }, [user]);
-  console.log(user);
-  if (!user) return null;
+    getUserData();
+  });
 
+  if (!user) return null;
 
   return (
     <div>
       {(isValidName && (
-        <div className="container">
+        <div className="account-container">
           <div className="profile-container">
             <div className="left-container">
               <div className="profile-picture">
                 <img
-                  // className={stylePic}
-                  className="stylee"
+                  className="stylePic"
                   src={user.pictureUrl}
                   alt="profilePic"
                 />
@@ -62,7 +84,7 @@ function ProfileDetails() {
             </div>
           </div>
         </div>
-      )) || <h1>404 not found</h1>}
+      )) || <UserNotFound />}
     </div>
   );
 }

@@ -1,11 +1,13 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import "../styles/page.css";
 
 function GuestForm() {
-	const auth = useAuth();
+	const { loginAsGuest } = useAuth();
 	const [guestInput, setGuestInput] = useState("");
 	const [errorMsg, setErrorMsg] = useState("");
+	const navigate = useNavigate();
 
 	const modifyGuestInput = (event) => {
 		const input = event.currentTarget.value;
@@ -17,8 +19,9 @@ function GuestForm() {
 		setErrorMsg("");
 		if (guestInput === "") setErrorMsg("you need to write a name");
 		else {
-			auth.loginAsGuest(guestInput);
+			loginAsGuest(guestInput);
 			setGuestInput("");
+			navigate('/');
 		}
 	};
 

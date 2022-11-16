@@ -1,46 +1,39 @@
 import axios from "../axios.config";
 import React, { useContext, useEffect, useState } from "react";
 import { IUser } from "../interfaces/user.interface";
-import guestPic from "../assets/img/profile.jpeg";
+import guestPic from "../assets/img/profile1.jpg"
+import { IAuthContext } from "../interfaces/authcontext.interface";
 
-const AuthContext = React.createContext(null);
+const AuthContext = React.createContext<IAuthContext>(null);
 
 export const AuthProvider = ({ children }) => {
 	const [user, setUser] = useState<IUser>(null);
-	const [users, setUsers] = useState<IUser[]>(null);
 
-	// GET all users
-	const getUsers = async () => {
-		await axios
-			.get("/users")
-			.then((res) => {
-				setUsers(res.data);
-				console.log(res.data);
-			})
-			.catch((error) => {
-				console.log(error);
-			});
-	};
-
-	// GET session/cookie42
-	const getSessionCookie = async () => {
-		await axios
+	useEffect(() => {
+		let subscribed = true; //TODO: subscribe only in dev_mode strictmode => double render
+		const token = localStorage.getItem("MY_PONG_APP");
+		// GET session/cookie42
+		axios
 			.get("/me", {
 				withCredentials: true,
 			})
 			.then((res) => {
-				if (res.data) {
+				if (subscribed && res.data) {
 					setUser(res.data);
+					// console.log(res.data);
 					localStorage.setItem(
 						"MY_PONG_APP",
 						JSON.stringify(res.data)
 					);
-				} else console.log("getSessionCookie: empty res.data");
+				}
 			})
 			.catch((error) => {
 				console.log(error);
 			});
-	};
+		return () => {
+			subscribed = false;
+		};
+	}, []);
 
 	const postGuestUser = async (user: IUser) => {
 		await axios
@@ -66,46 +59,18 @@ export const AuthProvider = ({ children }) => {
 			});
 	};
 
-	const getUserByname = async (name: string) => {
-		await axios
-			.get("/users/" + name)
-			.then((res) => {
-				if (res.data) {
-					setUser(null);
-					setUser(res.data);
-				}
-			})
-			.catch((error) => {
-				console.log(error);
-			});
-	};
-
-	// if localStorage exists, setUser in getUserByname()
-	useEffect(() => {
-		const token = localStorage.getItem("MY_PONG_APP");
-
-		if (token) {
-			const { name } = JSON.parse(token);
-			getUserByname(name);
-		}
-		getUsers();
-		getSessionCookie();
-	}, []);
-
-	const login = () => {
-		window.location.href = "http://localhost:3001/auth/42/login";
-	};
-
 	const loginAsGuest = async (guestName: string) => {
 		const newUser: IUser = {
 			name: guestName,
-			pictureUrl: guestPic,
+			avatar: guestPic,
 			status: "online",
+			inGame: false,
+			inQueue: false,
 		};
 		await postGuestUser(newUser);
 	};
 
-	// REMOVE localStorage on logout + if (Guest) deleteUser
+	// REMOVE localStorage on logout and if Guest deleteUser
 	const logout = async () => {
 		//only Stud42 have a login field
 		if (user.login) {
@@ -121,9 +86,7 @@ export const AuthProvider = ({ children }) => {
 	};
 
 	return (
-		<AuthContext.Provider
-			value={{ user, users, setUser, login, loginAsGuest, logout }}
-		>
+		<AuthContext.Provider value={{ user, setUser, loginAsGuest, logout }}>
 			{children}
 		</AuthContext.Provider>
 	);

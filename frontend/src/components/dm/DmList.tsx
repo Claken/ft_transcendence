@@ -30,10 +30,20 @@ function DmList() {
     return false;
   };
 
+  const changeUsers = (users: IUser[]) => {
+    setUsers(users);
+  };
+
+  const changeTarget = (user: IUser) => {
+    chat.setTarget(user);
+    chat.setHaveTarget(true);
+    chat.setLoading(true);
+  };
+
   return (
     <ul className="btndisplay">
       <li className="dmsearchbar">
-        <DmSearch changeUsers={setUsers} />
+        <DmSearch changeUsers={changeUsers} />
       </li>
       {Users.map(
         (user) =>
@@ -41,6 +51,7 @@ function DmList() {
             <DmUserButton
               key={user.id}
               user={user}
+              changeTarget={changeTarget}
             />
           )
       )}

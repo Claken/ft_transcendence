@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import io, { Socket } from 'socket.io-client';
-import DmChat from '../dm/DmChat';
+import { isForOfStatement } from 'typescript';
 import '../../styles/chat.css'
-import { useChat } from "../../contexts/ChatContext";
 
 // const 	socket = io('http://localhost/3001');
 
@@ -19,7 +18,6 @@ interface IRoom {
 }
 
 const ProtoChat = () => {
-	const chat = useChat();
 
 	const	title = 'PROTO CHATROOM';
 	const	[text, changeText] = useState<string>("");
@@ -248,7 +246,8 @@ const ProtoChat = () => {
 					<div className="middle">
 						<div className="room_name">{activeRoom}</div>
 						<div className="messages_box">
-							{chat.haveTarget && <DmChat />}
+							<ul>
+							</ul>
 						</div>
 						<div className="chat_box">
 							<form onSubmit={sendChatMessage}>

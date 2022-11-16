@@ -1,17 +1,18 @@
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Pong from "./pages/Pong";
+import Game from "./components/game/Game";
 import Social from "./pages/Social";
 import Channel from "./pages/Channel";
 import Account from "./pages/Account";
 import { AuthProvider } from "./contexts/AuthContext";
-import RequiredAuth from "./components/auth/RequiredAuth";
-import RequiredOffline from "./components/auth/RequiredOffline";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Layout from "./pages/Layout";
 import { ChatProvider } from "./contexts/ChatContext";
 import Profile from "./pages/Profile";
 import ProfileDetails from "./pages/ProfileDetails";
+import RequiredOffline from "./components/RequiredRoutes/RequiredOffline";
+import TwoFaCode from "./pages/TwoFaCode";
 
 function App() {
   return (
@@ -32,8 +33,10 @@ function App() {
                 <Route path="/pong" element={<Pong />} />
                 <Route path="/profile" element={<Profile />} />
                 <Route path="profile/:userId" element={<ProfileDetails />} />
-              {/* </Route> */}
-            </Route>
+                {/* pim la page */}
+                <Route path="twofa-validation" element={<TwoFaCode />} />
+              </Route>
+            {/* </Route> */}
           </Routes>
         </BrowserRouter>
       </ChatProvider>

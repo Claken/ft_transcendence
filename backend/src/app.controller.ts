@@ -1,6 +1,6 @@
-import { Controller, Get, Post, Req } from '@nestjs/common';
-import { Request } from 'express';
+import { Controller, Get, Req } from '@nestjs/common';
 import { AppService } from './app.service';
+import { RequestWithUser } from './TypeOrm/DTOs/User.dto';
 
 @Controller()
 export class AppController {
@@ -12,7 +12,7 @@ export class AppController {
   }
 
   @Get('me')
-  test(@Req() req: Request) {
+  getCookie(@Req() req: RequestWithUser) {
     return req.user;
   }
 }

@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { UserDTO } from 'src/TypeOrm/DTOs/User.dto';
 import { Repository } from 'typeorm';
 import { UsersEntity } from '../TypeOrm/Entities/users.entity';
+import { Cron, CronExpression } from '@nestjs/schedule';
 
 @Injectable()
 export class UsersService {
@@ -46,5 +47,32 @@ export class UsersService {
   async deleteUser(id: number): Promise<UsersEntity> {
     const user = await this.getById(id);
     return await this.userRepo.remove(user);
+  }
+
+  @Cron(CronExpression.EVERY_30_MINUTES)
+  async removeGuestUsers(): Promise<UsersEntity[]> {
+    const guestUsers = await this.userRepo.findBy({
+      login: '',
+    });
+    if (!guestUsers) return [];
+    return await this.userRepo.remove(guestUsers);
+  }
+
+  async setTwoFASecret(secret: string, id: number): Promise<UsersEntity> {
+    const user = await this.getById(id);
+    user.twoFASecret = secret;
+    return await this.userRepo.save(user);
+  }
+
+  async turnOnOffTwoFA(id: number): Promise<UsersEntity> {
+    const user = await this.getById(id);
+    user.isTwoFAEnabled = !user.isTwoFAEnabled;
+    return await this.userRepo.save(user);
+  }
+
+  async setTwoFACertif(id: number, val: boolean): Promise<UsersEntity> {
+    const user = await this.getById(id);
+    user.isTwoFAValidated = val;
+    return await this.userRepo.save(user);
   }
 }
