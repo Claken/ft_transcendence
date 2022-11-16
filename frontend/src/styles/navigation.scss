@@ -34,11 +34,6 @@
   font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
     "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
 
-
-  .left-list {
-    width: 100%;
-    height: 100%;
-    display: flex;
     ul {
       padding: 0;
       margin: 0;
@@ -47,57 +42,43 @@
       height: 100%;
       width: 100%;
       justify-content: space-around;
+      font-weight: bold;
+
 
       li {
         display: flex;
         justify-content: center;
         align-items: center;
-        width: 40%;
+        width: 30%;
         background-color: transparent;
         border-radius: 70px;
         text-align: center;
         margin: 2%;
       }
       li.active {
-        background-color: #5cb4e5;
+        background-color: whitesmoke;
+        color: rgb(82, 59, 130);
       }
     
       li:hover {
-        background-color: #14577d;
+        font-weight: bold;
+        background-color: whitesmoke;
+        color: rgb(82, 59, 130);
+        -webkit-transition: background-color 300ms linear;
+        -ms-transition: background-color 300ms linear;
+        transition: background-color 300ms linear;
       }
     }
+  .left-list {
+    width: 100%;
+    height: 100%;
+    display: flex;
   }
 
   .right-list {
     width: 100%;
     height: 100%;
-    ul {
-      padding: 0;
-      margin: 0;
-      list-style: none;
-      display: flex;
-      height: 100%;
-      width: 100%;
-      justify-content: space-around;
-
-      li {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        width: 40%;
-        background-color: transparent;
-        border-radius: 70px;
-        text-align: center;
-        margin: 2%;
-      }
-      li.active {
-        background-color: #5cb4e5;
-      }
     
-      li:hover {
-        background-color: #14577d;
-      }
-    }
     .userListElement {
       display: flex;
       background-color: transparent;
@@ -125,6 +106,7 @@
     }
   
     .userListElement:hover {
+      color: whitesmoke;
       background-color: transparent;
     }
   }

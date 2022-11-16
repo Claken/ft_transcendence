@@ -13,23 +13,26 @@
   margin-left: 5%;
   border: 2px solid whitesmoke;
   border-radius: 30px;
-  background: rgb(0, 138, 214);
-  background: -moz-radial-gradient(
-    circle,
-    rgba(0, 138, 214, 1) 35%,
-    rgba(92, 180, 229, 1) 100%
+  background: rgb(82, 59, 130);
+  background: -moz-linear-gradient(
+    90deg,
+    rgba(82, 59, 130, 1) 0%,
+    rgba(48, 34, 75, 1) 40%,
+    rgba(82, 59, 130, 1) 100%
   );
-  background: -webkit-radial-gradient(
-    circle,
-    rgba(0, 138, 214, 1) 35%,
-    rgba(92, 180, 229, 1) 100%
+  background: -webkit-linear-gradient(
+    90deg,
+    rgba(82, 59, 130, 1) 0%,
+    rgba(48, 34, 75, 1) 40%,
+    rgba(82, 59, 130, 1) 100%
   );
-  background: radial-gradient(
-    circle,
-    rgba(0, 138, 214, 1) 35%,
-    rgba(92, 180, 229, 1) 100%
+  background: linear-gradient(
+    90deg,
+    rgba(82, 59, 130, 1) 0%,
+    rgba(48, 34, 75, 1) 40%,
+    rgba(82, 59, 130, 1) 100%
   );
-  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#008ad6",endColorstr="#5cb4e5",GradientType=1);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#523b82",endColorstr="#523b82",GradientType=1);
 
   .profile-container {
     display: flex;
@@ -91,7 +94,6 @@
     border-bottom-right-radius: 30px;
     border-top-right-radius: 30px;
     display: flex;
-    flex-wrap: wrap;
 
     .matchHistory {
       display: flex;
@@ -100,7 +102,7 @@
       width: 90%;
       height: 90%;
       background-color: #7355b1;
-      margin: 5%;
+      margin: auto;
       border-radius: 20px;
       border: 2px solid whitesmoke;
       overflow: hidden;
