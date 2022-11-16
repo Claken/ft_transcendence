@@ -1,11 +1,8 @@
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Pong from "./pages/Pong";
-<<<<<<< HEAD
 import Game from "./components/game/Game";
-=======
 import Social from "./pages/Social";
->>>>>>> edouard-profile
 import Channel from "./pages/Channel";
 import Account from "./pages/Account";
 import { AuthProvider } from "./contexts/AuthContext";
@@ -14,6 +11,8 @@ import Layout from "./pages/Layout";
 import { ChatProvider } from "./contexts/ChatContext";
 import Profile from "./pages/Profile";
 import ProfileDetails from "./pages/ProfileDetails";
+import RequiredOffline from "./components/RequiredRoutes/RequiredOffline";
+import TwoFaCode from "./pages/TwoFaCode";
 
 function App() {
   return (

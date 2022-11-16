@@ -3,6 +3,7 @@ import "../styles/account.scss";
 import Modal from "../components/modal";
 import useModal from "../hooks/useModal";
 import { useAuth } from "../contexts/AuthContext";
+import guestPic from "../assets/img/profile1.jpg"
 // ajouter 2fa
 function Account() {
   const auth = useAuth();
@@ -10,13 +11,12 @@ function Account() {
   const handleLogout = () => {
     auth.logout();
   };
-  const [stylePic, setStylePic] = useState<string>("guestPic");
+  const [stylePic, setStylePic] = useState<string>(guestPic);
   useEffect(() => {
     if (auth.user && auth.user.login) {
-      setStylePic("profilePic");
+      setStylePic(auth.user.avatar);
     }
   }, [auth.user]);
-
   const { isOpen, toggle } = useModal();
   return (
     <div>
@@ -25,8 +25,7 @@ function Account() {
           <div className="left-container">
             <div className="profile-picture">
               <img
-                className={stylePic}
-                src={auth.user?.pictureUrl}
+                src={stylePic}
                 alt="profilePic"
               />
             </div>

@@ -7,19 +7,36 @@ import UserNotFound from "../components/social/UserNotFound";
 function ProfileDetails() {
   const auth = useAuth();
   const [user, setUser] = useState<IUser>();
+  const [users, setUsers] = useState<IUser[]>([]);
   const [userProfile, setUserProfile] = useState(
     window.location.pathname.substring(
       window.location.pathname.lastIndexOf("/") + 1
     )
   );
   const [names, setNames] = useState(
-    auth?.users && auth?.users?.map((user: IUser) => user?.name)
+    users && users.map((user: IUser) => user?.name)
   );
+
   const [isValidName, setIsValidName] = useState(
     names && names.includes(userProfile)
   );
+
   useEffect(() => {
     const getData = async () => {
+      await axios
+        .get("/users")
+        .then((res) => {
+          setUsers(res.data);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    };
+    getData();
+  }, []);
+
+  useEffect(() => {
+    const getUserData = async () => {
       await axios
         .get("/users/" + userProfile)
         .then((res) => {
@@ -32,7 +49,7 @@ function ProfileDetails() {
           console.log(error);
         });
     };
-    getData();
+    getUserData();
   });
 
   if (!user) return null;

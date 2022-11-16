@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { UserDTO } from 'src/TypeOrm/DTOs/User.dto';
 import { Repository } from 'typeorm';
 import { UsersEntity } from '../TypeOrm/Entities/users.entity';
+import { Cron, CronExpression } from '@nestjs/schedule';
 
 @Injectable()
 export class UsersService {

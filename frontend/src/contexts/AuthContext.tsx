@@ -1,7 +1,7 @@
 import axios from "../axios.config";
 import React, { useContext, useEffect, useState } from "react";
 import { IUser } from "../interfaces/user.interface";
-import guestPic from "../assets/img/profile1.jpg";
+import guestPic from "../assets/img/profile1.jpg"
 import { IAuthContext } from "../interfaces/authcontext.interface";
 
 const AuthContext = React.createContext<IAuthContext>(null);
@@ -59,39 +59,6 @@ export const AuthProvider = ({ children }) => {
 			});
 	};
 
-<<<<<<< HEAD
-=======
-	const getUserByname = async (name: string) => {
-		await axios
-			.get("/users/" + name)
-			.then((res) => {
-				if (res.data) {
-					setUser(null);
-					setUser(res.data);
-				}
-			})
-			.catch((error) => {
-				console.log(error);
-			});
-	};
-
-	// if localStorage exists, setUser in getUserByname()
-	useEffect(() => {
-		const token = localStorage.getItem("MY_PONG_APP");
-
-		if (token) {
-			const { name } = JSON.parse(token);
-			getUserByname(name);
-		}
-		getUsers();
-		getSessionCookie();
-	}, []);
-
-	const login = () => {
-		window.location.href = "http://localhost:3001/auth/42/login";
-	};
-
->>>>>>> edouard-profile
 	const loginAsGuest = async (guestName: string) => {
 		const newUser: IUser = {
 			name: guestName,

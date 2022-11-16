@@ -3,18 +3,18 @@ import { Link, useResolvedPath, useMatch } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import pongLogo from "../assets/logo/white_pong.png";
 import ButtonProfile from "./ButtonProfile";
-
+import guestPic from "../assets/img/profile1.jpg"
 import "../styles/navigation.scss";
 
 function Navigation() {
   const auth = useAuth();
 
-  const [stylePic, setStylePic] = useState<string>("guestPic");
+  const [stylePic, setStylePic] = useState<string>(guestPic);
 
   useEffect(() => {
     if (auth.user && auth.user.login) {
       //TODO: css change
-      setStylePic("profilePic");
+      setStylePic(auth.user.avatar);
     }
   }, [auth.user]);
 
@@ -42,8 +42,7 @@ function Navigation() {
                 </div>
                 <div className="userProfilePicture">
                   <img
-                    className={stylePic}
-                    src={auth.user?.pictureUrl}
+                    src={stylePic}
                     alt="profilePic"
                   />
                 </div>
