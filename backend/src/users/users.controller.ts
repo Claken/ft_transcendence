@@ -15,10 +15,6 @@ import { UserDTO } from 'src/TypeOrm/DTOs/User.dto';
 export class UsersController {
   constructor(private usersService: UsersService) {}
 
-  @Post()
-  async create(@Body() post: UserDTO): Promise<UsersEntity> {
-    return await this.usersService.create(post);
-  }
   @Get()
   async findAllUsers(): Promise<UsersEntity[]> {
     return await this.usersService.findAllUsers();

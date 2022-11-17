@@ -5,6 +5,7 @@ import { Repository } from 'typeorm';
 import { UsersEntity } from '../TypeOrm/Entities/users.entity';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { AvatarService } from 'src/avatar/avatar.service';
+import { Avatar } from 'src/TypeOrm';
 
 @Injectable()
 export class UsersService {
@@ -12,14 +13,19 @@ export class UsersService {
   constructor(
     @InjectRepository(UsersEntity)
     private readonly userRepo: Repository<UsersEntity>,
-    private readonly avatarService: AvatarService
+    private readonly avatarService: AvatarService,
   ) {}
 
   // save() is a Repository Typeorm method to call INSERT query
   // TODO: handle users already exist
-  async create(user: UserDTO): Promise<UsersEntity> {
-      const newUser = this.userRepo.create(user);
-      return await this.userRepo.save(newUser);
+  async create(user: UserDTO, buffer: Buffer) {
+    const newUser = this.userRepo.create(user);
+    if (newUser.login) {
+      const filename = 'avatarApi42.jpg';
+      const avatar = await this.avatarService.uploadAvatar(buffer, filename);
+      newUser.avatarId = avatar.id;
+    }
+    return await this.userRepo.save(newUser);
   }
 
   // find() is a Repository Typeorm method to call SELECT query
@@ -60,9 +66,9 @@ export class UsersService {
     return await this.userRepo.remove(guestUsers);
   }
 
-	/* ********************************************************* */
-	/*                          TwoFA                            */
-	/* ********************************************************* */
+  /* ********************************************************* */
+  /*                          TwoFA                            */
+  /* ********************************************************* */
 
   async setTwoFASecret(secret: string, id: number): Promise<UsersEntity> {
     const user = await this.getById(id);
@@ -83,8 +89,8 @@ export class UsersService {
   }
 
   /* ********************************************************* */
-	/*                          Avatar                           */
-	/* ********************************************************* */
+  /*                          Avatar                           */
+  /* ********************************************************* */
 
   async updateAvatarId(id: number, avatarId: number): Promise<UsersEntity> {
     const user = await this.getById(id);
@@ -92,9 +98,13 @@ export class UsersService {
     return await this.userRepo.save(user);
   }
 
-  async addAvatar(userId: number, imageBuffer: Buffer, filename: string) {
+  async addAvatar(
+    userId: number,
+    imageBuffer: Buffer,
+    filename: string,
+  ): Promise<Avatar> {
     const avatar = await this.avatarService.uploadAvatar(imageBuffer, filename);
-    await this.updateAvatarId(userId, avatar.id);
+    const user = await this.updateAvatarId(userId, avatar.id);
     return avatar;
   }
 }

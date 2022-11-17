@@ -14,7 +14,7 @@ function Navigation() {
   useEffect(() => {
     if (auth.user && auth.user.login) {
       //TODO: css change
-      setStylePic(auth.user.firstAvatarUrl);
+      // setStylePic(auth.user.firstAvatarUrl);
     }
   }, [auth.user]);
 

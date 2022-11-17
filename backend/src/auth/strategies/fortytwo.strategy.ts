@@ -3,14 +3,18 @@ import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy, Profile, VerifyCallback } from 'passport-42';
 import { UsersEntity } from 'src/TypeOrm';
-import { TokenPayload, UserDTO } from 'src/TypeOrm/DTOs/User.dto';
+import { UserDTO } from 'src/TypeOrm/DTOs/User.dto';
 import { AuthService } from '../auth.service';
+import { HttpService } from '@nestjs/axios';
+import { map, lastValueFrom } from 'rxjs';
 
 @Injectable()
 export class FortyTwoStrategy extends PassportStrategy(Strategy, '42') {
   constructor(
     private readonly authService: AuthService,
     private readonly configService: ConfigService,
+    private readonly http: HttpService,
+
   ) {
     super({
       clientID: configService.get<string>('FORTYTWO_APP_UID'),
@@ -41,10 +45,12 @@ export class FortyTwoStrategy extends PassportStrategy(Strategy, '42') {
       login: username,
       name: username,
       email: emails[0].value,
-      firstAvatarUrl: photos[0].value,
-	  inQueue: false,
-	  inGame: false
+      inQueue: false,
+      inGame: false
     };
-    return await this.authService.register(userApi);
+    const responseObs = this.http.get(photos[0].value, { responseType: 'arraybuffer' });
+    const response = await lastValueFrom(responseObs);
+    const buf = Buffer.from(response.data, 'utf-8');
+    return await this.authService.register(userApi, buf);
   }
 }

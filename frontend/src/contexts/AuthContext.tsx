@@ -84,7 +84,7 @@ export const AuthProvider = ({ children }) => {
 	const loginAsGuest = async (guestName: string) => {
 		const newUser: IUser = {
 			name: guestName,
-			firstAvatarUrl: guestPic,
+			// firstAvatarUrl: guestPic,
 			status: "online",
 			inGame: false,
 			inQueue: false,

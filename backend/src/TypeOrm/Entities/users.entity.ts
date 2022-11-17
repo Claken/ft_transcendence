@@ -2,6 +2,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  Generated,
   JoinColumn,
   OneToMany,
   OneToOne,
@@ -24,9 +25,6 @@ export class UsersEntity {
 
   @Column({ default: '' })
   email?: string;
-
-  @Column({ default: '' })
-  firstAvatarUrl?: string;
 
   @Column({ default: 'online' })
   status?: string;
@@ -56,7 +54,7 @@ export class UsersEntity {
   @JoinColumn()
   avatar?: Avatar;
 
-  @Column({ nullable: true })
+  @Column({ nullable: true, default: 0 })
   avatarId?: number;
 
   // TODO: friends

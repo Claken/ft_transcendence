@@ -17,9 +17,6 @@ export class UserDTO {
   email?: string;
 
   @IsOptional()
-  firstAvatarUrl?: string;
-
-  @IsOptional()
   status?: string;
 
   @IsOptional()
@@ -59,8 +56,8 @@ export interface RequestWithUser extends Request {
   user: UserDTO;
 }
 
-export class TokenPayload {
-  user?: UserDTO;
-  isSecondFactorAuthenticated: boolean;
-}
+// export class TokenPayload {
+//   user?: UserDTO;
+//   isSecondFactorAuthenticated: boolean;
+// }
 

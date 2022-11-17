@@ -3,7 +3,6 @@ export class IUser {
 	login?: string;
 	name?: string;
 	email?: string;
-	firstAvatarUrl?: string;
 	inQueue: boolean;
 	inGame: boolean;
 	status?: string;

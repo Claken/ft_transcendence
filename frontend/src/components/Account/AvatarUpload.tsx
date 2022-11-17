@@ -3,7 +3,7 @@ import { useAuth } from "../../contexts/AuthContext";
 import axios from "../../axios.config";
 
 const AvatarUpload = () => {
-	const { user } = useAuth();
+	const { user, setUser } = useAuth();
 	const [file, setFile] = useState<File>(null);
 
 	const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -17,7 +17,7 @@ const AvatarUpload = () => {
 			})
 			.then((res) => {
 				console.log(res.data);
-				// setUser(res.data)
+				setUser(res.data);
 			})
 			.catch((error) => {
 				console.log(error);
@@ -27,17 +27,6 @@ const AvatarUpload = () => {
 	useEffect(() => {
 		if (file) {
 			const formData = new FormData();
-			/*** Generating a 10 random chars long string */
-			// const randomNb = Math.random().toString(36).substring(2, 12);
-			// const fileCustomName = user.name + randomNb;\
-
-			/*** Base64 */
-			// let fileConvert64;
-			// await getBase64(file, (res: string | ArrayBuffer) => {
-			// 	fileConvert64 = res;
-			// });
-			// console.log(fileConvert64);
-
 			formData.append("image", file, file.name);
 			postAvatar(formData);
 		}
