@@ -13,6 +13,7 @@ import Profile from "./pages/Profile";
 import ProfileDetails from "./pages/ProfileDetails";
 import RequiredOffline from "./components/RequiredRoutes/RequiredOffline";
 import TwoFaCode from "./pages/TwoFaCode";
+import LayoutPong from "./pages/LayoutPong";
 
 function App() {
   return (
@@ -30,7 +31,10 @@ function App() {
                 <Route path="/account" element={<Account />} />
                 <Route path="/social" element={<Social />} />
                 <Route path="/channel" element={<Channel />} />
-                <Route path="/pong" element={<Pong />} />
+                <Route path="/pong" element={<LayoutPong />}>
+					<Route index element={<Pong />} />
+					<Route path=":gameId" element={<Game />} />
+				</Route>
                 <Route path="/profile" element={<Profile />} />
                 <Route path="profile/:userId" element={<ProfileDetails />} />
                 {/* pim la page */}

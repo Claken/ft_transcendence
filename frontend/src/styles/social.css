@@ -86,7 +86,21 @@
   display: flex;
   justify-content: center;
   height: 90%;
-  width: 60%;
+  width: 80%;
+  overflow: auto;
+}
+
+.searchContainer::-webkit-scrollbar {
+  width: 10px;
+  background-color: whitesmoke;
+}
+
+.searchContainer::-webkit-scrollbar-track {
+  background-color: #523B82;
+}
+.searchContainer::-webkit-scrollbar-thumb {
+  background-color: whitesmoke;
+  
 }
 
 /* FriendList */
