@@ -9,6 +9,7 @@ import { useParams } from "react-router-dom";
 import Colors from "./colors";
 import State from "./state";
 import allPos from "./allPos";
+import gameBoards from "./gameBoards";
 
 import button from "./button";
 import pausePage from "./pagePause";
@@ -42,6 +43,9 @@ const Game = (
 	var curr = "";
 	const color = [];
 
+	/* ***************************************************************************** */
+	/*               Timer exécuter toutes les 10 premières secondes                 */
+	/* ***************************************************************************** */
 	const tick = () => {
 		if (allPos.compteur === -1)
 			clearInterval(intervalID);
@@ -50,14 +54,10 @@ const Game = (
 			socket.emit("randomMap")
 		}
 		else if (allPos.compteur > 0) {
-			allPos.compteur--;
+			// allPos.compteur--;
 			socket.emit("compteur", allPos.compteur);
 		}
 	}
-
-	//TODO: Si la partie existe déjà, il faut y retourner
-	//TODO: Retourner dans la Queue si l'instance de la partie a déjà été crée
-	/* Vérifier à chaque connexion client s'il était en partie */
 
 	/* ***************************************************************************** */
 	/*                 Initialisation de la Game et des 2 joueurs                    */
@@ -68,7 +68,6 @@ const Game = (
 			setLoginRP(game.loginRP);
 			setScoreLP(0);
 			setScoreRP(0);
-			setAbort(false);
 			allPos.loginLP = game.loginLP;
 			allPos.loginRP = game.loginRP;
 			if (auth.user.name === allPos.loginLP && !lock) {
@@ -92,6 +91,22 @@ const Game = (
 	useEffect(() => {
 		getGameById();
 	}, [])
+
+	//reconnexion en pleine partie
+	useEffect(() => {
+		// socket.emit();
+		console.log("entrée dans le useEffect de la reconnexion (GAME.TSX"); //TODO: retirer
+	}, [auth.user.id])
+
+	//TODO: besoin de useEffect ? Si il déco, setAbort ?
+	//TODO: il rentre forcément dans le useEffect ? Pourquoi ?
+	//Un joueur abort la game car il se fait daronned
+	useEffect(() => {
+		if (abort === true) {
+			// socket.emit();
+			console.log("entrée dans le useEffect du ABORT"); //TODO: retirer
+		}
+	}, [abort])
 
 	/* ***************************************************************************** */
 	/*            Ajout d'event pour écouter les touches/cliques entrant             */
@@ -217,15 +232,12 @@ const Game = (
 		allPos.state = 0; //etat du jeu
 		allPos.score = 5;
 		allPos.speed = 2;
-		allPos.map = -1;
+		allPos.mapLP = -1;
+		allPos.mapRP = -1;
 		allPos.key = key;
 		let animationFrameId: number;
 		allPos.img = new Image();
 		var mignature = [new Image(), new Image(), new Image()];
-		const gameBoards = [
-			"https://emotionsnumeriques.files.wordpress.com/2017/04/srjc9512.jpg?w=640",
-			"https://cdn.pocket-lint.com/r/s/1200x630/assets/images/149352-games-news-gwent-the-witcher-card-game-is-coming-to-ios-and-you-can-pre-order-it-for-free-now-image1-dkpsimikqa.jpg",
-			"https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/e8f138b7-dfde-4001-9305-eabae23b82ff/df6krl3-1950d728-786e-4aee-8504-bcd07f7c9b71.jpg?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7InBhdGgiOiJcL2ZcL2U4ZjEzOGI3LWRmZGUtNDAwMS05MzA1LWVhYmFlMjNiODJmZlwvZGY2a3JsMy0xOTUwZDcyOC03ODZlLTRhZWUtODUwNC1iY2QwN2Y3YzliNzEuanBnIn1dXSwiYXVkIjpbInVybjpzZXJ2aWNlOmZpbGUuZG93bmxvYWQiXX0.PxPrKzBYn4B63khYSVcan9XNsDDaxoq0X2oRXWaIJNQ"];
 		allPos.img.src = gameBoards[0];
 		mignature[0].src = gameBoards[0];
 		mignature[1].src = gameBoards[1];
@@ -265,17 +277,18 @@ const Game = (
 			prev = infos[1];
 		});
 
-		socket.on("updateImg", (mapPlayer) => {
-			allPos.img.src = gameBoards[mapPlayer.index];
-			allPos.map = mapPlayer.index;
+		socket.on("updateImg", (infos) => {
+			allPos.img.src = gameBoards[infos[2]];
+			allPos.mapLP = infos[1].mapLP;
+			allPos.mapRP = infos[1].mapRP;
 			for (let index = 0; index < gameBoards.length; index++) {
-				if (index === mapPlayer.index) {
-					auth.user.name === mapPlayer.login ? color[index] = Colors.green : color[index] = Colors.red;
+				if (index === infos[2]) {
+					auth.user.name === infos[0] ? color[index] = Colors.green : color[index] = Colors.red;
 				}
 				else {
-					if (auth.user.name === mapPlayer.login && color[index] === Colors.green)
+					if (auth.user.name === infos[0] && color[index] === Colors.green)
 						color[index] = Colors.white;
-					else if (auth.user.name !== mapPlayer.login && color[index] === Colors.red)
+					else if (auth.user.name !== infos[0] && color[index] === Colors.red)
 						color[index] = Colors.white;
 				}
 			}
@@ -293,7 +306,7 @@ const Game = (
 
 		socket.on("endGame", (winner, capitulator) => {
 			if (capitulator)
-				//todo
+				// setAbort(true);
 			console.log("endGame")
 			auth.user.name === winner ? allPos.state = State.WIN : allPos.state = State.LOSE ;//TODO: allPos ou pas ?
 		})

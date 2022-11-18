@@ -48,6 +48,12 @@ export class UsersEntity {
   @Column({ nullable: true, default: 0})
   lose?: number;
 
+//   @OneToMany(() => Game, Game => Game.userLeft)
+//   userLeft: Game[];
+
+//   @OneToMany(() => Game, Game => Game.userRight)
+//   userRight: Game[];
+
   @CreateDateColumn()
   createdAt?: Date;
 
