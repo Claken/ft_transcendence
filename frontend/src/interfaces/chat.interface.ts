@@ -10,7 +10,7 @@ export interface IChatRoom {
   
 	administrators?: string;
 
-	isPublic: boolean;
+	type: number;
 
 	password?: string;
 

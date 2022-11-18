@@ -11,6 +11,7 @@ import {
 import { MemberEntity } from './member.entity';
 import { MessageEntity } from './chatMessage.entity';
 import { UsersEntity } from './users.entity';
+import { type } from 'src/exports/enum';
 
 @Entity('ChatRoom')
 export class ChatRoomEntity {
@@ -32,11 +33,8 @@ export class ChatRoomEntity {
 	@JoinColumn()
 	messages: MessageEntity[];
 
-	@Column({ default: true })
-	isPublic: boolean;
-
-	// @Column({nullable: true}) 1 = PUBLIC, 2 = PRIVATE, 3 = PROTECTED
-	// type: number;
+	@Column({default: type.public})
+	type: number;
 
 	@Column({ nullable: true, default: ''})
 	password?: string;
@@ -51,7 +49,7 @@ export interface IChatRoom {
 	owner?: UsersEntity,
 	members?: MemberEntity[];
 	messages?: MessageEntity[];
-	isPublic?: boolean,
+	type?: number,
 	password?: string,
 	createdAt?: Date,
 }

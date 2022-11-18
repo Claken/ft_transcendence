@@ -11,6 +11,7 @@ import { UsersEntity } from 'src/TypeOrm';
 import { MemberService } from './member.service';
 import { combineLatest } from 'rxjs';
 import { MessageService } from './chatMessage.service';
+import { type } from 'src/exports/enum';
 
 
 // {cors: '*'} pour que chaque client dans le frontend puisse se connecter à notre gateway
@@ -124,7 +125,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 		const newChatRoom: IChatRoom = {
 			chatRoomName: room.chatRoomName,
 			owner: theOwner,
-			isPublic: room.isPublic,
+			type: room.type,
 			password: room.password,
 		}
 		let		ChannelCreated = await this.chatService.createChatRoom(newChatRoom);
@@ -152,7 +153,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 	HandleModificationChannel(@MessageBody() room: CreateRoomDto): void {
 		const modifiedRoom: IChatRoom = {
 			chatRoomName: room.chatRoomName,
-			isPublic: room.isPublic,
+			type: room.type,
 			password: room.password,
 		}
 	}
@@ -160,8 +161,10 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 	@SubscribeMessage('getAllChannels')
 	async HandleGettingChannels(client: Socket) : Promise<void> {
 		const Channels = await this.chatService.findAllChatRooms();
-		
-		
+		// const Admins = await this.memberService.findAllAdminsFromOneRoom(Channels[0].id);
+		// console.log(Admins);
+		// const Members = await this.memberService.findAllMembersFromOneRoom(Channels[0].id);
+		// console.log(Members);
 		// console.log(Channels[0].owner.name);
 		// console.log(Channels[0].messages);
 		client.emit('sendAllChannels', Channels);

@@ -5,6 +5,7 @@ import {IChatRoom} from '../../interfaces/chat.interface'
 import {useAuth} from '../../contexts/AuthContext'
 import { IMessageToBack } from '../../interfaces/messageToBack.interface';
 import { IRoom } from '../../interfaces/room.interface';
+import { type } from '../../interfaces/enum';
 
 // const 	socket = io('http://localhost/3001');
 
@@ -36,6 +37,7 @@ const ProtoChat = () => {
 			member: false,
 			owner: '',
 			name: '',
+			type: type.public,
 			messages: [],
 		};
 		rooms.forEach((element: IRoom) => {
@@ -121,7 +123,6 @@ const ProtoChat = () => {
 	const addARoom = (event: any) => {
 		event.preventDefault();
 		let		askARoom: string = "";
-		let		isPublicOrNot: boolean;
 		while (askARoom === "")
 		{
 			askARoom = prompt('Enter a name for your room: ')!;
@@ -130,11 +131,10 @@ const ProtoChat = () => {
 			if (askARoom === "")
 				alert('This is not a right name for a room !');
 		}
-		isPublicOrNot = window.confirm('If you want your room to be public, press OK. Otherwise, press Cancel');
 		const dbRoom: IChatRoom = {
 			chatRoomName: askARoom,
 			owner: username,
-			isPublic: isPublicOrNot,
+			type: type.public,
 			// password: 
 		}
 		socket?.emit('createChatRoom', dbRoom);
@@ -205,6 +205,7 @@ const ProtoChat = () => {
 				member: isMemberOrNot,
 				owner: element.owner.name,
 				name: element.chatRoomName,
+				type: element.type,
 				messages: [],
 			};
 			[...element.messages].reverse().forEach((oneMessage: any) => {
@@ -226,6 +227,7 @@ const ProtoChat = () => {
 		member: isMemberOrNot,
 		owner: channel.owner.name,
 		name: channel.chatRoomName,
+		type: channel.type,
 		messages: [],
 		};
 		if (channel.messages !== undefined) {

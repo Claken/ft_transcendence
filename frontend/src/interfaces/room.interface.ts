@@ -5,10 +5,9 @@ export interface IRoom {
 	member: boolean;
 	owner: string;
 	name: string;
+	type: number;
 	messages: IMessageToBack[];
-	isPublic?: boolean,			// A FAIRE
-	usersList?: string[],		// A FAIRE
-	adminsList?: string[],		// A FAIRE
-	banList?: string[],			// A FAIRE
-	type?: number,
+	usersList?: string[];		// A FAIRE
+	adminsList?: string[];		// A FAIRE
+	banList?: string[];			// A FAIRE
 }

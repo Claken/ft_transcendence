@@ -16,7 +16,23 @@ export class MemberService {
 
 		async findAllMembers(): Promise<MemberEntity[]> {
 			return await this.memberRepo.find({relations: ['inChannel']});
-		} 
+		}
+
+		async findAllAdminsFromOneRoom(roomId: string) : Promise<MemberEntity[]> {
+			const members = await this.findAllMembers();
+			return members.filter((member: MemberEntity) =>
+			member.inChannel.id === roomId && member.isAdmin === true);
+		}
+
+		async findAllMembersFromOneRoom(roomId: string) : Promise<MemberEntity[]> {
+			const members = await this.findAllMembers();
+			return members.filter((member: MemberEntity) => member.inChannel.id === roomId);
+		}
+
+		async findAllBannedMembersFromOneRoom(roomId: string) :  Promise<MemberEntity[]> {
+			const members = await this.findAllMembers();
+			return members.filter((member: MemberEntity) => member.inChannel.id === roomId && member.isBan === true);
+		}
 
 		async getMemberById(memberId: string) : Promise<MemberEntity> {
 			return await this.memberRepo.findOneBy({id: memberId});
