@@ -357,7 +357,7 @@ const ProtoChat = () => {
 					</p>
 				</div>
 			<div>
-				{findActiveRoom().messages.map((msg: any, id: number) => <ul key={id}><strong>{msg.sender}:</strong> {msg.message} - - - <i>{msg.date}</i></ul>)}
+				{findActiveRoom().member ? findActiveRoom().messages.map((msg: any, id: number) => <ul key={id}><strong>{msg.sender}:</strong> {msg.message} - - - <i>{msg.date}</i></ul>) : <div></div>}
 			</div>
 		</div>
 	)

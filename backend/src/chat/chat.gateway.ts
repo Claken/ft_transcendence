@@ -62,8 +62,6 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 	@SubscribeMessage('chatToServer')
 	async HandleMessageToRoom(@MessageBody() message: {sender: string, room: string, msg: string}): Promise<void> {
 
-		// console.log('message.msg = ' + message.msg);
-		// console.log('message.room = ' + message.room);
 		let theRoom = await this.chatService.findOneChatRoomByName(message.room);
 
 		const messageCreated = await this.messageService.createMessage({sender: message.sender, content: message.msg})
@@ -77,7 +75,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 			content: message.msg,
 			date: messageCreated.createdAt,
 		}
-		this.server.to(message.room).emit('chatToClient', newMessage);
+		this.server.to(theRoom.id).emit('chatToClient', newMessage);
 	}
 
   	/* ************************************************************************* */
@@ -95,7 +93,6 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
 		await	this.chatService.saveChatRoom(channelJoined);
 
-		client.join(infos.room);		
 		client.emit('joinedRoom', infos.room);
 	}
 
@@ -109,7 +106,6 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 		const	channelLeft = await this.chatService.findOneChatRoomByName(infos.room);
 		const	member = await this.memberService.getMemberByNameAndChannel(infos.user, channelLeft);
 		await	this.memberService.deleteMemberById(member.id);
-    	client.leave(infos.room);
 		client.emit('leftRoom', infos.room);
   }
 
@@ -138,7 +134,8 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 		theOwner.ownedChannels = [ChannelCreated];
 		await this.usersService.updateUser(theOwner.id);
 
-		client.join(room.chatRoomName);
+		const sockets = await this.server.fetchSockets();
+		sockets.forEach((socket: any) => socket.join(ChannelCreated.id));
 		this.server.emit('sendNewChannel', ChannelCreated);
 	}
 
@@ -161,6 +158,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 	@SubscribeMessage('getAllChannels')
 	async HandleGettingChannels(client: Socket) : Promise<void> {
 		const Channels = await this.chatService.findAllChatRooms();
+		Channels.forEach((channel : ChatRoomEntity) => client.join(channel.id));
 		// const Admins = await this.memberService.findAllAdminsFromOneRoom(Channels[0].id);
 		// console.log(Admins);
 		// const Members = await this.memberService.findAllMembersFromOneRoom(Channels[0].id);
