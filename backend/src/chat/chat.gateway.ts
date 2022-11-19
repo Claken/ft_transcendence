@@ -124,25 +124,30 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 			type: room.type,
 			password: room.password,
 		}
-		let		ChannelCreated = await this.chatService.createChatRoom(newChatRoom);
+		let		channelCreated = await this.chatService.createChatRoom(newChatRoom);
 
 		const	memberCreated = await this.memberService.createMember({name: theOwner.name, isAdmin: true});
 
-		ChannelCreated.members = [memberCreated];
-		await this.chatService.saveChatRoom(ChannelCreated);
+		channelCreated.members = [memberCreated];
+		await this.chatService.saveChatRoom(channelCreated);
 
-		theOwner.ownedChannels = [ChannelCreated];
+		theOwner.ownedChannels = [channelCreated];
 		await this.usersService.updateUser(theOwner.id);
 
 		const sockets = await this.server.fetchSockets();
-		sockets.forEach((socket: any) => socket.join(ChannelCreated.id));
-		this.server.emit('sendNewChannel', ChannelCreated);
+		sockets.forEach((socket: any) => socket.join(channelCreated.id));
+		this.server.emit('sendNewChannel', channelCreated);
 	}
 
 	@SubscribeMessage('deleteChatRoom')
-	HandleDeletionRoom(client: Socket, room: string): void {
-		client.leave(room);
-		this.chatService.deleteChatRoomByName(room);
+	async HandleDeletionRoom(client: Socket, room: string): Promise<void> {
+
+		const	channelToBeDeleted = await this.chatService.findOneChatRoomByName(room);
+
+		const sockets = await this.server.fetchSockets();
+		sockets.forEach((socket: any) => socket.leave(channelToBeDeleted.id));
+
+		this.chatService.deleteChatRoomById(channelToBeDeleted.id);
 		this.server.emit('sendDeleteMessage', room);
 	}
 
