@@ -33,20 +33,6 @@ const AvatarUpload = () => {
 	}, [file]);
 	console.log(file);
 
-	const getBase64 = async (
-		file: File,
-		cb: (res: string | ArrayBuffer) => void
-	) => {
-		let reader = new FileReader();
-		reader.readAsDataURL(file);
-		reader.onload = () => {
-			cb(reader.result);
-		};
-		reader.onerror = (error) => {
-			console.log("Error: ", error);
-		};
-	};
-
 	return (
 		<div>
 			<input

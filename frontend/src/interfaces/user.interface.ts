@@ -13,4 +13,5 @@ export class IUser {
 	win?: number;
 	lose?: number;
 	avatarId?: number;
+	avatarUrl?: string;
 }

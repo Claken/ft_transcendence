@@ -35,13 +35,13 @@ export class UserDTO {
   inGame: boolean;
 
   @IsOptional()
-  avatar?:Avatar;
-
-  @IsOptional()
   win?: number;
 
   @IsOptional()
   lose?: number;
+
+  @IsOptional()
+  avatar?:Avatar;
 
   @IsOptional()
   avatarId?: number;

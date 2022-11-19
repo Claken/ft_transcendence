@@ -1,6 +1,5 @@
-export interface AvatarDTO {
+export interface IAvatar {
 	id: number;
 	name: string;
-	data: string | ArrayBuffer;
-	mimeType: string;
+    data: Uint8Array;
 }
