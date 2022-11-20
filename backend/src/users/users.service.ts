@@ -1,7 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserDTO } from 'src/TypeOrm/DTOs/User.dto';
-import { Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { UsersEntity } from '../TypeOrm/Entities/users.entity';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { AvatarService } from 'src/avatar/avatar.service';
@@ -14,6 +14,7 @@ export class UsersService {
     @InjectRepository(UsersEntity)
     private readonly userRepo: Repository<UsersEntity>,
     private readonly avatarService: AvatarService,
+    private datasource: DataSource
   ) {}
 
   // save() is a Repository Typeorm method to call INSERT query
@@ -103,8 +104,35 @@ export class UsersService {
     imageBuffer: Buffer,
     filename: string,
   ): Promise<Avatar> {
-    const avatar = await this.avatarService.uploadAvatar(imageBuffer, filename);
-    const user = await this.updateAvatarId(userId, avatar.id);
-    return avatar;
+
+    const queryRunner = this.datasource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
+    try {
+      const user = await this.userRepo.findOneBy({
+        id: userId,
+      });
+      const currentAvatarId = user.avatarId;
+      const avatar = await this.avatarService.uploadAvatarWithQueryRunner(imageBuffer, filename, queryRunner);
+ 
+      await queryRunner.manager.update(UsersEntity, userId, {
+        avatarId: avatar.id
+      });
+ 
+      if (currentAvatarId) {
+        await this.avatarService.deleteAvatarWithQueryRunner(currentAvatarId, queryRunner);
+      }
+      await queryRunner.commitTransaction();
+ 
+      return avatar;
+    } catch {
+      // since we have errors lets rollback the changes we made
+      await queryRunner.rollbackTransaction();
+      throw new InternalServerErrorException();
+    } finally {
+      // you need to release a queryRunner which was manually instantiated
+      await queryRunner.release();
+    }
   }
 }

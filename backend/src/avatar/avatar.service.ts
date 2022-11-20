@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Avatar } from 'src/TypeOrm';
-import { Repository } from 'typeorm';
+import { QueryRunner, Repository } from 'typeorm';
 
 @Injectable()
 export class AvatarService {
@@ -11,12 +11,35 @@ export class AvatarService {
   ) {}
 
   async uploadAvatar(dataBuffer: Buffer, filename: string): Promise<Avatar> {
-    const newFile = this.avatar.create({
+    const newAvatar = this.avatar.create({
       filename,
       data: dataBuffer,
     });
-    await this.avatar.save(newFile);
-    return newFile;
+    await this.avatar.save(newAvatar);
+    return newAvatar;
+  }
+
+  async uploadAvatarWithQueryRunner(
+    dataBuffer: Buffer,
+    filename: string,
+    queryrunner: QueryRunner,
+  ): Promise<Avatar> {
+    const newAvatar = queryrunner.manager.create(Avatar, {
+      filename,
+      data: dataBuffer,
+    });
+    await queryrunner.manager.save(newAvatar);
+    return newAvatar;
+  }
+
+  async deleteAvatarWithQueryRunner(
+    avatarId: number,
+    queryRunner: QueryRunner,
+  ) {
+    const deleteResponse = await queryRunner.manager.delete(Avatar, avatarId);
+    if (!deleteResponse.affected) {
+      throw new NotFoundException();
+    }
   }
 
   async getFileById(fileId: number): Promise<Avatar> {

@@ -12,6 +12,9 @@ export const AuthProvider = ({ children }) => {
 	const [user, setUser] = useState<IUser>(null);
 	const [blob, setBlob] = useState<Blob>(null);
 
+	/* ********************************************************* */
+	/*                     User AvatarUrl Update                 */
+	/* ********************************************************* */
 	// convert Blob to Base64
 	const getBase64 = async (
 		blob: Blob,
@@ -38,7 +41,7 @@ export const AuthProvider = ({ children }) => {
 		}
 	}, [blob]);
 
-	// On Avatar uploade OR connexion
+	// On Avatar uploade OR on connexion
 	useEffect(() => {
 		if (user?.id) {
 			axios
@@ -56,7 +59,10 @@ export const AuthProvider = ({ children }) => {
 		}
 	}, [user?.id, user?.avatarId]);
 
-	// data:image;base64,data:application/octet-stream;base64
+
+  	/* ********************************************************* */
+	/*                     On Connexion                          */
+	/* ********************************************************* */
 	useEffect(() => {
 		const token = localStorage.getItem("MY_PONG_APP");
 		// GET session/cookie42
