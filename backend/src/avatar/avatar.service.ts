@@ -10,7 +10,7 @@ export class AvatarService {
     private avatar: Repository<Avatar>,
   ) {}
 
-  async uploadAvatar(dataBuffer: Buffer, filename: string) {
+  async uploadAvatar(dataBuffer: Buffer, filename: string): Promise<Avatar> {
     const newFile = this.avatar.create({
       filename,
       data: dataBuffer,
@@ -19,9 +19,9 @@ export class AvatarService {
     return newFile;
   }
 
-  async getFileById(fileId: number) {
+  async getFileById(fileId: number): Promise<Avatar> {
     const file = await this.avatar.findOneBy({
-        id: fileId
+      id: fileId,
     });
     if (!file) {
       throw new NotFoundException();

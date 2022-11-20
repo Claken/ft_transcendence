@@ -9,7 +9,6 @@ import {
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { UsersEntity } from '../TypeOrm/Entities/users.entity';
-import { UserDTO } from 'src/TypeOrm/DTOs/User.dto';
 
 @Controller('users')
 export class UsersController {

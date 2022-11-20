@@ -4,21 +4,14 @@ import { IUser } from "../interfaces/user.interface";
 import guestPic from "../assets/img/profile1.jpg";
 import { IAuthContext } from "../interfaces/authcontext.interface";
 import { IAvatar } from "../interfaces/avatar.interfce";
-import { Buffer } from 'buffer';
+import { Buffer } from "buffer";
 
 const AuthContext = React.createContext<IAuthContext>(null);
 
-// const encodeBase64 = (data: Uint8Array) => {
-//     return Buffer.from(data).toString('base64');
-// }
-// const decodeBase64 = (data) => {
-//     return Buffer.from(data, 'base64').toString('ascii');
-// }
-
 export const AuthProvider = ({ children }) => {
 	const [user, setUser] = useState<IUser>(null);
-	// const [avatar, setAvatar] = useState<Stream>(null);
-	
+	const [blob, setBlob] = useState<Blob>(null);
+
 	// convert Blob to Base64
 	const getBase64 = async (
 		blob: Blob,
@@ -33,45 +26,37 @@ export const AuthProvider = ({ children }) => {
 			console.log("Error: ", error);
 		};
 	};
-
-	// useEffect(() => {
-	// 	if (avatar) {
-			// const myAvatarUrl = Buffer.from(avatar.data.buffer).toString('base64');
-			// getBase64(res.data, (base64string) => {
-			// 	const contentType = res.headers["content-type"];
-			// 	const firstAvatarUrl =
-			// 		"data:" + contentType + ";base64," + base64string;
-			// 	console.log(firstAvatarUrl);
-			// });
-
-	// 	}
-	// }, [avatar]);
-
-	const getAvatar = () => {
-		axios
-			.get("/avatar/" + user.avatarId)
-			.then((res) => {
-				if (res.data) {
-					const blobFile = new Blob([res.data]);
-					getBase64(blobFile, (base64string) => {
-						const contentType = res.headers["content-type"];
-						const firstAvatarUrl =
-							"data:" + contentType + ";base64," + base64string;
-						console.log(firstAvatarUrl);
-					});
-				}
-			})
-			.catch((error) => {
-				console.log(error);
-			});
-	};
-
-	// Only on connexion get Avatar
+	
+	// set user.avatarUrl !
 	useEffect(() => {
-		if (user?.id)
-			getAvatar();
-	}, [user?.id])
+		if (blob) {
+			console.log('blob change!!!')
+			const blobFile = new Blob([blob], { type: 'image/png' });
+			getBase64(blobFile, (base64string) => {
+				setUser({ ...user, avatarUrl: base64string as string });
+			});
+		}
+	}, [blob]);
 
+	// On Avatar uploade OR connexion
+	useEffect(() => {
+		if (user?.id) {
+			axios
+				.get("/avatar/" + user.avatarId, {
+					responseType: "blob",
+				})
+				.then((res) => {
+					if (res.data) {
+						setBlob(res.data);
+					}
+				})
+				.catch((error) => {
+					console.log(error);
+				});
+		}
+	}, [user?.id, user?.avatarId]);
+
+	// data:image;base64,data:application/octet-stream;base64
 	useEffect(() => {
 		const token = localStorage.getItem("MY_PONG_APP");
 		// GET session/cookie42

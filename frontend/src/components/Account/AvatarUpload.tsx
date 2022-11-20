@@ -1,14 +1,22 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "../../contexts/AuthContext";
 import axios from "../../axios.config";
+import { IAvatar } from "../../interfaces/avatar.interfce";
 
 const AvatarUpload = () => {
 	const { user, setUser } = useAuth();
 	const [file, setFile] = useState<File>(null);
+	const [avatar, setAvatar] = useState<IAvatar>(null);
 
 	const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
 		setFile(e.target.files[0]);
 	};
+
+	useEffect(() => {
+		if (avatar) {
+			setUser({ ...user, avatarId: avatar.id });
+		}
+	}, [avatar])
 
 	const postAvatar = async (formData: FormData) => {
 		await axios
@@ -17,7 +25,7 @@ const AvatarUpload = () => {
 			})
 			.then((res) => {
 				console.log(res.data);
-				setUser(res.data);
+				setAvatar(res.data);
 			})
 			.catch((error) => {
 				console.log(error);
@@ -31,7 +39,6 @@ const AvatarUpload = () => {
 			postAvatar(formData);
 		}
 	}, [file]);
-	console.log(file);
 
 	return (
 		<div>
