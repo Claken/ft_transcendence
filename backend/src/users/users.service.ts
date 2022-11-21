@@ -44,6 +44,30 @@ export class UsersService {
     return await this.userRepo.save(user);
   }
 
+  async updateInQueue(id: number, bool: boolean): Promise<UsersEntity> {
+    const user = await this.getById(id);
+    user.inQueue = bool;
+    return await this.userRepo.save(user);
+  }
+
+  async updateInGame(id: number, bool: boolean): Promise<UsersEntity> {
+    const user = await this.getById(id);
+    user.inGame = bool;
+    return await this.userRepo.save(user);
+  }
+
+  async OneMoreWin(id: number): Promise<UsersEntity> {
+    const user = await this.getById(id);
+	user.win += 1;
+    return await this.userRepo.save(user);
+  }
+
+  async OneMorelose(id: number): Promise<UsersEntity> {
+    const user = await this.getById(id);
+	user.lose += 1;
+    return await this.userRepo.save(user);
+  }
+
   async deleteUser(id: number): Promise<UsersEntity> {
     const user = await this.getById(id);
     return await this.userRepo.remove(user);

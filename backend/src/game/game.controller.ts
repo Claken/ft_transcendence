@@ -28,6 +28,11 @@ export class GameController {
     return await this.gameService.getByloginLP(loginLP);
   }
 
+//   @Get(':')
+//   async getCurrentGame(@Param('id') name: string): Promise<Game> {
+//     return await this.gameService.getCurrentGame(name);
+//   }
+
   @Get(':id')
   async getById(@Param('id') idToFind: number): Promise<Game> {
     return await this.gameService.getById(idToFind);

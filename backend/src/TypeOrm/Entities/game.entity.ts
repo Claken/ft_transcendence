@@ -24,6 +24,9 @@ export class Game implements IGame {
   @Column({ default: 0 })
   scoreRP?: number;
 
+  @Column({ default: 10 })
+  compteur?: number;
+
   @Column({ default: '' })
   winner?: string;
 

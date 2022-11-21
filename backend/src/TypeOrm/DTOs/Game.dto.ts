@@ -15,6 +15,9 @@ export class GameDTO {
 	
 	@IsOptional()
 	scoreRP?: number;
+
+	@IsOptional()
+	compteur?: number = 10;
 	
 	@IsOptional()
 	abort?: string;

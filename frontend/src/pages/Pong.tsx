@@ -19,15 +19,14 @@ function Pong() {
 	useEffect(() => {
 		if (game?.waitingForOppenent === false
 			&& (game?.loginLP === auth.user.name
-			|| game?.loginRP === auth.user.name))
-			navigate("/pong/" + game.id);
+			|| game?.loginRP === auth.user.name)) {
+				console.log("on navigate");
+				navigate("/pong/" + game.id);
+			}
 	}, [game?.waitingForOppenent])
 
-	//TODO: reconnexion en pleine partie OU remettre en file d'attente s'il y est déjà
+	/** reconnexion en pleine partie OU remettre en file d'attente s'il y est déjà **/
 	useEffect(() => {
-		//TODO: vérifier si il est en game ? Si oui: navigate sur la bonne game. Laquelle ?
-		//Laquelle ? l'id de la table game qui est liée à celle du User
-		//vérifie si le user est dans la queue
 		socket.emit('inQueueOrGame', auth.user);
 	}, [auth.user.id])
 
@@ -59,8 +58,6 @@ function Pong() {
 		socket.emit("leaveQueue", auth.user);
 	};
 
-	//TODO: - OutQueue:	Avoir le bouton FIND + la liste des user à Watch
-	//TODO: - InQueue:	Avoir le bouton LEAVE + indiquer qu'il est en Queue
 	return (
 		<div>
 			{wait ? (

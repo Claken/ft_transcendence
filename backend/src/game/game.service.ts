@@ -34,6 +34,15 @@ export class GameService {
     });
   }
 
+  async getCurrentGame(name: string): Promise<Game> {
+    return await this.gameRepo.findOne({
+		where: [
+			{ loginLP: name, isFinish: false },
+			{ loginRP: name, isFinish: false },
+		],
+	})
+  }
+
   async getPendingGames(): Promise<Game[]> {
     return await this.gameRepo.find({
       where : {
@@ -42,18 +51,32 @@ export class GameService {
     });
   }
 
-  // async getLoginLPById(idToFind: number): Promise<string> {
-  //   const game = await this.gameRepo.findOneBy({
-  //     id: idToFind,
-  //   });
-  //   return game.loginLP;
-  // }
+  async gameFinished(id: number, scoreLP: number, scoreRP: number,
+	winner: string, loser: string, capitulator: string): Promise<Game> {
+    const game = await this.getById(id);
+    game.isFinish = true;
+	game.winner = winner;
+	game.loser = loser;
+	game.scoreLP = scoreLP;
+	game.scoreRP = scoreRP;
+	if (capitulator)
+		game.abort = capitulator;
+    return await this.gameRepo.save(game);
+  }
 
   async updateGameReady(id: number, loginRP: string): Promise<Game> {
     const game = await this.getById(id);
     game.waitingForOppenent = false;
     game.loginRP = loginRP;
     return await this.gameRepo.save(game);
+  }
+
+  async updateCompteur(id: number): Promise<number> {
+    const game = await this.getById(id);
+	if (game.compteur !== -1)
+		game.compteur--;
+	await this.gameRepo.save(game);
+	return game.compteur;
   }
 
   async deleteGame(id: number): Promise<Game> {

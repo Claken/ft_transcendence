@@ -42,6 +42,7 @@ export class UsersEntity {
 
   @Column({ default: false })
   inGame: boolean;
+
   @Column({ nullable: true, default: 0})
   win?: number;
 

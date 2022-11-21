@@ -33,46 +33,32 @@ const Game = (
 	const [scoreRP, setScoreRP] = useState(0); // Score du joueur droit
 	const [abort, setAbort] = useState(false);
 	const [game, setGame] = useState<IGame>(null);
-	const [games, setGames] = useState<IGame[]>([]);//TODO: utilité ?
+	// const [games, setGames] = useState<IGame[]>([]);//TODO: utilité ?
 	const auth = useAuth();
 	const { gameId } = useParams();
 	const [lock, setLock] = useState<boolean>(false);
-	var intervalID = null;
 	var key = "";
 	var prev = "";
 	var curr = "";
 	const color = [];
 
 	/* ***************************************************************************** */
-	/*               Timer exécuter toutes les 10 premières secondes                 */
-	/* ***************************************************************************** */
-	const tick = () => {
-		if (allPos.compteur === -1)
-			clearInterval(intervalID);
-		if (allPos.compteur === 0) {
-			clearInterval(intervalID);
-			socket.emit("randomMap")
-		}
-		else if (allPos.compteur > 0) {
-			// allPos.compteur--;
-			socket.emit("compteur", allPos.compteur);
-		}
-	}
-
-	/* ***************************************************************************** */
 	/*                 Initialisation de la Game et des 2 joueurs                    */
 	/* ***************************************************************************** */
 	useEffect(() => {
 		if (game) {
+			console.log("useEffect [game]") //TODO: retirer
 			setLoginLP(game.loginLP);
 			setLoginRP(game.loginRP);
 			setScoreLP(0);
 			setScoreRP(0);
 			allPos.loginLP = game.loginLP;
 			allPos.loginRP = game.loginRP;
+			allPos.idGame = game.id;
 			if (auth.user.name === allPos.loginLP && !lock) {
 				setLock(true)
-				intervalID = setInterval(tick, 1000);
+				if (allPos.compteur === null || allPos.compteur === 10)
+					socket.emit("setCompteur", allPos.compteur);
 			}
 		}
 	}, [game])
@@ -92,14 +78,13 @@ const Game = (
 		getGameById();
 	}, [])
 
-	//reconnexion en pleine partie
-	useEffect(() => {
-		// socket.emit();
-		console.log("entrée dans le useEffect de la reconnexion (GAME.TSX"); //TODO: retirer
-	}, [auth.user.id])
+	//TODO: Quand un user est offline (user.status)
+	// useEffect(() => {
+	// 	// socket.emit();
+	// 	console.log("entrée dans le useEffect de la reconnexion (GAME.TSX"); //TODO: retirer
+	// }, [auth.user.status])
 
-	//TODO: besoin de useEffect ? Si il déco, setAbort ?
-	//TODO: il rentre forcément dans le useEffect ? Pourquoi ?
+	//TODO: Si il déco, setAbort ?
 	//Un joueur abort la game car il se fait daronned
 	useEffect(() => {
 		if (abort === true) {
@@ -191,18 +176,9 @@ const Game = (
 				x < allPos.width / 2 + 150 + allPos.radius * 2 &&
 				y > 25 - allPos.radius * 2 &&
 				y < 25 + allPos.radius * 2) {
-					socket.emit("state", State.PAUSE);
-					//TODO: Abort page ? Le joueur restant est donc gagnant
+					socket.emit("state", State.ABORT, allPos, auth.user.name);
 			}
 		}
-		// if ((allPos.state === State.LOSE || allPos.state === State.WIN) &&
-		// 	x > allPos.width / 2 - 290 &&
-		// 	x < allPos.width / 2 + 290 &&
-		// 	y > allPos.height / 1.6 - 50 &&
-		// 	y < allPos.height / 1.6
-		// ) {
-		// 	socket.emit("state", State.INIT);
-		// }
 	};
 
 /* ***************************************************************************** */
@@ -234,6 +210,8 @@ const Game = (
 		allPos.speed = 2;
 		allPos.mapLP = -1;
 		allPos.mapRP = -1;
+		if (allPos.compteur === null)
+			allPos.compteur = socket.emit("getCompteur", gameId);
 		allPos.key = key;
 		let animationFrameId: number;
 		allPos.img = new Image();
@@ -299,16 +277,14 @@ const Game = (
 		})
 
 		socket.on("launchGame", (map) => {
-			allPos.compteur = -1;
 			allPos.img.src = gameBoards[map];
 			allPos.state = State.PLAY;
 		});
 
-		socket.on("endGame", (winner, capitulator) => {
-			if (capitulator)
-				// setAbort(true);
-			console.log("endGame")
+		socket.on("endGame", (winner, loser, capitulator) => {
+			socket.emit("updateInGame", auth.user)
 			auth.user.name === winner ? allPos.state = State.WIN : allPos.state = State.LOSE ;//TODO: allPos ou pas ?
+			socket.emit("endGame", allPos, winner, loser, capitulator, auth.user);
 		})
 
 		/* ***************************************************************************** */
@@ -343,7 +319,7 @@ const Game = (
 					allPos.key === "Z"
 				)
 					socket.emit("movePlayer", allPos, auth.user.name);
-				socket.emit("update", allPos);
+				socket.emit("update", allPos, auth.user);
 			}
 			context.font = "40px Roboto";
 			context.fillStyle = "black";
@@ -386,6 +362,7 @@ const Game = (
 			socket.off("endGame");
 			socket.off("PauseAndPlay");
 		};
+	// },[]);
 	},[loginRP]);
 
 	/* ***************************************************************************** */

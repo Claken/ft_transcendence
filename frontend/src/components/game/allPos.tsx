@@ -19,12 +19,13 @@ const allPos = {
 	key: null,
 	score: null,
 	speed: null,
-	compteur: 10,
+	compteur: null,
 	img: null,
 	mapLP: null,
 	mapRP: null,
 	loginLP: null,
 	loginRP: null,
+	idGame: null,
 };
 
 export default allPos;
