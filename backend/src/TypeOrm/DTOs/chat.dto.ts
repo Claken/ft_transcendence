@@ -9,7 +9,7 @@ import {
 import { UsersEntity } from '../Entities/users.entity';
 import { type } from 'src/exports/enum';
 
-export class CreateRoomDto {
+export class ChatRoomDto {
 
 	@IsOptional()
 	id: number;

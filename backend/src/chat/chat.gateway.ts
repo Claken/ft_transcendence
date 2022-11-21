@@ -4,7 +4,7 @@ import { Logger, Req, UseGuards } from '@nestjs/common';
 import { ChatService } from './chat.service';
 import { ChatRoomEntity, IChatRoom } from 'src/TypeOrm/Entities/chat.entity';
 import { MemberEntity, IMember } from 'src/TypeOrm/Entities/member.entity';
-import { CreateRoomDto } from 'src/TypeOrm/DTOs/chat.dto';
+import { ChatRoomDto } from 'src/TypeOrm/DTOs/chat.dto';
 import { IsUnion, string } from 'joi';
 import { UsersService } from 'src/users/users.service';
 import { UsersEntity } from 'src/TypeOrm';
@@ -114,7 +114,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 	/* ************************************************************************* */
 
 	@SubscribeMessage('createChatRoom')
-	async HandleCreationRoom(client: Socket, room: CreateRoomDto): Promise<void> {
+	async HandleCreationRoom(client: Socket, room: ChatRoomDto): Promise<void> {
 
 		const	theOwner = await this.usersService.getByName(room.owner);
 
@@ -151,14 +151,27 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 		this.server.emit('sendDeleteMessage', room);
 	}
 
-	@SubscribeMessage('modifyChatRoom')
-	HandleModificationChannel(@MessageBody() room: CreateRoomDto): void {
-		const modifiedRoom: IChatRoom = {
-			chatRoomName: room.chatRoomName,
-			type: room.type,
-			password: room.password,
-		}
+	@SubscribeMessage('updateChatRoom')
+	async HandleChangingName(client: Socket, update: ChatRoomDto)
+	{
+		let	channel = await this.chatService.findOneChatRoomByName(update.chatRoomName);
+
+		let updatedChatRoom: IChatRoom;
+
+		updatedChatRoom.chatRoomName = update.chatRoomName ? update.chatRoomName : channel.chatRoomName;
+
+		updatedChatRoom.password = update.password ? update.password : channel.password;
+		
+		updatedChatRoom.type = update.type ? update.type : channel.type;
+
+		updatedChatRoom.createdAt = channel.createdAt;
+		updatedChatRoom.members = channel.members;
+		updatedChatRoom.messages = channel.messages;
+
+
+		// await this.chatService.saveChatRoom(channelToChange);
 	}
+
 
 	@SubscribeMessage('getAllChannels')
 	async HandleGettingChannels(client: Socket) : Promise<void> {
