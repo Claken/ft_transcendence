@@ -4,8 +4,10 @@ import {
   Entity,
   OneToMany,
   PrimaryGeneratedColumn,
+  JoinColumn
 } from 'typeorm';
 import { Game } from './game.entity';
+import { ChatRoomEntity } from './chat.entity';
 
 // Table in the DB
 @Entity('Users')
@@ -48,7 +50,10 @@ export class UsersEntity {
   @Column({ nullable: true, default: 0})
   lose?: number;
 
+  @OneToMany(() => ChatRoomEntity, (Chat: ChatRoomEntity) => Chat.owner, {onDelete: 'SET NULL'})
+  @JoinColumn()
+  ownedChannels?: ChatRoomEntity[];
+
   @CreateDateColumn()
   createdAt?: Date;
-
 }

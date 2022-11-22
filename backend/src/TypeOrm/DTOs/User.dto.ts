@@ -1,6 +1,7 @@
 import { Type } from 'class-transformer';
 import { IsOptional, Length } from 'class-validator';
 import { Request } from 'express';
+import { ChatRoomEntity } from '../Entities/chat.entity';
 
 export class UserDTO {
   @IsOptional()
@@ -35,6 +36,7 @@ export class UserDTO {
 
   @IsOptional()
   inGame: boolean;
+  ownedChannels?: ChatRoomEntity[];
 
   @IsOptional()
   createdAt?: Date;

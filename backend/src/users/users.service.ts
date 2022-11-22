@@ -32,10 +32,24 @@ export class UsersService {
     });
   }
 
+  // unuse
+  async getByEmail(emailToFind: string): Promise<UsersEntity> {
+    return await this.userRepo.findOneBy({
+      email: emailToFind,
+    });
+  }
+
   async getById(idToFind: number): Promise<UsersEntity> {
     return await this.userRepo.findOneBy({
       id: idToFind,
     });
+  }
+
+  async getLatestUser(): Promise<UsersEntity> {
+    return await this.userRepo.findOne({
+      where: {},
+      order: { id: 'DESC' },
+      });
   }
 
   async updateStatusUser(id: number, status: string): Promise<UsersEntity> {
@@ -43,6 +57,18 @@ export class UsersService {
     user.status = status;
     return await this.userRepo.save(user);
   }
+
+  async updateUser(id: number): Promise<UsersEntity> {
+    const user = await this.getById(id);
+    return await this.userRepo.save(user);
+  }
+
+  // async updateToken(id: number, access_token: string): Promise<UsersEntity> {
+  //   const user = await this.getById(id);
+  //   user.accessToken = access_token;
+  //   await this.userRepo.save(user);
+  //   return await this.getById(id);
+  // }
 
   async deleteUser(id: number): Promise<UsersEntity> {
     const user = await this.getById(id);
