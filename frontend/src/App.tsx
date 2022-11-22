@@ -8,7 +8,7 @@ import Account from "./pages/Account";
 import { AuthProvider } from "./contexts/AuthContext";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Layout from "./pages/Layout";
-import { ChatProvider } from "./contexts/ChatContext";
+import { DmProvider } from "./contexts/DmContext";
 import Profile from "./pages/Profile";
 import ProfileDetails from "./pages/ProfileDetails";
 import RequiredOffline from "./components/RequiredRoutes/RequiredOffline";
@@ -18,7 +18,7 @@ import LayoutPong from "./pages/LayoutPong";
 function App() {
   return (
     <AuthProvider>
-      <ChatProvider>
+      <DmProvider>
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Layout />}>
@@ -28,22 +28,22 @@ function App() {
                 <Route path="/login" element={<Login />} />
               </Route>
               {/* <Route element={<RequiredAuth />}> */}
-                <Route path="/account" element={<Account />} />
-                <Route path="/social" element={<Social />} />
-                <Route path="/channel" element={<Channel />} />
-                <Route path="/pong" element={<LayoutPong />}>
-					<Route index element={<Pong />} />
-					<Route path=":gameId" element={<Game />} />
-				</Route>
-                <Route path="/profile" element={<Profile />} />
-                <Route path="profile/:userId" element={<ProfileDetails />} />
-                {/* pim la page */}
-                <Route path="twofa-validation" element={<TwoFaCode />} />
+              <Route path="/account" element={<Account />} />
+              <Route path="/social" element={<Social />} />
+              <Route path="/channel" element={<Channel />} />
+              <Route path="/pong" element={<LayoutPong />}>
+                <Route index element={<Pong />} />
+                <Route path=":gameId" element={<Game />} />
               </Route>
+              <Route path="/profile" element={<Profile />} />
+              <Route path="profile/:userId" element={<ProfileDetails />} />
+              {/* pim la page */}
+              <Route path="twofa-validation" element={<TwoFaCode />} />
+            </Route>
             {/* </Route> */}
           </Routes>
         </BrowserRouter>
-      </ChatProvider>
+      </DmProvider>
     </AuthProvider>
   );
 }

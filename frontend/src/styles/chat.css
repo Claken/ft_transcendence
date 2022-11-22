@@ -183,7 +183,6 @@
 
 .middle {
 	position: relative;
-	flex: 50%;
 	background: #196F9F;
 	border-right: 1px  solid whitesmoke;
 	border-left: 1px  solid whitesmoke;

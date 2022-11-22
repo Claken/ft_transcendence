@@ -4,10 +4,11 @@ import { DmService } from './dm.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { DmEntity } from '../TypeOrm/Entities/dm.entity';
 import { DmController } from './dm.controller';
+import { DmUser } from './dm.service';
 
 @Module({
   imports: [TypeOrmModule.forFeature([DmEntity])],
   controllers: [DmController],
-  providers: [DmService, DmGateway],
+  providers: [DmService, DmGateway, Array<DmUser>],
 })
 export class DmModule {}

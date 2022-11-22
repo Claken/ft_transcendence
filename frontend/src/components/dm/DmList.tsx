@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "../../axios.config";
-import { useChat } from "../../contexts/ChatContext";
+import { useDm } from "../../contexts/DmContext";
 import DmUserButton from "./DmUserButton";
 import { IUser } from "../../interfaces/user.interface";
 import DmSearch from "./DmSearch";
@@ -8,8 +8,8 @@ import "../../styles/dmchat.css";
 import "../../styles/social.css";
 
 function DmList() {
-  const [Users, setUsers] = useState<IUser[]>([]);
-  const chat = useChat();
+  const [users, setUsers] = useState<IUser[]>([]);
+  const dmContext = useDm();
 
   useEffect(() => {
     const getData = async () => {
@@ -26,34 +26,17 @@ function DmList() {
   }, []);
 
   const isMe = (id): boolean => {
-    if (id === chat.me.id) return true;
+    if (id === dmContext.me.id) return true;
     return false;
-  };
-
-  const changeUsers = (users: IUser[]) => {
-    setUsers(users);
-  };
-
-  const changeTarget = (user: IUser) => {
-    chat.setTarget(user);
-    chat.setHaveTarget(true);
-    chat.setLoading(true);
   };
 
   return (
     <ul className="btndisplay">
       <li className="dmsearchbar">
-        <DmSearch changeUsers={changeUsers} />
+        <DmSearch changeUsers={setUsers} />
       </li>
-      {Users.map(
-        (user) =>
-          !isMe(user.id) && (
-            <DmUserButton
-              key={user.id}
-              user={user}
-              changeTarget={changeTarget}
-            />
-          )
+      {users.map(
+        (user) => !isMe(user.id) && <DmUserButton key={user.id} user={user} />
       )}
     </ul>
   );
