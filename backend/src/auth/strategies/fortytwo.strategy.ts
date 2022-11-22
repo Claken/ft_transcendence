@@ -3,10 +3,9 @@ import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy, Profile, VerifyCallback } from 'passport-42';
 import { UsersEntity } from 'src/TypeOrm';
-import { UserDTO } from 'src/TypeOrm/DTOs/User.dto';
 import { AuthService } from '../auth.service';
 import { HttpService } from '@nestjs/axios';
-import { map, lastValueFrom } from 'rxjs';
+import { lastValueFrom } from 'rxjs';
 
 @Injectable()
 export class FortyTwoStrategy extends PassportStrategy(Strategy, '42') {
@@ -14,7 +13,6 @@ export class FortyTwoStrategy extends PassportStrategy(Strategy, '42') {
     private readonly authService: AuthService,
     private readonly configService: ConfigService,
     private readonly http: HttpService,
-
   ) {
     super({
       clientID: configService.get<string>('FORTYTWO_APP_UID'),
@@ -39,16 +37,25 @@ export class FortyTwoStrategy extends PassportStrategy(Strategy, '42') {
     profile: Profile,
     done: VerifyCallback,
   ): Promise<UsersEntity> {
-    const { username, id: apiId, emails, photos } = profile;
+    const { username, id: apiId, emails } = profile;
     const userApi = {
       apiId,
       login: username,
       name: username,
       email: emails[0].value,
       inQueue: false,
-      inGame: false
+      inGame: false,
     };
-    const responseObs = this.http.get(photos[0].value, { responseType: 'arraybuffer' });
+
+    // get the image with authorization token in headers
+    const profileResponseObs = this.http.get('https://api.intra.42.fr/v2/me', {
+      headers: { Authorization: `Bearer ${accessToken}` },
+    });
+    const res = await lastValueFrom(profileResponseObs);
+    const {image} = res.data;
+
+    // Now make a request with the api image url
+    const responseObs = this.http.get(image.link, { responseType: 'arraybuffer' });
     const response = await lastValueFrom(responseObs);
     const buf = Buffer.from(response.data, 'utf-8');
     return await this.authService.register(userApi, buf);
