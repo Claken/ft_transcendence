@@ -36,7 +36,7 @@ export class ChatRoomEntity {
 	@Column({default: type.public})
 	type: number;
 
-	@Column({ nullable: true, default: ''})
+	@Column({ nullable: true, default: null})
 	password?: string;
 
 	@CreateDateColumn()

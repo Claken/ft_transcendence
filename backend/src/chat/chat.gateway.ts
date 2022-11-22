@@ -12,7 +12,7 @@ import { MemberService } from './member.service';
 import { combineLatest } from 'rxjs';
 import { MessageService } from './chatMessage.service';
 import { type } from 'src/exports/enum';
-
+import * as bcrypt from 'bcrypt';
 
 // {cors: '*'} pour que chaque client dans le frontend puisse se connecter à notre gateway
 @WebSocketGateway({cors: '*'}) // decorator pour dire que la classe ChatGateway sera un gateway /
@@ -83,10 +83,20 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 	/* ************************************************************************* */
 
 	@SubscribeMessage('joinRoom')
-	async HandleJoinRoom(client: Socket, infos: {room: string, user: string}): Promise<void> {
+	async HandleJoinRoom(client: Socket, infos: {room: string, user: string, password: string}): Promise<void> {
 		console.log('joinRoom');
 
 		let		channelJoined = await this.chatService.findOneChatRoomByName(infos.room);
+
+		if (channelJoined.type === type.protected)
+		{
+			const isMatch = await bcrypt.compare(infos.password, channelJoined.password);
+			if (!isMatch)
+			{
+				client.emit('wrongPasswordForTheJoin');
+				return;
+			}
+		}
 
 		const	memberCreated = await this.memberService.createMember({name: infos.user});
 		channelJoined.members.push(memberCreated);
@@ -114,30 +124,32 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 	/* ************************************************************************* */
 
 	@SubscribeMessage('createChatRoom')
-	async HandleCreationRoom(client: Socket, room: ChatRoomDto): Promise<void> {
+    async HandleCreationRoom(client: Socket, room: ChatRoomDto): Promise<void> {
 
-		const	theOwner = await this.usersService.getByName(room.owner);
+        const    	theOwner = await this.usersService.getByName(room.owner);
 
-		const newChatRoom: IChatRoom = {
-			chatRoomName: room.chatRoomName,
-			owner: theOwner,
-			type: room.type,
-			password: room.password,
-		}
-		let		channelCreated = await this.chatService.createChatRoom(newChatRoom);
+        const    	hash = room.type === type.protected ? await bcrypt.hash(room.password, 10) : null;
 
-		const	memberCreated = await this.memberService.createMember({name: theOwner.name, isAdmin: true});
+        const newChatRoom: IChatRoom = {
+            chatRoomName: room.chatRoomName,
+            owner: theOwner,
+            type: room.type,
+            password: hash,
+        }
+        let        	channelCreated = await this.chatService.createChatRoom(newChatRoom);
 
-		channelCreated.members = [memberCreated];
-		await this.chatService.saveChatRoom(channelCreated);
+        const    	memberCreated = await this.memberService.createMember({name: theOwner.name, isAdmin: true});
 
-		theOwner.ownedChannels = [channelCreated];
-		await this.usersService.updateUser(theOwner.id);
+        channelCreated.members = [memberCreated];
+        await this.chatService.saveChatRoom(channelCreated);
 
-		const sockets = await this.server.fetchSockets();
-		sockets.forEach((socket: any) => socket.join(channelCreated.id));
-		this.server.emit('sendNewChannel', channelCreated);
-	}
+        theOwner.ownedChannels = [channelCreated];
+        await this.usersService.updateUser(theOwner.id);
+
+        const sockets = await this.server.fetchSockets();
+        sockets.forEach((socket: any) => socket.join(channelCreated.id));
+        this.server.emit('sendNewChannel', channelCreated);
+    }
 
 	@SubscribeMessage('deleteChatRoom')
 	async HandleDeletionRoom(client: Socket, room: string): Promise<void> {
@@ -152,25 +164,18 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 	}
 
 	@SubscribeMessage('updateChatRoom')
-	async HandleChangingName(client: Socket, update: ChatRoomDto)
-	{
-		let	channel = await this.chatService.findOneChatRoomByName(update.chatRoomName);
+    async HandleChangingName(client: Socket, update: ChatRoomDto)
+    {
+        let    channel = await this.chatService.findOneChatRoomByName(update.chatRoomName);
 
-		let updatedChatRoom: IChatRoom;
+        channel.chatRoomName = update.chatRoomName ? update.chatRoomName : channel.chatRoomName;
 
-		updatedChatRoom.chatRoomName = update.chatRoomName ? update.chatRoomName : channel.chatRoomName;
+        channel.password = update.password ? update.password : channel.password;
+        
+        channel.type = update.type ? update.type : channel.type;
 
-		updatedChatRoom.password = update.password ? update.password : channel.password;
-		
-		updatedChatRoom.type = update.type ? update.type : channel.type;
-
-		updatedChatRoom.createdAt = channel.createdAt;
-		updatedChatRoom.members = channel.members;
-		updatedChatRoom.messages = channel.messages;
-
-
-		// await this.chatService.saveChatRoom(channelToChange);
-	}
+        await this.chatService.saveChatRoom(channel);
+    }
 
 
 	@SubscribeMessage('getAllChannels')

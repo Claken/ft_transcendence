@@ -4,7 +4,7 @@ import { DeleteResult, Repository, UpdateResult } from 'typeorm';
 import { IMember, MemberEntity } from '../TypeOrm/Entities/member.entity'
 import { ChatRoomEntity } from 'src/TypeOrm';
 
-import { CreateRoomDto } from '../TypeOrm/DTOs/chat.dto'
+import { ChatRoomDto } from '../TypeOrm/DTOs/chat.dto'
 import { UsersService } from 'src/users/users.service';
 
 @Injectable()

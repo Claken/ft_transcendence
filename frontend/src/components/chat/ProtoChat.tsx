@@ -87,6 +87,10 @@ const ProtoChat = () => {
 		changeText(event.target.value);
 	}
 
+	const wrongPasswordMessage = () => {
+		alert('WRONG PASSWORD ! YOU CANNOT JOIN THIS CHANNEL');
+	}
+
 	const sendChatMessage = (event: any) => {
 		event.preventDefault();
 		const activeRoom = findActiveRoom();
@@ -131,11 +135,13 @@ const ProtoChat = () => {
 			if (askARoom === "")
 				alert('This is not a right name for a room !');
 		}
+		const pswd = prompt('Enter a password for your room if you want one: ');
+		const typeOfRoom = pswd === null ? type.public : type.protected;
 		const dbRoom: IChatRoom = {
 			chatRoomName: askARoom,
 			owner: username,
-			type: type.public,
-			// password: 
+			type: typeOfRoom,
+			password: pswd,
 		}
 		socket?.emit('createChatRoom', dbRoom);
 	}
@@ -184,11 +190,18 @@ const ProtoChat = () => {
 
 	const toggleRoomMembership = (event: any) => {
 		event.preventDefault();
-		const activeRoom = findActiveRoom();
+		const	activeRoom = findActiveRoom();
+		let		pswd: string = null;
 		if (activeRoom.member)
+		{
 			socket?.emit('leaveRoom', {room: activeRoom.name, user: username});
+		}
 		else
-			socket?.emit('joinRoom', {room: activeRoom.name, user: username});
+		{
+			if (activeRoom.type === type.protected)
+				pswd = prompt('you need a password to join this channel, please type it: ');
+			socket?.emit('joinRoom', {room: activeRoom.name, user: username, password: pswd});
+		}
 	}
 
 	const receiveAllChannels = (channels: any[]) => {
@@ -327,6 +340,14 @@ const ProtoChat = () => {
 			socket?.off('joinedRoom', joinedRoom);
 		}
 	}, [joinedRoom])
+
+	// USEEFFECT POUR UN MAUVAIS MOT DE PASSE
+	useEffect(() => {
+		socket?.on('wrongPasswordForTheJoin', wrongPasswordMessage);
+		return () => {
+			socket?.off('wrongPasswordForTheJoin', wrongPasswordMessage);
+		}
+	}, [wrongPasswordMessage])
 
 	return (
 		<div>
