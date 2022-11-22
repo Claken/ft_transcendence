@@ -3,7 +3,9 @@ import {
 	CreateDateColumn,
 	Entity,
 	PrimaryGeneratedColumn,
+	ManyToOne,
 } from 'typeorm';
+import { UsersEntity } from "./users.entity"
 
 @Entity()
 export class Game implements IGame {
@@ -36,6 +38,12 @@ export class Game implements IGame {
 
   @Column({ default: true })
   waitingForOppenent?: boolean;
+
+//   @ManyToOne(() => UsersEntity, User => User.userLeft)
+//   userLeft: UsersEntity;
+
+//   @ManyToOne(() => UsersEntity, User => User.userRight)
+//   userRight: UsersEntity;
 
   @CreateDateColumn()
   date?: Date;

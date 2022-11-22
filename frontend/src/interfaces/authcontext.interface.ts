@@ -5,5 +5,5 @@ export interface IAuthContext {
 	user: IUser;
 	setUser: Dispatch<SetStateAction<IUser>>;
 	loginAsGuest: (guestName: string) => Promise<void>;
-	logout: () => Promise<void>;
+	logout: () => void;
 };

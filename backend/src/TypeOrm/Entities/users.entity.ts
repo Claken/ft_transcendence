@@ -53,6 +53,11 @@ export class UsersEntity {
   @OneToMany(() => ChatRoomEntity, (Chat: ChatRoomEntity) => Chat.owner, {onDelete: 'SET NULL'})
   @JoinColumn()
   ownedChannels?: ChatRoomEntity[];
+//   @OneToMany(() => Game, Game => Game.userLeft)
+//   userLeft: Game[];
+
+//   @OneToMany(() => Game, Game => Game.userRight)
+//   userRight: Game[];
 
   @CreateDateColumn()
   createdAt?: Date;

@@ -21,7 +21,8 @@ const allPos = {
 	speed: null,
 	compteur: 10,
 	img: null,
-	map: null,
+	mapLP: null,
+	mapRP: null,
 	loginLP: null,
 	loginRP: null,
 };

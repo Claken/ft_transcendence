@@ -74,7 +74,6 @@ export class GameGateway
       ) {
         allPos.vx = 1;
         allPos.speed < 5 ? (allPos.speed += 0.2) : null;
-        console.log('speed = ' + allPos.speed); //TODO: retirer
       }
     }
 
@@ -86,7 +85,6 @@ export class GameGateway
       ) {
         allPos.vx = -1;
         allPos.speed < 5 ? (allPos.speed += 0.2) : null;
-        console.log('speed = ' + allPos.speed); //TODO: retirer
       }
     }
 
@@ -127,7 +125,6 @@ export class GameGateway
   @SubscribeMessage('movePlayer')
   async PaddleUp(client: any, infos) {
 	//TODO: En fonction de l'userID, le paddle Gauche ou Droit bouge
-	console.log("appel de la fct");
 	if (infos[0].key === 'ArrowUp'
 	|| infos[0].key === 'w'
 	|| infos[0].key === 'W'
@@ -149,18 +146,19 @@ export class GameGateway
 			infos[0].pRY = infos[0].height - infos[0].paddleH;
 	}
     this.server.emit('updatedPlayer', infos[0]);
+    this.server.to(client).emit('updatedPlayer', infos[0]);
   }
 
   /* ***************************************************************************** */
   /*                    Mise à jours du state pour les joueurs                     */
   /* ***************************************************************************** */
   @SubscribeMessage('state')
-  async State(client: any, currentState) {
+  async State(client: any, currentState: number) {
     this.server.emit('updatedState', currentState);
   }
 
   @SubscribeMessage('pause&play')
-  async PauseAndPlay(client: any, currentState, name) {
+  async PauseAndPlay(client: any, currentState, name: string) {
     this.server.emit('PauseAndPlay', currentState, name);
   }
 
@@ -169,15 +167,13 @@ export class GameGateway
   /* ***************************************************************************** */
   @SubscribeMessage('image')
   async Image(client: any, infos) {
-	let mapPlayer = {login : infos[0], index : infos[2]}
-
-	if (mapPlayer.index === infos[1].map) {
-		console.log("même map, on lance la game")
-		this.server.emit("launchGame", mapPlayer.index)
+	var toto = infos[2];
+	infos[0] === infos[1].loginLP ? infos[1].mapLP = infos[2] : infos[1].mapRP = infos[2];
+	if (infos[1].mapLP === infos[1].mapRP) {
+		this.server.emit("launchGame", infos[2])
 		return;
 	}
-	console.log("attribut de la nouvelle map")
-	this.server.emit('updateImg', mapPlayer);
+	this.server.emit('updateImg', infos);
   }
 
   @SubscribeMessage('randomMap')
@@ -193,9 +189,22 @@ export class GameGateway
   }
 
   /* ***************************************************************************** */
+  /*                     Vérifie si le user est en Queue/Game                      */
+  /* ***************************************************************************** */
+
+  @SubscribeMessage('inQueueOrGame')
+  async InQueueOrGame(client: any, user: UserDTO) {
+	let indexUser = userQueue.findIndex((elet: UserDTO) => elet.name === user.name,);
+	if (indexUser !== -1)
+  		client.emit("changeQueue", true);
+	//s'il n'est pas en Queue, vérifier s'il est en game
+  }
+
+  /* ***************************************************************************** */
   /*                   Rejoindre la userQueue et créer une game                    */
   /* ***************************************************************************** */
 
+  //pour que le client join la game: client.join("game.id");
   @SubscribeMessage('joinQueue')
   async JoinQueue(client: any, user: UserDTO) {
     if (!userQueue.find((elet: UserDTO) => elet.name === user.name)) {
@@ -208,8 +217,9 @@ export class GameGateway
       /**** Update Game: waitingForOppenent=false AND loginRP=user ****/
       const updatedGame: GameDTO = await this.gameService.updateGameReady(
         games[0].id,
-        user.name,
-      );
+        user.name,);
+      /**** Join the socket game ****/
+	  client.join(updatedGame.id);//TODO: OK ?
       /**** Find loginLP in UserQueue ****/
       const firstGameUserLp: UserDTO = userQueue.find(
         (elet: UserDTO) => elet.name === games[0].loginLP,
@@ -219,19 +229,35 @@ export class GameGateway
         (elet: UserDTO) => elet.name === firstGameUserLp.name,
       );
       userQueue.splice(indexLP, 1);
-      console.log('userQueue.length: ' + userQueue.length);
       const indexRP = userQueue.findIndex(
         (elet: UserDTO) => elet.name === user.name,
       );
       userQueue.splice(indexRP, 1);
-      console.log('userQueue.length: ' + userQueue.length);
       /**** Redirect in the Frontend to <Game /> ****/
-      this.server.emit('goPlay', updatedGame);
+    //   this.server.emit('goPlay', updatedGame); //TODO: seulement les 2 joueurs ?
+      this.server.to(updatedGame.id).emit('goPlay', updatedGame); //TODO: OK ?
     } else {
       const newGame = await this.gameService.create({
         loginLP: user.name,
         loginRP: '',
       });
+	  client.join(newGame.id);//TODO: OK ?
     }
+  }
+
+  /* ***************************************************************************** */
+  /*                             Quitter la userQueue                              */
+  /* ***************************************************************************** */
+
+  @SubscribeMessage('leaveQueue')
+  async LeaveQueue(client: any, user: UserDTO) {
+	let indexLP = userQueue.findIndex((elet: UserDTO) => elet.name === user.name,);
+	console.log(indexLP);//TODO: retirer
+	if (indexLP !== -1) {
+		const games: GameDTO[] = await this.gameService.getPendingGames();
+		userQueue.splice(indexLP, 1);
+		client.leave(games[0].id);
+		this.gameService.deleteGame(games[0].id)
+  	}
   }
 }
