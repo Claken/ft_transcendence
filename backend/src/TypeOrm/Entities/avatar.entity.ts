@@ -10,6 +10,7 @@ export class Avatar {
   filename: string;
 
   @Column({
+    nullable: true,
     type: 'bytea',
   })
   data: Uint8Array;

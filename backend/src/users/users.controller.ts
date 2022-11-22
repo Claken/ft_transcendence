@@ -9,10 +9,16 @@ import {
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { UsersEntity } from '../TypeOrm/Entities/users.entity';
+import { UserDTO } from 'src/TypeOrm/DTOs/User.dto';
 
 @Controller('users')
 export class UsersController {
   constructor(private usersService: UsersService) {}
+
+  @Post()
+  async create(@Body() post: UserDTO): Promise<UsersEntity> {
+    return await this.usersService.create(post, null);
+  }
 
   @Get()
   async findAllUsers(): Promise<UsersEntity[]> {

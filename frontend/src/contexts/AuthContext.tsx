@@ -43,6 +43,8 @@ export const AuthProvider = ({ children }) => {
 
 	// On Avatar uploade OR on connexion
 	useEffect(() => {
+		// check if userId change
+		// AND if guestUser first connexion => no avatar in database
 		if (user?.id) {
 			axios
 				.get("/avatar/" + user.avatarId, {

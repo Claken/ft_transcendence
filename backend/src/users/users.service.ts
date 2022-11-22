@@ -19,9 +19,10 @@ export class UsersService {
 
   // save() is a Repository Typeorm method to call INSERT query
   // TODO: handle users already exist
-  async create(user: UserDTO, buffer: Buffer) {
+  async create(user: UserDTO, buffer: Buffer): Promise<UsersEntity> {
     const newUser = this.userRepo.create(user);
-    if (newUser.login) {
+    if (buffer) {
+      console.log("buffer: "+buffer);
       const filename = 'avatarApi42.jpg';
       const avatar = await this.avatarService.uploadAvatar(buffer, filename);
       newUser.avatarId = avatar.id;

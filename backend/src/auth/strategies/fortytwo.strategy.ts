@@ -47,14 +47,14 @@ export class FortyTwoStrategy extends PassportStrategy(Strategy, '42') {
       inGame: false,
     };
 
-    // get the image with authorization token in headers
+    // get the image with authorization token from api42
     const profileResponseObs = this.http.get('https://api.intra.42.fr/v2/me', {
       headers: { Authorization: `Bearer ${accessToken}` },
     });
     const res = await lastValueFrom(profileResponseObs);
     const {image} = res.data;
 
-    // Now make a request with the api image url
+    // Make a request with the api42 image url
     const responseObs = this.http.get(image.link, { responseType: 'arraybuffer' });
     const response = await lastValueFrom(responseObs);
     const buf = Buffer.from(response.data, 'utf-8');

@@ -50,12 +50,11 @@ export class UsersEntity {
   @Column({ nullable: true, default: 0})
   lose?: number;
 
-  @OneToOne(() => Avatar, (avatar) => avatar.user, { nullable: true })
-  @JoinColumn()
-  avatar?: Avatar;
-
   @Column({ nullable: true, default: 0 })
   avatarId?: number;
+  
+  @OneToOne(() => Avatar, (avatar) => avatar.user, { nullable: true })
+  avatar?: Avatar;
 
   // TODO: friends
   // @OneToMany(() => UsersEntity, (friends) => friends.id, {
