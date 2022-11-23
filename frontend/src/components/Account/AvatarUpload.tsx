@@ -18,6 +18,8 @@ const AvatarUpload = () => {
 		}
 	}, [avatar])
 
+	// TODO: cannot send id if GuestUser because there is no session without api42
+	// cannot change guestUser Avatar
 	const postAvatar = async (formData: FormData) => {
 		await axios
 			.post("/avatar", formData, {

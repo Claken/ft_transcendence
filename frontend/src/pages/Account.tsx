@@ -3,7 +3,6 @@ import "../styles/account.scss";
 import Modal from "../components/modal";
 import useModal from "../hooks/useModal";
 import { useAuth } from "../contexts/AuthContext";
-import guestPic from "../assets/img/profile1.jpg";
 import AvatarUpload from "../components/Account/AvatarUpload";
 // ajouter 2fa
 function Account() {
@@ -12,12 +11,7 @@ function Account() {
 	const handleLogout = () => {
 		auth.logout();
 	};
-	const [pic, setPic] = useState<string>(guestPic);
-	useEffect(() => {
-		if (auth.user && auth.user.login) {
-			setPic(auth.user.avatarUrl);
-		}
-	}, [auth.user]);
+
 	const { isOpen, toggle } = useModal();
 	return (
 		<div>
@@ -25,7 +19,7 @@ function Account() {
 				<div className="profile-container">
 					<div className="left-container">
 						<div className="profile-picture">
-							<img src={pic} alt="profilePic" />
+							<img src={auth.user?.avatarUrl} alt="profilePic" />
 						</div>
 						<div className="profile-stats">
 							<h1> {auth?.user?.name}</h1>
@@ -61,11 +55,16 @@ function Account() {
 								<div className="modal-settings">
 									<div className="picture-settings">
 										<div className="profile-picture">
-											<img src={pic} alt="profilePic" />
+											<img
+												src={auth.user?.avatarUrl}
+												alt="profilePic"
+											/>
 										</div>
-										<div className="uploadButton">
-											<AvatarUpload />
-										</div>
+										{auth.user?.login && (
+											<div className="uploadButton">
+												<AvatarUpload />
+											</div>
+										)}
 									</div>
 									<div className="username-settings">
 										<h2>{auth.user?.name}</h2>

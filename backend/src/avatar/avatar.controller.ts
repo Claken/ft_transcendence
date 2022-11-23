@@ -9,7 +9,6 @@ import {
   Res,
   StreamableFile,
   UploadedFile,
-  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { Response } from 'express';
@@ -28,7 +27,6 @@ export class AvatarController {
   ) {}
 
   @Post()
-  // @UseGuards(AuthenticatedGuard)
   @UseInterceptors(FileInterceptor('image'))
   async addAvatar(
     @Req() req: RequestWithUser,

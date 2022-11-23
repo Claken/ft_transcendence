@@ -4,9 +4,10 @@ import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
 import { UsersEntity } from '../TypeOrm/Entities/users.entity';
 import { AvatarModule } from 'src/avatar/avatar.module';
+import { HttpModule } from '@nestjs/axios';
 
 @Module({
-  imports: [AvatarModule, TypeOrmModule.forFeature([UsersEntity])],
+  imports: [HttpModule, AvatarModule, TypeOrmModule.forFeature([UsersEntity])],
   controllers: [UsersController],
   providers: [UsersService],
   exports: [UsersService],

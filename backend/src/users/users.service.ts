@@ -6,6 +6,8 @@ import { UsersEntity } from '../TypeOrm/Entities/users.entity';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { AvatarService } from 'src/avatar/avatar.service';
 import { Avatar } from 'src/TypeOrm';
+import { HttpService } from '@nestjs/axios';
+import { lastValueFrom } from 'rxjs';
 
 @Injectable()
 export class UsersService {
@@ -14,19 +16,28 @@ export class UsersService {
     @InjectRepository(UsersEntity)
     private readonly userRepo: Repository<UsersEntity>,
     private readonly avatarService: AvatarService,
-    private datasource: DataSource
+    private datasource: DataSource,
+    private readonly http: HttpService,
   ) {}
+
+  async getGuestAvatarBuffer (pathToImage: string): Promise<Buffer> {
+    const responseObs = this.http.get(pathToImage, { responseType: 'arraybuffer' });
+    const response = await lastValueFrom(responseObs);
+    const buf = Buffer.from(response.data, 'utf-8');
+    return buf;
+  }
 
   // save() is a Repository Typeorm method to call INSERT query
   // TODO: handle users already exist
   async create(user: UserDTO, buffer: Buffer): Promise<UsersEntity> {
     const newUser = this.userRepo.create(user);
-    if (buffer) {
-      console.log("buffer: "+buffer);
-      const filename = 'avatarApi42.jpg';
-      const avatar = await this.avatarService.uploadAvatar(buffer, filename);
-      newUser.avatarId = avatar.id;
+    let filename = 'api42Avatar.jpg';
+    if (!newUser.login && !buffer) {
+      buffer = await this.getGuestAvatarBuffer("https://i.pravatar.cc/400");
+      filename = 'guestAvatar.jpg';
     }
+    const avatar = await this.avatarService.uploadAvatar(buffer, filename);
+    newUser.avatarId = avatar.id;
     return await this.userRepo.save(newUser);
   }
 

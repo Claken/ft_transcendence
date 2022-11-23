@@ -1,25 +1,15 @@
 import {
-  Body,
   Controller,
   Get,
-  HttpStatus,
-  ParseFilePipeBuilder,
-  Patch,
-  Post,
   Redirect,
   Req,
   Res,
-  UploadedFile,
   UseGuards,
-  UseInterceptors,
 } from '@nestjs/common';
-import { FileInterceptor } from '@nestjs/platform-express';
-import { Request, Response } from 'express';
-import { RequestWithUser, UserDTO } from 'src/TypeOrm/DTOs/User.dto';
+import { Response } from 'express';
+import { RequestWithUser } from 'src/TypeOrm/DTOs/User.dto';
 import { UsersService } from 'src/users/users.service';
 import { FortyTwoAuthGuard } from './guards/fortytwo.guard';
-import { diskStorage } from 'multer';
-import { extname } from 'path';
 
 @Controller('auth/42')
 export class AuthController {

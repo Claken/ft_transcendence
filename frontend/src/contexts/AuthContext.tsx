@@ -1,9 +1,7 @@
 import axios from "../axios.config";
 import React, { useContext, useEffect, useState } from "react";
 import { IUser } from "../interfaces/user.interface";
-import guestPic from "../assets/img/profile1.jpg";
 import { IAuthContext } from "../interfaces/authcontext.interface";
-import { IAvatar } from "../interfaces/avatar.interfce";
 import { Buffer } from "buffer";
 
 const AuthContext = React.createContext<IAuthContext>(null);
@@ -128,7 +126,6 @@ export const AuthProvider = ({ children }) => {
 	const loginAsGuest = async (guestName: string) => {
 		const newUser: IUser = {
 			name: guestName,
-			avatarUrl: guestPic,
 			status: "online",
 			inGame: false,
 			inQueue: false,
