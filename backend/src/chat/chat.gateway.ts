@@ -113,9 +113,36 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 	@SubscribeMessage('leaveRoom')
 	async HandleLeaveRoom(client: Socket, infos: {room: string, user: string}): Promise<void> {
 		console.log('leaveRoom');
-		const	channelLeft = await this.chatService.findOneChatRoomByName(infos.room);
+		let		channelLeft = await this.chatService.findOneChatRoomByName(infos.room);
 		const	member = await this.memberService.getMemberByNameAndChannel(infos.user, channelLeft);
 		await	this.memberService.deleteMemberById(member.id);
+		if (member.name === channelLeft.owner.name)
+		{
+			let		newOwner: UsersEntity = null;
+			const	admins = await this.memberService.findAllAdminsFromOneRoom(channelLeft.id);
+			if (admins.length !== 0)
+				newOwner = await this.usersService.getByName(admins[0].name);
+			else
+			{
+				const users = await this.memberService.findAllMembersFromOneRoom(channelLeft.id);
+				if (users.length !== 0)
+				{
+					newOwner = await this.usersService.getByName(users[0].name);
+					let		ownerMember = await this.memberService.getMemberByNameAndChannel(users[0].name, channelLeft);
+					ownerMember.isAdmin = true;
+					await this.memberService.saveMember(ownerMember);
+				}
+				else
+					this.HandleDeletionRoom(client, channelLeft.chatRoomName);
+			}
+			if (newOwner !== null)
+			{
+				channelLeft.owner = newOwner;
+				await this.chatService.saveChatRoom(channelLeft);
+				newOwner.ownedChannels = [channelLeft];
+				await this.usersService.updateUser(newOwner.id);
+			}
+		}
 		client.emit('leftRoom', infos.room);
   }
 

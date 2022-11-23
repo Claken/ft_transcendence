@@ -26,7 +26,8 @@ export class MemberService {
 
 		async findAllMembersFromOneRoom(roomId: string) : Promise<MemberEntity[]> {
 			const members = await this.findAllMembers();
-			return members.filter((member: MemberEntity) => member.inChannel.id === roomId);
+			const membersFromOneRoom = members.filter((member: MemberEntity) => member.inChannel.id === roomId);
+			return membersFromOneRoom;
 		}
 
 		async findAllBannedMembersFromOneRoom(roomId: string) :  Promise<MemberEntity[]> {
