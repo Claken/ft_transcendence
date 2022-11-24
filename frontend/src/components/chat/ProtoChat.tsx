@@ -92,7 +92,7 @@ const ProtoChat = () => {
 	}
 
 	const changeChannelOwner = (update: {newOwner: string, channel: string}) => {
-		let room = rooms.find(element => {if (element.name === update.channel) return element});
+		let room = rooms.find((element: IRoom) => {if (element.name === update.channel) return element});
 		room.owner = update.newOwner;
 	}
 
