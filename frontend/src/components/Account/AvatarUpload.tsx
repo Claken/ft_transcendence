@@ -1,14 +1,33 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "../../contexts/AuthContext";
 import axios from "../../axios.config";
-import { IAvatar } from "../../interfaces/avatar.interfce";
+import { IAvatar } from "../../interfaces/avatar.interface";
+// import Resizer from "react-image-file-resizer";
 
 const AvatarUpload = () => {
 	const { user, setUser } = useAuth();
 	const [file, setFile] = useState<File>(null);
 	const [avatar, setAvatar] = useState<IAvatar>(null);
 
+	// const resizeFile = (file: File): Promise<File> =>
+	// 	new Promise((resolve) => {
+	// 		Resizer.imageFileResizer(
+	// 			file,
+	// 			400,
+	// 			400,
+	// 			"JPEG",
+	// 			100,
+	// 			0,
+	// 			(uri: File) => {
+	// 				resolve(uri);
+	// 			},
+	// 			"file"
+	// 		);
+	// 	});
 	const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+		// const fileChosen: File = e.target.files[0];
+		// const newFile = await resizeFile(fileChosen);
+		// setFile(newFile);
 		setFile(e.target.files[0]);
 	};
 
@@ -16,7 +35,7 @@ const AvatarUpload = () => {
 		if (avatar) {
 			setUser({ ...user, avatarId: avatar.id });
 		}
-	}, [avatar])
+	}, [avatar]);
 
 	// TODO: cannot send id if GuestUser because there is no session without api42
 	// cannot change guestUser Avatar
@@ -26,7 +45,6 @@ const AvatarUpload = () => {
 				withCredentials: true,
 			})
 			.then((res) => {
-				console.log(res.data);
 				setAvatar(res.data);
 			})
 			.catch((error) => {

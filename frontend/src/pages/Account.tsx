@@ -4,12 +4,25 @@ import Modal from "../components/modal";
 import useModal from "../hooks/useModal";
 import { useAuth } from "../contexts/AuthContext";
 import AvatarUpload from "../components/Account/AvatarUpload";
+import { useNavigate } from "react-router-dom";
 // ajouter 2fa
 function Account() {
 	const auth = useAuth();
+	const navigate = useNavigate();
 
 	const handleLogout = () => {
-		auth.logout();
+		// only api42 have a login field
+		if (auth.user.login) {
+			window.location.href = "http://localhost:3001/auth/42/logout";
+		} else {
+			console.log("logout: " + JSON.stringify(auth.user));
+			auth.deleteGuestUser();
+			if (sessionStorage.getItem("MY_PONG_APP")) {
+				sessionStorage.removeItem("MY_PONG_APP");
+				auth.setUser(null);
+			}
+			navigate('/');
+		}
 	};
 
 	const { isOpen, toggle } = useModal();

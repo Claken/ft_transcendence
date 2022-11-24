@@ -31,7 +31,6 @@ export const AuthProvider = ({ children }) => {
 	// set user.avatarUrl !
 	useEffect(() => {
 		if (blob) {
-			console.log('blob change!!!')
 			const blobFile = new Blob([blob], { type: 'image/png' });
 			getBase64(blobFile, (base64string) => {
 				setUser({ ...user, avatarUrl: base64string as string });
@@ -64,7 +63,7 @@ export const AuthProvider = ({ children }) => {
 	/*                     On Connexion                          */
 	/* ********************************************************* */
 	useEffect(() => {
-		const token = localStorage.getItem("MY_PONG_APP");
+		const token = sessionStorage.getItem("MY_PONG_APP");
 		// GET session/cookie42
 		axios
 			.get("/me", {
@@ -72,24 +71,25 @@ export const AuthProvider = ({ children }) => {
 			})
 			.then((res) => {
 				if (res.data) {
+					console.log(res.data);
 					setUser(res.data);
-					localStorage.setItem(
+					sessionStorage.setItem(
 						"MY_PONG_APP",
 						JSON.stringify(res.data)
-					);
+						);
 				}
 			})
 			.catch((error) => {
 				console.log(error);
 			});
-		// Set User on refresh paged if localStorage unchanged
+		// Set GuestUser on refresh page if sessionStorage name is still in bdd
 		if (token) {
 			const { name, login } = JSON.parse(token);
 			if (name && !login) {
 				axios
 					.get("/users/name/" + name)
 					.then((res) => {
-						setUser(null);
+						// setUser(null);
 						setUser(res.data);
 					})
 					.catch((error) => {
@@ -104,7 +104,7 @@ export const AuthProvider = ({ children }) => {
 			.post("/users", user)
 			.then((res) => {
 				setUser(res.data);
-				localStorage.setItem("MY_PONG_APP", JSON.stringify(user));
+				sessionStorage.setItem("MY_PONG_APP", JSON.stringify(user));
 				console.log(res.data);
 			})
 			.catch((error) => {
@@ -133,23 +133,8 @@ export const AuthProvider = ({ children }) => {
 		await postGuestUser(newUser);
 	};
 
-	// REMOVE localStorage on logout and if Guest deleteUser
-	const logout = () => {
-		//only Stud42 have a login field
-		if (user.login) {
-			window.location.href = "http://localhost:3001/auth/42/logout";
-		} else {
-			console.log("logout: " + JSON.stringify(user));
-			deleteGuestUser();
-		}
-		if (localStorage.getItem("MY_PONG_APP")) {
-			localStorage.removeItem("MY_PONG_APP");
-			setUser(null);
-		}
-	};
-
 	return (
-		<AuthContext.Provider value={{ user, setUser, loginAsGuest, logout }}>
+		<AuthContext.Provider value={{ user, setUser, loginAsGuest, deleteGuestUser }}>
 			{children}
 		</AuthContext.Provider>
 	);

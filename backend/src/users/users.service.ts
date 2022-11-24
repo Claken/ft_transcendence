@@ -66,7 +66,11 @@ export class UsersService {
   }
 
   async deleteUser(id: number): Promise<UsersEntity> {
+    if (!id)
+      return null;
     const user = await this.getById(id);
+    if (!user)
+      return null;
     return await this.userRepo.remove(user);
   }
 
