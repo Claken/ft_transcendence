@@ -91,6 +91,11 @@ const ProtoChat = () => {
 		alert('WRONG PASSWORD ! YOU CANNOT JOIN THIS CHANNEL');
 	}
 
+	const changeChannelOwner = (update: {newOwner: string, channel: string}) => {
+		let room = rooms.find(element => {if (element.name === update.channel) return element});
+		room.owner = update.newOwner;
+	}
+
 	const sendChatMessage = (event: any) => {
 		event.preventDefault();
 		const activeRoom = findActiveRoom();
@@ -348,6 +353,14 @@ const ProtoChat = () => {
 			socket?.off('wrongPasswordForTheJoin', wrongPasswordMessage);
 		}
 	}, [wrongPasswordMessage])
+
+	// USEEFFECT POUR CHANGER LE OWNER
+	useEffect(() => {
+		socket?.on('newOwner', changeChannelOwner);
+		return () => {
+			socket?.off('newOwner', changeChannelOwner);
+		}
+	}, [changeChannelOwner])
 
 	return (
 		<div>

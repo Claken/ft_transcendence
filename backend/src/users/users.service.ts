@@ -31,6 +31,10 @@ export class UsersService {
     });
   }
 
+  async findOneByName(nameToFind: string) : Promise<UsersEntity> {
+    return await this.userRepo.findOne({where: {name: nameToFind}, relations: ['ownedChannels']});
+  }
+
   // unuse
   async getByEmail(emailToFind: string): Promise<UsersEntity> {
     return await this.userRepo.findOneBy({
