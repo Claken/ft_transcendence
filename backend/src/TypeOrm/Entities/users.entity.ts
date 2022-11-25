@@ -2,10 +2,14 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  Generated,
+  JoinColumn,
   OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
   JoinColumn
 } from 'typeorm';
+import { Avatar } from './avatar.entity';
 import { Game } from './game.entity';
 import { ChatRoomEntity } from './chat.entity';
 
@@ -24,9 +28,6 @@ export class UsersEntity {
   @Column({ default: '' })
   email?: string;
 
-  @Column({ default: '' })
-  avatar?: string;
-
   @Column({ default: 'online' })
   status?: string;
 
@@ -44,6 +45,7 @@ export class UsersEntity {
 
   @Column({ default: false })
   inGame: boolean;
+
   @Column({ nullable: true, default: 0})
   win?: number;
 
@@ -61,4 +63,18 @@ export class UsersEntity {
 
   @CreateDateColumn()
   createdAt?: Date;
+  @Column({ nullable: true, default: 0 })
+  avatarId?: number;
+  
+  @OneToOne(() => Avatar, (avatar) => avatar.user, {
+    cascade: true
+  })
+  avatar?: Avatar;
+
+  // TODO: friends
+  // @OneToMany(() => UsersEntity, (friends) => friends.id, {
+  //   onDelete: 'SET NULL',
+  // })
+  // friends: UsersEntity[];
+
 }

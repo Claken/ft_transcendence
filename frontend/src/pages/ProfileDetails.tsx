@@ -63,7 +63,7 @@ function ProfileDetails() {
               <div className="profile-picture">
                 <img
                   className="stylePic"
-                  src={user.pictureUrl}
+                  src={user.avatarUrl}
                   alt="profilePic"
                 />
               </div>

@@ -6,7 +6,7 @@ import { useAuth } from "../contexts/AuthContext";
 import { IUser } from "../interfaces/user.interface";
 
 const TwoFaCode = () => {
-	const [code, setCode] = useState("");
+	const [code, setCode] = useState<string>("");
 	const { user, setUser } = useAuth();
 	const navigate = useNavigate();
 
