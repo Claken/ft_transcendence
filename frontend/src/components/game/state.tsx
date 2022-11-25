@@ -5,6 +5,7 @@ const State = {
 	WIN:		3,
 	LOSE:		4,
 	ABORT:		5,
+	FINISH:		6
 };
 
 export default State;

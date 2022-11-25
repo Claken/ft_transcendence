@@ -27,6 +27,12 @@ export class Game implements IGame {
   @Column({ default: 10 })
   compteur?: number;
 
+  @Column({ default: 0 })
+  map?: number;
+
+  @Column({ default: 0 })
+  state?: number;
+
   @Column({ default: '' })
   winner?: string;
 

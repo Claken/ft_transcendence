@@ -15,6 +15,7 @@ import { Cron, CronExpression } from '@nestjs/schedule';
 import { Socket } from 'dgram';
 import { threadId } from 'worker_threads';
 import { Game } from 'src/TypeOrm';
+import { ConsoleLogger } from '@nestjs/common';
 
 export var userQueue: UserDTO[] = [];
 
@@ -35,14 +36,14 @@ export class GameGateway
     // A client has connected
     this.users++;
     // Notify connected clients of current users
-    this.server.emit('users', this.users);
+    client.emit('users', this.users);
   }
 
   async handleDisconnect(client) {
     //assigner un numéro dans la bdd pour l'utiliser ici
     // A client has disconnected
     // Notify connected clients of current users
-    this.server.emit('users', this.users);
+    client.emit('users', this.users);
     this.users--;
   }
 
@@ -89,10 +90,12 @@ export class GameGateway
       // Si la balle sort du terrain de droite
       if (right > infos[0].width) {
         infos[0].scoreLP++;
-        if (infos[0].scoreLP >= infos[0].score) {
-			infos[0].state = 3;
-			this.server.emit('updatedData', infos[0]);
-			this.server.emit("endGame", infos[0].loginLP, infos[0].loginRP, "");
+		this.gameService.updateScore(infos[0].gameId, infos[0].scoreLP, infos[0].scoreRP);
+		if (infos[0].scoreLP >= infos[0].score) {
+			infos[0].state = 6;
+			await this.gameService.updateState(infos[0].gameId, 6);
+			this.server.to(infos[0].gameId).emit('update', infos[0]);
+			this.server.to(infos[0].gameId).emit("endGame", infos[0].loginLP, infos[0].loginRP, "");
 			return;
 		}
 		else
@@ -102,10 +105,12 @@ export class GameGateway
       // Si la balle sort du terrain de gauche
       if (left < 0) {
         infos[0].scoreRP++;
-        if (infos[0].scoreRP >= infos[0].score) {
-			infos[0].state = 3;
-			this.server.emit('updatedData', infos[0]);
-			this.server.emit("endGame", infos[0].loginRP, infos[0].loginLP, "");
+		this.gameService.updateScore(infos[0].gameId, infos[0].scoreLP, infos[0].scoreRP);
+		if (infos[0].scoreRP >= infos[0].score) {
+			infos[0].state = 6;
+			await this.gameService.updateState(infos[0].gameId, 6);
+			this.server.to(infos[0].gameId).emit('update', infos[0]);
+			this.server.to(infos[0].gameId).emit("endGame", infos[0].loginRP, infos[0].loginLP, "");
 			return ;
 		}
 		else
@@ -114,7 +119,7 @@ export class GameGateway
       }
       infos[0].ballX += infos[0].vx * infos[0].speed;
       infos[0].ballY += infos[0].vy * infos[0].speed;
-    this.server.emit('updatedData', infos[0]);
+	  this.server.to(infos[0].gameId).emit('update', infos[0]);
   }
 
   /* ***************************************************************************** */
@@ -122,7 +127,6 @@ export class GameGateway
   /* ***************************************************************************** */
   @SubscribeMessage('movePlayer')
   async PaddleUp(client: any, infos) {
-	//TODO: En fonction de l'userID, le paddle Gauche ou Droit bouge
 	if (infos[0].key === 'ArrowUp'
 	|| infos[0].key === 'w'
 	|| infos[0].key === 'W'
@@ -143,27 +147,36 @@ export class GameGateway
 		else if (infos[0].pRY + infos[0].paddleH > infos[0].height)
 			infos[0].pRY = infos[0].height - infos[0].paddleH;
 	}
-    this.server.emit('updatedPlayer', infos[0]);
-    // this.server.to(client).emit('updatedPlayer', infos[0]);
+    this.server.to(infos[0].gameId).emit('updatedPlayer', infos[0]);
   }
 
   /* ***************************************************************************** */
-  /*                    Mise à jours du state pour les joueurs                     */
+  /*                    Mise à jours et state pour les joueurs                     */
   /* ***************************************************************************** */
-  @SubscribeMessage('state')
-  async State(client: any, infos) {
-	if (infos[0] === 5) {
-		infos[2] === infos[1].loginLP ?
-		this.server.emit("endGame", infos[1].loginRP, infos[1].loginLP, infos[2]) : 
-		this.server.emit("endGame", infos[1].loginLP, infos[1].loginRP, infos[2]);
-		return ;
-	}
-    this.server.emit('updatedState', infos[0]);
+  @SubscribeMessage('abort')
+  async Abort(client: any, infos) {
+	this.gameService.updateState(infos[1].gameId, infos[1].state);
+	infos[2] === infos[1].loginLP ?
+	this.server.to(infos[1].gameId).emit("endGame", infos[1].loginRP, infos[1].loginLP, infos[2]) : 
+	this.server.to(infos[1].gameId).emit("endGame", infos[1].loginLP, infos[1].loginRP, infos[2]);
   }
 
-  @SubscribeMessage('pause&play')
-  async PauseAndPlay(client: any, currentState, name: string) {
-    this.server.emit('PauseAndPlay', currentState, name);
+  @SubscribeMessage('pauseNplay')
+  async PauseAndPlay(client: any, infos) {
+	this.gameService.updateState(infos[2], infos[0]);
+    this.server.to(infos[2]).emit('PauseAndPlay', infos);
+  }
+
+  @SubscribeMessage('updateData')
+  async UpdateData(client: any, gameId: number) {
+	let game: GameDTO = await this.gameService.getById(gameId);
+
+	client.join(gameId);
+	let newData = {
+		loginRP : game.loginRP, loginLP : game.loginLP,
+		scoreLP : game.scoreLP, scoreRP : game.scoreRP,
+		state : game.state, map: game.map, compteur: game.compteur};
+    client.emit('updateData', newData);
   }
 
   /* ***************************************************************************** */
@@ -171,41 +184,44 @@ export class GameGateway
   /* ***************************************************************************** */
   @SubscribeMessage('image')
   async Image(client: any, infos) {
+	console.log("idgame dans IMAGE: "+infos[1].gameId)
 	infos[0] === infos[1].loginLP ? infos[1].mapLP = infos[2] : infos[1].mapRP = infos[2];
 	if (infos[1].mapLP === infos[1].mapRP) {
 		clearInterval(this.intervalID);
-		this.server.emit("launchGame", infos[2])
+		this.gameService.updateCompteur(infos[1].gameId, true);
+		this.gameService.updateMap(infos[1].gameId, infos[1].mapLP);
+		this.server.to(infos[1].gameId).emit("launchGame", infos[2])
 		return;
 	}
-	this.server.emit('updateImg', infos);
+	this.server.to(infos[1].gameId).emit('updateImg', infos);
   }
 
-  RandomMap() {
+  RandomMap(gameId) {
 	let map: number;
 	map = Math.floor(Math.random() * 3);
-	this.server.emit("launchGame", map);
+	this.gameService.updateMap(gameId, map);
+	this.server.to(gameId).emit("launchGame", map);
   }
 
-  tick = async (id: number) => {
-	let compteur = await this.gameService.updateCompteur(id);
+  tick = async (gameId: number) => {
+	let compteur = await this.gameService.updateCompteur(gameId, false);
 	if (compteur === 0) {
 		clearInterval(this.intervalID);
-		this.RandomMap();
+		this.RandomMap(gameId);
 	}
 	else if (compteur > 0)
-		this.server.emit('compteurUpdated', compteur);
+	this.server.to(gameId).emit('compteurUpdated', compteur);
 }
 
   @SubscribeMessage('setCompteur')
-  async SetCompteur(client: any, allPos) {
-	let currentGame: GameDTO = await this.gameService.getCurrentGame(allPos.loginLP);
-	this.intervalID = setInterval(this.tick, 1000, currentGame.id);
+  async SetCompteur(gameId) {
+	this.intervalID = setInterval(this.tick, 1000, gameId);
   }
 
   @SubscribeMessage('getCompteur')
-  async GetCompteur(client: any, idGame: number) {
-	let currentGame: GameDTO = await this.gameService.getById(idGame);
-	this.server.emit("compteurUpdated", currentGame.compteur);
+  async GetCompteur(client: any, gameId: number) {
+	let currentGame: GameDTO = await this.gameService.getById(gameId);
+	this.server.to(gameId).emit("compteurUpdated", currentGame.compteur);
   }
 
   /* ***************************************************************************** */
@@ -220,6 +236,7 @@ export class GameGateway
 	}
 	if (user.inGame) {
 		let currentGame: GameDTO = await this.gameService.getCurrentGame(user.name)
+		client.join(currentGame.id);
 		client.emit("goPlay", currentGame);
 		return ;
 	}
@@ -230,12 +247,12 @@ export class GameGateway
   /*                   Rejoindre la userQueue et créer une game                    */
   /* ***************************************************************************** */
 
-  //pour que le client join la game: client.join("game.id");
   @SubscribeMessage('joinQueue')
   async JoinQueue(client: any, user: UserDTO) {
     if (!userQueue.find((elet: UserDTO) => elet.name === user.name)) {
-      userQueue.push(user);
-	  await this.usersService.updateInQueue(user.id, true)
+		user = await this.usersService.updateInQueue(user.id, true);
+		client.emit("updateUser", user);
+		userQueue.push(user);
     }
     if (userQueue.length % 2 === 0) {
       /**** Take the first pending Game ****/
@@ -245,7 +262,8 @@ export class GameGateway
         games[0].id,
         user.name,);
       /**** Join the socket game ****/
-	//   client.join(updatedGame.id);//TODO: OK ?
+	  client.join(updatedGame.id);//TODO: OK ?
+	  console.log("client: "+client+" has join: "+updatedGame.id);
       /**** Find loginLP in UserQueue ****/
       const firstGameUserLp: UserDTO = userQueue.find(
         (elet: UserDTO) => elet.name === games[0].loginLP,
@@ -264,15 +282,21 @@ export class GameGateway
 	  await this.usersService.updateInGame(firstGameUserLp.id, true)
 	  await this.usersService.updateInGame(user.id, true)
       /**** Redirect in the Frontend to <Game /> ****/
-      this.server.emit('goPlay', updatedGame); //TODO: seulement les 2 joueurs ?
-    //   this.server.to(updatedGame.id).emit('goPlay', updatedGame); //TODO: OK ?
+	  this.server.to(updatedGame.id).emit('goPlay', updatedGame); //TODO: OK ?
+	  console.log("server: "+this.server+" send to: "+updatedGame.id);
+	  this.SetCompteur(updatedGame.id);
     } else {
       const newGame = await this.gameService.create({
         loginLP: user.name,
         loginRP: '',
       });
-	//   client.join(newGame.id);//TODO: OK ?
-    }
+	  client.join(newGame.id);//TODO: OK ?
+	  console.log("client: "+client+" has join: "+newGame.id);
+		console.log("loginLP = "+newGame.loginLP);
+		console.log("waiting = "+newGame.waitingForOppenent);
+		// console.log("client rooms -> "+client.rooms)
+		// console.log("rooms -> "+client.rooms[0])
+}
   }
 
   /* ***************************************************************************** */
@@ -283,11 +307,12 @@ export class GameGateway
   async LeaveQueue(client: any, user: UserDTO) {
 	let indexLP = userQueue.findIndex((elet: UserDTO) => elet.name === user.name,);
 	if (indexLP !== -1) {
-		const games: GameDTO[] = await this.gameService.getPendingGames();
+		const game: GameDTO = await this.gameService.getPendingGame(user.name);
 		userQueue.splice(indexLP, 1);
-		await this.usersService.updateInQueue(user.id, false)
-		client.leave(games[0].id);
-		await this.gameService.deleteGame(games[0].id)
+		user = await this.usersService.updateInQueue(user.id, false);
+		client.leave(game.id);
+		client.emit("updateUser", user);
+		await this.gameService.deleteGame(game.id);
   	}
   }
 
@@ -296,14 +321,16 @@ export class GameGateway
   /* ***************************************************************************** */
 
   @SubscribeMessage('updateInGame')
-  async UpdateInGame(client: any, user: UserDTO) {
-	await this.usersService.updateInGame(user.id, false);
-  }
+  async UpdateInGame(client: any, user: UserDTO, gameId: number) {
+	user = await this.usersService.updateInGame(user.id, false);
+	client.emit("updateUser", user);
+	client.leave(gameId);
+	}
 
   @SubscribeMessage('endGame')
   async EndGame(client: any, infos) {
 	await this.gameService.gameFinished(
-		infos[0].idGame, infos[0].scoreLP, infos[0].scoreRP,
+		infos[0].gameId, infos[0].scoreLP, infos[0].scoreRP,
 		infos[1], infos[2], infos[3]);
 	if (infos[1] === infos[4].name)
 		await this.usersService.OneMoreWin(infos[4].id);

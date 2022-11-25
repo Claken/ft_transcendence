@@ -17,7 +17,7 @@ const allPos = {
 	EmptyGround: null,
 	state: null,
 	key: null,
-	score: null,
+	score: 5,
 	speed: null,
 	compteur: null,
 	img: null,
@@ -25,7 +25,7 @@ const allPos = {
 	mapRP: null,
 	loginLP: null,
 	loginRP: null,
-	idGame: null,
+	gameId: null,
 };
 
 export default allPos;

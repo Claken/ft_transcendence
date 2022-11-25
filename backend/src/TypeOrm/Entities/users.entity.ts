@@ -38,10 +38,10 @@ export class UsersEntity {
   isTwoFAValidated?: boolean;
 
   @Column({ default: false })
-  inQueue: boolean;
+  inQueue?: boolean;
 
   @Column({ default: false })
-  inGame: boolean;
+  inGame?: boolean;
 
   @Column({ nullable: true, default: 0})
   win?: number;

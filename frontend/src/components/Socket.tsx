@@ -3,7 +3,7 @@ import io from "socket.io-client";
 
 export const socket = io('http://localhost:3001');//back
 
-// const Socket= () => {//TODO: Utilité ?
+// const Socket= () => {//TODO: retirer
 
 // 	const [response, setResponse] = useState("");
 

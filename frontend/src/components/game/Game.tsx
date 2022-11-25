@@ -2,8 +2,6 @@ import React, { useRef, useEffect, useState } from "react";
 import { socket } from "../Socket";
 import "../../styles/canvas.css"
 import { useAuth } from "../../contexts/AuthContext";
-import axios from "../../axios.config";
-import { IGame } from "../../interfaces/game.interface"
 import { useParams } from "react-router-dom";
 
 import Colors from "./colors";
@@ -25,18 +23,9 @@ const Game = (
 	let CanvasWidth = 1600;
 	let CanvasHeight = 760;
 	let EmptyGround = 50;
-	// const [playerL, setPlayerL] = useState(0); // avoir le profil du user
-	// const [playerR, setPlayerR] = useState(0); // avoir le profil du user
-	const [loginLP, setLoginLP] = useState("Player 1"); // avoir le login du joueur de gauche pour l'afficher
-	const [loginRP, setLoginRP] = useState("Player 2"); // avoir le login du joueur de droite pour l'afficher
-	const [scoreLP, setScoreLP] = useState(0); // Score du joueur gauche
-	const [scoreRP, setScoreRP] = useState(0); // Score du joueur droit
-	const [abort, setAbort] = useState(false);
-	const [game, setGame] = useState<IGame>(null);
-	// const [games, setGames] = useState<IGame[]>([]);//TODO: utilité ?
 	const auth = useAuth();
 	const { gameId } = useParams();
-	const [lock, setLock] = useState<boolean>(false);
+	const [ready, setReady] = useState<boolean>(false);
 	var key = "";
 	var prev = "";
 	var curr = "";
@@ -46,36 +35,23 @@ const Game = (
 	/*                 Initialisation de la Game et des 2 joueurs                    */
 	/* ***************************************************************************** */
 	useEffect(() => {
-		if (game) {
-			console.log("useEffect [game]") //TODO: retirer
-			setLoginLP(game.loginLP);
-			setLoginRP(game.loginRP);
-			setScoreLP(0);
-			setScoreRP(0);
-			allPos.loginLP = game.loginLP;
-			allPos.loginRP = game.loginRP;
-			allPos.idGame = game.id;
-			if (auth.user.name === allPos.loginLP && !lock) {
-				setLock(true)
-				if (allPos.compteur === null || allPos.compteur === 10)
-					socket.emit("setCompteur", allPos.compteur);
-			}
+		socket.on("updateData", (newData) => {
+			allPos.img.src = gameBoards[newData.map];
+			allPos.state = newData.state;
+			allPos.compteur = newData.compteur;
+			allPos.scoreLP = newData.scoreLP;
+			allPos.scoreRP = newData.scoreRP;
+			allPos.loginLP = newData.loginLP;
+			allPos.loginRP = newData.loginRP;
+			allPos.gameId = gameId;
+			console.log("updateData fini.")
+		});
+
+		if (auth.user) {
+			console.log("useEffect []") //TODO: retirer
+			socket.emit("updateData", gameId);
+			setReady(true);
 		}
-	}, [game])
-
-	const getGameById = async () => {
-		await axios
-			.get("/game/" + gameId)
-			.then((res) => {
-				setGame(res.data);
-			})
-			.catch((error) => {
-				console.log(error);
-			});
-	};
-
-	useEffect(() => {
-		getGameById();
 	}, [])
 
 	//TODO: Quand un user est offline (user.status)
@@ -84,15 +60,6 @@ const Game = (
 	// 	console.log("entrée dans le useEffect de la reconnexion (GAME.TSX"); //TODO: retirer
 	// }, [auth.user.status])
 
-	//TODO: Si il déco, setAbort ?
-	//Un joueur abort la game car il se fait daronned
-	useEffect(() => {
-		if (abort === true) {
-			// socket.emit();
-			console.log("entrée dans le useEffect du ABORT"); //TODO: retirer
-		}
-	}, [abort])
-
 	/* ***************************************************************************** */
 	/*            Ajout d'event pour écouter les touches/cliques entrant             */
 	/* ***************************************************************************** */
@@ -100,9 +67,9 @@ const Game = (
 		if (e.key === "p"|| e.key === "P" || e.key === " ") {
 			e.preventDefault();
 			if (allPos.state === State.PLAY)
-				socket.emit("pause&play", State.PAUSE, auth.user.name);
+				socket.emit("pauseNplay", State.PAUSE, auth.user.name, gameId);
 			else if (allPos.state === State.PAUSE && auth.user.name === prev)
-				socket.emit("pause&play", State.PLAY, "");
+				socket.emit("pauseNplay", State.PLAY, "", gameId);
 		}
 	};
 
@@ -167,16 +134,16 @@ const Game = (
 				y > 25 - allPos.radius * 2 &&
 				y < 25 + allPos.radius * 2) {
 				if (allPos.state === State.PLAY)
-					socket.emit("pause&play", State.PAUSE, auth.user.name);
+					socket.emit("pauseNplay", State.PAUSE, auth.user.name, gameId);
 				else if(allPos.state === State.PAUSE && auth.user.name === prev)
-					socket.emit("pause&play", State.PLAY, "");
+					socket.emit("pauseNplay", State.PLAY, "", gameId);
 			}
 			else if (//button stop
 				x > allPos.width / 2 + 150 - allPos.radius * 2 &&
 				x < allPos.width / 2 + 150 + allPos.radius * 2 &&
 				y > 25 - allPos.radius * 2 &&
 				y < 25 + allPos.radius * 2) {
-					socket.emit("state", State.ABORT, allPos, auth.user.name);
+					socket.emit("abort", State.ABORT, allPos, auth.user.name);
 			}
 		}
 	};
@@ -185,6 +152,12 @@ const Game = (
 /*                             USEEFFECT PRINCIPALE                              */
 /* ***************************************************************************** */
 	useEffect(() => {
+		if (ready === false || !auth.user) {
+			console.log("RETURN CAR READY FALSE");
+			return ;
+		}
+		else
+			console.log("ON COMMENCE LE USEEFFECT");
 		const canvas = canvasRef.current;
 		if (canvas == null) return;
 		const context = canvas.getContext("2d");
@@ -202,11 +175,7 @@ const Game = (
 		allPos.ballY = allPos.height / 2 + EmptyGround / 2; //placement en Y de la balle
 		allPos.vx = -1; //vitesse en X de la balle
 		allPos.vy = -1; //vitesse en Y de la balle
-		allPos.scoreLP = scoreLP;
-		allPos.scoreRP = scoreRP;
 		allPos.EmptyGround = EmptyGround;
-		allPos.state = 0; //etat du jeu
-		allPos.score = 5;
 		allPos.speed = 2;
 		allPos.mapLP = -1;
 		allPos.mapRP = -1;
@@ -216,7 +185,6 @@ const Game = (
 		let animationFrameId: number;
 		allPos.img = new Image();
 		var mignature = [new Image(), new Image(), new Image()];
-		allPos.img.src = gameBoards[0];
 		mignature[0].src = gameBoards[0];
 		mignature[1].src = gameBoards[1];
 		mignature[2].src = gameBoards[2];
@@ -229,14 +197,13 @@ const Game = (
 		/* ***************************************************************************** */
 		/*              Communication avec le back sur l'échange de données              */
 		/* ***************************************************************************** */
-		socket.on("updatedData", (newData) => {
+		socket.on("update", (newData) => {
 			allPos.ballX = newData.ballX;
 			allPos.ballY = newData.ballY;
 			allPos.vy = newData.vy;
 			allPos.vx = newData.vx;
 			allPos.scoreLP = newData.scoreLP;
 			allPos.scoreRP = newData.scoreRP;
-			allPos.score = newData.score;
 			allPos.speed = newData.speed;
 			allPos.state = newData.state;
 		});
@@ -244,10 +211,6 @@ const Game = (
 		socket.on("updatedPlayer", (newData) => {
 			allPos.pLY = newData.pLY;
 			allPos.pRY = newData.pRY;
-		});
-
-		socket.on("updatedState", (newState) => {
-			allPos.state = newState;
 		});
 
 		socket.on("PauseAndPlay", (infos) => {
@@ -282,9 +245,14 @@ const Game = (
 		});
 
 		socket.on("endGame", (winner, loser, capitulator) => {
-			socket.emit("updateInGame", auth.user)
+			socket.emit("updateInGame", auth.user, gameId);
 			auth.user.name === winner ? allPos.state = State.WIN : allPos.state = State.LOSE ;//TODO: allPos ou pas ?
 			socket.emit("endGame", allPos, winner, loser, capitulator, auth.user);
+		})
+
+		socket.on("updateUser", (user) => {
+			console.log("update dans GAME");
+			auth.user = user;
 		})
 
 		/* ***************************************************************************** */
@@ -308,16 +276,14 @@ const Game = (
 				winPage(context);
 			else if (allPos.state === State.PLAY) {
 				button(context);
-				if (
-					allPos.key === "ArrowUp" ||
+				if (allPos.key === "ArrowUp" ||
 					allPos.key === "ArrowDown" ||
 					allPos.key === "w" ||
 					allPos.key === "W" ||
 					allPos.key === "s" ||
 					allPos.key === "S" ||
 					allPos.key === "z" ||
-					allPos.key === "Z"
-				)
+					allPos.key === "Z")
 					socket.emit("movePlayer", allPos, auth.user.name);
 				socket.emit("update", allPos, auth.user);
 			}
@@ -353,17 +319,16 @@ const Game = (
 			document.removeEventListener("keydown", movePlayer);
 			document.removeEventListener("keyup", stopPlayer);
 			document.removeEventListener("click", clickInterpreter);
-			socket.off("updatedData");
+			socket.off("update");
 			socket.off("updatedPlayer");
-			socket.off("updatedState");
+			socket.off("PauseAndPlay");
 			socket.off("updateImg");
 			socket.off("compteurUpdated");
 			socket.off("launchGame");
 			socket.off("endGame");
-			socket.off("PauseAndPlay");
+			socket.off("updateUser");
 		};
-	// },[]);
-	},[loginRP]);
+	},[ready]);
 
 	/* ***************************************************************************** */
 	/*                          balise HTML de la page web                           */

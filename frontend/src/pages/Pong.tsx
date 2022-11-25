@@ -27,8 +27,9 @@ function Pong() {
 
 	/** reconnexion en pleine partie OU remettre en file d'attente s'il y est déjà **/
 	useEffect(() => {
-		socket.emit('inQueueOrGame', auth.user);
-	}, [auth.user.id])
+		if (auth.user)
+			socket.emit('inQueueOrGame', auth.user);
+	}, [])
 
 	/* ***************************************************************************** */
 	/*                                  socket.on                                    */
@@ -43,6 +44,10 @@ function Pong() {
 		setWait(false);
 		setGame(gameToPlay);
 	});
+
+	socket.on("updateUser", (user) => {
+		auth.user = user;
+	})
 
 	/* ***************************************************************************** */
 	/*                                  fonctions                                    */

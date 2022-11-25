@@ -31,10 +31,10 @@ export class UserDTO {
   isTwoFAValidated?: boolean;
 
   @IsOptional()
-  inQueue: boolean;
+  inQueue?: boolean = false;
 
   @IsOptional()
-  inGame: boolean;
+  inGame?: boolean = false;
 
   @IsOptional()
   createdAt?: Date;

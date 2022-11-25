@@ -35,9 +35,8 @@ export class FortyTwoStrategy extends PassportStrategy(Strategy, '42') {
     profile: Profile,
     done: VerifyCallback,
   ): Promise<UsersEntity> {
-    const { username, id: apiId, emails, photos } = profile;
+    const { username, emails, photos } = profile;
     const userApi = {
-      apiId,
       login: username,
       name: username,
       email: emails[0].value,
