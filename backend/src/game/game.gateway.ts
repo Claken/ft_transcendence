@@ -184,7 +184,6 @@ export class GameGateway
   /* ***************************************************************************** */
   @SubscribeMessage('image')
   async Image(client: any, infos) {
-	console.log("idgame dans IMAGE: "+infos[1].gameId)
 	infos[0] === infos[1].loginLP ? infos[1].mapLP = infos[2] : infos[1].mapRP = infos[2];
 	if (infos[1].mapLP === infos[1].mapRP) {
 		clearInterval(this.intervalID);
@@ -236,7 +235,8 @@ export class GameGateway
 	}
 	if (user.inGame) {
 		let currentGame: GameDTO = await this.gameService.getCurrentGame(user.name)
-		client.join(currentGame.id);
+		// if (currentGame)
+		// 	client.join(currentGame.id);
 		client.emit("goPlay", currentGame);
 		return ;
 	}
@@ -262,8 +262,7 @@ export class GameGateway
         games[0].id,
         user.name,);
       /**** Join the socket game ****/
-	  client.join(updatedGame.id);//TODO: OK ?
-	  console.log("client: "+client+" has join: "+updatedGame.id);
+	  client.join(updatedGame.id);
       /**** Find loginLP in UserQueue ****/
       const firstGameUserLp: UserDTO = userQueue.find(
         (elet: UserDTO) => elet.name === games[0].loginLP,
@@ -282,21 +281,15 @@ export class GameGateway
 	  await this.usersService.updateInGame(firstGameUserLp.id, true)
 	  await this.usersService.updateInGame(user.id, true)
       /**** Redirect in the Frontend to <Game /> ****/
-	  this.server.to(updatedGame.id).emit('goPlay', updatedGame); //TODO: OK ?
-	  console.log("server: "+this.server+" send to: "+updatedGame.id);
+	  this.server.to(updatedGame.id).emit('goPlay', updatedGame);
 	  this.SetCompteur(updatedGame.id);
     } else {
       const newGame = await this.gameService.create({
         loginLP: user.name,
         loginRP: '',
       });
-	  client.join(newGame.id);//TODO: OK ?
-	  console.log("client: "+client+" has join: "+newGame.id);
-		console.log("loginLP = "+newGame.loginLP);
-		console.log("waiting = "+newGame.waitingForOppenent);
-		// console.log("client rooms -> "+client.rooms)
-		// console.log("rooms -> "+client.rooms[0])
-}
+	  client.join(newGame.id);
+	}
   }
 
   /* ***************************************************************************** */

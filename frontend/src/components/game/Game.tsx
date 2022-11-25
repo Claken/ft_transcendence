@@ -44,21 +44,24 @@ const Game = (
 			allPos.loginLP = newData.loginLP;
 			allPos.loginRP = newData.loginRP;
 			allPos.gameId = gameId;
-			console.log("updateData fini.")
 		});
 
 		if (auth.user) {
-			console.log("useEffect []") //TODO: retirer
 			socket.emit("updateData", gameId);
 			setReady(true);
 		}
 	}, [])
 
-	//TODO: Quand un user est offline (user.status)
-	// useEffect(() => {
-	// 	// socket.emit();
-	// 	console.log("entrée dans le useEffect de la reconnexion (GAME.TSX"); //TODO: retirer
-	// }, [auth.user.status])
+	/* ***************************************************************************** */
+	/*                     Déconnection d'un des deux joueurs                        */
+	/* ***************************************************************************** */
+
+	useEffect(() => {
+		// socket.emit("abort", State.ABORT, allPos, auth.user.name);
+		console.log("entrée dans le useEffect de la reconnexion (GAME.TSX"); //TODO: retirer
+		if (auth.user.status === "offline")
+			console.log("Le joueur est hors-ligne"); //TODO: retirer
+	}, [auth.user.status])
 
 	/* ***************************************************************************** */
 	/*            Ajout d'event pour écouter les touches/cliques entrant             */
@@ -152,12 +155,8 @@ const Game = (
 /*                             USEEFFECT PRINCIPALE                              */
 /* ***************************************************************************** */
 	useEffect(() => {
-		if (ready === false || !auth.user) {
-			console.log("RETURN CAR READY FALSE");
+		if (ready === false || !auth.user)
 			return ;
-		}
-		else
-			console.log("ON COMMENCE LE USEEFFECT");
 		const canvas = canvasRef.current;
 		if (canvas == null) return;
 		const context = canvas.getContext("2d");
@@ -205,7 +204,7 @@ const Game = (
 			allPos.scoreLP = newData.scoreLP;
 			allPos.scoreRP = newData.scoreRP;
 			allPos.speed = newData.speed;
-			allPos.state = newData.state;
+			// allPos.state = newData.state;
 		});
 
 		socket.on("updatedPlayer", (newData) => {
@@ -251,7 +250,6 @@ const Game = (
 		})
 
 		socket.on("updateUser", (user) => {
-			console.log("update dans GAME");
 			auth.user = user;
 		})
 
