@@ -7,16 +7,23 @@ import { QueryRunner, Repository } from 'typeorm';
 export class AvatarService {
   constructor(
     @InjectRepository(Avatar)
-    private avatar: Repository<Avatar>,
+    private avatarRepo: Repository<Avatar>,
   ) {}
 
   async uploadAvatar(dataBuffer: Buffer, filename: string): Promise<Avatar> {
-    const newAvatar = this.avatar.create({
+    const newAvatar = this.avatarRepo.create({
       filename,
       data: dataBuffer,
     });
-    await this.avatar.save(newAvatar);
+    await this.avatarRepo.save(newAvatar);
     return newAvatar;
+  }
+
+  async deleteAvatar(
+    avatarId: number,
+  ) {
+    const avatar = await this.getFileById(avatarId);
+    return await this.avatarRepo.remove(avatar);
   }
 
   async uploadAvatarWithQueryRunner(
@@ -43,7 +50,7 @@ export class AvatarService {
   }
 
   async getFileById(fileId: number): Promise<Avatar> {
-    const file = await this.avatar.findOneBy({
+    const file = await this.avatarRepo.findOneBy({
       id: fileId,
     });
     if (!file) {

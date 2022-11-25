@@ -16,7 +16,6 @@ export class Avatar {
   data: Uint8Array;
 
   @OneToOne(() => UsersEntity, (user) => user.avatar, {
-    nullable: true,
     onDelete: 'CASCADE',
   })
   user?: UsersEntity;

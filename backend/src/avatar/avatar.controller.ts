@@ -23,7 +23,7 @@ import { UsersService } from 'src/users/users.service';
 export class AvatarController {
   constructor(
     private readonly avatarService: AvatarService,
-    private usersService: UsersService,
+    private readonly usersService: UsersService,
   ) {}
 
   @Post()

@@ -71,6 +71,10 @@ export class UsersService {
     const user = await this.getById(id);
     if (!user)
       return null;
+    // delete guest avatar
+    if (!user.login) {
+      this.avatarService.deleteAvatar(user.avatarId);
+    }
     return await this.userRepo.remove(user);
   }
 

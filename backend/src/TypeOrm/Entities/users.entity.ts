@@ -53,7 +53,9 @@ export class UsersEntity {
   @Column({ nullable: true, default: 0 })
   avatarId?: number;
   
-  @OneToOne(() => Avatar, (avatar) => avatar.user, { nullable: true })
+  @OneToOne(() => Avatar, (avatar) => avatar.user, {
+    cascade: true
+  })
   avatar?: Avatar;
 
   // TODO: friends
