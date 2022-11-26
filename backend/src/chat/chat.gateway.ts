@@ -115,55 +115,52 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 		console.log('leaveRoom');
 		let		channelLeft = await this.chatService.findOneChatRoomByName(infos.room);
 		let		member = await this.memberService.getMemberByNameAndChannel(infos.user, channelLeft);
+		let		memberName = member.name;
 		await	this.memberService.deleteMemberById(member.id);
-		if (member.name === channelLeft.owner.name)
+		if (memberName === channelLeft.owner.name)
 		{
-			let oldOwner = await this.usersService.findOneByName(infos.user);
-			for (let i = 0; i < oldOwner.ownedChannels.length; i++)
+			let		oldOwner = await this.usersService.findOneByName(infos.user);
+			let		ownedChannels: ChatRoomEntity[] = [...oldOwner.ownedChannels];
+			for (let i = 0; i < ownedChannels.length; i++)
 			{
-				if (oldOwner.ownedChannels[i].id === channelLeft.id)
-					oldOwner.ownedChannels.splice(i, 1);
+				if (ownedChannels[i].id === channelLeft.id)
+					ownedChannels.splice(i, 1);
 			}
-			this.HandleOwnerChange(client, member, channelLeft);
+			oldOwner.ownedChannels = ownedChannels;
+			await this.usersService.updateUser(oldOwner.id);
+			this.HandleOwnerChange(client, memberName, channelLeft.id)
 		}
 		client.emit('leftRoom', infos.room);
   }
 
-  async HandleOwnerChange(client: Socket, oldOwner: MemberEntity, channelLeft: ChatRoomEntity) : Promise<void> {
-		let		newOwner: UsersEntity = null;
-		const	admins = await this.memberService.findAllAdminsFromOneRoom(channelLeft.id);
-		if (admins.length !== 0)
+  async HandleOwnerChange(client: Socket, oldOwnerName: string, channelId: string) : Promise<void> {
+		let 		thechannel = await this.chatService.findOneChatRoomById(channelId);
+		const		admins = await this.memberService.findAllAdminsFromOneRoom(channelId);
+		let			newOwner: UsersEntity = null;
+		if (admins.length > 0)
 		{
-			const	firstAdmin = admins.find((admin: MemberEntity) => admin.name !== oldOwner.name);
-			console.log('firstAdmin ' + firstAdmin.name);
-			newOwner = await this.usersService.getByName(firstAdmin.name);
+			const	admin = admins.find((member: MemberEntity) => member.name != oldOwnerName);
+			newOwner = await this.usersService.findOneByName(admin.name);
 		}
 		else
 		{
-			const users = await this.memberService.findAllMembersFromOneRoom(channelLeft.id);
-			if (users.length !== 0)
+			const	users = await this.memberService.findAllMembersFromOneRoom(channelId);
+			if (users.length > 0)
 			{
-				const	firstMember = users.find((member: MemberEntity) => member.name !== oldOwner.name);
-				console.log('firstMember ' + firstMember.name);
-				newOwner = await this.usersService.getByName(firstMember.name);
-				let		ownerMember = await this.memberService.getMemberByNameAndChannel(newOwner.name, channelLeft);
-				ownerMember.isAdmin = true;
-				await this.memberService.updateMember(ownerMember.id);
+				const user = users.find((member: MemberEntity) => member.name != oldOwnerName);
+				newOwner = await this.usersService.findOneByName(user.name);
 			}
 			else
-				this.HandleDeletionRoom(client, channelLeft.chatRoomName);
+				this.HandleDeletionRoom(client, thechannel.chatRoomName);
 		}
-		if (newOwner !== null)
+		if (newOwner != null)
 		{
-			channelLeft.owner = newOwner;
-			await this.chatService.saveChatRoom(channelLeft);
-			if (newOwner.ownedChannels.length == 0)
-				newOwner.ownedChannels = [channelLeft];
-			else
-				newOwner.ownedChannels.push(channelLeft);
+			thechannel.owner = newOwner;
+			await	this.chatService.saveChatRoom(thechannel);
+			newOwner.ownedChannels.push(thechannel);
 			await this.usersService.updateUser(newOwner.id);
-			this.server.to(channelLeft.id).emit('newOwner',
-			{newOwner: newOwner.name, channel: channelLeft.chatRoomName});
+			this.server.to(thechannel.id).emit('newOwner',
+			{newOwner: newOwner.name, channel: thechannel.chatRoomName});
 		}
   }
 

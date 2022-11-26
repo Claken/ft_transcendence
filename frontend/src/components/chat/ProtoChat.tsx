@@ -94,6 +94,7 @@ const ProtoChat = () => {
 	const changeChannelOwner = (update: {newOwner: string, channel: string}) => {
 		let room = rooms.find((element: IRoom) => {if (element.name === update.channel) return element});
 		room.owner = update.newOwner;
+		console.log(room);
 	}
 
 	const sendChatMessage = (event: any) => {
@@ -356,6 +357,7 @@ const ProtoChat = () => {
 
 	// USEEFFECT POUR CHANGER LE OWNER
 	useEffect(() => {
+		console.log('newOwner message');
 		socket?.on('newOwner', changeChannelOwner);
 		return () => {
 			socket?.off('newOwner', changeChannelOwner);

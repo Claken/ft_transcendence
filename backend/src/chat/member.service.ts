@@ -36,11 +36,11 @@ export class MemberService {
 		}
 
 		async getMemberById(memberId: string) : Promise<MemberEntity> {
-			return await this.memberRepo.findOneBy({id: memberId});
+			return await this.memberRepo.findOne({where: {id: memberId}, relations: ['inChannel']});
 		}
 
 		async getMemberByName(memberName: string) : Promise<MemberEntity> {
-			return await this.memberRepo.findOneBy({name: memberName});
+			return await this.memberRepo.findOne({where: {name: memberName}, relations: ['inChannel']});
 		}
 
 		async getMemberByNameAndChannel(memberName: string, channel: ChatRoomEntity) : Promise<MemberEntity> {
@@ -57,9 +57,11 @@ export class MemberService {
 			return await this.memberRepo.save(member);
 		}
 
-		async updateMember(id: string): Promise<MemberEntity> {
-			const member = await this.getMemberById(id);
-			return await this.memberRepo.save(member);
+		async updateMemberIsAdminToTrue(memberId: string) : Promise<void> {
+			let member = await this.getMemberById(memberId);
+			member.isAdmin = true;
+			await this.memberRepo.update(member.id, member);
+			console.log(await this.getMemberById(memberId));
 		}
 
 	  	async deleteMemberById(id: string) : Promise<void> {
