@@ -63,6 +63,11 @@ export class MemberService {
 			await this.memberRepo.update(member.id, member);
 		}
 
+		async updateMember(memberId: string, update: IMember) : Promise<void>
+		{
+			await this.memberRepo.update(memberId, update);
+		}
+
 	  	async deleteMemberById(id: string) : Promise<void> {
 			await this.memberRepo.delete({id: id});
 		}

@@ -157,12 +157,15 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 		}
 		if (newOwner != null && newOwner != undefined)
 		{
+			console.log("user == " + user + " admin == " + admin);
 			thechannel.owner = newOwner;
 			await	this.chatService.saveChatRoom(thechannel);
 			newOwner.ownedChannels.push(thechannel);
 			await	this.usersService.updateUser(newOwner.id);
 			if (user != null && user != undefined)
-				await this.memberService.updateMemberIsAdminToTrue(user.id);
+			{
+				await 	this.memberService.updateMemberIsAdminToTrue(user.id);
+			}
 			this.server.to(thechannel.id).emit('newOwner',
 			{newOwner: newOwner.name, channel: thechannel.chatRoomName});
 		}

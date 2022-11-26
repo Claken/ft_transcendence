@@ -47,4 +47,5 @@ export interface IMember {
 	isBan?: boolean,
 	timeBan?: number,
 	inChannel?: ChatRoomEntity;
+	createdAt?: Date;
 }
