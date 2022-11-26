@@ -61,7 +61,6 @@ export class MemberService {
 			let member = await this.getMemberById(memberId);
 			member.isAdmin = true;
 			await this.memberRepo.update(member.id, member);
-			console.log(await this.getMemberById(memberId));
 		}
 
 	  	async deleteMemberById(id: string) : Promise<void> {

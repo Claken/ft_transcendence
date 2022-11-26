@@ -135,11 +135,13 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
   async HandleOwnerChange(client: Socket, oldOwnerName: string, channelId: string) : Promise<void> {
 		let 		thechannel = await this.chatService.findOneChatRoomById(channelId);
-		const		admins = await this.memberService.findAllAdminsFromOneRoom(channelId);
 		let			newOwner: UsersEntity = null;
+		let			admin: MemberEntity = null;
+		let			user: MemberEntity = null;
+		const		admins = await this.memberService.findAllAdminsFromOneRoom(channelId);
 		if (admins.length > 0)
 		{
-			const	admin = admins.find((member: MemberEntity) => member.name != oldOwnerName);
+			admin = admins.find((member: MemberEntity) => member.name != oldOwnerName);
 			newOwner = await this.usersService.findOneByName(admin.name);
 		}
 		else
@@ -147,18 +149,20 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 			const	users = await this.memberService.findAllMembersFromOneRoom(channelId);
 			if (users.length > 0)
 			{
-				const user = users.find((member: MemberEntity) => member.name != oldOwnerName);
+				user = users.find((member: MemberEntity) => member.name != oldOwnerName);
 				newOwner = await this.usersService.findOneByName(user.name);
 			}
 			else
 				this.HandleDeletionRoom(client, thechannel.chatRoomName);
 		}
-		if (newOwner != null)
+		if (newOwner != null && newOwner != undefined)
 		{
 			thechannel.owner = newOwner;
 			await	this.chatService.saveChatRoom(thechannel);
 			newOwner.ownedChannels.push(thechannel);
-			await this.usersService.updateUser(newOwner.id);
+			await	this.usersService.updateUser(newOwner.id);
+			if (user != null && user != undefined)
+				await this.memberService.updateMemberIsAdminToTrue(user.id);
 			this.server.to(thechannel.id).emit('newOwner',
 			{newOwner: newOwner.name, channel: thechannel.chatRoomName});
 		}
