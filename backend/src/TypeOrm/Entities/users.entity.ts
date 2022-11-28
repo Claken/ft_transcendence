@@ -6,6 +6,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Game } from './game.entity';
+import { UserDTO } from '../DTOs/User.dto';
 
 // Table in the DB
 @Entity('Users')
@@ -49,8 +50,8 @@ export class UsersEntity {
   @Column({ nullable: true, default: 0})
   lose?: number;
 
-//   @OneToMany(() => Game, Game => Game.userLeft)
-//   userLeft: Game[];
+//   @OneToMany(() => Game, Game => Game.user)
+//   games: Game[];
 
 //   @OneToMany(() => Game, Game => Game.userRight)
 //   userRight: Game[];

@@ -229,15 +229,22 @@ export class GameGateway
 
   @SubscribeMessage('inQueueOrGame')
   async InQueueOrGame(client: any, user: UserDTO) {
-	if (user.inQueue) {
-		client.emit("changeQueue", true);
+	if (user && user.inQueue) {
+		let waitingGame: GameDTO = await this.gameService.getPendingGame(user.name)
+		if (waitingGame) {
+			client.join(waitingGame.id);
+			client.emit("changeQueue", true);
+		}
 		return ;
 	}
-	if (user.inGame) {
+	if (user && user.inGame) {
+		console.log(user.name+" est en game.");
 		let currentGame: GameDTO = await this.gameService.getCurrentGame(user.name)
-		// if (currentGame)
-		// 	client.join(currentGame.id);
-		client.emit("goPlay", currentGame);
+		if (currentGame) {
+			client.emit("goPlay", currentGame);
+		}
+		else
+			console.log("on a pas trouvé la game car currentGame = "+currentGame)
 		return ;
 	}
 	client.emit("changeQueue", false);
@@ -264,7 +271,7 @@ export class GameGateway
       /**** Join the socket game ****/
 	  client.join(updatedGame.id);
       /**** Find loginLP in UserQueue ****/
-      const firstGameUserLp: UserDTO = userQueue.find(
+      let firstGameUserLp: UserDTO = userQueue.find(
         (elet: UserDTO) => elet.name === games[0].loginLP,
       );
       /**** Delete the 2 users in UserQueue ****/
@@ -278,8 +285,9 @@ export class GameGateway
       );
 	  await this.usersService.updateInQueue(user.id, false)
       userQueue.splice(indexRP, 1);
-	  await this.usersService.updateInGame(firstGameUserLp.id, true)
-	  await this.usersService.updateInGame(user.id, true)
+	  firstGameUserLp = await this.usersService.updateInGame(firstGameUserLp.id, true)
+	  user = await this.usersService.updateInGame(user.id, true)
+	  this.server.to(updatedGame.id).emit("updateUsers", firstGameUserLp, user);
       /**** Redirect in the Frontend to <Game /> ****/
 	  this.server.to(updatedGame.id).emit('goPlay', updatedGame);
 	  this.SetCompteur(updatedGame.id);
@@ -322,12 +330,16 @@ export class GameGateway
 
   @SubscribeMessage('endGame')
   async EndGame(client: any, infos) {
-	await this.gameService.gameFinished(
+	let game = this.gameService.getCurrentGame(infos[4]);
+	if (game) {
+		console.log("On set les param pour mettre fin à la partie");
+		await this.gameService.gameFinished(
 		infos[0].gameId, infos[0].scoreLP, infos[0].scoreRP,
 		infos[1], infos[2], infos[3]);
-	if (infos[1] === infos[4].name)
-		await this.usersService.OneMoreWin(infos[4].id);
-	else
-		await this.usersService.OneMorelose(infos[4].id);
+		if (infos[1] === infos[4].name)
+			await this.usersService.OneMoreWin(infos[4].id);
+		else
+			await this.usersService.OneMorelose(infos[4].id);
+		}
 	}
 }

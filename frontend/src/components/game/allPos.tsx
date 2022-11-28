@@ -23,6 +23,7 @@ const allPos = {
 	img: null,
 	mapLP: null,
 	mapRP: null,
+	map: 0,
 	loginLP: null,
 	loginRP: null,
 	gameId: null,

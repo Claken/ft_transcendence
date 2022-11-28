@@ -29,7 +29,7 @@ function Pong() {
 	useEffect(() => {
 		if (auth.user)
 			socket.emit('inQueueOrGame', auth.user);
-	}, [])
+		}, [auth.user])
 
 	/* ***************************************************************************** */
 	/*                                  socket.on                                    */
@@ -47,6 +47,13 @@ function Pong() {
 
 	socket.on("updateUser", (user) => {
 		auth.user = user;
+	})
+
+	socket.on("updateUsers", (userLeft, userRight) => {
+		if (auth.user.name === userLeft.name)
+			auth.user = userLeft;
+		else
+			auth.user = userRight;
 	})
 
 	/* ***************************************************************************** */

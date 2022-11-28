@@ -6,6 +6,7 @@ import {
 	ManyToOne,
 } from 'typeorm';
 import { UsersEntity } from "./users.entity"
+import { UserDTO } from '../DTOs/User.dto';
 
 @Entity()
 export class Game implements IGame {
@@ -48,8 +49,8 @@ export class Game implements IGame {
   @Column({ default: true })
   waitingForOppenent?: boolean;
 
-//   @ManyToOne(() => UsersEntity, User => User.userLeft)
-//   userLeft: UsersEntity;
+//   @ManyToOne(() => UsersEntity, User => User.games)
+//   user: UsersEntity;
 
 //   @ManyToOne(() => UsersEntity, User => User.userRight)
 //   userRight: UsersEntity;

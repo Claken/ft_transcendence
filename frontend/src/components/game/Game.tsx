@@ -36,7 +36,7 @@ const Game = (
 	/* ***************************************************************************** */
 	useEffect(() => {
 		socket.on("updateData", (newData) => {
-			allPos.img.src = gameBoards[newData.map];
+			allPos.map = newData.map;
 			allPos.state = newData.state;
 			allPos.compteur = newData.compteur;
 			allPos.scoreLP = newData.scoreLP;
@@ -44,11 +44,11 @@ const Game = (
 			allPos.loginLP = newData.loginLP;
 			allPos.loginRP = newData.loginRP;
 			allPos.gameId = gameId;
+			setReady(true);
 		});
 
 		if (auth.user) {
 			socket.emit("updateData", gameId);
-			setReady(true);
 		}
 	}, [])
 
@@ -58,10 +58,12 @@ const Game = (
 
 	useEffect(() => {
 		// socket.emit("abort", State.ABORT, allPos, auth.user.name);
-		console.log("entrée dans le useEffect de la reconnexion (GAME.TSX"); //TODO: retirer
+		console.log("entrée dans le useEffect de la déco"); //TODO: retirer
 		if (auth.user.status === "offline")
-			console.log("Le joueur est hors-ligne"); //TODO: retirer
-	}, [auth.user.status])
+			console.log("Le joueur est hors-ligne");
+		else if (auth.user.status === "online")
+			console.log("Le joueur est en ligne");
+		}, [auth.user.status])
 
 	/* ***************************************************************************** */
 	/*            Ajout d'event pour écouter les touches/cliques entrant             */
@@ -183,6 +185,7 @@ const Game = (
 		allPos.key = key;
 		let animationFrameId: number;
 		allPos.img = new Image();
+		allPos.img.src = gameBoards[allPos.map];
 		var mignature = [new Image(), new Image(), new Image()];
 		mignature[0].src = gameBoards[0];
 		mignature[1].src = gameBoards[1];
@@ -204,7 +207,6 @@ const Game = (
 			allPos.scoreLP = newData.scoreLP;
 			allPos.scoreRP = newData.scoreRP;
 			allPos.speed = newData.speed;
-			// allPos.state = newData.state;
 		});
 
 		socket.on("updatedPlayer", (newData) => {
@@ -244,9 +246,9 @@ const Game = (
 		});
 
 		socket.on("endGame", (winner, loser, capitulator) => {
-			socket.emit("updateInGame", auth.user, gameId);
 			auth.user.name === winner ? allPos.state = State.WIN : allPos.state = State.LOSE ;//TODO: allPos ou pas ?
 			socket.emit("endGame", allPos, winner, loser, capitulator, auth.user);
+			socket.emit("updateInGame", auth.user, gameId);
 		})
 
 		socket.on("updateUser", (user) => {

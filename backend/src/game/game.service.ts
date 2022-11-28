@@ -93,6 +93,7 @@ export class GameService {
   async updateMap(id: number, map: number): Promise<Game> {
     const game = await this.getById(id);
 	game.map = map;
+	game.state = 2;
 	return await this.gameRepo.save(game);
   }
 
