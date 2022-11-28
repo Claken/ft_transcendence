@@ -38,7 +38,7 @@ function ProfileDetails() {
   useEffect(() => {
     const getUserData = async () => {
       await axios
-        .get("/users/" + userProfile)
+        .get("/users/name/" + userProfile)
         .then((res) => {
           if (res.data) {
             setUser(null);
@@ -63,7 +63,7 @@ function ProfileDetails() {
               <div className="profile-picture">
                 <img
                   className="stylePic"
-                  src={user.pictureUrl}
+                  src={user.avatarUrl}
                   alt="profilePic"
                 />
               </div>

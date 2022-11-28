@@ -5,10 +5,14 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
+import { AppLoggerMiddleware } from './http.logger.middleware';
+import { MiddlewareConsumer } from '@nestjs/common';
+import { ChatModule } from './chat/chat.module';
 import { entities } from './TypeOrm';
 import { GameModule } from './game/game.module';
 import { PassportModule } from '@nestjs/passport';
 import { DmModule } from './dm/dm.module';
+import { AvatarModule } from './avatar/avatar.module';
 
 @Module({
   imports: [
@@ -37,10 +41,16 @@ import { DmModule } from './dm/dm.module';
     }),
     UsersModule,
     AuthModule,
+    ChatModule,
     GameModule,
-		DmModule
+		DmModule,
+		AvatarModule
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule {
+  configure(consumer: MiddlewareConsumer): void {
+    consumer.apply(AppLoggerMiddleware).forRoutes('*');
+  }
+}

@@ -7,11 +7,12 @@ import { UsersService } from 'src/users/users.service';
 export class AuthService {
   constructor(private usersService: UsersService) {}
 
-  async register(user: UserDTO): Promise<UsersEntity> {
+  async register(user: UserDTO, buffer: Buffer): Promise<UsersEntity> {
     const { login } = user;
-    const userFound = await this.usersService.getByName(login);
+    const userFound = await this.usersService.getByLogin(login); //name = login
     if (userFound) return userFound;
-    return await this.usersService.create(user);
+
+    return await this.usersService.create(user, buffer);
   }
   // async register(user: UserDTO): Promise<TokenPayload> {
   //   const { id } = user;
