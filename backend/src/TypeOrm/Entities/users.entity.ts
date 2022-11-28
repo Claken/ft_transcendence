@@ -1,17 +1,13 @@
 import {
   Column,
-  CreateDateColumn,
   Entity,
-  Generated,
   OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
   JoinColumn
 } from 'typeorm';
 import { Avatar } from './avatar.entity';
-import { Game } from './game.entity';
 import { ChatRoomEntity } from './chat.entity';
-import { UserDTO } from '../DTOs/User.dto';
 
 // Table in the DB
 @Entity('Users')
@@ -55,14 +51,7 @@ export class UsersEntity {
   @OneToMany(() => ChatRoomEntity, (Chat: ChatRoomEntity) => Chat.owner, {onDelete: 'SET NULL'})
   @JoinColumn()
   ownedChannels?: ChatRoomEntity[];
-//   @OneToMany(() => Game, Game => Game.user)
-//   games: Game[];
 
-//   @OneToMany(() => Game, Game => Game.userRight)
-//   userRight: Game[];
-
-  @CreateDateColumn()
-  createdAt?: Date;
   @Column({ nullable: true, default: 0 })
   avatarId?: number;
   
