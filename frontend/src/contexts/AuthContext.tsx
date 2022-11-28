@@ -33,7 +33,7 @@ export const AuthProvider = ({ children }) => {
 		if (blob) {
 			const blobFile = new Blob([blob], { type: 'image/png' });
 			getBase64(blobFile, (base64string) => {
-				setUser({ ...user, avatarUrl: base64string as string });
+				setUser((prev: IUser) => ({ ...prev, avatarUrl: base64string as string }));
 			});
 		}
 	}, [blob]);

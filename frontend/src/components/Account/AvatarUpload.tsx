@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useAuth } from "../../contexts/AuthContext";
 import axios from "../../axios.config";
 import { IAvatar } from "../../interfaces/avatar.interface";
+import { IUser } from "../../interfaces/user.interface";
 // import Resizer from "react-image-file-resizer";
 
 const AvatarUpload = () => {
@@ -33,7 +34,7 @@ const AvatarUpload = () => {
 
 	useEffect(() => {
 		if (avatar) {
-			setUser({ ...user, avatarId: avatar.id });
+			setUser((prev: IUser) => ({ ...prev, avatarId: avatar.id }));
 		}
 	}, [avatar]);
 

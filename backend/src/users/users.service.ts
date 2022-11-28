@@ -53,6 +53,12 @@ export class UsersService {
     });
   }
 
+  async getByLogin(loginToFind: string): Promise<UsersEntity> {
+    return await this.userRepo.findOneBy({
+      login: loginToFind,
+    });
+  }
+
   // unuse
   async getByEmail(emailToFind: string): Promise<UsersEntity> {
     return await this.userRepo.findOneBy({
@@ -76,6 +82,12 @@ export class UsersService {
   async updateStatusUser(id: number, status: string): Promise<UsersEntity> {
     const user = await this.getById(id);
     user.status = status;
+    return await this.userRepo.save(user);
+  }
+
+  async updateName(id: number, name: string): Promise<UsersEntity> {
+    const user = await this.getById(id);
+    user.name = name;
     return await this.userRepo.save(user);
   }
 

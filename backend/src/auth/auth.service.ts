@@ -9,7 +9,7 @@ export class AuthService {
 
   async register(user: UserDTO, buffer: Buffer): Promise<UsersEntity> {
     const { login } = user;
-    const userFound = await this.usersService.getByName(login); //name = login
+    const userFound = await this.usersService.getByLogin(login); //name = login
     if (userFound) return userFound;
 
     return await this.usersService.create(user, buffer);
