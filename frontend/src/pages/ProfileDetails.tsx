@@ -38,7 +38,7 @@ function ProfileDetails() {
   useEffect(() => {
     const getUserData = async () => {
       await axios
-        .get("/users/" + userProfile)
+        .get("/users/name/" + userProfile)
         .then((res) => {
           if (res.data) {
             setUser(null);
