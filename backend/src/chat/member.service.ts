@@ -6,6 +6,7 @@ import { ChatRoomEntity } from 'src/TypeOrm';
 
 import { ChatRoomDto } from '../TypeOrm/DTOs/chat.dto'
 import { UsersService } from 'src/users/users.service';
+import { DeepPartial } from 'typeorm';
 
 @Injectable()
 export class MemberService {
@@ -57,15 +58,8 @@ export class MemberService {
 			return await this.memberRepo.save(member);
 		}
 
-		async updateMemberIsAdminToTrue(memberId: string) : Promise<void> {
-			let member = await this.getMemberById(memberId);
-			member.isAdmin = true;
+		async updateMember(member: MemberEntity) : Promise<void> {
 			await this.memberRepo.update(member.id, member);
-		}
-
-		async updateMember(memberId: string, update: IMember) : Promise<void>
-		{
-			await this.memberRepo.update(memberId, update);
 		}
 
 	  	async deleteMemberById(id: string) : Promise<void> {

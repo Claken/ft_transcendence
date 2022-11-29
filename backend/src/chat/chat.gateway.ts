@@ -13,6 +13,7 @@ import { combineLatest } from 'rxjs';
 import { MessageService } from './chatMessage.service';
 import { type } from 'src/exports/enum';
 import * as bcrypt from 'bcrypt';
+import { DeepPartial } from 'typeorm';
 
 // {cors: '*'} pour que chaque client dans le frontend puisse se connecter à notre gateway
 @WebSocketGateway({cors: '*'}) // decorator pour dire que la classe ChatGateway sera un gateway /
@@ -157,14 +158,15 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 		}
 		if (newOwner != null && newOwner != undefined)
 		{
-			console.log("user == " + user + " admin == " + admin);
+			// console.log("user == " + user + " admin == " + admin);
 			thechannel.owner = newOwner;
 			await	this.chatService.saveChatRoom(thechannel);
 			newOwner.ownedChannels.push(thechannel);
 			await	this.usersService.updateUser(newOwner.id);
 			if (user != null && user != undefined)
 			{
-				await 	this.memberService.updateMemberIsAdminToTrue(user.id);
+				user.isAdmin = true;
+				await 	this.memberService.updateMember(user);
 			}
 			this.server.to(thechannel.id).emit('newOwner',
 			{newOwner: newOwner.name, channel: thechannel.chatRoomName});
@@ -178,7 +180,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 	@SubscribeMessage('createChatRoom')
     async HandleCreationRoom(client: Socket, room: ChatRoomDto): Promise<void> {
 
-        const    	theOwner = await this.usersService.getByName(room.owner);
+        const    	theOwner = await this.usersService.findOneByName(room.owner);
 
         const    	hash = room.type === type.protected ? await bcrypt.hash(room.password, 10) : null;
 
@@ -195,7 +197,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
         channelCreated.members = [memberCreated];
         await this.chatService.saveChatRoom(channelCreated);
 
-        theOwner.ownedChannels = [channelCreated];
+        theOwner.ownedChannels.push(channelCreated);
         await this.usersService.updateUser(theOwner.id);
 
         const sockets = await this.server.fetchSockets();
