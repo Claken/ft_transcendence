@@ -23,6 +23,8 @@ const ProtoChat = () => {
 
 	const	[activeRoom, setActiveRoom] = useState<string>("");
 
+	const [password, setPassword] = useState<string>("");
+
 	const 	auth = useAuth();
 
 	let 	ignore = false;
@@ -307,6 +309,21 @@ const ProtoChat = () => {
 		setRooms(roomsCopy);
 	}
 
+	const deleteChannelPassword = () => {
+		const	activeRoom = findActiveRoom();
+		if (activeRoom && (activeRoom.owner === username))
+		{
+			socket?.emit('deleteChannelPassword', activeRoom.name);
+		}
+	}
+	const updateChannelPassword = () => {
+		const	activeRoom = findActiveRoom();
+		if (activeRoom && (activeRoom.owner === username))
+		{
+			socket?.emit('updateChannelPassword', {room: activeRoom.name, newPassword: password});
+		}
+	}
+
 	/* ***************************************************************************** */
 	/*    						Les différents UseEffets    						 */
 	/* ***************************************************************************** */
@@ -443,6 +460,13 @@ const ProtoChat = () => {
 					<p>
 						Banned users : {findActiveRoom().banList ? findActiveRoom().banList.map((name: string) => <div>{name}</div>) : <div></div>}
 					</p>
+					<p>
+						<button onClick={deleteChannelPassword}>Delete password</button>
+					</p>
+					<form onSubmit={updateChannelPassword}>
+						<input type="text" value={password} onChange={e => setPassword(e.target.value)}/>
+						<button type="submit"><strong>change password</strong></button>
+					</form>
 				</div>
 			<div>
 				{findActiveRoom().member ? findActiveRoom().messages.map((msg: any, id: number) => <ul key={id}><strong>{msg.sender}:</strong> {msg.message} - - - <i>{msg.date}</i></ul>) : <div></div>}
