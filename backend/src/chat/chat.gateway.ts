@@ -158,7 +158,6 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 		}
 		if (newOwner != null && newOwner != undefined)
 		{
-			// console.log("user == " + user + " admin == " + admin);
 			thechannel.owner = newOwner;
 			await	this.chatService.saveChatRoom(thechannel);
 			newOwner.ownedChannels.push(thechannel);
@@ -245,4 +244,24 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 		client.emit('sendAllChannels', Channels);
 	}
 
+	@SubscribeMessage('getListsForOneClient')
+	async HandleListsForOneClient(client: Socket, chatName: string) : Promise<void> {
+		const theChannel = 	await this.chatService.findOneChatRoomByName(chatName);
+		const admins =		await this.memberService.findAllAdminsFromOneRoom(theChannel.id);
+		const users =		await this.memberService.findAllMembersFromOneRoom(theChannel.id);
+		const bans =		await this.memberService.findAllBannedMembersFromOneRoom(theChannel.id);
+
+		client.emit('AllLists', {channel: chatName, usersList: users, adminsList: admins, banList: bans});
+	}
+
+	@SubscribeMessage('getLists')
+	async HandleLists(@MessageBody() chatName: string) : Promise<void> {
+		const theChannel = 	await this.chatService.findOneChatRoomByName(chatName);
+		const admins =		await this.memberService.findAllAdminsFromOneRoom(theChannel.id);
+		const users =		await this.memberService.findAllMembersFromOneRoom(theChannel.id);
+		const bans =		await this.memberService.findAllBannedMembersFromOneRoom(theChannel.id);
+
+		this.server.to(theChannel.id).emit('AllLists', {channel: chatName, usersList: users, adminsList: admins, banList: bans});
+	}
+	
 }

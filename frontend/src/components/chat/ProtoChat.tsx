@@ -97,6 +97,38 @@ const ProtoChat = () => {
 		console.log(room);
 	}
 
+	const getListsForAChannel = (lists: {channel: string, usersList: any[], adminsList: any[], banList: any[]}) =>
+	{
+		let room = rooms.find((element: IRoom) => {if (element.name === lists.channel) return element});
+		let newUsers: string[] = [];
+		let newAdmins: string[] = [];
+		let newBans: string[] = [];
+		if (lists.usersList.length > 0)
+		{
+			lists.usersList.forEach((element: any) => {
+				newUsers.push(element.name);
+			});
+			room.usersList = newUsers;
+			console.log(room.usersList);
+		}
+		if (lists.adminsList.length > 0)
+		{
+			lists.adminsList.forEach((element: any) => {
+				newAdmins.push(element.name);
+			});
+			room.adminsList = newAdmins;
+		}
+		if (lists.banList.length > 0)
+		{
+			lists.banList.forEach((element: any) => {
+				newBans.push(element.name);
+			});
+			room.banList = newBans;
+		}
+		const roomsCopy = [...rooms];
+		setRooms(roomsCopy);
+	}
+
 	const sendChatMessage = (event: any) => {
 		event.preventDefault();
 		const activeRoom = findActiveRoom();
@@ -184,6 +216,7 @@ const ProtoChat = () => {
 				element.member = false;
 		});
 		setJoinButtonAndStatus();
+		socket?.emit('getLists', room);
 	}
 
 	const joinedRoom = (room: string) => {
@@ -192,6 +225,7 @@ const ProtoChat = () => {
 				element.member = true;
 		});
 		setJoinButtonAndStatus();
+		socket?.emit('getLists', room);
 	}
 
 	const toggleRoomMembership = (event: any) => {
@@ -231,6 +265,7 @@ const ProtoChat = () => {
 				newRoom.messages.push({sender: oneMessage.sender, message: oneMessage.content, date: oneMessage.createdAt});
 			});
 			roomsCopy.push(newRoom);
+			socket.emit('getListsForOneClient', element.chatRoomName);
 		});
 		setRooms(roomsCopy);
 	}
@@ -253,8 +288,8 @@ const ProtoChat = () => {
 			[...channel.messages].reverse().forEach((oneMessage: any) => {
 				newRoom.messages.push({sender: oneMessage.sender, message: oneMessage.content, date: oneMessage.createdAt});
 			});
-			
 		}
+		socket?.emit('getListsForOneClient', channel.chatRoomName);
 
 		const roomsCopy = [...rooms];
 		roomsCopy.push(newRoom);
@@ -364,6 +399,14 @@ const ProtoChat = () => {
 		}
 	}, [changeChannelOwner])
 
+	// GET LISTS
+	useEffect(() => {
+		socket?.on('AllLists', getListsForAChannel);
+		return () => {
+			socket?.off('AllLists', getListsForAChannel);
+		}
+	}, [getListsForAChannel])
+
 	return (
 		<div>
 			<h1>{title}</h1>
@@ -386,10 +429,19 @@ const ProtoChat = () => {
 			</table>
 				<div>
 					<p>
-						Active room: {activeRoom}
+						Active room ~~ : {activeRoom}
 					</p>
 					<p>
-						Status: {joinStatus + ' '}<button onClick={toggleRoomMembership}>{joinButton}</button>
+						Status ~~~~~~~ : {joinStatus + ' '}<button onClick={toggleRoomMembership}>{joinButton}</button>
+					</p>
+					<p>
+						Members : {findActiveRoom().usersList ? findActiveRoom().usersList.map((name: string) => <div>{name}</div>) : <div></div>}
+					</p>
+					<p>
+						Admins : {findActiveRoom().adminsList ? findActiveRoom().adminsList.map((name: string) => <div>{name}</div>) : <div></div>}
+					</p>
+					<p>
+						Banned users : {findActiveRoom().banList ? findActiveRoom().banList.map((name: string) => <div>{name}</div>) : <div></div>}
 					</p>
 				</div>
 			<div>
