@@ -310,17 +310,23 @@ const ProtoChat = () => {
 
 	const deleteChannelPassword = () => {
 		const	activeRoom = findActiveRoom();
-		if (activeRoom && (activeRoom.owner === username))
-		{
+		if (activeRoom && (activeRoom.owner === username) && activeRoom.type === type.protected)
 			socket?.emit('deleteChannelPassword', activeRoom.name);
-		}
+		else if (activeRoom.type != type.protected)
+			alert('this channel is not protected');
+		else if (activeRoom.owner != username)
+			alert('You are not the owner of this channel !');
+
+
 	}
 	const updateChannelPassword = () => {
 		const	activeRoom = findActiveRoom();
-		if (activeRoom && (activeRoom.owner === username))
-		{
+		if (activeRoom && (activeRoom.owner === username) && activeRoom.type === type.protected)
 			socket?.emit('updateChannelPassword', {room: activeRoom.name, newPassword: password});
-		}
+		else if (activeRoom.type != type.protected)
+			alert('this channel is not protected');
+		else if (activeRoom.owner != username)
+			alert('You are not the owner of this channel !');
 	}
 
 	/* ***************************************************************************** */
@@ -445,19 +451,22 @@ const ProtoChat = () => {
 			</table>
 				<div>
 					<p>
-						Active room ~~ : {activeRoom}
+						<div>&nbsp;</div>Active room : {activeRoom}
 					</p>
 					<p>
-						Status ~~~~~~~ : {joinStatus + ' '}<button onClick={toggleRoomMembership}>{joinButton}</button>
+						<div>&nbsp;</div>Status : {joinStatus + ' '}<button onClick={toggleRoomMembership}>{joinButton}</button>
 					</p>
 					<p>
-						Members : {findActiveRoom().usersList ? findActiveRoom().usersList.map((name: string) => <div>{name}</div>) : <div></div>}
+						<div>&nbsp;</div>Members : {findActiveRoom().usersList ? findActiveRoom().usersList.map((name: string) => <div>{name}</div>) : <div></div>}
 					</p>
 					<p>
-						Admins : {findActiveRoom().adminsList ? findActiveRoom().adminsList.map((name: string) => <div>{name}</div>) : <div></div>}
+						<div>&nbsp;</div>Admins : {findActiveRoom().adminsList ? findActiveRoom().adminsList.map((name: string) => <div>{name}</div>) : <div></div>}
 					</p>
 					<p>
-						Banned users : {findActiveRoom().banList ? findActiveRoom().banList.map((name: string) => <div>{name}</div>) : <div></div>}
+						<div>&nbsp;</div>Banned users : {findActiveRoom().banList ? findActiveRoom().banList.map((name: string) => <div>{name}</div>) : <div></div>}
+					</p>
+					<p>
+						<div>&nbsp;</div>
 					</p>
 					<p>
 						<button onClick={deleteChannelPassword}>Delete password</button>
@@ -468,6 +477,7 @@ const ProtoChat = () => {
 					</form>
 				</div>
 			<div>
+				<div>&nbsp;</div>
 				{findActiveRoom().member ? findActiveRoom().messages.map((msg: any, id: number) => <ul key={id}><strong>{msg.sender}:</strong> {msg.message} - - - <i>{msg.date}</i></ul>) : <div></div>}
 			</div>
 		</div>

@@ -45,7 +45,7 @@ export class UsersService {
   // find() is a Repository Typeorm method to call SELECT query
   // TODO: throw exception if not found ?
   async findAllUsers(): Promise<UsersEntity[]> {
-    return await this.userRepo.find();
+    return await this.userRepo.find({relations: ['ownedChannels', 'memberships']});
   }
 
   async getByName(nameToFind: string): Promise<UsersEntity> {
@@ -55,7 +55,7 @@ export class UsersService {
   }
 
   async findOneByName(nameToFind: string) : Promise<UsersEntity> {
-    return await this.userRepo.findOne({where: {name: nameToFind}, relations: ['ownedChannels']});
+    return await this.userRepo.findOne({where: {name: nameToFind}, relations: ['ownedChannels', 'memberships']});
   }
   
   async getByLogin(loginToFind: string): Promise<UsersEntity> {

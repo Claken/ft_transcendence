@@ -197,6 +197,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
         await this.chatService.saveChatRoom(channelCreated);
 
         theOwner.ownedChannels.push(channelCreated);
+		theOwner.memberships.push(memberCreated);
         await this.usersService.updateUser(theOwner.id);
 
         const sockets = await this.server.fetchSockets();
