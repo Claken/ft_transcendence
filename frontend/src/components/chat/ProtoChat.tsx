@@ -24,6 +24,8 @@ const ProtoChat = () => {
 
 	const	[activeRoom, setActiveRoom] = useState<string>("");
 
+	const [password, setPassword] = useState<string>("");
+
 	const 	auth = useAuth();
 
 	/* ***************************************************************************** */
@@ -86,6 +88,48 @@ const ProtoChat = () => {
 		changeText(event.target.value);
 	}
 
+	const wrongPasswordMessage = () => {
+		alert('WRONG PASSWORD ! YOU CANNOT JOIN THIS CHANNEL');
+	}
+
+	const changeChannelOwner = (update: {newOwner: string, channel: string}) => {
+		let room = rooms.find((element: IRoom) => {if (element.name === update.channel) return element});
+		room.owner = update.newOwner;
+		console.log(room);
+	}
+
+	const getListsForAChannel = (lists: {channel: string, usersList: any[], adminsList: any[], banList: any[]}) =>
+	{
+		let room = rooms.find((element: IRoom) => {if (element.name === lists.channel) return element});
+		let newUsers: string[] = [];
+		let newAdmins: string[] = [];
+		let newBans: string[] = [];
+		if (lists.usersList.length > 0)
+		{
+			lists.usersList.forEach((element: any) => {
+				newUsers.push(element.name);
+			});
+			room.usersList = newUsers;
+		}
+		if (lists.adminsList.length > 0)
+		{
+			lists.adminsList.forEach((element: any) => {
+				newAdmins.push(element.name);
+			});
+			room.adminsList = newAdmins;
+		}
+		if (lists.banList.length > 0)
+		{
+			lists.banList.forEach((element: any) => {
+				newBans.push(element.name);
+			});
+			room.banList = newBans;
+		}
+		// POUR RERENDER LA PAGE CAR ROOMS EST UN USESTATE, ET QUAND LE USESTATE EST MODIFIE CA RERENDER
+		const roomsCopy = [...rooms];
+		setRooms(roomsCopy);
+	}
+
 	const sendChatMessage = (event: any) => {
 		event.preventDefault();
 		const activeRoom = findActiveRoom();
@@ -130,11 +174,13 @@ const ProtoChat = () => {
 			if (askARoom === "")
 				alert('This is not a right name for a room !');
 		}
+		const pswd = prompt('Enter a password for your room if you want one: ');
+		const typeOfRoom = pswd === null ? type.public : type.protected;
 		const dbRoom: IChatRoom = {
 			chatRoomName: askARoom,
 			owner: username,
-			type: type.public,
-			// password: 
+			type: typeOfRoom,
+			password: pswd,
 		}
 		socket?.emit('createChatRoom', dbRoom);
 	}
@@ -171,6 +217,7 @@ const ProtoChat = () => {
 				element.member = false;
 		});
 		setJoinButtonAndStatus();
+		socket?.emit('getLists', room);
 	}
 
 	const joinedRoom = (room: string) => {
@@ -179,15 +226,23 @@ const ProtoChat = () => {
 				element.member = true;
 		});
 		setJoinButtonAndStatus();
+		socket?.emit('getLists', room);
 	}
 
 	const toggleRoomMembership = (event: any) => {
 		event.preventDefault();
-		const activeRoom = findActiveRoom();
+		const	activeRoom = findActiveRoom();
+		let		pswd: string = null;
 		if (activeRoom.member)
+		{
 			socket?.emit('leaveRoom', {room: activeRoom.name, user: username});
+		}
 		else
-			socket?.emit('joinRoom', {room: activeRoom.name, user: username});
+		{
+			if (activeRoom.type === type.protected)
+				pswd = prompt('you need a password to join this channel, please type it: ');
+			socket?.emit('joinRoom', {room: activeRoom.name, user: username, password: pswd});
+		}
 	}
 
 	const receiveAllChannels = (channels: any[]) => {
@@ -211,6 +266,7 @@ const ProtoChat = () => {
 				newRoom.messages.push({sender: oneMessage.sender, message: oneMessage.content, date: oneMessage.createdAt});
 			});
 			roomsCopy.push(newRoom);
+			socket.emit('getListsForOneClient', element.chatRoomName);
 		});
 		setRooms(roomsCopy);
 	}
@@ -233,8 +289,8 @@ const ProtoChat = () => {
 			[...channel.messages].reverse().forEach((oneMessage: any) => {
 				newRoom.messages.push({sender: oneMessage.sender, message: oneMessage.content, date: oneMessage.createdAt});
 			});
-			
 		}
+		socket?.emit('getListsForOneClient', channel.chatRoomName);
 
 		const roomsCopy = [...rooms];
 		roomsCopy.push(newRoom);
@@ -250,6 +306,21 @@ const ProtoChat = () => {
 				roomsCopy.splice(i, 1);
 		}
 		setRooms(roomsCopy);
+	}
+
+	const deleteChannelPassword = () => {
+		const	activeRoom = findActiveRoom();
+		if (activeRoom && (activeRoom.owner === username))
+		{
+			socket?.emit('deleteChannelPassword', activeRoom.name);
+		}
+	}
+	const updateChannelPassword = () => {
+		const	activeRoom = findActiveRoom();
+		if (activeRoom && (activeRoom.owner === username))
+		{
+			socket?.emit('updateChannelPassword', {room: activeRoom.name, newPassword: password});
+		}
 	}
 
 	/* ***************************************************************************** */
@@ -327,6 +398,31 @@ const ProtoChat = () => {
 		}
 	}, [joinedRoom])
 
+	// USEEFFECT POUR UN MAUVAIS MOT DE PASSE
+	useEffect(() => {
+		socket?.on('wrongPasswordForTheJoin', wrongPasswordMessage);
+		return () => {
+			socket?.off('wrongPasswordForTheJoin', wrongPasswordMessage);
+		}
+	}, [wrongPasswordMessage])
+
+	// USEEFFECT POUR CHANGER LE OWNER
+	useEffect(() => {
+		console.log('newOwner message');
+		socket?.on('newOwner', changeChannelOwner);
+		return () => {
+			socket?.off('newOwner', changeChannelOwner);
+		}
+	}, [changeChannelOwner])
+
+	// GET LISTS
+	useEffect(() => {
+		socket?.on('AllLists', getListsForAChannel);
+		return () => {
+			socket?.off('AllLists', getListsForAChannel);
+		}
+	}, [getListsForAChannel])
+
 	return (
 		<div>
 			<h1>{title}</h1>
@@ -349,11 +445,27 @@ const ProtoChat = () => {
 			</table>
 				<div>
 					<p>
-						Active room: {activeRoom}
+						Active room ~~ : {activeRoom}
 					</p>
 					<p>
-						Status: {joinStatus + ' '}<button onClick={toggleRoomMembership}>{joinButton}</button>
+						Status ~~~~~~~ : {joinStatus + ' '}<button onClick={toggleRoomMembership}>{joinButton}</button>
 					</p>
+					<p>
+						Members : {findActiveRoom().usersList ? findActiveRoom().usersList.map((name: string) => <div>{name}</div>) : <div></div>}
+					</p>
+					<p>
+						Admins : {findActiveRoom().adminsList ? findActiveRoom().adminsList.map((name: string) => <div>{name}</div>) : <div></div>}
+					</p>
+					<p>
+						Banned users : {findActiveRoom().banList ? findActiveRoom().banList.map((name: string) => <div>{name}</div>) : <div></div>}
+					</p>
+					<p>
+						<button onClick={deleteChannelPassword}>Delete password</button>
+					</p>
+					<form onSubmit={updateChannelPassword}>
+						<input type="text" value={password} onChange={e => setPassword(e.target.value)}/>
+						<button type="submit"><strong>change password</strong></button>
+					</form>
 				</div>
 			<div>
 				{findActiveRoom().member ? findActiveRoom().messages.map((msg: any, id: number) => <ul key={id}><strong>{msg.sender}:</strong> {msg.message} - - - <i>{msg.date}</i></ul>) : <div></div>}

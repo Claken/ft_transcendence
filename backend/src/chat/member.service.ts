@@ -6,6 +6,7 @@ import { ChatRoomEntity } from 'src/TypeOrm';
 
 import { ChatRoomDto } from '../TypeOrm/DTOs/chat.dto'
 import { UsersService } from 'src/users/users.service';
+import { DeepPartial } from 'typeorm';
 
 @Injectable()
 export class MemberService {
@@ -26,7 +27,8 @@ export class MemberService {
 
 		async findAllMembersFromOneRoom(roomId: string) : Promise<MemberEntity[]> {
 			const members = await this.findAllMembers();
-			return members.filter((member: MemberEntity) => member.inChannel.id === roomId);
+			const membersFromOneRoom = members.filter((member: MemberEntity) => member.inChannel.id === roomId);
+			return membersFromOneRoom;
 		}
 
 		async findAllBannedMembersFromOneRoom(roomId: string) :  Promise<MemberEntity[]> {
@@ -35,11 +37,11 @@ export class MemberService {
 		}
 
 		async getMemberById(memberId: string) : Promise<MemberEntity> {
-			return await this.memberRepo.findOneBy({id: memberId});
+			return await this.memberRepo.findOne({where: {id: memberId}, relations: ['inChannel']});
 		}
 
 		async getMemberByName(memberName: string) : Promise<MemberEntity> {
-			return await this.memberRepo.findOneBy({name: memberName});
+			return await this.memberRepo.findOne({where: {name: memberName}, relations: ['inChannel']});
 		}
 
 		async getMemberByNameAndChannel(memberName: string, channel: ChatRoomEntity) : Promise<MemberEntity> {
@@ -56,9 +58,8 @@ export class MemberService {
 			return await this.memberRepo.save(member);
 		}
 
-		async updateMember(id: string): Promise<MemberEntity> {
-			const member = await this.getMemberById(id);
-			return await this.memberRepo.save(member);
+		async updateMember(member: MemberEntity) : Promise<void> {
+			await this.memberRepo.update(member.id, member);
 		}
 
 	  	async deleteMemberById(id: string) : Promise<void> {

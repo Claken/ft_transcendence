@@ -14,8 +14,6 @@ export interface IChatRoom {
 
 	password?: string;
 
-	createdAt?: Date;
-
 	// active?: boolean;
 
 	// member?: boolean;

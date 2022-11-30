@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { IsDateString } from 'class-validator';
 import { UserDTO } from 'src/TypeOrm/DTOs/User.dto';
-import { Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { UsersEntity } from '../TypeOrm/Entities/users.entity';
 import { Cron, CronExpression } from '@nestjs/schedule';
 
@@ -30,6 +31,10 @@ export class UsersService {
     return await this.userRepo.findOneBy({
       name: nameToFind,
     });
+  }
+
+  async findOneByName(nameToFind: string) : Promise<UsersEntity> {
+    return await this.userRepo.findOne({where: {name: nameToFind}, relations: ['ownedChannels']});
   }
 
   // unuse
