@@ -111,7 +111,6 @@ const ProtoChat = () => {
 				newUsers.push(element.name);
 			});
 			room.usersList = newUsers;
-			console.log(room.usersList);
 		}
 		if (lists.adminsList.length > 0)
 		{
@@ -127,6 +126,7 @@ const ProtoChat = () => {
 			});
 			room.banList = newBans;
 		}
+		// POUR RERENDER LA PAGE CAR ROOMS EST UN USESTATE, ET QUAND LE USESTATE EST MODIFIE CA RERENDER
 		const roomsCopy = [...rooms];
 		setRooms(roomsCopy);
 	}

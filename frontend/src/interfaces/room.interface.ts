@@ -7,7 +7,7 @@ export interface IRoom {
 	name: string;
 	type: number;
 	messages: IMessageToBack[];
-	usersList?: string[];		// A FAIRE
-	adminsList?: string[];		// A FAIRE
-	banList?: string[];			// A FAIRE
+	usersList?: string[];
+	adminsList?: string[];
+	banList?: string[];
 }

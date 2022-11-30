@@ -261,7 +261,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 		const users =		await this.memberService.findAllMembersFromOneRoom(theChannel.id);
 		const bans =		await this.memberService.findAllBannedMembersFromOneRoom(theChannel.id);
 
-		this.server.to(theChannel.id).emit('AllLists', {channel: chatName, usersList: users, adminsList: admins, banList: bans});
+		this.server.emit('AllLists', {channel: chatName, usersList: users, adminsList: admins, banList: bans});
 	}
 	
 	@SubscribeMessage('deleteChannelPassword')
