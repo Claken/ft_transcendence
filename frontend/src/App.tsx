@@ -11,7 +11,7 @@ import { ChatProvider } from "./contexts/ChatContext";
 import Profile from "./pages/Profile";
 import ProfileDetails from "./pages/ProfileDetails";
 import RequiredOffline from "./components/RequiredRoutes/RequiredOffline";
-import TwoFaCode from "./pages/TwoFaCode";
+import TwoFaConfirm from "./pages/TwoFaConfirm";
 import LayoutPong from "./pages/LayoutPong";
 import Game from "./components/game/Game";
 import RequiredAuth from "./components/RequiredRoutes/RequiredAuth";
@@ -28,7 +28,7 @@ function App() {
 							<Route element={<RequiredOffline />}>
 								<Route path="/login" element={<Login />} />
 							</Route>
-							<Route element={<RequiredAuth />}>
+							{/* <Route element={<RequiredAuth />}> */}
 								<Route path="/account" element={<Account />} />
 								<Route path="/social" element={<Social />} />
 								<Route path="/channel" element={<Channel />} />
@@ -41,11 +41,11 @@ function App() {
 									path="profile/:userId"
 									element={<ProfileDetails />}
 								/>
-							</Route>
+							{/* </Route> */}
 							{/* pim la page */}
 							<Route
 								path="twofa-validation"
-								element={<TwoFaCode />}
+								element={<TwoFaConfirm />}
 							/>
 						</Route>
 					</Routes>

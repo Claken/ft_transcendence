@@ -2,10 +2,9 @@ import "../styles/account.scss";
 import Modal from "../components/modal";
 import useModal from "../hooks/useModal";
 import { useAuth } from "../contexts/AuthContext";
-import AvatarUpload from "../components/Account/AvatarUpload";
 import { useNavigate } from "react-router-dom";
-import ChooseName from "../components/Account/ChooseName";
-// ajouter 2fa
+import ModalSettings from "../components/Account/ModalSettings";
+
 function Account() {
 	const auth = useAuth();
 	const navigate = useNavigate();
@@ -26,6 +25,7 @@ function Account() {
 	};
 
 	const { isOpen, toggle } = useModal();
+
 	return (
 		<div>
 			<div className="account-container">
@@ -65,32 +65,7 @@ function Account() {
 								</svg>
 							</button>
 							<Modal isOpen={isOpen} toggle={toggle}>
-								<div className="modal-settings">
-									<div className="picture-settings">
-										<div className="profile-picture">
-											<img
-												src={auth.user?.avatarUrl}
-												alt="profilePic"
-											/>
-										</div>
-										{auth.user?.login && (
-											<div className="uploadButton">
-												<AvatarUpload />
-											</div>
-										)}
-									</div>
-									<div className="username-settings">
-										<h2>{auth.user?.name}</h2>
-										<ChooseName />
-									</div>
-									<div className="twoFA-settings">
-										<h2>2FA status</h2>
-										<h3 style={{ color: "red" }}>
-											Disabled
-										</h3>
-										<button>Activate 2FA</button>
-									</div>
-								</div>
+								<ModalSettings  />
 							</Modal>
 							<button onClick={handleLogout}>
 								<svg

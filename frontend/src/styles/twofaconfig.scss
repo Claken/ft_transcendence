@@ -1,0 +1,82 @@
+.twoFaBox {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: fit-content;
+    height: fit-content;
+    padding-left: 0.8em;
+    padding-right: 0.8em;
+    h3 {
+        padding: 1em;
+        margin: 0.7em;
+        border-radius: 25px;
+        width: 100%;
+        border-bottom: 2px rgba(91, 89, 137, 0.7) solid ;
+        background: rgb(82, 59, 130);
+        background: -moz-linear-gradient(
+            90deg,
+            rgba(82, 59, 130, 0.7) 0%,
+            rgba(48, 34, 75, 0.7) 40%,
+            rgba(82, 59, 130, 0.7) 100%
+        );
+        background: -webkit-linear-gradient(
+            90deg,
+            rgba(82, 59, 130, 0.7) 0%,
+            rgba(48, 34, 75, 0.7) 40%,
+            rgba(82, 59, 130, 0.7) 100%
+        );
+        background: linear-gradient(
+            90deg,
+            rgba(82, 59, 130, 0.7) 0%,
+            rgba(48, 34, 75, 0.7) 40%,
+            rgba(82, 59, 130, 0.7) 100%
+        );
+    }
+    
+    .twoFaRubrik {
+        width: 100%;
+        height: 100%;
+        padding-bottom: 1rem;
+        h4 {
+            margin-bottom: 0.7em;
+            border-bottom: 2px rgba(91, 89, 137, 0.5) solid ;
+            padding-top: 0.5em;
+            padding-left: 0.7em;
+            padding-bottom: 0.3em;
+            border-radius: 5px;
+            background: rgb(82, 59, 130);
+            background: -moz-linear-gradient(
+                90deg,
+                rgba(82, 59, 130, 0.5) 0%,
+                rgba(48, 34, 75, 0.5) 40%,
+                rgba(82, 59, 130, 0.5) 100%
+            );
+            background: -webkit-linear-gradient(
+                90deg,
+                rgba(82, 59, 130, 0.5) 0%,
+                rgba(48, 34, 75, 0.5) 40%,
+                rgba(82, 59, 130, 0.5) 100%
+            );
+            background: linear-gradient(
+                90deg,
+                rgba(82, 59, 130, 0.5) 0%,
+                rgba(48, 34, 75, 0.5) 40%,
+                rgba(82, 59, 130, 0.5) 100%
+            );
+        }
+        ul, p {
+            font-size: 0.7em;
+            list-style-type:decimal;
+        }
+        button {
+            font-size: 0.6em;
+            border: 1px rgba(91, 89, 137, 1) solid ;
+            background: black;
+        }
+        button:hover {
+            border-color: aqua;
+        }
+
+    }
+}

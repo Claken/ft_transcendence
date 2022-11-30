@@ -5,7 +5,7 @@ import { socket } from "../components/Socket";
 import { useAuth } from "../contexts/AuthContext";
 import { IUser } from "../interfaces/user.interface";
 
-const TwoFaCode = () => {
+const TwoFaConfirm = () => {
 	const [code, setCode] = useState<string>("");
 	const { user, setUser } = useAuth();
 	const navigate = useNavigate();
@@ -17,22 +17,20 @@ const TwoFaCode = () => {
 
 	const validateCode = (event) => {
 		event.preventDefault();
-		socket.emit("check-secret-code", {user: user, code: code});
+		socket.emit("check-secret-code", { user: user, code: code });
 	};
 
 	const checkCode = (current: IUser) => {
 		setUser(current);
-		if (current.isTwoFAValidated)
-			navigate("/");
-		else
-			alert("Wrong two faCode");
-	}
+		if (current.isTwoFAValidated) navigate("/");
+		else alert("Wrong two faCode");
+	};
 	useEffect(() => {
 		socket.on("secret-code-checked", checkCode);
 		return () => {
 			socket.off("secret-code-checked", checkCode);
-		}
-	}, [checkCode])
+		};
+	}, [checkCode]);
 
 	return (
 		<div>
@@ -53,4 +51,4 @@ const TwoFaCode = () => {
 	);
 };
 
-export default TwoFaCode;
+export default TwoFaConfirm;
