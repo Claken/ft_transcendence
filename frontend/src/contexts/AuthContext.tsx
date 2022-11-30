@@ -71,7 +71,6 @@ export const AuthProvider = ({ children }) => {
 			})
 			.then((res) => {
 				if (res.data) {
-					console.log(res.data);
 					setUser(res.data);
 					sessionStorage.setItem(
 						"MY_PONG_APP",
