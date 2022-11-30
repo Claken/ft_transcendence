@@ -1,3 +1,4 @@
+import { UsersModule } from 'src/users/users.module';
 import {
 	Entity,
 	Column,
@@ -6,6 +7,7 @@ import {
 	ManyToOne,
 } from 'typeorm';
 import { ChatRoomEntity } from './chat.entity';
+import { UsersEntity } from './users.entity';
 
 @Entity('Member')
 export class MemberEntity {
@@ -15,6 +17,9 @@ export class MemberEntity {
 
 	@Column()
 	name: string;
+
+	@ManyToOne(() => UsersEntity, (user: UsersEntity) => user.memberships, {onDelete: 'CASCADE'})
+	user?: UsersEntity;
 
 	@Column({ default: false })
 	isAdmin: boolean;
@@ -41,6 +46,7 @@ export class MemberEntity {
 export interface IMember {
 	id?: string,
 	name?: string,
+	user?: UsersEntity,
 	isAdmin?: boolean,
 	isMute?: boolean,
 	timeMute?: number,

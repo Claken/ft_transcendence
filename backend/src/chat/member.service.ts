@@ -16,7 +16,7 @@ export class MemberService {
 	  	) {}
 
 		async findAllMembers(): Promise<MemberEntity[]> {
-			return await this.memberRepo.find({relations: ['inChannel']});
+			return await this.memberRepo.find({relations: ['inChannel', 'user']});
 		}
 
 		async findAllAdminsFromOneRoom(roomId: string) : Promise<MemberEntity[]> {
@@ -37,11 +37,11 @@ export class MemberService {
 		}
 
 		async getMemberById(memberId: string) : Promise<MemberEntity> {
-			return await this.memberRepo.findOne({where: {id: memberId}, relations: ['inChannel']});
+			return await this.memberRepo.findOne({where: {id: memberId}, relations: ['inChannel', 'user']});
 		}
 
 		async getMemberByName(memberName: string) : Promise<MemberEntity> {
-			return await this.memberRepo.findOne({where: {name: memberName}, relations: ['inChannel']});
+			return await this.memberRepo.findOne({where: {name: memberName}, relations: ['inChannel', 'user']});
 		}
 
 		async getMemberByNameAndChannel(memberName: string, channel: ChatRoomEntity) : Promise<MemberEntity> {

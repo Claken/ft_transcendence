@@ -11,6 +11,7 @@ import {
 import { Avatar } from './avatar.entity';
 import { Game } from './game.entity';
 import { ChatRoomEntity } from './chat.entity';
+import { MemberEntity } from '..';
 
 // Table in the DB
 @Entity('Users')
@@ -69,6 +70,10 @@ export class UsersEntity {
     cascade: true
   })
   avatar?: Avatar;
+
+  @OneToMany(() => MemberEntity, (Member: MemberEntity) => Member.user, {onDelete: 'SET NULL'})
+  @JoinColumn()
+  memberships?: MemberEntity[];
 
   // TODO: friends
   // @OneToMany(() => UsersEntity, (friends) => friends.id, {
