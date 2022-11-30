@@ -1,10 +1,14 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { IsDateString } from 'class-validator';
 import { UserDTO } from 'src/TypeOrm/DTOs/User.dto';
 import { DataSource, Repository } from 'typeorm';
 import { UsersEntity } from '../TypeOrm/Entities/users.entity';
 import { Cron, CronExpression } from '@nestjs/schedule';
+import { AvatarService } from 'src/avatar/avatar.service';
+import { Avatar } from 'src/TypeOrm';
+import { HttpService } from '@nestjs/axios';
+import { lastValueFrom } from 'rxjs';
 
 @Injectable()
 export class UsersService {
@@ -12,13 +16,30 @@ export class UsersService {
   constructor(
     @InjectRepository(UsersEntity)
     private readonly userRepo: Repository<UsersEntity>,
+    private readonly avatarService: AvatarService,
+    private datasource: DataSource,
+    private readonly http: HttpService,
   ) {}
+
+  async getGuestAvatarBuffer (pathToImage: string): Promise<Buffer> {
+    const responseObs = this.http.get(pathToImage, { responseType: 'arraybuffer' });
+    const response = await lastValueFrom(responseObs);
+    const buf = Buffer.from(response.data, 'utf-8');
+    return buf;
+  }
 
   // save() is a Repository Typeorm method to call INSERT query
   // TODO: handle users already exist
-  async create(user: UserDTO): Promise<UsersEntity> {
-      const newUser = this.userRepo.create(user);
-      return await this.userRepo.save(newUser);
+  async create(user: UserDTO, buffer: Buffer): Promise<UsersEntity> {
+    const newUser = this.userRepo.create(user);
+    let filename = 'api42Avatar.jpg';
+    if (!newUser.login && !buffer) {
+      buffer = await this.getGuestAvatarBuffer("https://i.pravatar.cc/400");
+      filename = 'guestAvatar.jpg';
+    }
+    const avatar = await this.avatarService.uploadAvatar(buffer, filename);
+    newUser.avatarId = avatar.id;
+    return await this.userRepo.save(newUser);
   }
 
   // find() is a Repository Typeorm method to call SELECT query
@@ -35,6 +56,12 @@ export class UsersService {
 
   async findOneByName(nameToFind: string) : Promise<UsersEntity> {
     return await this.userRepo.findOne({where: {name: nameToFind}, relations: ['ownedChannels']});
+  }
+  
+  async getByLogin(loginToFind: string): Promise<UsersEntity> {
+    return await this.userRepo.findOneBy({
+      login: loginToFind,
+    });
   }
 
   // unuse
@@ -63,6 +90,12 @@ export class UsersService {
     return await this.userRepo.save(user);
   }
 
+  async updateName(id: number, name: string): Promise<UsersEntity> {
+    const user = await this.getById(id);
+    user.name = name;
+    return await this.userRepo.save(user);
+  }
+
   async updateUser(id: number): Promise<UsersEntity> {
     const user = await this.getById(id);
     return await this.userRepo.save(user);
@@ -76,7 +109,15 @@ export class UsersService {
   // }
 
   async deleteUser(id: number): Promise<UsersEntity> {
+    if (!id)
+      return null;
     const user = await this.getById(id);
+    if (!user)
+      return null;
+    // delete guest avatar
+    if (!user.login) {
+      this.avatarService.deleteAvatar(user.avatarId);
+    }
     return await this.userRepo.remove(user);
   }
 
@@ -88,6 +129,10 @@ export class UsersService {
     if (!guestUsers) return [];
     return await this.userRepo.remove(guestUsers);
   }
+
+  /* ********************************************************* */
+  /*                          TwoFA                            */
+  /* ********************************************************* */
 
   async setTwoFASecret(secret: string, id: number): Promise<UsersEntity> {
     const user = await this.getById(id);
@@ -105,5 +150,52 @@ export class UsersService {
     const user = await this.getById(id);
     user.isTwoFAValidated = val;
     return await this.userRepo.save(user);
+  }
+
+  /* ********************************************************* */
+  /*                          Avatar                           */
+  /* ********************************************************* */
+
+  async updateAvatarId(id: number, avatarId: number): Promise<UsersEntity> {
+    const user = await this.getById(id);
+    user.avatarId = avatarId;
+    return await this.userRepo.save(user);
+  }
+
+  async addAvatar(
+    userId: number,
+    imageBuffer: Buffer,
+    filename: string,
+  ): Promise<Avatar> {
+
+    const queryRunner = this.datasource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
+    try {
+      const user = await this.userRepo.findOneBy({
+        id: userId,
+      });
+      const currentAvatarId = user.avatarId;
+      const avatar = await this.avatarService.uploadAvatarWithQueryRunner(imageBuffer, filename, queryRunner);
+ 
+      await queryRunner.manager.update(UsersEntity, userId, {
+        avatarId: avatar.id
+      });
+ 
+      if (currentAvatarId) {
+        await this.avatarService.deleteAvatarWithQueryRunner(currentAvatarId, queryRunner);
+      }
+      await queryRunner.commitTransaction();
+ 
+      return avatar;
+    } catch {
+      // since we have errors lets rollback the changes we made
+      await queryRunner.rollbackTransaction();
+      throw new InternalServerErrorException();
+    } finally {
+      // you need to release a queryRunner which was manually instantiated
+      await queryRunner.release();
+    }
   }
 }

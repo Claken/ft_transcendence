@@ -17,8 +17,9 @@ export class UsersController {
 
   @Post()
   async create(@Body() post: UserDTO): Promise<UsersEntity> {
-    return await this.usersService.create(post);
+    return await this.usersService.create(post, null);
   }
+
   @Get()
   async findAllUsers(): Promise<UsersEntity[]> {
     return await this.usersService.findAllUsers();
@@ -46,4 +47,5 @@ export class UsersController {
   async delete(@Param('id') id: number): Promise<UsersEntity> {
     return await this.usersService.deleteUser(id);
   }
+  
 }

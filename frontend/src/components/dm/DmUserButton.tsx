@@ -43,7 +43,7 @@ function DmUserButton(props) {
         >
           <button className="overlayleft">Messages</button>
           <div className="overlayright">
-            <Link to={"/profile/" + props.user.name}>
+            <Link to={"/profile/" + props.user.id}>
               <button className="overlayright">Profile</button>
             </Link>
           </div>
