@@ -84,6 +84,13 @@ export class AuthGateway
     this.server.emit('secret-code-checked', user);
   }
 
+  @SubscribeMessage('test-secret-code')
+  async testSecretCode(client: Socket, twofa: TwoFAValidation) {
+    const { code, user } = twofa;
+    const isCodeValid = await this.twoFAService.isTwoFACodeValid(code, user);
+    this.server.emit('secret-code-tested', isCodeValid);
+  }
+
   /* ********************************************************* */
   /*                     Choosename.tsx                        */
   /* ********************************************************* */

@@ -35,10 +35,7 @@ const ModalSettings = () => {
 		<div className="modal-settings">
 			{toggleTwoFaConfig ? (
 				<>
-					<TwoFaConfig
-						toggleTwoFaConfig={toggleTwoFaConfig}
-						setToggleTwoFaConfig={setToggleTwoFaConfig}
-					/>
+					<TwoFaConfig setToggleTwoFaConfig={setToggleTwoFaConfig} />
 				</>
 			) : (
 				<>

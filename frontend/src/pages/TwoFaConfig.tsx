@@ -1,22 +1,22 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { QRCodeCanvas } from "qrcode.react";
 import { useEffect, useState } from "react";
-/* eslint-disable react-hooks/exhaustive-deps */
 import { socket } from "../components/Socket";
 import { useAuth } from "../contexts/AuthContext";
 import "../styles/twofaconfig.scss";
 import { Dispatch, SetStateAction } from "react";
-import { IUser } from "../interfaces/user.interface";
 
 interface IToggleTwofaConfig {
-	toggleTwoFaConfig: boolean;
 	setToggleTwoFaConfig: Dispatch<SetStateAction<boolean>>;
 }
 
 const TwoFaConfig = (props: IToggleTwofaConfig) => {
-	const { user, setUser } = useAuth();
+	const { user } = useAuth();
 	const [code, setCode] = useState<string>("");
 	const [url, setUrl] = useState<string>("");
-	const { toggleTwoFaConfig, setToggleTwoFaConfig } = props;
+	const [testMsg, setTestMsg] = useState<string>("");
+	const [isValid, setIsValid] = useState<boolean>(false);
+	const { setToggleTwoFaConfig } = props;
 
 	/* ********************************************************* */
 	/*                     Set TwoFA URL                         */
@@ -50,19 +50,29 @@ const TwoFaConfig = (props: IToggleTwofaConfig) => {
 		event: React.MouseEvent<HTMLButtonElement, MouseEvent>
 	) => {
 		event.preventDefault();
-		socket.emit("check-secret-code", { user: user, code: code });
+		socket.emit("test-secret-code", { user: user, code: code });
 	};
 
-	const checkCode = (current: IUser) => {
-		setUser(current);
-		if (current.isTwoFAValidated) {
-			setToggleTwoFaConfig(!toggleTwoFaConfig);
-		} else alert("Wrong two faCode");
+	const verifyCodeSumbit = (
+		event: React.FormEvent<HTMLFormElement>
+	) => {
+		event.preventDefault();
+		socket.emit("test-secret-code", { user: user, code: code });
+	};
+
+	const checkCode = (isCodeValid: boolean) => {
+		if (isCodeValid) {
+			setTestMsg("2fa Code verified.");
+			setIsValid(true);
+		} else {
+			setTestMsg("Wrong 2fa Code...");
+			setIsValid(false);
+		}
 	};
 	useEffect(() => {
-		socket.on("secret-code-checked", checkCode);
+		socket.on("secret-code-tested", checkCode);
 		return () => {
-			socket.off("secret-code-checked", checkCode);
+			socket.off("secret-code-tested", checkCode);
 		};
 	}, [checkCode]);
 
@@ -108,18 +118,18 @@ const TwoFaConfig = (props: IToggleTwofaConfig) => {
 			</div>
 
 			<h4>Verify Code</h4>
-			<div className="">
-				<p>
-					For changing the setting, please verify the authenticator
-					code:
-				</p>
-				<input
-					type="text"
-					value={code}
-					onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-						setCode(e.target.value)
-					}
-				/>
+			<div>
+				<p>Please verify the authenticator code:</p>
+				<form onSubmit={verifyCodeSumbit}>
+					<input
+						type="text"
+						value={code}
+						onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+							setCode(e.target.value)
+						}
+					/>
+				</form>
+				{testMsg && <p className={isValid.toString()}>{testMsg}</p>}
 			</div>
 
 			<div className="twoFaRubrik btnVerifyCodes">
@@ -129,13 +139,13 @@ const TwoFaConfig = (props: IToggleTwofaConfig) => {
 					onClick={() => setToggleTwoFaConfig(false)}
 				>
 					Close
-				</button>{" "}
+				</button>
 				<button
 					className="btnconfirm"
 					type="button"
 					onClick={verifyCode}
 				>
-					Verify & Activate
+					Verify
 				</button>
 			</div>
 		</div>

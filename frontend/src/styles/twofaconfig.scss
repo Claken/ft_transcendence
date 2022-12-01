@@ -38,7 +38,6 @@
         border-bottom: 2px rgba(91, 89, 137, 0.5) solid ;
         padding-top: 0.5em;
         padding-left: 0.7em;
-        padding-bottom: 0.3em;
         border-radius: 7px;
         background: rgb(82, 59, 130);
         background: -moz-linear-gradient(
@@ -93,15 +92,20 @@
             max-width: 40%;
             padding: 2em;
         }
-        .btnconfirm {
-            border: unset;
-        }
     }
     .btnVerifyCodes {
-        min-width: 40%;
+        min-width: 25%;
         max-width: 50%;
-        height: 15%;
+        height: 12%;
         font-size: 0.4em;
-        font-weight: bold;
+    }
+    form + .true {
+        font-size: 1em;
+        text-align: center;
+        color: green;
+    }
+    form + .false {
+        text-align: center;
+        color: red;
     }
 }
