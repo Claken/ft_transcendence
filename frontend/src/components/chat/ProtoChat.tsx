@@ -251,7 +251,7 @@ const ProtoChat = () => {
 		channels.forEach(element => {
 			
 			let isMemberOrNot: boolean = false;
-			if (element.members.find((member: any) => member.name === username) !== undefined)
+			if (element.members.find((member: any) => member.user.name === username) !== undefined)
 				isMemberOrNot = true;
 
 			const newRoom: IRoom = {
@@ -274,7 +274,7 @@ const ProtoChat = () => {
 	const receiveNewChannel = (channel: any) => {
 		
 		let isMemberOrNot: boolean = false;
-		if (channel.members.find((member: any) => member.name === username) !== undefined)
+		if (channel.members.find((member: any) => member.user.name === username) !== undefined)
 			isMemberOrNot = true;
 
 		const newRoom: IRoom = {
