@@ -14,7 +14,7 @@ export class ChatService {
 	  	) {}
 
 	  async findAllChatRooms(): Promise<ChatRoomEntity[]> {
-		return await this.chatRepo.find({relations: ['owner', 'members', 'messages']});
+		return await this.chatRepo.find({relations: ['owner', 'members', 'members.user', 'messages']});
 	  }
 
 	  async findOneChatRoomByName(name: string): Promise<ChatRoomEntity> {
