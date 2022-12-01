@@ -32,7 +32,11 @@ const TwoFaConfirm = () => {
 	return (
 		<div>
 			<form className="items">
-				<h3>2-Factor-Authentication</h3>
+				<h3>Two-Factor-Authentication</h3>
+				<p>
+					Open the two-step verification app on your mobile<br />
+					device to get your verification code
+				</p>
 				<input
 					className="input"
 					type="code"
@@ -43,7 +47,7 @@ const TwoFaConfirm = () => {
 					}
 				></input>
 				<button className="btnconfirm" onClick={validateCode}>
-					Submit
+					Authenticate
 				</button>
 			</form>
 		</div>
