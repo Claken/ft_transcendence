@@ -73,10 +73,11 @@ export class GameService {
     return await this.gameRepo.save(game);
   }
 
-  async updateGameReady(id: number, loginRP: string): Promise<Game> {
+  async updateGameReady(id: number, loginRP: string, nameRP: string): Promise<Game> {
     const game = await this.getById(id);
     game.waitingForOppenent = false;
     game.loginRP = loginRP;
+	game.nameRP = nameRP;
     return await this.gameRepo.save(game);
   }
 

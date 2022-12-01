@@ -42,8 +42,9 @@ export class GameController {
   async updateGameReady(
     @Param('id') id: number,
     @Body('loginRP') loginRP: string,
+    @Body('nameRP') nameRP: string,
   ): Promise<Game> {
-    return await this.gameService.updateGameReady(id, loginRP);
+    return await this.gameService.updateGameReady(id, loginRP, nameRP);
   }
 
   @Delete(':id')

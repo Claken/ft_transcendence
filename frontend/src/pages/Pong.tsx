@@ -20,7 +20,6 @@ function Pong() {
 		if (game?.waitingForOppenent === false
 			&& (game?.loginLP === auth.user.name
 			|| game?.loginRP === auth.user.name)) {
-				console.log("on navigate");
 				navigate("/pong/" + game.id);
 			}
 	}, [game?.waitingForOppenent])
@@ -29,7 +28,7 @@ function Pong() {
 	useEffect(() => {
 		if (auth.user)
 			socket.emit('inQueueOrGame', auth.user);
-		}, [auth.user])
+	}, [auth.user])
 
 	/* ***************************************************************************** */
 	/*                                  socket.on                                    */
@@ -46,7 +45,8 @@ function Pong() {
 	});
 
 	socket.on("updateUser", (user) => {
-		auth.user = user;
+		if (user.name === auth.user.name)//TODO: remplacer name par login
+			auth.user = user;
 	})
 
 	socket.on("updateUsers", (userLeft, userRight) => {
@@ -69,6 +69,10 @@ function Pong() {
 		setWait(false);
 		socket.emit("leaveQueue", auth.user);
 	};
+
+	const DisplayGames = () => {
+		//
+	}
 
 	return (
 		<div>

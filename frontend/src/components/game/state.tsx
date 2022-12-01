@@ -4,8 +4,9 @@ const State = {
 	PLAY:		2,
 	WIN:		3,
 	LOSE:		4,
-	ABORT:		5,
-	FINISH:		6
+	LEAVE:		5,
+	FINISH:		6,
+	END:		7
 };
 
 export default State;

@@ -5,7 +5,8 @@ import { ChatRoomEntity } from "./Entities/chat.entity";
 import { MemberEntity } from "./Entities/member.entity";
 import { MessageEntity } from "./Entities/chatMessage.entity";
 import { Avatar } from "./Entities/avatar.entity";
+import { Socket } from "./Entities/sockets.entity";
 
-export const entities = [ UsersEntity, DmEntity, Game, ChatRoomEntity, MemberEntity, MessageEntity, Avatar];
+export const entities = [ UsersEntity, DmEntity, Game, Socket, ChatRoomEntity, MemberEntity, MessageEntity, Avatar];
 
 export { UsersEntity, DmEntity, Game, ChatRoomEntity, MemberEntity, MessageEntity, Avatar };

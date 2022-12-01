@@ -27,6 +27,9 @@ const allPos = {
 	loginLP: null,
 	loginRP: null,
 	gameId: null,
+	WinLoseL: [0, 0],
+	WinLoseR: [0, 0],
+	viewer: false,
 };
 
 export default allPos;

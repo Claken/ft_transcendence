@@ -13,7 +13,9 @@ import button from "./button";
 import pausePage from "./pagePause";
 import losePage from "./pageLose";
 import winPage from "./pageWin";
+import leavePage from "./pageLeave";
 import initPage from "./pageInit";
+import endPage from "./pageEnd";
 
 const Game = (
 	props: JSX.IntrinsicAttributes &
@@ -44,6 +46,10 @@ const Game = (
 			allPos.loginLP = newData.loginLP;
 			allPos.loginRP = newData.loginRP;
 			allPos.gameId = gameId;
+			allPos.WinLoseL = newData.WLuserL;
+			allPos.WinLoseR = newData.WLuserR;
+			if (auth.user.name === allPos.loginLP || auth.user.name === allPos.loginRP)
+				allPos.viewer = true;
 			setReady(true);
 		});
 
@@ -53,22 +59,11 @@ const Game = (
 	}, [])
 
 	/* ***************************************************************************** */
-	/*                     Déconnection d'un des deux joueurs                        */
-	/* ***************************************************************************** */
-
-	useEffect(() => {
-		// socket.emit("abort", State.ABORT, allPos, auth.user.name);
-		console.log("entrée dans le useEffect de la déco"); //TODO: retirer
-		if (auth.user.status === "offline")
-			console.log("Le joueur est hors-ligne");
-		else if (auth.user.status === "online")
-			console.log("Le joueur est en ligne");
-		}, [auth.user.status])
-
-	/* ***************************************************************************** */
 	/*            Ajout d'event pour écouter les touches/cliques entrant             */
 	/* ***************************************************************************** */
 	const pauseGame = (e) => {
+		if (allPos.viewer)
+			return ;
 		if (e.key === "p"|| e.key === "P" || e.key === " ") {
 			e.preventDefault();
 			if (allPos.state === State.PLAY)
@@ -79,6 +74,8 @@ const Game = (
 	};
 
 	const movePlayer = (e) => {
+		if (allPos.viewer)
+			return ;
 		if (
 			e.key === "ArrowUp" ||
 			e.key === "ArrowDown" ||
@@ -97,6 +94,8 @@ const Game = (
 	};
 
 	const stopPlayer = (e) => {
+		if (allPos.viewer)
+			return ;
 		if (
 			e.key === "ArrowUp" ||
 			e.key === "ArrowDown" ||
@@ -115,6 +114,8 @@ const Game = (
 	};
 
 	const clickInterpreter = (e) => {
+		if (allPos.viewer)
+			return ;
 		let x = e.offsetX;
 		let y = e.offsetY;
 		e.preventDefault();
@@ -148,7 +149,7 @@ const Game = (
 				x < allPos.width / 2 + 150 + allPos.radius * 2 &&
 				y > 25 - allPos.radius * 2 &&
 				y < 25 + allPos.radius * 2) {
-					socket.emit("abort", State.ABORT, allPos, auth.user.name);
+					socket.emit("abort", allPos, auth.user.name);
 			}
 		}
 	};
@@ -180,8 +181,8 @@ const Game = (
 		allPos.speed = 2;
 		allPos.mapLP = -1;
 		allPos.mapRP = -1;
-		if (allPos.compteur === null)
-			allPos.compteur = socket.emit("getCompteur", gameId);
+		// if (allPos.compteur === null)
+		allPos.compteur = socket.emit("getCompteur", gameId);
 		allPos.key = key;
 		let animationFrameId: number;
 		allPos.img = new Image();
@@ -245,14 +246,25 @@ const Game = (
 			allPos.state = State.PLAY;
 		});
 
-		socket.on("endGame", (winner, loser, capitulator) => {
-			auth.user.name === winner ? allPos.state = State.WIN : allPos.state = State.LOSE ;//TODO: allPos ou pas ?
-			socket.emit("endGame", allPos, winner, loser, capitulator, auth.user);
+		socket.on("endGame", (winner) => {
+			if (allPos.viewer){
+				allPos.state = State.END
+				socket.emit("leaveSocket", gameId);
+				return ;
+			}
+			auth.user.name === winner ? allPos.state = State.WIN : allPos.state = State.LOSE ;
 			socket.emit("updateInGame", auth.user, gameId);
 		})
 
+		socket.on("opponentLeave", (abandoner) => {
+			allPos.state = State.LEAVE;
+			socket.emit("updateInGame", auth.user, gameId);
+			socket.emit("endGameF", allPos, auth.user.name, abandoner, "");
+		})
+
 		socket.on("updateUser", (user) => {
-			auth.user = user;
+			if (user.name === auth.user.name)//TODO: remplacer name par login
+				auth.user = user;
 		})
 
 		/* ***************************************************************************** */
@@ -274,6 +286,10 @@ const Game = (
 				losePage(context);
 			else if (allPos.state === State.WIN)
 				winPage(context);
+			else if (allPos.state === State.LEAVE)
+				leavePage(context);
+			else if (allPos.state === State.END)
+				endPage(context);
 			else if (allPos.state === State.PLAY) {
 				button(context);
 				if (allPos.key === "ArrowUp" ||
@@ -326,6 +342,7 @@ const Game = (
 			socket.off("compteurUpdated");
 			socket.off("launchGame");
 			socket.off("endGame");
+			socket.off("opponentLeave");
 			socket.off("updateUser");
 		};
 	},[ready]);

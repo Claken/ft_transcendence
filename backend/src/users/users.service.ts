@@ -59,6 +59,12 @@ export class UsersService {
     });
   }
 
+  async getByClient(clientToFind: string): Promise<UsersEntity> {
+    return await this.userRepo.findOneBy({
+      lastSocket: clientToFind,
+    });
+  }
+
   // unuse
   async getByEmail(emailToFind: string): Promise<UsersEntity> {
     return await this.userRepo.findOneBy({
@@ -96,6 +102,22 @@ export class UsersService {
     return await this.userRepo.save(user);
   }
 
+  async updateSocket(id: number, socket: string): Promise<UsersEntity> {
+    const user = await this.getById(id);
+	user.lastSocket = socket;
+    return await this.userRepo.save(user);
+  }
+
+  async isConnected(userL: string, userR: string) : Promise<Boolean> {
+    const userLeft = await this.getByName(userL)
+    const userRight = await this.getByName(userR)
+	console.log(userLeft.status+" "+userRight.status)
+	if (userLeft.status === "offline" || userRight.status === "offline")
+		return false;
+	else
+		return true;
+  }
+
   // async updateToken(id: number, access_token: string): Promise<UsersEntity> {
   //   const user = await this.getById(id);
   //   user.accessToken = access_token;
@@ -115,15 +137,15 @@ export class UsersService {
     return await this.userRepo.save(user);
   }
 
-  async OneMoreWin(id: number): Promise<UsersEntity> {
+  async userWin(id: number, win: number): Promise<UsersEntity> {
     const user = await this.getById(id);
-	user.win += 1;
+	user.win = win + 1;
     return await this.userRepo.save(user);
   }
 
-  async OneMorelose(id: number): Promise<UsersEntity> {
+  async userLose(id: number, lose: number): Promise<UsersEntity> {
     const user = await this.getById(id);
-	user.lose += 1;
+	user.lose = lose + 1;
     return await this.userRepo.save(user);
   }
 

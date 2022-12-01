@@ -13,7 +13,8 @@ import { FortyTwoAuthGuard } from './guards/fortytwo.guard';
 
 @Controller('auth/42')
 export class AuthController {
-  constructor(private usersService: UsersService) {}
+  constructor(
+	private usersService: UsersService) {}
 
   @UseGuards(FortyTwoAuthGuard)
   @Get('login')
@@ -44,6 +45,7 @@ export class AuthController {
   async logOut(@Req() req: RequestWithUser) {
     // logOut() => removes the session from the memory of the webserver
     if (req.user) {
+	  console.log("infos: "+req.user.name+", "+req.user.inGame)
       this.usersService.updateStatusUser(req.user.id, 'offline');
       if (req.user.isTwoFAValidated)
         this.usersService.setTwoFACertif(req.user.id, false);

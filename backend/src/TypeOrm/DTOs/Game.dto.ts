@@ -9,6 +9,12 @@ export class GameDTO {
 	
 	@IsOptional()
 	loginRP?: string;
+
+	@IsOptional()
+	nameLP?: string;
+	
+	@IsOptional()
+	nameRP?: string;
 	
 	@IsOptional()
 	scoreLP?: number;

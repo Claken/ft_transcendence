@@ -32,19 +32,41 @@ export class GameGateway
   intervalID = null; //TODO: créer un tab avec l'id de la game lié au intervalID
 
   async handleConnection(client) {
-    //assigner un numéro dans la bdd pour l'utiliser ici
     // A client has connected
     this.users++;
-    // Notify connected clients of current users
-    client.emit('users', this.users);
-  }
+	//ajouter le client.id à l'entité user
+}
 
   async handleDisconnect(client) {
-    //assigner un numéro dans la bdd pour l'utiliser ici
     // A client has disconnected
-    // Notify connected clients of current users
-    client.emit('users', this.users);
     this.users--;
+	//wait 1sec then check if the user is disconnect
+	setTimeout(() => {
+		this.isDisconnect(client.id);
+	}, 1500)
+  }
+
+  async isDisconnect(client: string) {
+	let user: UserDTO = await this.usersService.getByClient(client);
+	if (user) {
+		if (user.inQueue) {
+			const indexUser = userQueue.findIndex(
+				(elet: UserDTO) => elet.name === user.name);
+			await this.usersService.updateInQueue(user.id, false)
+			userQueue.splice(indexUser, 1);
+		}
+		if (user.inGame) {
+			let game = await this.gameService.getCurrentGame(user.name);
+
+			if (user.name === game.loginLP)
+				var winner = game.loginRP;
+			else
+				var winner = game.loginLP;
+			await this.gameService.updateState(game.id, 6);
+			await this.usersService.updateInGame(user.id, false);
+			this.server.to(game.id).emit("opponentLeave", user.name);
+		}
+	}
   }
 
   @SubscribeMessage('update')
@@ -90,12 +112,14 @@ export class GameGateway
       // Si la balle sort du terrain de droite
       if (right > infos[0].width) {
         infos[0].scoreLP++;
+		this.isConnected(infos[0].loginLP, infos[0].loginRP, infos[0].gameId);
 		this.gameService.updateScore(infos[0].gameId, infos[0].scoreLP, infos[0].scoreRP);
 		if (infos[0].scoreLP >= infos[0].score) {
 			infos[0].state = 6;
 			await this.gameService.updateState(infos[0].gameId, 6);
 			this.server.to(infos[0].gameId).emit('update', infos[0]);
-			this.server.to(infos[0].gameId).emit("endGame", infos[0].loginLP, infos[0].loginRP, "");
+			this.server.to(infos[0].gameId).emit("endGame", infos[0].loginLP);
+			this.EndGameB(client, infos[0], infos[0].loginLP, infos[0].loginRP, "");
 			return;
 		}
 		else
@@ -105,12 +129,14 @@ export class GameGateway
       // Si la balle sort du terrain de gauche
       if (left < 0) {
         infos[0].scoreRP++;
+		this.isConnected(infos[0].loginLP, infos[0].loginRP, infos[0].gameId);
 		this.gameService.updateScore(infos[0].gameId, infos[0].scoreLP, infos[0].scoreRP);
 		if (infos[0].scoreRP >= infos[0].score) {
 			infos[0].state = 6;
 			await this.gameService.updateState(infos[0].gameId, 6);
 			this.server.to(infos[0].gameId).emit('update', infos[0]);
-			this.server.to(infos[0].gameId).emit("endGame", infos[0].loginRP, infos[0].loginLP, "");
+			this.server.to(infos[0].gameId).emit("endGame", infos[0].loginRP);
+			this.EndGameB(client, infos[0], infos[0].loginRP, infos[0].loginLP, "");
 			return ;
 		}
 		else
@@ -155,10 +181,17 @@ export class GameGateway
   /* ***************************************************************************** */
   @SubscribeMessage('abort')
   async Abort(client: any, infos) {
-	this.gameService.updateState(infos[1].gameId, infos[1].state);
-	infos[2] === infos[1].loginLP ?
-	this.server.to(infos[1].gameId).emit("endGame", infos[1].loginRP, infos[1].loginLP, infos[2]) : 
-	this.server.to(infos[1].gameId).emit("endGame", infos[1].loginLP, infos[1].loginRP, infos[2]);
+	this.gameService.updateState(infos[0].gameId, infos[0].state);
+	if (infos[1] === infos[0].loginLP) {
+		await this.gameService.updateState(infos[0].gameId, 6);
+		this.server.to(infos[0].gameId).emit("endGame", infos[0].loginRP);
+		this.EndGameB(client, infos[0], infos[0].loginRP, infos[0].loginLP, infos[0].loginLP);
+	}
+	else {
+		await this.gameService.updateState(infos[0].gameId, 6);
+		this.server.to(infos[0].gameId).emit("endGame", infos[0].loginLP);
+		this.EndGameB(client, infos[0], infos[0].loginLP, infos[0].loginRP, infos[0].loginRP);
+	}
   }
 
   @SubscribeMessage('pauseNplay')
@@ -170,12 +203,15 @@ export class GameGateway
   @SubscribeMessage('updateData')
   async UpdateData(client: any, gameId: number) {
 	let game: GameDTO = await this.gameService.getById(gameId);
+	let userLeft: UserDTO = await this.usersService.getByName(game.nameLP);//TODO: utiliser Login ? car name peut changer
+	let userRight: UserDTO = await this.usersService.getByName(game.nameRP);//TODO: utiliser Login ? car name peut changer
 
 	client.join(gameId);
 	let newData = {
 		loginRP : game.loginRP, loginLP : game.loginLP,
 		scoreLP : game.scoreLP, scoreRP : game.scoreRP,
-		state : game.state, map: game.map, compteur: game.compteur};
+		state : game.state, map: game.map, compteur: game.compteur,
+		WLuserL : [userLeft.win, userLeft.lose], WLuserR : [userRight.win, userRight.lose]};
     client.emit('updateData', newData);
   }
 
@@ -238,13 +274,9 @@ export class GameGateway
 		return ;
 	}
 	if (user && user.inGame) {
-		console.log(user.name+" est en game.");
 		let currentGame: GameDTO = await this.gameService.getCurrentGame(user.name)
-		if (currentGame) {
+		if (currentGame)
 			client.emit("goPlay", currentGame);
-		}
-		else
-			console.log("on a pas trouvé la game car currentGame = "+currentGame)
 		return ;
 	}
 	client.emit("changeQueue", false);
@@ -261,13 +293,15 @@ export class GameGateway
 		client.emit("updateUser", user);
 		userQueue.push(user);
     }
+	console.log(userQueue.at(0))
+	console.log(userQueue.at(1))
     if (userQueue.length % 2 === 0) {
       /**** Take the first pending Game ****/
       const games: GameDTO[] = await this.gameService.getPendingGames();
       /**** Update Game: waitingForOppenent=false AND loginRP=user ****/
       const updatedGame: GameDTO = await this.gameService.updateGameReady(
         games[0].id,
-        user.name,);
+        user.name, user.name);//TODO: remplacer name par login pour le deuxième
       /**** Join the socket game ****/
 	  client.join(updatedGame.id);
       /**** Find loginLP in UserQueue ****/
@@ -292,9 +326,16 @@ export class GameGateway
 	  this.server.to(updatedGame.id).emit('goPlay', updatedGame);
 	  this.SetCompteur(updatedGame.id);
     } else {
+	  let login: string;
+	  if (!user.login)
+		login = user.name;
+	  else
+		login = user.login;
       const newGame = await this.gameService.create({
-        loginLP: user.name,
+        loginLP: login,
+		nameLP: user.name,
         loginRP: '',
+		nameRP: '',
       });
 	  client.join(newGame.id);
 	}
@@ -318,28 +359,92 @@ export class GameGateway
   }
 
   /* ***************************************************************************** */
-  /*                              Update user.inGame                               */
+  /*                               MAJ du/Des users                                */
   /* ***************************************************************************** */
+
+  async isConnected(userL: string, userR: string, gameId: number) {
+	let connected = await this.usersService.isConnected(userL, userR);
+	console.log("connected: "+connected)
+	if (!connected)
+		this.server.to(gameId).emit("opponentLeave");
+  }
+
+  @SubscribeMessage('user')
+  async User(client: any, userId: number) {
+	const user = await this.usersService.updateSocket(userId, client.id);
+	user.lastSocket = client.id;
+	if (user.inQueue === true) {
+		client.emit("redirect", "");
+	}
+	if (user.inGame === true) {
+		let game = await this.gameService.getByloginLP(user.name);
+		client.emit("redirect", game.id);
+	}
+  }
 
   @SubscribeMessage('updateInGame')
   async UpdateInGame(client: any, user: UserDTO, gameId: number) {
 	user = await this.usersService.updateInGame(user.id, false);
 	client.emit("updateUser", user);
 	client.leave(gameId);
-	}
+  }
 
-  @SubscribeMessage('endGame')
-  async EndGame(client: any, infos) {
-	let game = this.gameService.getCurrentGame(infos[4]);
+  @SubscribeMessage('leaveSocket')
+  async LeaveSocket(client: any, gameId: number) {
+	client.leave(gameId);
+  }
+
+  @SubscribeMessage('endGameB')
+  async EndGameB(client: any, allPos, winner: string, loser: string, capitulator: string) {
+	let game: GameDTO = await this.gameService.getCurrentGame(allPos.loginLP);
+
 	if (game) {
-		console.log("On set les param pour mettre fin à la partie");
-		await this.gameService.gameFinished(
-		infos[0].gameId, infos[0].scoreLP, infos[0].scoreRP,
-		infos[1], infos[2], infos[3]);
-		if (infos[1] === infos[4].name)
-			await this.usersService.OneMoreWin(infos[4].id);
+		let userLeft: UserDTO = await this.usersService.getByName(game.nameLP);
+		let userRight: UserDTO = await this.usersService.getByName(game.nameRP);
+		if (client.id === userLeft.lastSocket)
+			this.UpdateInGame(client, userLeft, allPos.gameId);
 		else
-			await this.usersService.OneMorelose(infos[4].id);
+			this.UpdateInGame(client, userRight, allPos.gameId);
+		if (game.isFinish === false && userLeft && userRight) {
+			game = await this.gameService.gameFinished(
+				allPos.gameId, allPos.scoreLP, allPos.scoreRP,
+				winner, loser, capitulator);
+			if (userLeft.name === winner) {
+				await this.usersService.userWin(userLeft.id, allPos.WinLoseL[0]);
+				await this.usersService.userLose(userRight.id, allPos.WinLoseR[1]);
+			}
+			else {
+				await this.usersService.userLose(userLeft.id, allPos.WinLoseL[1]);
+				await this.usersService.userWin(userRight.id, allPos.WinLoseR[0]);
+			}
 		}
 	}
+  }
+
+  @SubscribeMessage('endGameF')
+  async EndGameF(client: any, infos) {
+	let game: GameDTO = await this.gameService.getCurrentGame(infos[0].loginLP);
+
+	if (game) {
+		let userLeft: UserDTO = await this.usersService.getByName(game.nameLP);
+		let userRight: UserDTO = await this.usersService.getByName(game.nameRP);
+		if (client.id === userLeft.lastSocket)
+			this.UpdateInGame(client, userLeft, infos[0].gameId);
+		else
+			this.UpdateInGame(client, userRight, infos[0].gameId);
+		if (game.isFinish === false && userLeft && userRight) {
+			game = await this.gameService.gameFinished(
+				infos[0].gameId, infos[0].scoreLP, infos[0].scoreRP,
+				infos[1], infos[2], infos[3]);
+			if (userLeft.name === infos[1]) {
+				await this.usersService.userWin(userLeft.id, infos[0].WinLoseL[0]);
+				await this.usersService.userLose(userRight.id, infos[0].WinLoseR[1]);
+			}
+			else {
+				await this.usersService.userLose(userLeft.id, infos[0].WinLoseL[1]);
+				await this.usersService.userWin(userRight.id, infos[0].WinLoseR[0]);
+			}
+		}
+	}
+  }
 }
