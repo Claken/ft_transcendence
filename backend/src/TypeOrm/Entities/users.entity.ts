@@ -11,7 +11,7 @@ import {
 import { Avatar } from './avatar.entity';
 import { Game } from './game.entity';
 import { ChatRoomEntity } from './chat.entity';
-import { MemberEntity } from '..';
+import { MemberEntity } from './member.entity';
 
 // Table in the DB
 @Entity('Users')
