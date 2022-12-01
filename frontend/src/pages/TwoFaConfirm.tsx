@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { socket } from "../components/Socket";
 import { useAuth } from "../contexts/AuthContext";
@@ -10,12 +10,9 @@ const TwoFaConfirm = () => {
 	const { user, setUser } = useAuth();
 	const navigate = useNavigate();
 
-	const modifyCode = (event) => {
-		const input = event.currentTarget.value;
-		setCode(input);
-	};
-
-	const validateCode = (event) => {
+	const validateCode = (
+		event: React.MouseEvent<HTMLButtonElement, MouseEvent>
+	) => {
 		event.preventDefault();
 		socket.emit("check-secret-code", { user: user, code: code });
 	};
@@ -41,7 +38,9 @@ const TwoFaConfirm = () => {
 					type="code"
 					placeholder="tape code validation"
 					value={code}
-					onChange={modifyCode}
+					onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+						setCode(e.currentTarget.value)
+					}
 				></input>
 				<button className="btnconfirm" onClick={validateCode}>
 					Submit

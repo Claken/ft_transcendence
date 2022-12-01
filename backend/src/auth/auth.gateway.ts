@@ -56,10 +56,9 @@ export class AuthGateway
   @SubscribeMessage('toggle-2fa')
   async toggle2fa(client: Socket, user: UserDTO) {
     await this.usersService.turnOnOffTwoFA(user.id);
-    const newUser = await this.usersService.getById(user.id);
+    let newUser = await this.usersService.getById(user.id);
     if (newUser.isTwoFAEnabled) {
-      this.usersService.setTwoFACertif(newUser.id, true);
-      newUser.isTwoFAValidated = true;
+      newUser = await this.usersService.setTwoFACertif(newUser.id, true);
       if (!newUser.twoFASecret) {
         const { secret, otpauthUrl } =
           await this.twoFAService.generateTwoFASecret(newUser);
@@ -77,7 +76,7 @@ export class AuthGateway
   @SubscribeMessage('check-secret-code')
   async checkSecretCode(client: Socket, twofa: TwoFAValidation) {
     const { code, user } = twofa;
-    const isCodeValid = await this.twoFAService.isTwoFaCodeValid(code, user);
+    const isCodeValid = await this.twoFAService.isTwoFACodeValid(code, user);
     if (isCodeValid) {
       this.usersService.setTwoFACertif(user.id, true);
       user.isTwoFAValidated = true;

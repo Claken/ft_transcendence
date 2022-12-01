@@ -38,7 +38,9 @@ const ChooseName = () => {
 	return (
 		<div>
 			<input type="text" onChange={handleChange} />
-			<button onClick={handleClick}>Change Username</button>
+			<button className="btnconfirm" onClick={handleClick}>
+				Change Username
+			</button>
 		</div>
 	);
 };
