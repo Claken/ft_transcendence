@@ -1,38 +1,33 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { socket } from "../components/Socket";
 import { useAuth } from "../contexts/AuthContext";
 import { IUser } from "../interfaces/user.interface";
 
-const TwoFaCode = () => {
+const TwoFaConfirm = () => {
 	const [code, setCode] = useState<string>("");
 	const { user, setUser } = useAuth();
 	const navigate = useNavigate();
 
-	const modifyCode = (event) => {
-		const input = event.currentTarget.value;
-		setCode(input);
-	};
-
-	const validateCode = (event) => {
+	const validateCode = (
+		event: React.MouseEvent<HTMLButtonElement, MouseEvent>
+	) => {
 		event.preventDefault();
-		socket.emit("check-secret-code", {user: user, code: code});
+		socket.emit("check-secret-code", { user: user, code: code });
 	};
 
 	const checkCode = (current: IUser) => {
 		setUser(current);
-		if (current.isTwoFAValidated)
-			navigate("/");
-		else
-			alert("Wrong two faCode");
-	}
+		if (current.isTwoFAValidated) navigate("/");
+		else alert("Wrong two faCode");
+	};
 	useEffect(() => {
 		socket.on("secret-code-checked", checkCode);
 		return () => {
 			socket.off("secret-code-checked", checkCode);
-		}
-	}, [checkCode])
+		};
+	}, [checkCode]);
 
 	return (
 		<div>
@@ -43,7 +38,9 @@ const TwoFaCode = () => {
 					type="code"
 					placeholder="tape code validation"
 					value={code}
-					onChange={modifyCode}
+					onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+						setCode(e.currentTarget.value)
+					}
 				></input>
 				<button className="btnconfirm" onClick={validateCode}>
 					Submit
@@ -53,4 +50,4 @@ const TwoFaCode = () => {
 	);
 };
 
-export default TwoFaCode;
+export default TwoFaConfirm;
