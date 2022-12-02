@@ -8,9 +8,11 @@ import {
   WebSocketServer,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
+import { MemberEntity } from 'src/TypeOrm';
 import { TwoFAValidation, UserDTO } from 'src/TypeOrm/DTOs/User.dto';
 import { UsersService } from 'src/users/users.service';
 import { TwoFactorAuthenticationService } from './two-factor-authentication/two-factor-authentication.service';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 
 @WebSocketGateway({ cors: '*' })
 export class AuthGateway
@@ -19,6 +21,7 @@ export class AuthGateway
   constructor(
     private readonly usersService: UsersService,
     private readonly twoFAService: TwoFactorAuthenticationService,
+    private eventEmitter: EventEmitter2,
   ) {}
 
   @WebSocketServer()
@@ -91,10 +94,13 @@ export class AuthGateway
 
   @SubscribeMessage('update-username')
   async updateUsername(
-    client: Socket,
-    @MessageBody() body: { newName: string; userId: number },
+    client: Socket, body: { newName: string; userId: number },
   ) {
     const { newName, userId } = body;
     await this.usersService.updateName(userId, newName);
+    const memberships = await this.usersService.getMembershipsFromOneUserId(userId);
+    memberships.forEach((member: MemberEntity) => {
+      this.eventEmitter.emit('GetListsForUser', member.inChannel.chatRoomName);
+    });
   }
 }

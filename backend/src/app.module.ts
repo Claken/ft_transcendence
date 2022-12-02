@@ -13,6 +13,7 @@ import { GameModule } from './game/game.module';
 import { PassportModule } from '@nestjs/passport';
 import { DmModule } from './dm/dm.module';
 import { AvatarModule } from './avatar/avatar.module';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 
 @Module({
   imports: [
@@ -21,7 +22,7 @@ import { AvatarModule } from './avatar/avatar.module';
       envFilePath: ['.env'],
     }),
     TypeOrmModule.forRootAsync({
-      imports: [ConfigModule],
+      imports: [ConfigModule, EventEmitterModule.forRoot()],
       inject: [ConfigService],
       useFactory: async (configService: ConfigService) => {
         return {

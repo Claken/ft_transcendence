@@ -14,6 +14,7 @@ import { MessageService } from './chatMessage.service';
 import { type } from 'src/exports/enum';
 import * as bcrypt from 'bcrypt';
 import { DeepPartial } from 'typeorm';
+import { OnEvent } from '@nestjs/event-emitter';
 
 // {cors: '*'} pour que chaque client dans le frontend puisse se connecter à notre gateway
 @WebSocketGateway({cors: '*'}) // decorator pour dire que la classe ChatGateway sera un gateway /
@@ -265,6 +266,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 		client.emit('AllLists', {channel: chatName, usersList: users, adminsList: admins, banList: bans});
 	}
 
+	@OnEvent('GetListsForUser')
 	@SubscribeMessage('getLists')
 	async HandleLists(@MessageBody() chatName: string) : Promise<void> {
 		const theChannel = 	await this.chatService.findOneChatRoomByName(chatName);

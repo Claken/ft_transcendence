@@ -6,7 +6,7 @@ import { DataSource, Repository } from 'typeorm';
 import { UsersEntity } from '../TypeOrm/Entities/users.entity';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { AvatarService } from 'src/avatar/avatar.service';
-import { Avatar } from 'src/TypeOrm';
+import { Avatar, MemberEntity } from 'src/TypeOrm';
 import { HttpService } from '@nestjs/axios';
 import { lastValueFrom } from 'rxjs';
 
@@ -45,7 +45,7 @@ export class UsersService {
   // find() is a Repository Typeorm method to call SELECT query
   // TODO: throw exception if not found ?
   async findAllUsers(): Promise<UsersEntity[]> {
-    return await this.userRepo.find({relations: ['ownedChannels', 'memberships']});
+    return await this.userRepo.find({relations: ['ownedChannels', 'memberships', 'memberships.inChannel']});
   }
 
   async getByName(nameToFind: string): Promise<UsersEntity> {
@@ -55,7 +55,11 @@ export class UsersService {
   }
 
   async findOneByName(nameToFind: string) : Promise<UsersEntity> {
-    return await this.userRepo.findOne({where: {name: nameToFind}, relations: ['ownedChannels', 'memberships']});
+    return await this.userRepo.findOne({where: {name: nameToFind}, relations: ['ownedChannels', 'memberships', 'memberships.inChannel']});
+  }
+
+	async findOneById(idToFind: number) : Promise<UsersEntity> {
+    return await this.userRepo.findOne({where: {id: idToFind}, relations: ['ownedChannels', 'memberships', 'memberships.inChannel']});
   }
   
   async getByLogin(loginToFind: string): Promise<UsersEntity> {
@@ -198,4 +202,20 @@ export class UsersService {
       await queryRunner.release();
     }
   }
+
+    /* ********************************************************* */
+    /*												Memberships                        */
+    /* ********************************************************* */
+
+		async getMembershipsFromOneUserId(id: number) : Promise<MemberEntity[]>
+		{
+			const user = await this.findOneById(id);
+			return user.memberships;
+		}
+
+		async getMembershipsFromOneUserName(name: string) : Promise<MemberEntity[]>
+		{
+			const user = await this.findOneByName(name);
+			return user.memberships;
+		}
 }
