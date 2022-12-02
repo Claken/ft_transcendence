@@ -3,7 +3,6 @@ import { IsOptional, Length } from 'class-validator';
 import { Request } from 'express';
 import { ChatRoomEntity } from '../Entities/chat.entity';
 import { Avatar } from '../Entities/avatar.entity';
-import { Socket } from '../Entities/sockets.entity';
 
 export class UserDTO {
   @IsOptional()
@@ -38,9 +37,6 @@ export class UserDTO {
   
   @IsOptional()
   ownedChannels?: ChatRoomEntity[];
-
-  @IsOptional()
-  socket?: Socket[];
 
   @IsOptional()
   lastSocket?: string;

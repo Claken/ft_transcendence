@@ -29,7 +29,7 @@ export class GameGateway
 
   @WebSocketServer() server;
   users: number = 0;
-  intervalID = null; //TODO: créer un tab avec l'id de la game lié au intervalID
+  intervalID = null; //TODO: créer un tab avec l'id de l'interval lié à son compteur
 
   async handleConnection(client) {
     // A client has connected
@@ -245,7 +245,7 @@ export class GameGateway
 		this.RandomMap(gameId);
 	}
 	else if (compteur > 0)
-	this.server.to(gameId).emit('compteurUpdated', compteur);
+		this.server.to(gameId).emit('compteurUpdated', compteur);
 }
 
   @SubscribeMessage('setCompteur')
@@ -256,6 +256,7 @@ export class GameGateway
   @SubscribeMessage('getCompteur')
   async GetCompteur(client: any, gameId: number) {
 	let currentGame: GameDTO = await this.gameService.getById(gameId);
+	client.join(gameId);
 	this.server.to(gameId).emit("compteurUpdated", currentGame.compteur);
   }
 
@@ -373,6 +374,7 @@ export class GameGateway
   async User(client: any, userId: number) {
 	const user = await this.usersService.updateSocket(userId, client.id);
 	user.lastSocket = client.id;
+	console.log("socket client "+userId+" = "+client.id)
 	if (user.inQueue === true) {
 		client.emit("redirect", "");
 	}
@@ -393,6 +395,10 @@ export class GameGateway
   async LeaveSocket(client: any, gameId: number) {
 	client.leave(gameId);
   }
+
+  /* ***************************************************************************** */
+  /*                                FIN de partie                                  */
+  /* ***************************************************************************** */
 
   @SubscribeMessage('endGameB')
   async EndGameB(client: any, allPos, winner: string, loser: string, capitulator: string) {
@@ -446,5 +452,13 @@ export class GameGateway
 			}
 		}
 	}
+  }
+
+  /* ***************************************************************************** */
+  /*                             affichage des game                                */
+  /* ***************************************************************************** */
+
+  @SubscribeMessage('getCurrGames')
+  async GetCurrGames(client: any, gameId: number) {
   }
 }

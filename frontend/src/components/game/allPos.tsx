@@ -19,7 +19,7 @@ const allPos = {
 	key: null,
 	score: 5,
 	speed: null,
-	compteur: null,
+	compteur: 10,
 	img: null,
 	mapLP: null,
 	mapRP: null,

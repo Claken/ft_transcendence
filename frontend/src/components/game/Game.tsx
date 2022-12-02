@@ -48,7 +48,7 @@ const Game = (
 			allPos.gameId = gameId;
 			allPos.WinLoseL = newData.WLuserL;
 			allPos.WinLoseR = newData.WLuserR;
-			if (auth.user.name === allPos.loginLP || auth.user.name === allPos.loginRP)
+			if (auth.user.name !== allPos.loginLP && auth.user.name !== allPos.loginRP)
 				allPos.viewer = true;
 			setReady(true);
 		});
@@ -181,8 +181,9 @@ const Game = (
 		allPos.speed = 2;
 		allPos.mapLP = -1;
 		allPos.mapRP = -1;
-		// if (allPos.compteur === null)
-		allPos.compteur = socket.emit("getCompteur", gameId);
+		// if (allPos.compteur !== 10)
+			// socket.emit("setCompteur", gameId, true);// ???
+		socket.emit("getCompteur", gameId);
 		allPos.key = key;
 		let animationFrameId: number;
 		allPos.img = new Image();
@@ -238,6 +239,7 @@ const Game = (
 		})
 
 		socket.on("compteurUpdated", (currentSec) => {
+			console.log("compteur update pour "+auth.user.name)
 			allPos.compteur = currentSec;
 		})
 

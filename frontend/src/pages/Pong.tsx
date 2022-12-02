@@ -71,7 +71,7 @@ function Pong() {
 	};
 
 	const DisplayGames = () => {
-		//
+		socket.emit("getCurrGames");
 	}
 
 	return (

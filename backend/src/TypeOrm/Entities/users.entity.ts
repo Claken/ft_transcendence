@@ -8,7 +8,6 @@ import {
 } from 'typeorm';
 import { Avatar } from './avatar.entity';
 import { ChatRoomEntity } from './chat.entity';
-import { Socket } from './sockets.entity';
 
 // Table in the DB
 @Entity('Users')
@@ -52,9 +51,6 @@ export class UsersEntity {
   @OneToMany(() => ChatRoomEntity, (Chat: ChatRoomEntity) => Chat.owner, {onDelete: 'SET NULL'})
   @JoinColumn()
   ownedChannels?: ChatRoomEntity[];
-
-  @OneToMany(() => Socket, socket => socket.user)
-  socket: Socket[];
 
   @Column({ default: false })
   lastSocket?: string;
