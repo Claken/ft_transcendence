@@ -93,11 +93,18 @@
             padding: 2em;
         }
     }
+
     .btnVerifyCodes {
         min-width: 25%;
         max-width: 50%;
-        height: 12%;
+        height: 4%;
         font-size: 0.4em;
+        margin-top: 7%;
+        margin-bottom: 1%;
+        .btnconfirm {
+            width: 400%;
+            height: 500%;
+        }
     }
     form + .true {
         font-size: 1em;

@@ -29,6 +29,7 @@ const AvatarUpload = () => {
 		// const fileChosen: File = e.target.files[0];
 		// const newFile = await resizeFile(fileChosen);
 		// setFile(newFile);
+		e.preventDefault();
 		setFile(e.target.files[0]);
 	};
 
