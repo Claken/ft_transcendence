@@ -11,10 +11,10 @@ import { ChatProvider } from "./contexts/ChatContext";
 import Profile from "./pages/Profile";
 import ProfileDetails from "./pages/ProfileDetails";
 import RequiredOffline from "./components/RequiredRoutes/RequiredOffline";
-import TwoFaConfirm from "./pages/TwoFaConfirm";
 import LayoutPong from "./pages/LayoutPong";
 import Game from "./components/game/Game";
 import RequiredAuth from "./components/RequiredRoutes/RequiredAuth";
+import TwoFaConnexion from "./pages/TwoFaConnexion";
 
 function App() {
 	return (
@@ -45,7 +45,7 @@ function App() {
 							{/* pim la page */}
 							<Route
 								path="twofa-validation"
-								element={<TwoFaConfirm />}
+								element={<TwoFaConnexion />}
 							/>
 						</Route>
 					</Routes>

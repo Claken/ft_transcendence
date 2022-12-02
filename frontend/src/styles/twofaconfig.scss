@@ -4,6 +4,7 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    padding: 0 1rem;
     h3 {
         padding: 1em;
         margin-bottom: 0.5em;
@@ -76,6 +77,13 @@
         margin-top: 1em;
         box-shadow:0 0 15px 4px rgba(0,0,0,0.06);
         text-align: center;
+        text-decoration: none;
+        border-radius: 25px;
+        text-align: center;
+        background: #3b3b3b;
+        color: whitesmoke;
+        height: 2.2em;
+
     }
     .btnconfirm:hover {
         box-shadow: 0 0 2px 0 whitesmoke;
