@@ -1,0 +1,20 @@
+.gameList-container{
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    max-width: 90vw;
+    max-height: 30vh;
+    height: fit-content;
+    margin: 2vh auto 5vh;
+    border: 1px solid black;
+
+    .frame {
+        flex: 1;
+        width: 20em;
+        height: 15em;
+        border: 1px solid rgb(82, 59, 130);
+        margin: 1em;
+    }
+
+}

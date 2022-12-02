@@ -6,6 +6,7 @@ import axios from "../axios.config";
 import { IGame } from "../interfaces/game.interface";
 import { useNavigate } from "react-router-dom";
 import "../styles/canvas.css"
+import GameList from "../components/game/GameList";
 
 function Pong() {
 	const auth = useAuth();
@@ -159,7 +160,7 @@ function Pong() {
 			)}
 			{wait ? (<div>Waiting for opponent...</div>
 				) : (
-					<h1>LIST HERE</h1>
+					<GameList />
 				)}
 		</div>
 	);
