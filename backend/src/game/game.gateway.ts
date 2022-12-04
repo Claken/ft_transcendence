@@ -240,12 +240,15 @@ export class GameGateway
 
   tick = async (gameId: number) => {
 	let compteur = await this.gameService.updateCompteur(gameId, false);
+	//TODO: choper le socket client et emit vers lui. Comment ??
 	if (compteur === 0) {
 		clearInterval(this.intervalID);
 		this.RandomMap(gameId);
 	}
-	else if (compteur > 0)
+	else if (compteur > 0) {
+		console.log("emit vers game => "+gameId)
 		this.server.to(gameId).emit('compteurUpdated', compteur);
+	}
 }
 
   @SubscribeMessage('setCompteur')

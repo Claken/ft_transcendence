@@ -183,7 +183,7 @@ const Game = (
 		allPos.mapRP = -1;
 		// if (allPos.compteur !== 10)
 			// socket.emit("setCompteur", gameId, true);// ???
-		socket.emit("getCompteur", gameId);
+		// socket.emit("getCompteur", gameId);
 		allPos.key = key;
 		let animationFrameId: number;
 		allPos.img = new Image();
