@@ -20,20 +20,15 @@ export class MemberService {
 		}
 
 		async findAllAdminsFromOneRoom(roomId: string) : Promise<MemberEntity[]> {
-			const members = await this.findAllMembers();
-			return members.filter((member: MemberEntity) =>
-			member.inChannel.id === roomId && member.isAdmin === true);
+			return await this.memberRepo.find({relations: ['inChannel', 'user'], where: {inChannel: {id: roomId}, isAdmin: true}});
 		}
 
 		async findAllMembersFromOneRoom(roomId: string) : Promise<MemberEntity[]> {
-			const members = await this.findAllMembers();
-			const membersFromOneRoom = members.filter((member: MemberEntity) => member.inChannel.id === roomId);
-			return membersFromOneRoom;
+			return await this.memberRepo.find({relations: ['inChannel', 'user'], where: {inChannel: {id: roomId}}});
 		}
 
 		async findAllBannedMembersFromOneRoom(roomId: string) :  Promise<MemberEntity[]> {
-			const members = await this.findAllMembers();
-			return members.filter((member: MemberEntity) => member.inChannel.id === roomId && member.isBan === true);
+			return await this.memberRepo.find({relations: ['inChannel', 'user'], where: {inChannel: {id: roomId}, isBan: true}});
 		}
 
 		async getMemberById(memberId: string) : Promise<MemberEntity> {
@@ -41,13 +36,11 @@ export class MemberService {
 		}
 
 		async getMemberByName(memberName: string) : Promise<MemberEntity> {
-			return await this.memberRepo.findOne({where: {name: memberName}, relations: ['inChannel', 'user']});
+			return await this.memberRepo.findOne({relations: ['inChannel', 'user'], where: {user: {name: memberName}}});
 		}
 
 		async getMemberByNameAndChannel(memberName: string, channel: ChatRoomEntity) : Promise<MemberEntity> {
-			const members = await this.findAllMembers();
-			return members.find((member: MemberEntity) =>
-			member.name === memberName && member.inChannel.id === channel.id);
+			return await this.memberRepo.findOne({relations: ['inChannel', 'user'], where: {inChannel: {id: channel.id}, user: {name: memberName}}});
 		}
 
 		async createMember(member: IMember): Promise<MemberEntity> {

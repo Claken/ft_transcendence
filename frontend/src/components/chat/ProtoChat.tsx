@@ -107,21 +107,21 @@ const ProtoChat = () => {
 		if (lists.usersList.length > 0)
 		{
 			lists.usersList.forEach((element: any) => {
-				newUsers.push(element.name);
+				newUsers.push(element.user.name);
 			});
 			room.usersList = newUsers;
 		}
 		if (lists.adminsList.length > 0)
 		{
 			lists.adminsList.forEach((element: any) => {
-				newAdmins.push(element.name);
+				newAdmins.push(element.user.name);
 			});
 			room.adminsList = newAdmins;
 		}
 		if (lists.banList.length > 0)
 		{
 			lists.banList.forEach((element: any) => {
-				newBans.push(element.name);
+				newBans.push(element.user.name);
 			});
 			room.banList = newBans;
 		}
@@ -251,7 +251,7 @@ const ProtoChat = () => {
 		channels.forEach(element => {
 			
 			let isMemberOrNot: boolean = false;
-			if (element.members.find((member: any) => member.name === username) !== undefined)
+			if (element.members.find((member: any) => member.user.name === username) !== undefined)
 				isMemberOrNot = true;
 
 			const newRoom: IRoom = {
@@ -274,7 +274,7 @@ const ProtoChat = () => {
 	const receiveNewChannel = (channel: any) => {
 		
 		let isMemberOrNot: boolean = false;
-		if (channel.members.find((member: any) => member.name === username) !== undefined)
+		if (channel.members.find((member: any) => member.user.name === username) !== undefined)
 			isMemberOrNot = true;
 
 		const newRoom: IRoom = {

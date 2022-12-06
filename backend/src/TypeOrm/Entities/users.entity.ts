@@ -63,6 +63,7 @@ export class UsersEntity {
 
   @CreateDateColumn()
   createdAt?: Date;
+  
   @Column({ nullable: true, default: 0 })
   avatarId?: number;
   

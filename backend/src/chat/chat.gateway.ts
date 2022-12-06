@@ -14,6 +14,7 @@ import { MessageService } from './chatMessage.service';
 import { type } from 'src/exports/enum';
 import * as bcrypt from 'bcrypt';
 import { DeepPartial } from 'typeorm';
+import { OnEvent } from '@nestjs/event-emitter';
 
 // {cors: '*'} pour que chaque client dans le frontend puisse se connecter à notre gateway
 @WebSocketGateway({cors: '*'}) // decorator pour dire que la classe ChatGateway sera un gateway /
@@ -88,6 +89,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 		console.log('joinRoom');
 
 		let		channelJoined = await this.chatService.findOneChatRoomByName(infos.room);
+		let		theUser = await this.usersService.findOneByName(infos.user);
 
 		if (channelJoined.type === type.protected)
 		{
@@ -99,10 +101,13 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 			}
 		}
 
-		const	memberCreated = await this.memberService.createMember({name: infos.user});
+		const	memberCreated = await this.memberService.createMember({name: infos.user, user: theUser});
 		channelJoined.members.push(memberCreated);
 
 		await	this.chatService.saveChatRoom(channelJoined);
+
+		theUser.memberships.push(await this.memberService.getMemberById(memberCreated.id));
+		await	this.usersService.updateUser(theUser.id);
 
 		client.emit('joinedRoom', infos.room);
 	}
@@ -116,18 +121,25 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 		console.log('leaveRoom');
 		let		channelLeft = await this.chatService.findOneChatRoomByName(infos.room);
 		let		member = await this.memberService.getMemberByNameAndChannel(infos.user, channelLeft);
-		let		memberName = member.name;
+		let		memberName = member.user.name;
 		await	this.memberService.deleteMemberById(member.id);
 		if (memberName === channelLeft.owner.name)
 		{
 			let		oldOwner = await this.usersService.findOneByName(infos.user);
 			let		ownedChannels: ChatRoomEntity[] = [...oldOwner.ownedChannels];
+			let		memberships: MemberEntity[] = [...oldOwner.memberships];
 			for (let i = 0; i < ownedChannels.length; i++)
 			{
 				if (ownedChannels[i].id === channelLeft.id)
 					ownedChannels.splice(i, 1);
 			}
 			oldOwner.ownedChannels = ownedChannels;
+			for (let i = 0; i < memberships.length; i++)
+			{
+				if (memberships[i].user.name === memberName)
+					memberships.splice(i, 1);
+			}
+			oldOwner.memberships = memberships;
 			await this.usersService.updateUser(oldOwner.id);
 			this.HandleOwnerChange(client, memberName, channelLeft.id)
 		}
@@ -138,20 +150,20 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 		let 		thechannel = await this.chatService.findOneChatRoomById(channelId);
 		let			newOwner: UsersEntity = null;
 		let			admin: MemberEntity = null;
-		let			user: MemberEntity = null;
+		let			member: MemberEntity = null;
 		const		admins = await this.memberService.findAllAdminsFromOneRoom(channelId);
 		if (admins.length > 0)
 		{
-			admin = admins.find((member: MemberEntity) => member.name != oldOwnerName);
-			newOwner = await this.usersService.findOneByName(admin.name);
+			admin = admins.find((member: MemberEntity) => member.user.name != oldOwnerName);
+			newOwner = await this.usersService.findOneByName(admin.user.name);
 		}
 		else
 		{
-			const	users = await this.memberService.findAllMembersFromOneRoom(channelId);
-			if (users.length > 0)
+			const	members = await this.memberService.findAllMembersFromOneRoom(channelId);
+			if (members.length > 0)
 			{
-				user = users.find((member: MemberEntity) => member.name != oldOwnerName);
-				newOwner = await this.usersService.findOneByName(user.name);
+				member = members.find((member: MemberEntity) => member.user.name != oldOwnerName);
+				newOwner = await this.usersService.findOneByName(member.user.name);
 			}
 			else
 				this.HandleDeletionRoom(client, thechannel.chatRoomName);
@@ -162,10 +174,10 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 			await	this.chatService.saveChatRoom(thechannel);
 			newOwner.ownedChannels.push(thechannel);
 			await	this.usersService.updateUser(newOwner.id);
-			if (user != null && user != undefined)
+			if (member != null && member != undefined)
 			{
-				user.isAdmin = true;
-				await 	this.memberService.updateMember(user);
+				member.isAdmin = true;
+				await 	this.memberService.updateMember(member);
 			}
 			this.server.to(thechannel.id).emit('newOwner',
 			{newOwner: newOwner.name, channel: thechannel.chatRoomName});
@@ -183,21 +195,20 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
         const    	hash = room.type === type.protected ? await bcrypt.hash(room.password, 10) : null;
 
-        const newChatRoom: IChatRoom = {
-            chatRoomName: room.chatRoomName,
+        const 		newChatRoom: IChatRoom = {
+			chatRoomName: room.chatRoomName,
             owner: theOwner,
             type: room.type,
             password: hash,
         }
         let        	channelCreated = await this.chatService.createChatRoom(newChatRoom);
-
-        const    	memberCreated = await this.memberService.createMember({name: theOwner.name, isAdmin: true});
+        const    	memberCreated = await this.memberService.createMember({name: theOwner.name, user: theOwner, isAdmin: true});
 
         channelCreated.members = [memberCreated];
         await this.chatService.saveChatRoom(channelCreated);
 
         theOwner.ownedChannels.push(channelCreated);
-		theOwner.memberships.push(memberCreated);
+		theOwner.memberships.push(await this.memberService.getMemberById(memberCreated.id));
         await this.usersService.updateUser(theOwner.id);
 
         const sockets = await this.server.fetchSockets();
@@ -255,6 +266,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 		client.emit('AllLists', {channel: chatName, usersList: users, adminsList: admins, banList: bans});
 	}
 
+	@OnEvent('GetListsForUser')
 	@SubscribeMessage('getLists')
 	async HandleLists(@MessageBody() chatName: string) : Promise<void> {
 		const theChannel = 	await this.chatService.findOneChatRoomByName(chatName);

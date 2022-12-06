@@ -15,9 +15,6 @@ export class MemberEntity {
 	@PrimaryGeneratedColumn('uuid')
 	id: string;
 
-	@Column()
-	name: string;
-
 	@ManyToOne(() => UsersEntity, (user: UsersEntity) => user.memberships, {onDelete: 'CASCADE'})
 	user?: UsersEntity;
 
