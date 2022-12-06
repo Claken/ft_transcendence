@@ -25,13 +25,13 @@ export class MemberEntity {
 	isMute: boolean;
 
 	@Column({ nullable: true, default: 0 })
-	timeMute?: number;
+	timeMuteInMinute?: number;
 
 	@Column({ default: false })
 	isBan: boolean;
 
 	@Column({ nullable: true, default: 0 })
-	timeBan?: number;
+	timeBanInMinute?: number;
 
 	@ManyToOne(() => ChatRoomEntity, (Channel: ChatRoomEntity) => Channel.members, {onDelete: 'CASCADE'})
 	inChannel?: ChatRoomEntity;
@@ -46,9 +46,9 @@ export interface IMember {
 	user?: UsersEntity,
 	isAdmin?: boolean,
 	isMute?: boolean,
-	timeMute?: number,
+	timeMuteInMinute?: number,
 	isBan?: boolean,
-	timeBan?: number,
+	timeBanInMinute?: number,
 	inChannel?: ChatRoomEntity;
 	createdAt?: Date;
 }

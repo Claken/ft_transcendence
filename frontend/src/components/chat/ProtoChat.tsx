@@ -98,6 +98,16 @@ const ProtoChat = () => {
 		console.log(room);
 	}
 
+	const isAdminInActive = (): boolean => {
+
+		const activeRoom = findActiveRoom();
+		activeRoom.adminsList.forEach((admin: string) => {
+			if (admin === username)
+				return true;
+		})
+		return false;
+	}
+
 	const getListsForAChannel = (lists: {channel: string, usersList: any[], adminsList: any[], banList: any[]}) =>
 	{
 		let room = rooms.find((element: IRoom) => {if (element.name === lists.channel) return element});
@@ -457,7 +467,7 @@ const ProtoChat = () => {
 						<div>&nbsp;</div>Status : {joinStatus + ' '}<button onClick={toggleRoomMembership}>{joinButton}</button>
 					</p>
 					<p>
-						<div>&nbsp;</div>Members : {findActiveRoom().usersList ? findActiveRoom().usersList.map((name: string) => <div>{name}</div>) : <div></div>}
+						<div>&nbsp;</div>Members : {findActiveRoom().usersList ? findActiveRoom().usersList.map((name: string) => <div><button>{name}</button></div>) : <div></div>}
 					</p>
 					<p>
 						<div>&nbsp;</div>Admins : {findActiveRoom().adminsList ? findActiveRoom().adminsList.map((name: string) => <div>{name}</div>) : <div></div>}

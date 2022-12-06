@@ -293,4 +293,36 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 		await this.chatService.saveChatRoom(channel);
 	}
 
+	@SubscribeMessage('banMember')
+	async banMember(client: Socket, user: {name: string, channel: string, time: number}) {
+		let channel = await this.chatService.findOneChatRoomByName(user.channel);
+		let member = await this.memberService.getMemberByNameAndChannel(user.name, channel);
+		member.isBan = true;
+		member.timeBanInMinute = user.time;
+		await 	this.memberService.updateMember(member);
+		this.HandleLists(channel.chatRoomName);
+
+		setTimeout(async () => {
+			member.isBan = false;
+			member.timeBanInMinute = 0;
+			await 	this.memberService.updateMember(member);
+			this.HandleLists(channel.chatRoomName);
+		}, user.time * 60000);
+	}
+
+	@SubscribeMessage('muteMember')
+	async muteMember(client: Socket, user: {name: string, channel: string, time: number}) {
+		let channel = await this.chatService.findOneChatRoomByName(user.channel);
+		let member = await this.memberService.getMemberByNameAndChannel(user.name, channel);
+		member.isMute = true;
+		member.timeMuteInMinute = user.time;
+		await 	this.memberService.updateMember(member);
+
+		setTimeout(async () => {
+			member.isMute = false;
+			member.timeBanInMinute = 0;
+			await 	this.memberService.updateMember(member);
+		}, user.time * 60000);
+	}
+
 }
