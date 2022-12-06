@@ -43,9 +43,7 @@ const ProtoChat = () => {
 		};
 		rooms.forEach((element: IRoom) => {
 			if (element.active === true)
-			{
 				activeRoom = element;
-			}
 		})
 		return activeRoom;
 	}
@@ -65,15 +63,9 @@ const ProtoChat = () => {
 	}
 
 	const setActiveForRoom = (roomName: string) => {
-		rooms.forEach((element: IRoom) => {
-			if (element.name === roomName)
-			{
-				element.active = true;
-			}
-			else
-			{
-				element.active = false;
-			}
+		rooms.forEach((element: IRoom) =>
+		{
+			element.active = element.name === roomName ? true : false;
 		})
 		setActiveRoom(roomName);
 		setJoinButtonAndStatus();
