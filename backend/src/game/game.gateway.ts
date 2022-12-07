@@ -4,32 +4,30 @@ import {
   SubscribeMessage,
   OnGatewayConnection,
   OnGatewayDisconnect,
-  OnGatewayInit,
 } from '@nestjs/websockets';
 import { UserDTO } from '../TypeOrm/DTOs/User.dto';
 import { GameDTO } from '../TypeOrm/DTOs/Game.dto';
 import { GameService } from './game.service';
 import { UsersService } from 'src/users/users.service';
-import { map } from 'rxjs';
-import { Cron, CronExpression } from '@nestjs/schedule';
-import { Socket } from 'dgram';
-import { threadId } from 'worker_threads';
-import { Game } from 'src/TypeOrm';
-import { ConsoleLogger } from '@nestjs/common';
 
 export var userQueue: UserDTO[] = [];
+export interface ObjInterval {
+	gameId:		number,
+	intervalID:	NodeJS.Timer,
+}
+// export var tabIntervalId: ObjInterval[] = [];
 
 @WebSocketGateway({ cors: 'http://localhost:3000' })
 export class GameGateway
   implements OnGatewayConnection, OnGatewayDisconnect
 {
   constructor(
-	private gameService: GameService,
-	private usersService: UsersService) {}
+	private readonly gameService: GameService,
+	private readonly usersService: UsersService) {}
 
   @WebSocketServer() server;
   users: number = 0;
-  intervalID = null; //TODO: créer un tab avec l'id de l'interval lié à son compteur
+  tabIntervalId: ObjInterval[] = [];
 
   async handleConnection(client) {
     // A client has connected
@@ -220,9 +218,11 @@ export class GameGateway
   /* ***************************************************************************** */
   @SubscribeMessage('image')
   async Image(client: any, infos) {
+	let game: GameDTO = await this.gameService.getById(infos[1].gameId);
+
 	infos[0] === infos[1].loginLP ? infos[1].mapLP = infos[2] : infos[1].mapRP = infos[2];
 	if (infos[1].mapLP === infos[1].mapRP) {
-		clearInterval(this.intervalID);
+		this.deleteInter(game.id);
 		this.gameService.updateCompteur(infos[1].gameId, true);
 		this.gameService.updateMap(infos[1].gameId, infos[1].mapLP);
 		this.server.to(infos[1].gameId).emit("launchGame", infos[2])
@@ -238,30 +238,37 @@ export class GameGateway
 	this.server.to(gameId).emit("launchGame", map);
   }
 
-  tick = async (gameId: number) => {
-	let compteur = await this.gameService.updateCompteur(gameId, false);
-	//TODO: choper le socket client et emit vers lui. Comment ??
+  tick = async (gameId: number, nbInter: number) => {
+	const compteur: number = await this.gameService.updateCompteur(gameId, false);
+	const nbInterval = await this.gameService.getNbInter(gameId);
+
+	console.log("TICK avec comme nbInter: "+nbInter)
+	if (nbInterval !== nbInter)
+		this.deleteInter(gameId);
 	if (compteur === 0) {
-		clearInterval(this.intervalID);
+		this.deleteInter(gameId);
 		this.RandomMap(gameId);
 	}
-	else if (compteur > 0) {
-		console.log("emit vers game => "+gameId)
+	else if (compteur > 0)
 		this.server.to(gameId).emit('compteurUpdated', compteur);
+  }
+
+  deleteInter = async (id: number) => {
+	const res = this.tabIntervalId.filter((objInterval: ObjInterval) => objInterval.gameId === id);
+	const index = this.tabIntervalId.findIndex((objInterval: ObjInterval) => objInterval.gameId === id);
+	if (res[0]) {
+		clearInterval(res[0].intervalID);
+		if (index !== -1)
+			this.tabIntervalId.splice(index, 1);
 	}
-}
+  }
 
   @SubscribeMessage('setCompteur')
-  async SetCompteur(gameId) {
-	this.intervalID = setInterval(this.tick, 1000, gameId);
-  }
-
-  @SubscribeMessage('getCompteur')
-  async GetCompteur(client: any, gameId: number) {
-	let currentGame: GameDTO = await this.gameService.getById(gameId);
-	client.join(gameId);
-	this.server.to(gameId).emit("compteurUpdated", currentGame.compteur);
-  }
+  async SetCompteur(client: any, gameId: number) {
+	let nbInter = await this.gameService.updateNbInterval(gameId);
+	const interval = setInterval(this.tick, 1000, gameId, nbInter);
+	this.tabIntervalId.push({gameId, intervalID: interval});
+}
 
   /* ***************************************************************************** */
   /*                     Vérifie si le user est en Queue/Game                      */
@@ -297,8 +304,6 @@ export class GameGateway
 		client.emit("updateUser", user);
 		userQueue.push(user);
     }
-	console.log(userQueue.at(0))
-	console.log(userQueue.at(1))
     if (userQueue.length % 2 === 0) {
       /**** Take the first pending Game ****/
       const games: GameDTO[] = await this.gameService.getPendingGames();
@@ -328,7 +333,7 @@ export class GameGateway
 	  this.server.to(updatedGame.id).emit("updateUsers", firstGameUserLp, user);
       /**** Redirect in the Frontend to <Game /> ****/
 	  this.server.to(updatedGame.id).emit('goPlay', updatedGame);
-	  this.SetCompteur(updatedGame.id);
+	  this.SetCompteur(client, updatedGame.id);
     } else {
 	  let login: string;
 	  if (!user.login)
@@ -368,7 +373,6 @@ export class GameGateway
 
   async isConnected(userL: string, userR: string, gameId: number) {
 	let connected = await this.usersService.isConnected(userL, userR);
-	console.log("connected: "+connected)
 	if (!connected)
 		this.server.to(gameId).emit("opponentLeave");
   }
@@ -377,13 +381,13 @@ export class GameGateway
   async User(client: any, userId: number) {
 	const user = await this.usersService.updateSocket(userId, client.id);
 	user.lastSocket = client.id;
-	console.log("socket client "+userId+" = "+client.id)
 	if (user.inQueue === true) {
 		client.emit("redirect", "");
 	}
 	if (user.inGame === true) {
-		let game = await this.gameService.getByloginLP(user.name);
-		client.emit("redirect", game.id);
+		let game = await this.gameService.getCurrentGame(user.name);
+		if (game)
+			client.emit("redirect", game.id);
 	}
   }
 

@@ -3,7 +3,8 @@ import allPos from "./allPos";
 const initPage = (context, color, mignature) => {
 	context.fillStyle = "white";
 	context.fillText("CHOOSE THE MAP", allPos.width / 2, allPos.height / 3, allPos.width);
-	context.fillText(allPos.compteur.toString(), allPos.width / 2, allPos.height / 2.2);
+	if (allPos.compteur !== null)
+		context.fillText(allPos.compteur.toString(), allPos.width / 2, allPos.height / 2.2);
 
 	context.fillStyle = color[0];
 	context.fillRect(allPos.width/2 - 610, 290, 320, 220);

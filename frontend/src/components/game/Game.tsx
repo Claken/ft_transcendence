@@ -39,8 +39,12 @@ const Game = (
 	useEffect(() => {
 		socket.on("updateData", (newData) => {
 			allPos.map = newData.map;
+			if (newData.compteur === 10) {
+				allPos.compteur = newData.compteur;
+			}
+			else
+				allPos.compteur = null;
 			allPos.state = newData.state;
-			allPos.compteur = newData.compteur;
 			allPos.scoreLP = newData.scoreLP;
 			allPos.scoreRP = newData.scoreRP;
 			allPos.loginLP = newData.loginLP;
@@ -181,9 +185,8 @@ const Game = (
 		allPos.speed = 2;
 		allPos.mapLP = -1;
 		allPos.mapRP = -1;
-		// if (allPos.compteur !== 10)
-			// socket.emit("setCompteur", gameId, true);// ???
-		// socket.emit("getCompteur", gameId);
+		if (allPos.compteur === null)
+			socket.emit("setCompteur", gameId);
 		allPos.key = key;
 		let animationFrameId: number;
 		allPos.img = new Image();
@@ -239,7 +242,6 @@ const Game = (
 		})
 
 		socket.on("compteurUpdated", (currentSec) => {
-			console.log("compteur update pour "+auth.user.name)
 			allPos.compteur = currentSec;
 		})
 

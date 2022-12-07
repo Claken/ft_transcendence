@@ -26,11 +26,14 @@ export class GameDTO {
 	compteur?: number = 10;
 
 	@IsOptional()
+	nbInter?: number = 0;
+
+	@IsOptional()
 	map?: number = 0;
 
 	@IsOptional()
 	state?: number = 0;
-	
+
 	@IsOptional()
 	abort?: string;
 	

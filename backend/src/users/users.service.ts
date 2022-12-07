@@ -111,7 +111,6 @@ export class UsersService {
   async isConnected(userL: string, userR: string) : Promise<Boolean> {
     const userLeft = await this.getByName(userL)
     const userRight = await this.getByName(userR)
-	console.log(userLeft.status+" "+userRight.status)
 	if (userLeft.status === "offline" || userRight.status === "offline")
 		return false;
 	else

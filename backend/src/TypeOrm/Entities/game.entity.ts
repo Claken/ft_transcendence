@@ -33,6 +33,9 @@ export class Game implements IGame {
   compteur?: number;
 
   @Column({ default: 0 })
+  nbInter?: number;
+
+  @Column({ default: 0 })
   map?: number;
 
   @Column({ default: 0 })

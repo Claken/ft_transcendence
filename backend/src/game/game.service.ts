@@ -34,6 +34,11 @@ export class GameService {
     });
   }
 
+  async getNbInter(id: number): Promise<number> {
+    const game = await this.getById(id);
+    return game.nbInter;
+  }
+
   async getCurrentGame(name: string): Promise<Game> {
     return await this.gameRepo.findOne({
 		where: [
@@ -80,9 +85,17 @@ export class GameService {
 	game.nameRP = nameRP;
     return await this.gameRepo.save(game);
   }
+  
+
+  async updateNbInterval(id: number): Promise<number> {
+    const game = await this.getById(id);
+	game.nbInter += 1;
+    await this.gameRepo.save(game);
+	return game.nbInter;
+  }
 
   async updateCompteur(id: number, end: boolean): Promise<number> {
-    const game = await this.getById(id);
+	const game = await this.getById(id);
 	if (end)
 		game.compteur = 0;
 	else 
