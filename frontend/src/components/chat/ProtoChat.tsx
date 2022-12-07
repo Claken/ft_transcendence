@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import io, { Socket } from 'socket.io-client';
 import { isForOfStatement } from 'typescript';
 import {IChatRoom} from '../../interfaces/chat.interface'
-import {useAuth} from '../../contexts/AuthContext'
+import { useAuth } from '../../contexts/AuthContext'
 import { IMessageToBack } from '../../interfaces/messageToBack.interface';
 import { IRoom } from '../../interfaces/room.interface';
 import { type } from '../../interfaces/enum';
@@ -109,24 +109,37 @@ const ProtoChat = () => {
 	const banOrMute = (name: string) => {
 		const 	activeRoom = findActiveRoom();
 		let		time: number = 0;
-		if (window.confirm('Do you want to ban this user ?') && !activeRoom.ban)
+		if (window.confirm('Do you want to ban this user ?'))
 		{
-			activeRoom.ban = true;
 			time = parseInt(prompt('insert the time in minutes please :'));
 			socket?.emit('banMember', {name: name, channel: activeRoom.name, time: time})
 		}
-		else if (activeRoom.ban)
-			alert('the user is already banned anyway');
-		if (window.confirm('Do you want to mute this user ?') && !activeRoom.mute)
+		if (window.confirm('Do you want to mute this user ?'))
 		{
-			activeRoom.mute = true;
 			time = parseInt(prompt('insert the time in minutes please :'));
 			socket?.emit('muteMember', {name: name, channel: activeRoom.name, time: time})
 		}
-		else if (activeRoom.mute)
-			alert('the user is already muted anyway');
-
 	}
+
+	const updateBanStatus = (member: {status: boolean, channel: string}) => {
+		console.log('BanStatus');
+		let room = rooms.find((room: IRoom) => {if (room.name === member.channel) return room});
+		room.ban = member.status;
+		if (room.ban)
+			alert('Congratulations, you are banned from ' + member.channel);
+		else
+			alert('Congratulations, you are not banned anymore from ' + member.channel);
+	};
+
+	const updateMuteStatus = (member: {status: boolean, channel: string}) => {
+		console.log('MuteStatus');
+		let room = rooms.find((room: IRoom) => {if (room.name === member.channel) return room});
+		room.ban = member.status;
+		if (room.ban)
+			alert('Congratulations, you are banned from ' + member.channel);
+		else
+			alert('Congratulations, you are not banned anymore from ' + member.channel);
+	};
 
 	const getListsForAChannel = (lists: {channel: string, usersList: any[], adminsList: any[], banList: any[]}) =>
 	{
@@ -396,6 +409,11 @@ const ProtoChat = () => {
 		socket?.emit('getAllChannels');
 	}, [username])
 
+	// STOCKER UN SOCKET DANS LE BACK AVEC LE NOM DU USER
+	useEffect(() => {
+		socket?.emit('addSocket', username);
+	})
+
 	useEffect(() => {
 		socket?.on('sendAllChannels', receiveAllChannels);
 		return () => {
@@ -476,6 +494,21 @@ const ProtoChat = () => {
 			socket?.off('AllLists', getListsForAChannel);
 		}
 	}, [getListsForAChannel])
+
+	// UPDATE BAN STATUS
+	useEffect(() => {
+		socket?.on('BanStatus', updateBanStatus);
+		return () => {
+			socket?.off('BanStatus', updateBanStatus);
+		}
+	}, [updateBanStatus])
+
+	useEffect(() => {
+		socket?.on('MuteStatus', updateMuteStatus);
+		return () => {
+			socket?.off('MuteStatus', updateMuteStatus);
+		}
+	}, [updateMuteStatus])
 
 	return (
 		<div>
