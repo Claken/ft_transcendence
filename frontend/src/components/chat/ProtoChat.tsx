@@ -6,6 +6,7 @@ import {useAuth} from '../../contexts/AuthContext'
 import { IMessageToBack } from '../../interfaces/messageToBack.interface';
 import { IRoom } from '../../interfaces/room.interface';
 import { type } from '../../interfaces/enum';
+import Account from '../../pages/Account';
 
 
 // const 	socket = io('http://localhost/3001');
@@ -36,6 +37,8 @@ const ProtoChat = () => {
 		let activeRoom: IRoom = {
 			active: false,
 			member: false,
+			ban: false,
+			mute: false,
 			owner: '',
 			name: '',
 			type: type.public,
@@ -101,6 +104,28 @@ const ProtoChat = () => {
 				value = true;
 		})
 		return value;
+	}
+
+	const banOrMute = (name: string) => {
+		const 	activeRoom = findActiveRoom();
+		let		time: number = 0;
+		if (window.confirm('Do you want to ban this user ?') && !activeRoom.ban)
+		{
+			activeRoom.ban = true;
+			time = parseInt(prompt('insert the time in minutes please :'));
+			socket?.emit('banMember', {name: name, channel: activeRoom.name, time: time})
+		}
+		else if (activeRoom.ban)
+			alert('the user is already banned anyway');
+		if (window.confirm('Do you want to mute this user ?') && !activeRoom.mute)
+		{
+			activeRoom.mute = true;
+			time = parseInt(prompt('insert the time in minutes please :'));
+			socket?.emit('muteMember', {name: name, channel: activeRoom.name, time: time})
+		}
+		else if (activeRoom.mute)
+			alert('the user is already muted anyway');
+
 	}
 
 	const getListsForAChannel = (lists: {channel: string, usersList: any[], adminsList: any[], banList: any[]}) =>
@@ -256,12 +281,21 @@ const ProtoChat = () => {
 		channels.forEach(element => {
 			
 			let isMemberOrNot: boolean = false;
-			if (element.members.find((member: any) => member.user.name === username) !== undefined)
+			let isBan: boolean = false;
+			let isMute: boolean = false;
+			let member: any = element.members.find((member: any) => member.user.name === username);
+			if (member !== undefined)
+			{
 				isMemberOrNot = true;
+				isBan = member.isBan;
+				isMute = member.isMute;
+			}
 
 			const newRoom: IRoom = {
 				active: false,
 				member: isMemberOrNot,
+				ban: isBan,
+				mute: isMute,
 				owner: element.owner.name,
 				name: element.chatRoomName,
 				type: element.type,
@@ -279,12 +313,21 @@ const ProtoChat = () => {
 	const receiveNewChannel = (channel: any) => {
 		
 		let isMemberOrNot: boolean = false;
-		if (channel.members.find((member: any) => member.user.name === username) !== undefined)
+		let isBan: boolean = false;
+		let isMute: boolean = false;
+		let member: any = channel.members.find((member: any) => member.user.name === username);
+		if (member !== undefined)
+		{
 			isMemberOrNot = true;
+			isBan = member.isBan;
+			isMute = member.isMute;
+		}
 
 		const newRoom: IRoom = {
 		active: false,
 		member: isMemberOrNot,
+		ban: isBan,
+		mute: isMute,
 		owner: channel.owner.name,
 		name: channel.chatRoomName,
 		type: channel.type,
@@ -464,7 +507,7 @@ const ProtoChat = () => {
 					<p>
 						<div>&nbsp;</div>Members : {findActiveRoom().usersList ? findActiveRoom().usersList.map
 						(
-							(name: string) => isAdminInActive() ? <div><button >{name}</button></div> : <div>{name}</div>
+							(name: string) => isAdminInActive() ? <div><button onClick={() => banOrMute(name)}>{name}</button></div> : <div>{name}</div>
 						) 
 						: <div></div>}
 					</p>
