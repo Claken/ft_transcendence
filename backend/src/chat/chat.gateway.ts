@@ -292,6 +292,16 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 		await this.chatService.saveChatRoom(channel);
 	}
 
+	@SubscribeMessage('setUserAsAdmin')
+	async setUserAsAdmin(client: Socket, user: {name: string, channel: string}) : Promise<void>
+	{
+		const channel = await this.chatService.findOneChatRoomByName(user.channel);
+		let member = await this.memberService.getMemberByNameAndChannel(user.name, channel);
+		member.isAdmin = true;
+		await	this.memberService.updateMember(member);
+		await 	this.HandleLists(channel.chatRoomName);
+	}
+
 	@SubscribeMessage('banMember')
 	async banMember(client: Socket, user: {name: string, channel: string, time: number}) {
 		let channel = await this.chatService.findOneChatRoomByName(user.channel);
@@ -327,5 +337,4 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 			this.users[user.name].emit('MuteStatus', {status: false, channel: channel.chatRoomName});
 		}, user.time * 60000);
 	}
-
 }

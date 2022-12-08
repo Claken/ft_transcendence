@@ -94,19 +94,23 @@ const ProtoChat = () => {
     room.owner = update.newOwner;
   };
 
-  const isAdminInActive = (): boolean => {
+  const isAdminInActive = (name: string): boolean => {
     const activeRoom = findActiveRoom();
     let value: boolean = false;
 
     activeRoom.adminsList.forEach((admin: string) => {
-      if (admin == username) value = true;
+      if (admin == name) value = true;
     });
     return value;
   };
 
-  const banOrMute = (name: string) => {
+  const userOptions = (name: string) => {
     const activeRoom = findActiveRoom();
     let time: number = 0;
+	if (!isAdminInActive(name) && window.confirm("Set this user as admin ?"))
+	{
+		socket?.emit("setUserAsAdmin", {name: name, channel: activeRoom.name});
+	}
     if (window.confirm("Do you want to ban this user ?"))
 	{
     	time = parseInt(prompt("insert the time in minute please :"));
@@ -575,9 +579,9 @@ const ProtoChat = () => {
           <div>&nbsp;</div>Members :{" "}
           {findActiveRoom().usersList ? (
             findActiveRoom().usersList.map((name: string) =>
-              isAdminInActive() ? (
+              isAdminInActive(username) && name != username ? (
                 <div>
-                  <button onClick={() => banOrMute(name)}>{name}</button>
+                	<button onClick={() => userOptions(name)}>{name}</button>
                 </div>
               ) : (
                 <div>{name}</div>
