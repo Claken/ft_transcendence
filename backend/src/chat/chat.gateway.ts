@@ -133,19 +133,12 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 		{
 			let		oldOwner = await this.usersService.findOneByName(infos.user);
 			let		ownedChannels: ChatRoomEntity[] = [...oldOwner.ownedChannels];
-			// let		memberships: MemberEntity[] = [...oldOwner.memberships];
 			for (let i = 0; i < ownedChannels.length; i++)
 			{
 				if (ownedChannels[i].id === channelLeft.id)
 					ownedChannels.splice(i, 1);
 			}
 			oldOwner.ownedChannels = ownedChannels;
-			// for (let i = 0; i < memberships.length; i++)
-			// {
-			// 	if (memberships[i].user.name === memberName)
-			// 		memberships.splice(i, 1);
-			// }
-			// oldOwner.memberships = memberships;
 			await this.usersService.updateUser(oldOwner.id);
 			this.HandleOwnerChange(client, memberName, channelLeft.id)
 		}
