@@ -128,7 +128,7 @@ const ProtoChat = () => {
 		if (room.ban)
 			alert('Congratulations, you are banned from ' + member.channel);
 		else
-			alert('Congratulations, you are not banned anymore from ' + member.channel);
+			alert('Congratulations, you are not banned from ' + member.channel + ' anymore');
 	};
 
 	const updateMuteStatus = (member: {status: boolean, channel: string}) => {
@@ -138,7 +138,7 @@ const ProtoChat = () => {
 		if (room.ban)
 			alert('Congratulations, you are banned from ' + member.channel);
 		else
-			alert('Congratulations, you are not banned anymore from ' + member.channel);
+			alert('Congratulations, you are not banned from ' + member.channel + ' anymore');
 	};
 
 	const getListsForAChannel = (lists: {channel: string, usersList: any[], adminsList: any[], banList: any[]}) =>

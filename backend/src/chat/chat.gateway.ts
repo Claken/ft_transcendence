@@ -51,8 +51,6 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 	@SubscribeMessage('addSocket') // decorator pour indiquer quelle méthode envoyer pour l'évènement dont le nom correspond à 'messages'
 	AddSocket(client: Socket, name: string): void {
 		this.users[name] = client;
-		console.log(client.id + ' + ' + name);
-		console.log(this.users[name].id);
 	}
 
   // @SubscribeMessage('msgToServer')
@@ -308,16 +306,14 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 		member.isBan = true;
 		member.timeBanInMinute = user.time;
 		await 	this.memberService.updateMember(member);
-		this.HandleLists(channel.chatRoomName);
-		console.log('this.users[user.name] in banMember');
-		console.log(this.users[user.name].id);
+		await 	this.HandleLists(channel.chatRoomName);
 		this.users[user.name].emit('BanStatus', {status: true, channel: channel.chatRoomName});
 
 		setTimeout(async () => {
 			member.isBan = false;
 			member.timeBanInMinute = 0;
 			await 	this.memberService.updateMember(member);
-			this.HandleLists(channel.chatRoomName);
+			await	this.HandleLists(channel.chatRoomName);
 			this.users[user.name].emit('BanStatus', {status: false, channel: channel.chatRoomName});
 		}, user.time * 60000);
 	}
@@ -329,7 +325,6 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 		member.isMute = true;
 		member.timeMuteInMinute = user.time;
 		await 	this.memberService.updateMember(member);
-		console.log('this.users[user.name] in muteMember');
 		this.users[user.name].emit('MuteStatus', {status: true, channel: channel.chatRoomName});
 
 		setTimeout(async () => {
