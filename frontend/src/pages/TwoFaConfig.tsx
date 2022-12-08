@@ -5,13 +5,14 @@ import { socket } from "../components/Socket";
 import { useAuth } from "../contexts/AuthContext";
 import "../styles/twofaconfig.scss";
 import { Dispatch, SetStateAction } from "react";
+import { IUser } from "../interfaces/user.interface";
 
 interface IToggleTwofaConfig {
 	setToggleTwoFaConfig: Dispatch<SetStateAction<boolean>>;
 }
 
 const TwoFaConfig = (props: IToggleTwofaConfig) => {
-	const { user } = useAuth();
+	const { user, setUser } = useAuth();
 	const [code, setCode] = useState<string>("");
 	const [url, setUrl] = useState<string>("");
 	const [testMsg, setTestMsg] = useState<string>("");
@@ -19,11 +20,16 @@ const TwoFaConfig = (props: IToggleTwofaConfig) => {
 	const inputRef = useRef<HTMLInputElement>();
 	const { setToggleTwoFaConfig } = props;
 
+	const focus = () => {
+		inputRef.current.focus();
+	}
+
 	/* ********************************************************* */
 	/*                     Set TwoFA URL                         */
 	/* ********************************************************* */
 	useEffect(() => {
-		if (user?.twoFASecret) socket.emit("set-2fa-url", user);
+		if (!user?.twoFASecret) generateTwoFa();
+		else socket.emit("set-2fa-url", user);
 	}, []);
 	const setTwoFaUrl = (otpauthUrl: string) => {
 		setUrl(otpauthUrl);
@@ -44,41 +50,58 @@ const TwoFaConfig = (props: IToggleTwofaConfig) => {
 	};
 
 	/* ********************************************************* */
-	/*                   	Submit Form	                         */
+	/*                 Verify & validate Form	             	 */
 	/* ********************************************************* */
 
 	const verifyCode = (
 		event: React.MouseEvent<HTMLButtonElement, MouseEvent>
 	) => {
 		event.preventDefault();
-		socket.emit("test-secret-code", { user: user, code: code });
+		socket.emit("verify-validate-2fa", { user: user, code: code });
 	};
 
 	const verifyCodeSumbit = (
 		event: React.FormEvent<HTMLFormElement>
 	) => {
 		event.preventDefault();
-		socket.emit("test-secret-code", { user: user, code: code });
+		socket.emit("verify-validate-2fa", { user: user, code: code });
 	};
 
-	const checkCode = (isCodeValid: boolean) => {
-		if (isCodeValid) {
-			setTestMsg("2fa Code verified.");
+	const checkCode = (newUser: IUser) => {
+		if (newUser.isTwoFAValidated) {
+			setTestMsg("Two-Factor Authentication now enabled.");
 			setIsValid(true);
+			newUser.avatarUrl = user.avatarUrl;
+			setUser(newUser);
 		} else {
 			setTestMsg("Wrong 2fa Code...");
 			setIsValid(false);
 		}
 	};
 	useEffect(() => {
-		socket.on("secret-code-tested", checkCode);
+		socket.on("2fa-verified", checkCode);
 		return () => {
-			socket.off("secret-code-tested", checkCode);
+			socket.off("2fa-verified", checkCode);
 		};
 	}, [checkCode]);
 
-	const focus = () => {
-		inputRef.current.focus();
+	/* ********************************************************* */
+	/*                   	Maj User	                         */
+	/* ********************************************************* */
+
+	const modifyUser = (newUser: IUser) => {
+        newUser.avatarUrl = user.avatarUrl;
+		setUser(newUser);
+	};
+	useEffect(() => {
+		socket.on("maj-user-2fa", modifyUser);
+		return () => {
+			socket.off("maj-user-2fa", modifyUser);
+		};
+	}, [modifyUser]);
+
+	const disableTwofa = () => {
+		socket.emit("twofa-disable", user);
 	}
 
 	return (
@@ -151,7 +174,14 @@ const TwoFaConfig = (props: IToggleTwofaConfig) => {
 					type="button"
 					onClick={verifyCode}
 				>
-					Verify
+					Verify & activate
+				</button>
+				<button
+					className="btnconfirm"
+					type="button"
+					onClick={disableTwofa}
+				>
+					Disable2fa
 				</button>
 			</div>
 		</div>

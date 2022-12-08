@@ -56,24 +56,30 @@ export class AuthGateway
     this.server.emit('maj-user-2fa', user);
   }
 
-  @SubscribeMessage('toggle-2fa')
-  async toggle2fa(client: Socket, user: UserDTO) {
-    await this.usersService.turnOnOffTwoFA(user.id);
+  @SubscribeMessage('verify-validate-2fa')
+  async verifyValidate2fa(client: Socket, twofa: TwoFAValidation) {
+    const { code, user } = twofa;
+    const isCodeValid = await this.twoFAService.isTwoFACodeValid(code, user);
+    let newUser = await this.usersService.getById(user.id);
+    if (isCodeValid) {
+      newUser = await this.usersService.turnOnOffTwoFA(user.id, true);
+      newUser = await this.usersService.setTwoFACertif(newUser.id, true);
+    }
+    this.server.emit('2fa-verified', newUser);
+  }
+
+  @SubscribeMessage('twofa-disable')
+  async twofaDisable(client: Socket, user: UserDTO) {
     let newUser = await this.usersService.getById(user.id);
     if (newUser.isTwoFAEnabled) {
-      newUser = await this.usersService.setTwoFACertif(newUser.id, true);
-      if (!newUser.twoFASecret) {
-        const { secret, otpauthUrl } =
-          await this.twoFAService.generateTwoFASecret(newUser);
-        newUser.twoFASecret = secret;
-      }
-      this.set2faUrl(client, newUser);
+      newUser = await this.usersService.turnOnOffTwoFA(user.id, false);
+      newUser = await this.usersService.setTwoFACertif(newUser.id, false);
     }
-    this.server.emit('maj-user-2fa', newUser);
+    this.server.emit('maj-user-2fa', user);
   }
 
   /* ********************************************************* */
-  /*                     TwoFa.tsx                             */
+  /*                     TwoFaConnexion.tsx                    */
   /* ********************************************************* */
 
   @SubscribeMessage('check-secret-code')
@@ -87,24 +93,20 @@ export class AuthGateway
     this.server.emit('secret-code-checked', user);
   }
 
-  @SubscribeMessage('test-secret-code')
-  async testSecretCode(client: Socket, twofa: TwoFAValidation) {
-    const { code, user } = twofa;
-    const isCodeValid = await this.twoFAService.isTwoFACodeValid(code, user);
-    this.server.emit('secret-code-tested', isCodeValid);
-  }
-
   /* ********************************************************* */
   /*                     Choosename.tsx                        */
   /* ********************************************************* */
 
   @SubscribeMessage('update-username')
   async updateUsername(
-    client: Socket, body: { newName: string; userId: number },
+    client: Socket,
+    body: { newName: string; userId: number },
   ) {
     const { newName, userId } = body;
     await this.usersService.updateName(userId, newName);
-    const memberships = await this.usersService.getMembershipsFromOneUserId(userId);
+    const memberships = await this.usersService.getMembershipsFromOneUserId(
+      userId,
+    );
     memberships.forEach((member: MemberEntity) => {
       this.eventEmitter.emit('GetListsForUser', member.inChannel.chatRoomName);
     });

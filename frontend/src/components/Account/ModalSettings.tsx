@@ -7,10 +7,9 @@ import ChooseName from "./ChooseName";
 import { socket } from "../Socket";
 import { IUser } from "../../interfaces/user.interface";
 import axios from "../../axios.config"
-import { shouldProcessLinkClick } from "react-router-dom/dist/dom";
 
 const ModalSettings = () => {
-	const { user, setUser } = useAuth();
+	const { user } = useAuth();
 	const [toggleTwoFaConfig, setToggleTwoFaConfig] = useState<boolean>(false);
 	const show = useRef<boolean>(true);
 
@@ -18,21 +17,8 @@ const ModalSettings = () => {
 	/*                 TwoFA Enabled/Disabled                    */
 	/* ********************************************************* */
 	const toggleTwoFa = () => {
-		if (!user?.isTwoFAEnabled)
-			setToggleTwoFaConfig(true);
-		socket.emit("toggle-2fa", user);
+		setToggleTwoFaConfig(true);
 	};
-
-	const modifyUser = (current: IUser) => {
-        current.avatarUrl = user.avatarUrl;
-		setUser(current);
-	};
-	useEffect(() => {
-		socket.on("maj-user-2fa", modifyUser);
-		return () => {
-			socket.off("maj-user-2fa", modifyUser);
-		};
-	}, [modifyUser]);
 
 	useEffect(() => {
 		const getUser = async () => {
@@ -70,20 +56,13 @@ const ModalSettings = () => {
 					</div>
 					<ChooseName />
 					<div className="twoFA-settings">
-						<h2>
-							2FA
-							{user?.isTwoFAEnabled ? (
-								<span style={{ color: "green" }}>On</span>
-							) : (
-								<span style={{ color: "red" }}>Off</span>
-							)}
-						</h2>
+						<h2>2FA</h2>
 						<button
                             className="btnconfirm"
                             type="button"
                             onClick={toggleTwoFa}
                         >
-                            {user.isTwoFAEnabled ? (<>Disable 2FA</>) : (<>Setup 2FA</>)}
+                            <>Setup 2FA</>
                         </button>
 					</div>
 				</>

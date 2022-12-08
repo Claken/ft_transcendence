@@ -144,9 +144,9 @@ export class UsersService {
     return await this.userRepo.save(user);
   }
 
-  async turnOnOffTwoFA(id: number): Promise<UsersEntity> {
+  async turnOnOffTwoFA(id: number, val: boolean): Promise<UsersEntity> {
     const user = await this.getById(id);
-    user.isTwoFAEnabled = !user.isTwoFAEnabled;
+    user.isTwoFAEnabled = val;
     return await this.userRepo.save(user);
   }
 
