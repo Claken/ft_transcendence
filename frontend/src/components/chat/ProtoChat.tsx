@@ -579,9 +579,11 @@ const ProtoChat = () => {
                   }
                 >
                   <li>
-                    <p>{msg.message}</p>
-                    {/* {msg.date}  */}
-                    {msg.sender}
+                    <p>{msg.message}
+                    <br />
+                    - {msg.sender}</p>
+                    {msg.date} 
+                    {/* {msg.sender} */}
                   </li>
                 </div>
               ))
