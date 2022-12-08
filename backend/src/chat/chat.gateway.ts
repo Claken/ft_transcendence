@@ -26,6 +26,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 		private messageService: MessageService) {}
 
 	private logger: Logger = new Logger('ChatGateway');
+	private	users = {};
 
 	@WebSocketServer() // decorator
 	server: Server;
@@ -45,6 +46,11 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 	@SubscribeMessage('everyone_message') // decorator pour indiquer quelle méthode envoyer pour l'évènement dont le nom correspond à 'messages'
 	SendMessageToEveryone(client: Socket, text: string): void {
 		this.server.emit('received', text);
+	}
+
+	@SubscribeMessage('addSocket') // decorator pour indiquer quelle méthode envoyer pour l'évènement dont le nom correspond à 'messages'
+	AddSocket(client: Socket, name: string): void {
+		this.users[name] = client;
 	}
 
   // @SubscribeMessage('msgToServer')
@@ -127,21 +133,14 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 		{
 			let		oldOwner = await this.usersService.findOneByName(infos.user);
 			let		ownedChannels: ChatRoomEntity[] = [...oldOwner.ownedChannels];
-			let		memberships: MemberEntity[] = [...oldOwner.memberships];
 			for (let i = 0; i < ownedChannels.length; i++)
 			{
 				if (ownedChannels[i].id === channelLeft.id)
 					ownedChannels.splice(i, 1);
 			}
 			oldOwner.ownedChannels = ownedChannels;
-			for (let i = 0; i < memberships.length; i++)
-			{
-				if (memberships[i].user.name === memberName)
-					memberships.splice(i, 1);
-			}
-			oldOwner.memberships = memberships;
 			await this.usersService.updateUser(oldOwner.id);
-			this.HandleOwnerChange(client, memberName, channelLeft.id)
+			await this.HandleOwnerChange(client, memberName, channelLeft.id);
 		}
 		client.emit('leftRoom', infos.room);
   }
@@ -166,7 +165,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 				newOwner = await this.usersService.findOneByName(member.user.name);
 			}
 			else
-				this.HandleDeletionRoom(client, thechannel.chatRoomName);
+				await this.HandleDeletionRoom(client, thechannel.chatRoomName);
 		}
 		if (newOwner != null && newOwner != undefined)
 		{
@@ -224,7 +223,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 		const sockets = await this.server.fetchSockets();
 		sockets.forEach((socket: any) => socket.leave(channelToBeDeleted.id));
 
-		this.chatService.deleteChatRoomById(channelToBeDeleted.id);
+		await this.chatService.deleteChatRoomById(channelToBeDeleted.id);
 		this.server.emit('sendDeleteMessage', room);
 	}
 
@@ -300,13 +299,15 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 		member.isBan = true;
 		member.timeBanInMinute = user.time;
 		await 	this.memberService.updateMember(member);
-		this.HandleLists(channel.chatRoomName);
+		await 	this.HandleLists(channel.chatRoomName);
+		this.users[user.name].emit('BanStatus', {status: true, channel: channel.chatRoomName});
 
 		setTimeout(async () => {
 			member.isBan = false;
 			member.timeBanInMinute = 0;
 			await 	this.memberService.updateMember(member);
-			this.HandleLists(channel.chatRoomName);
+			await	this.HandleLists(channel.chatRoomName);
+			this.users[user.name].emit('BanStatus', {status: false, channel: channel.chatRoomName});
 		}, user.time * 60000);
 	}
 
@@ -317,11 +318,13 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 		member.isMute = true;
 		member.timeMuteInMinute = user.time;
 		await 	this.memberService.updateMember(member);
+		this.users[user.name].emit('MuteStatus', {status: true, channel: channel.chatRoomName});
 
 		setTimeout(async () => {
 			member.isMute = false;
 			member.timeBanInMinute = 0;
 			await 	this.memberService.updateMember(member);
+			this.users[user.name].emit('MuteStatus', {status: false, channel: channel.chatRoomName});
 		}, user.time * 60000);
 	}
 
