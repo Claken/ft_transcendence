@@ -140,7 +140,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 			}
 			oldOwner.ownedChannels = ownedChannels;
 			await this.usersService.updateUser(oldOwner.id);
-			this.HandleOwnerChange(client, memberName, channelLeft.id)
+			await this.HandleOwnerChange(client, memberName, channelLeft.id);
 		}
 		client.emit('leftRoom', infos.room);
   }
@@ -165,7 +165,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 				newOwner = await this.usersService.findOneByName(member.user.name);
 			}
 			else
-				this.HandleDeletionRoom(client, thechannel.chatRoomName);
+				await this.HandleDeletionRoom(client, thechannel.chatRoomName);
 		}
 		if (newOwner != null && newOwner != undefined)
 		{

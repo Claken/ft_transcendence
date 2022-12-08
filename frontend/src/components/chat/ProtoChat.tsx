@@ -92,7 +92,6 @@ const ProtoChat = () => {
   }) => {
     let room = findRoom(update.channel);
     room.owner = update.newOwner;
-    console.log(room);
   };
 
   const isAdminInActive = (): boolean => {
@@ -108,21 +107,15 @@ const ProtoChat = () => {
   const banOrMute = (name: string) => {
     const activeRoom = findActiveRoom();
     let time: number = 0;
-    if (window.confirm("Do you want to ban this user ?")) {
-      time = parseInt(prompt("insert the time in minute please :"));
-      socket?.emit("banMember", {
-        name: name,
-        channel: activeRoom.name,
-        time: time,
-      });
+    if (window.confirm("Do you want to ban this user ?"))
+	{
+    	time = parseInt(prompt("insert the time in minute please :"));
+		socket?.emit("banMember", {name: name, channel: activeRoom.name, time: time});
     }
-    if (window.confirm("Do you want to mute this user ?")) {
-      time = parseInt(prompt("insert the time in minute please :"));
-      socket?.emit("muteMember", {
-        name: name,
-        channel: activeRoom.name,
-        time: time,
-      });
+    if (window.confirm("Do you want to mute this user ?"))
+	{
+      	time = parseInt(prompt("insert the time in minute please :"));
+      	socket?.emit("muteMember", {name: name, channel: activeRoom.name,time: time});
     }
   };
 
@@ -130,15 +123,15 @@ const ProtoChat = () => {
     console.log("BanStatus");
     let room = findRoom(member.channel);
     room.ban = member.status;
-    if (room.ban) {
-      alert("Congratulations, you are banned from " + member.channel);
-      if (room.name === activeRoom) setActiveForRoom("");
-    } else {
-      alert(
-        "Congratulations, you are not banned from " +
-          member.channel +
-          " anymore"
-      );
+    if (room.ban)
+	{
+    	alert("Congratulations, you are banned from " + member.channel);
+    	if (room.name === activeRoom)
+			setActiveForRoom("");
+    }
+	else
+	{
+      	alert("Congratulations, you are not banned from " + member.channel + " anymore");
     }
   };
 
@@ -153,35 +146,32 @@ const ProtoChat = () => {
       );
   };
 
-  const getListsForAChannel = (lists: {
-    channel: string;
-    usersList: any[];
-    adminsList: any[];
-    banList: any[];
-  }) => {
-    let room = findRoom(lists.channel);
-
+  const getListsForAChannel = (lists: {channel: string; usersList: any[]; adminsList: any[];banList: any[];}) => {
+	let room = findRoom(lists.channel);
     let newUsers: string[] = [];
     let newAdmins: string[] = [];
     let newBans: string[] = [];
-    if (lists.usersList.length > 0) {
-      lists.usersList.forEach((element: any) => {
-        newUsers.push(element.user.name);
+    if (lists.usersList.length > 0)
+	{
+      	lists.usersList.forEach((element: any) => {
+        	newUsers.push(element.user.name);
       });
-      room.usersList = newUsers;
     }
-    if (lists.adminsList.length > 0) {
-      lists.adminsList.forEach((element: any) => {
-        newAdmins.push(element.user.name);
+	room.usersList = newUsers;
+    if (lists.adminsList.length > 0)
+	{
+      	lists.adminsList.forEach((element: any) => {
+        	newAdmins.push(element.user.name);
       });
-      room.adminsList = newAdmins;
     }
-    if (lists.banList.length > 0) {
+	room.adminsList = newAdmins;
+    if (lists.banList.length > 0)
+	{
       lists.banList.forEach((element: any) => {
         newBans.push(element.user.name);
       });
-      room.banList = newBans;
     }
+	room.banList = newBans;
     // POUR RERENDER LA PAGE CAR ROOMS EST UN USESTATE, ET QUAND LE USESTATE EST MODIFIE CA RERENDER
     const roomsCopy = [...rooms];
     setRooms(roomsCopy);
@@ -190,19 +180,17 @@ const ProtoChat = () => {
   const sendChatMessage = (event: any) => {
     event.preventDefault();
     const activeRoom = findActiveRoom();
-    console.log("sendChat:   " + text);
-    console.log("activeRoom.mute == " + activeRoom.mute);
-    if (activeRoom.member && activeRoom.mute === false) {
-      socket?.emit("chatToServer", {
-        sender: username,
-        room: activeRoom.name,
-        msg: text,
-      });
-    } else {
-      if (activeRoom.mute) alert("you cannot talk in this room bitch !");
-      else if (activeRoom.member === false)
-        alert("you must be a member of the room bitch !");
-      changeText("");
+    if (activeRoom.member && activeRoom.mute === false)
+	{
+      	socket?.emit("chatToServer", {sender: username, room: activeRoom.name, msg: text,});
+    }
+	else
+	{
+    	if (activeRoom.mute)
+			alert("you cannot talk in this room bitch !");
+      	else if (activeRoom.member === false)
+        	alert("you must be a member of the room bitch !");
+      	changeText("");
     }
   };
 
@@ -405,10 +393,7 @@ const ProtoChat = () => {
   };
   const updateChannelPassword = () => {
     const activeRoom = findActiveRoom();
-    if (
-      activeRoom &&
-      activeRoom.owner === username &&
-      activeRoom.type === type.protected
+    if (activeRoom && activeRoom.owner === username && activeRoom.type === type.protected
     )
       socket?.emit("updateChannelPassword", {
         room: activeRoom.name,
@@ -622,9 +607,9 @@ const ProtoChat = () => {
           <div>&nbsp;</div>
         </p>
         <p>
-          <button onClick={deleteChannelPassword}>Delete password</button>
+          {findActiveRoom().type === type.protected ? <button onClick={deleteChannelPassword}>Delete password</button> : null}
         </p>
-        <form onSubmit={updateChannelPassword}>
+		{findActiveRoom().type === type.protected ?  <form onSubmit={updateChannelPassword}>
           <input
             type="text"
             value={password}
@@ -633,7 +618,7 @@ const ProtoChat = () => {
           <button type="submit">
             <strong>change password</strong>
           </button>
-        </form>
+        </form> : null}
       </div>
       <div>
         <div>&nbsp;</div>
