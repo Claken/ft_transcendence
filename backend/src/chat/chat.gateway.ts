@@ -223,7 +223,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 		const sockets = await this.server.fetchSockets();
 		sockets.forEach((socket: any) => socket.leave(channelToBeDeleted.id));
 
-		this.chatService.deleteChatRoomById(channelToBeDeleted.id);
+		await this.chatService.deleteChatRoomById(channelToBeDeleted.id);
 		this.server.emit('sendDeleteMessage', room);
 	}
 
