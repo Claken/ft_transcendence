@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { QRCodeCanvas } from "qrcode.react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { socket } from "../components/Socket";
 import { useAuth } from "../contexts/AuthContext";
 import "../styles/twofaconfig.scss";
@@ -16,6 +16,7 @@ const TwoFaConfig = (props: IToggleTwofaConfig) => {
 	const [url, setUrl] = useState<string>("");
 	const [testMsg, setTestMsg] = useState<string>("");
 	const [isValid, setIsValid] = useState<boolean>(false);
+	const inputRef = useRef<HTMLInputElement>();
 	const { setToggleTwoFaConfig } = props;
 
 	/* ********************************************************* */
@@ -76,6 +77,10 @@ const TwoFaConfig = (props: IToggleTwofaConfig) => {
 		};
 	}, [checkCode]);
 
+	const focus = () => {
+		inputRef.current.focus();
+	}
+
 	return (
 		<div className="twoFaBox">
 			<h3>Two-Factor Authentication (2FA)</h3>
@@ -96,7 +101,7 @@ const TwoFaConfig = (props: IToggleTwofaConfig) => {
 			<h4>Scan QR Code</h4>
 			<div className="twoFaRubrik">
 				<button
-					className="btnconfirm generate"
+					className="generate2fa"
 					type="button"
 					onClick={generateTwoFa}
 				>
@@ -119,11 +124,12 @@ const TwoFaConfig = (props: IToggleTwofaConfig) => {
 
 			<h4>Verify Code</h4>
 			<div>
-				<p>Please verify the authenticator code:</p>
+				<p onClick={focus}>Please verify the authenticator code:</p>
 				<form onSubmit={verifyCodeSumbit}>
 					<input
 						type="text"
 						value={code}
+						ref={inputRef}
 						onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
 							setCode(e.target.value)
 						}
@@ -132,7 +138,7 @@ const TwoFaConfig = (props: IToggleTwofaConfig) => {
 				{testMsg && <p className={isValid.toString()}>{testMsg}</p>}
 			</div>
 
-			<div className="twoFaRubrik btnVerifyCodes">
+			<div className="twoFaRubrik btnContainer">
 				<button
 					className="btnconfirm"
 					type="button"

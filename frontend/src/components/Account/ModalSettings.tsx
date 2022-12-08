@@ -1,15 +1,18 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useAuth } from "../../contexts/AuthContext";
 import TwoFaConfig from "../../pages/TwoFaConfig";
 import AvatarUpload from "./AvatarUpload";
 import ChooseName from "./ChooseName";
 import { socket } from "../Socket";
 import { IUser } from "../../interfaces/user.interface";
+import axios from "../../axios.config"
+import { shouldProcessLinkClick } from "react-router-dom/dist/dom";
 
 const ModalSettings = () => {
 	const { user, setUser } = useAuth();
 	const [toggleTwoFaConfig, setToggleTwoFaConfig] = useState<boolean>(false);
+	const show = useRef<boolean>(true);
 
     /* ********************************************************* */
 	/*                 TwoFA Enabled/Disabled                    */
@@ -31,6 +34,22 @@ const ModalSettings = () => {
 		};
 	}, [modifyUser]);
 
+	useEffect(() => {
+		const getUser = async () => {
+			await axios
+			.get("/users/" + user.id)
+			.then((res) => {
+				const { inQueue, inGame } = res.data;
+				if (inQueue === true || inGame === true)
+					show.current = false;
+			})
+			.catch((error) => {
+				console.log(error);
+			});
+		}
+		getUser();
+	}, [])
+
 	return (
 		<div className="modal-settings">
 			{toggleTwoFaConfig ? (
@@ -49,10 +68,7 @@ const ModalSettings = () => {
 							</div>
 						)}
 					</div>
-					<div className="username-settings">
-						<h2>{user?.name}</h2>
-						<ChooseName />
-					</div>
+					<ChooseName />
 					<div className="twoFA-settings">
 						<h2>
 							2FA

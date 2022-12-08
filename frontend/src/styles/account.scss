@@ -165,8 +165,9 @@
 
         .btnconfirm {
           font-size: 0.7em;
-          width: 90%;
-          min-height: fit-content;
+          width: 70%;
+          height: 3em;
+          padding: 0.1em;
         }
         .btnconfirm:hover {
           box-shadow: 0 0 10px 0 whitesmoke;
@@ -217,19 +218,16 @@
         .username-settings {
           flex: 1;
           width: 33%;
-          // min-width: 33%;
-          //   min-height: 33%;
-          //   max-width: 100%;
-          //   max-height: 100%;
           display: flex;
           justify-content: space-between;
           align-items: center;
           flex-direction: column;
           input {
-            max-width: 75%;
+            max-width: 85%;
+            height: 20%;
             position: relative;
             display: block;
-            margin : 0 auto;
+            margin : 1.5em auto 0;
             margin-bottom: 10%;
           }
         }
@@ -241,6 +239,9 @@
           justify-content: space-between;
           align-items: center;
           flex-direction: column;
+          .btnconfirm {
+            margin-top: 2.5em;
+          }
         }
       }
     }

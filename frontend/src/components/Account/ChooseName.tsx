@@ -1,32 +1,35 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import axios from "../../axios.config";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useAuth } from "../../contexts/AuthContext";
 import { IUser } from "../../interfaces/user.interface";
 import { socket } from "../Socket";
 
-const ChooseName = () => {
+const ChooseName = ({}) => {
 	const { user, setUser } = useAuth();
 	const [input, setInput] = useState<string>("");
-	const [freeName, setFreeName] = useState<boolean>(false);
+	const [isNameFree, setIsNameFree] = useState<boolean>(false);
+	const inputRef = useRef<HTMLInputElement>();
 
 	const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
 		setInput(event.currentTarget.value);
 	};
 
 	useEffect(() => {
-		if (freeName) {
+		if (isNameFree) {
 			setUser((prev: IUser) => ({ ...prev, name: input }));
 			socket.emit("update-username", { newName: input, userId: user.id });
+			setInput('');
+			setIsNameFree(false);
 		}
-	}, [freeName]);
+	}, [isNameFree]);
 
 	const handleClick = () => {
 		const getUserByName = async () => {
 			await axios
-				.get("/users/name/" + user.name)
+				.get("/users/name/" + input)
 				.then((res) => {
-					if (res.data) setFreeName(true);
+					if (!res.data) setIsNameFree(true);
 				})
 				.catch((err) => {
 					console.log(err);
@@ -35,11 +38,16 @@ const ChooseName = () => {
 		if (input) getUserByName();
 	};
 
+	const focus = () => {
+		inputRef.current.focus();
+	}
+
 	return (
-		<div>
-			<input type="text" onChange={handleChange} />
+		<div className="username-settings">
+			<h2><button onClick={focus}>{user?.name}</button></h2>
+			<input ref={inputRef} type="text" className="input" onChange={handleChange} placeholder="Change Username" />
 			<button className="btnconfirm" onClick={handleClick}>
-				Change Username
+				Submit
 			</button>
 		</div>
 	);
