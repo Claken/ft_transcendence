@@ -1,0 +1,225 @@
+.chat-container {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	width: 90%;
+	height: 80vh;
+	margin-top: 5vh;
+	margin-left: 5%;
+	border: 2px solid whitesmoke;
+	border-radius: 30px;
+	background: rgb(82, 59, 130);
+	background: -moz-linear-gradient(90deg,
+			rgba(82, 59, 130, 1) 0%,
+			rgba(48, 34, 75, 1) 40%,
+			rgba(82, 59, 130, 1) 100%);
+	background: -webkit-linear-gradient(90deg,
+			rgba(82, 59, 130, 1) 0%,
+			rgba(48, 34, 75, 1) 40%,
+			rgba(82, 59, 130, 1) 100%);
+	background: linear-gradient(90deg,
+			rgba(82, 59, 130, 1) 0%,
+			rgba(48, 34, 75, 1) 40%,
+			rgba(82, 59, 130, 1) 100%);
+
+	.left-side {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		flex: 1;
+		height: 100%;
+		width: 100%;
+		flex-direction: column;
+
+		ul {
+			width: 90%;
+			height: 90%;
+			margin: 10px 0;
+
+			li {
+				margin: 10px 0;
+				list-style: none;
+				width: 100%;
+				height: 10%;
+
+				button {
+					width: 100%;
+					background-color: transparent;
+					color: white;
+					cursor: pointer;
+					border: none;
+					border-radius: 10px;
+					height: 100%;
+					background-color: rgb(82, 59, 130);
+					font-weight: 600;
+					font-size: 18px;
+
+				}
+				button:hover {
+					background-color: whitesmoke;
+					color: rgb(82, 59, 130);
+				}
+				
+			}
+		}
+
+
+	}
+
+
+	.middle {
+		display: flex;
+		justify-content: center;
+		flex: 2;
+		height: 100%;
+		width: 100%;
+		border-left: solid 2px whitesmoke;
+		border-right: solid 2px whitesmoke;
+		flex-direction: column;
+
+		.top-chat {
+			height: 10%;
+			width: 100%;
+			background-color: rgb(82, 59, 130);
+			display: flex;
+			justify-content: space-around;
+			align-items: center;
+			color: whitesmoke;
+			font-weight: 600;
+			font-size: 15px;
+		}
+
+		.chat-box {
+			height: 80%;
+			width: 100%;
+
+			ul {
+				display: flex;
+				overflow-y: auto;
+				flex-direction: column;
+				height: 100%;
+				width: 100%;
+				.owner_messages {
+
+					li {
+						width: fit-content;
+						height: fit-content;
+						list-style: none;
+						float: right;
+						text-align: right;
+						color: grey;
+						margin: 10px 0;
+						margin-right: 15px;
+						max-width: 80%;
+						p {
+							background-color: lightblue;
+							border-bottom-left-radius: 10px;
+							border-bottom-right-radius: 10px;
+							border-top-left-radius: 10px;
+							width: 100%;
+							height: 100%;
+							padding: 10px;
+							font-size: 15px;
+							margin-right: 10px;
+							font-weight: 600;
+							color: black;
+						}
+					}
+				}
+
+				.others-messages {
+					li {
+						width: fit-content;
+						height: fit-content;
+						list-style: none;
+						float: left;
+						text-align: left;
+						margin: 10px 0;
+						margin-left: 15px;
+						max-width: 80%;
+						color: grey;
+						p {
+							color: black;
+							background-color: whitesmoke;
+							border-bottom-left-radius: 10px;
+							border-bottom-right-radius: 10px;
+							border-top-right-radius: 10px;
+							width: 100%;
+							height: 100%;
+							padding: 10px;
+							font-size: 15px;
+							margin-left: 10px;
+							font-weight: 600;
+						}
+					}
+				}
+			}
+		}
+
+		.chat-bottom {
+			width: 100%;
+			height: 10%;
+			display: flex;
+
+			form {
+				display: flex;
+				justify-content: space-around;
+				align-items: center;
+				margin: auto;
+				width: 100%;
+				height: 100%;
+
+				input {
+					width: 80%;
+					height: 80%;
+					background-color: transparent;
+					border: 2px solid whitesmoke;
+					border-radius: 10px;
+					color: whitesmoke;
+					font-size: 20px;
+					padding-left: 10px;
+				}
+
+				input::placeholder {
+					color: whitesmoke;
+				}
+
+				button {
+					display: flex;
+					justify-content: center;
+					align-items: center;
+					height: 80%;
+					width: 10%;
+					background-color: transparent;
+					color: whitesmoke;
+					border: none;
+
+					.icon {
+						height: 80%;
+						width: 80%;
+					}
+				}
+			}
+
+		}
+
+
+	}
+
+	.rigth-side {
+		display: flex;
+		justify-content: flex-start;
+		flex: 1;
+		height: 100%;
+		width: 100%;
+		flex-direction: column;
+		color: white;
+		font-weight: 600;
+		font-size: 20px;
+		align-items: center;
+	}
+}
+
+ul::-webkit-scrollbar {
+	display: none;
+  }

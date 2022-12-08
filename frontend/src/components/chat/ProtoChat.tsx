@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import io, { Socket } from "socket.io-client";
 import { isForOfStatement } from "typescript";
 import { IChatRoom } from "../../interfaces/chat.interface";
@@ -7,6 +7,7 @@ import { IMessageToBack } from "../../interfaces/messageToBack.interface";
 import { IRoom } from "../../interfaces/room.interface";
 import { type } from "../../interfaces/enum";
 import Account from "../../pages/Account";
+import "../../styles/chat.scss";
 
 // const 	socket = io('http://localhost/3001');
 
@@ -381,11 +382,10 @@ const ProtoChat = () => {
   const deleteChannel = (channel: any) => {
     let roomsCopy = [...rooms];
     for (let i = 0; i < roomsCopy.length; i++) {
-      if (roomsCopy[i].name === channel)
-	  {
-		roomsCopy.splice(i, 1);
-		setActiveForRoom("");
-	  }
+      if (roomsCopy[i].name === channel) {
+        roomsCopy.splice(i, 1);
+        setActiveForRoom("");
+      }
     }
     setRooms(roomsCopy);
   };
@@ -541,109 +541,121 @@ const ProtoChat = () => {
   }, [updateMuteStatus]);
 
   return (
-    <div>
-      <h1>{title}</h1>
-      <form onSubmit={sendChatMessage}>
-        <input type="text" value={text} onChange={handleChange} />
-        <button type="submit">Send</button>
-      </form>
-      <form onSubmit={addARoom}>
-        <button type="submit">
-          <strong>Add a room</strong>
-        </button>
-      </form>
-      <form onSubmit={deleteARoom}>
-        <button type="submit">
-          <strong>Delete a room</strong>
-        </button>
-      </form>
-      <table>
-        <tbody>
-          <tr>
-            {rooms.map((room: any, id: number) => (
-              <td key={id}>
-                <button
-                  onClick={() =>
-                    findRoom(room.name).ban
-                      ? alert("you are banned from this channel")
-                      : setActiveForRoom(room.name)
-                  }
-                >
-                  {room.name}
-                </button>
-              </td>
-            ))}
-          </tr>
-        </tbody>
-      </table>
-      <div>
-        <p>
-          <div>&nbsp;</div>Active room : {activeRoom}
-        </p>
-        <p>
-          {activeRoom !== "" ? "Status: " + joinStatus : null}
-          {activeRoom !== "" ? (
-            <button onClick={toggleRoomMembership}>{joinButton}</button>
-          ) : null}
-        </p>
-        <p>
-          <div>&nbsp;</div>Members :{" "}
-          {findActiveRoom().usersList ? (
-            findActiveRoom().usersList.map((name: string) =>
-              isAdminInActive() ? (
-                <div>
-                  <button onClick={() => banOrMute(name)}>{name}</button>
-                </div>
-              ) : (
-                <div>{name}</div>
-              )
-            )
-          ) : (
-            <div></div>
-          )}
-        </p>
-        <p>
-          <div>&nbsp;</div>Admins :{" "}
-          {findActiveRoom().adminsList ? (
-            findActiveRoom().adminsList.map((name: string) => <div>{name}</div>)
-          ) : (
-            <div></div>
-          )}
-        </p>
-        <p>
-          <div>&nbsp;</div>Banned users :{" "}
-          {findActiveRoom().banList ? (
-            findActiveRoom().banList.map((name: string) => <div>{name}</div>)
-          ) : (
-            <div></div>
-          )}
-        </p>
-        <p>
-          <div>&nbsp;</div>
-        </p>
-        <p>
-          <button onClick={deleteChannelPassword}>Delete password</button>
-        </p>
-        <form onSubmit={updateChannelPassword}>
-          <input
-            type="text"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
+    <div className="chat-container">
+      <div className="left-side">
+        <ul>
+          {rooms.map((room: any, id: number) => (
+            <li>
+              <button
+                onClick={() =>
+                  findRoom(room.name).ban
+                    ? alert("you are banned from this channel")
+                    : setActiveForRoom(room.name)
+                }
+              >
+                {room.name}
+              </button>
+            </li>
+          ))}
+        </ul>
+        <form onSubmit={addARoom}>
           <button type="submit">
-            <strong>change password</strong>
+            <strong>Add a room</strong>
+          </button>
+        </form>
+        <form onSubmit={deleteARoom}>
+          <button type="submit">
+            <strong>Delete a room</strong>
           </button>
         </form>
       </div>
-      <div>
-        <div>&nbsp;</div>
-        {findActiveRoom().member ? (
-          findActiveRoom().messages.map((msg: any, id: number) => (
-            <ul key={id}>
-              <strong>{msg.sender}:</strong> {msg.message} - - -{" "}
-              <i>{msg.date}</i>
-            </ul>
-          ))
+      <div className="middle">
+        <div className="top-chat">
+          <p>Active room : {activeRoom} </p>
+          {activeRoom !== "" ? "Status: " + joinStatus + " " : null}
+          {activeRoom !== "" ? (
+            <button onClick={toggleRoomMembership}>{joinButton}</button>
+          ) : null}
+        </div>
+
+        <div className="chat-box">
+          <ul>
+            {findActiveRoom().member ? (
+              findActiveRoom().messages.map((msg: any, id: number) => (
+                <div
+                  className={
+                    msg.sender == username
+                      ? "owner_messages"
+                      : "others-messages"
+                  }
+                >
+                  <li>
+                    <p>{msg.message}</p>
+                    {/* {msg.date}  */}
+                    {msg.sender}
+                  </li>
+                </div>
+              ))
+            ) : (
+              <div></div>
+            )}
+          </ul>
+        </div>
+        <div className="chat-bottom">
+          <form onSubmit={sendChatMessage}>
+            <input
+              type="text"
+              value={text}
+              onChange={handleChange}
+              placeholder="Type something ..."
+            />
+            <button type="submit">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="icon icon-tabler icon-tabler-brand-telegram"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                strokeWidth="2"
+                stroke="currentColor"
+                fill="none"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                <path d="M15 10l-4 4l6 6l4 -16l-18 7l4 2l2 6l3 -4"></path>
+              </svg>
+            </button>
+          </form>
+        </div>
+      </div>
+      <div className="rigth-side">
+        Members :
+        <br />
+        {findActiveRoom().usersList ? (
+          findActiveRoom().usersList.map((name: string) =>
+            isAdminInActive() ? (
+              <div>
+                <button onClick={() => banOrMute(name)}>{name}</button>
+              </div>
+            ) : (
+              <div>{name}</div>
+            )
+          )
+        ) : (
+          <div></div>
+        )}
+        Admins :
+        {findActiveRoom().adminsList ? (
+          findActiveRoom().adminsList.map((name: string) =>
+            isAdminInActive() ? (
+              <div>
+                <button onClick={() => banOrMute(name)}>{name}</button>
+              </div>
+            ) : (
+              <div>{name}</div>
+            )
+          )
         ) : (
           <div></div>
         )}
