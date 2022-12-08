@@ -55,11 +55,12 @@
 					font-size: 18px;
 
 				}
+
 				button:hover {
 					background-color: whitesmoke;
 					color: rgb(82, 59, 130);
 				}
-				
+
 			}
 		}
 
@@ -99,6 +100,7 @@
 				flex-direction: column;
 				height: 100%;
 				width: 100%;
+
 				.owner_messages {
 
 					li {
@@ -111,7 +113,15 @@
 						margin: 10px 0;
 						margin-right: 15px;
 						max-width: 80%;
+
+						.sender-username {
+							color: lightgrey;
+							font-size: 12px;
+						}
+
 						p {
+							width: fit-content;
+							height: fit-content;
 							background-color: lightblue;
 							border-bottom-left-radius: 10px;
 							border-bottom-right-radius: 10px;
@@ -123,6 +133,11 @@
 							margin-right: 10px;
 							font-weight: 600;
 							color: black;
+						}
+
+						.message-date {
+							color: lightgray;
+							font-size: 12px;
 						}
 					}
 				}
@@ -138,6 +153,12 @@
 						margin-left: 15px;
 						max-width: 80%;
 						color: grey;
+
+						.sender-username {
+							color: lightgrey;
+							font-size: 12px;
+						}
+
 						p {
 							color: black;
 							background-color: whitesmoke;
@@ -148,8 +169,12 @@
 							height: 100%;
 							padding: 10px;
 							font-size: 15px;
-							margin-left: 10px;
 							font-weight: 600;
+						}
+
+						.message-date {
+							color: lightgray;
+							font-size: 12px;
 						}
 					}
 				}
@@ -222,4 +247,4 @@
 
 ul::-webkit-scrollbar {
 	display: none;
-  }
+}
