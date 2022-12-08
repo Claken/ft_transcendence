@@ -51,6 +51,13 @@ const ProtoChat = () => {
 		return activeRoom;
 	}
 
+	const findRoom = (roomName: string): IRoom => {
+		return rooms.find((element: IRoom) => {
+			if (element.name === roomName)
+				return element;
+		});
+	}
+
 	const setJoinButtonAndStatus = () => {
 		const activeRoom = findActiveRoom();
 		if (activeRoom.member)
@@ -88,7 +95,7 @@ const ProtoChat = () => {
 	}
 
 	const changeChannelOwner = (update: {newOwner: string, channel: string}) => {
-		let room = rooms.find((element: IRoom) => {if (element.name === update.channel) return element});
+		let room = findRoom(update.channel);
 		room.owner = update.newOwner;
 		console.log(room);
 	}
@@ -123,17 +130,23 @@ const ProtoChat = () => {
 
 	const updateBanStatus = (member: {status: boolean, channel: string}) => {
 		console.log('BanStatus');
-		let room = rooms.find((room: IRoom) => {if (room.name === member.channel) return room});
+		let room = findRoom(member.channel);
 		room.ban = member.status;
 		if (room.ban)
+		{
 			alert('Congratulations, you are banned from ' + member.channel);
+			if (room.name === activeRoom)
+				setActiveForRoom("");
+		}
 		else
+		{
 			alert('Congratulations, you are not banned from ' + member.channel + ' anymore');
+		}
 	};
 
 	const updateMuteStatus = (member: {status: boolean, channel: string}) => {
 		console.log('MuteStatus');
-		let room = rooms.find((room: IRoom) => {if (room.name === member.channel) return room});
+		let room = findRoom(member.channel);
 		room.mute = member.status;
 		if (room.mute)
 			alert('Congratulations, you are muted in ' + member.channel);
@@ -143,7 +156,8 @@ const ProtoChat = () => {
 
 	const getListsForAChannel = (lists: {channel: string, usersList: any[], adminsList: any[], banList: any[]}) =>
 	{
-		let room = rooms.find((element: IRoom) => {if (element.name === lists.channel) return element});
+		let room = findRoom(lists.channel);
+
 		let newUsers: string[] = [];
 		let newAdmins: string[] = [];
 		let newBans: string[] = [];
@@ -236,7 +250,7 @@ const ProtoChat = () => {
 	{
 		event.preventDefault();
 		let askARoom = "";
-		let findRoom: IRoom = undefined;
+		let findARoom: IRoom = undefined;
 		while (askARoom === "")
 		{
 			askARoom = prompt('Enter the name of the room you want to delete: ')!;
@@ -244,12 +258,12 @@ const ProtoChat = () => {
 				return ;
 			if (askARoom === "")
 				alert('This is not a right name for a room !');
-			else if ((findRoom = rooms.find(element => {if (element.name === askARoom) return element})) === undefined)
+			else if ((findARoom = findRoom(askARoom)) === undefined)
 			{
 				alert('This room does not exist');
 				askARoom = "";
 			}
-			else if (findRoom.owner !== username)
+			else if (findARoom.owner !== username)
 			{
 				alert('You are not the owner of this channel !');
 				return ;
@@ -530,7 +544,7 @@ const ProtoChat = () => {
 			<table>
     			<tbody>
         			<tr>
-						{rooms.map((room: any, id: number) => <td key={id}><button onClick={() => setActiveForRoom(room.name)}>{room.name}</button></td>)}
+						{rooms.map((room: any, id: number) => <td key={id}><button onClick={() => findRoom(room.name).ban ? alert("you are banned from this channel") : setActiveForRoom(room.name)}>{room.name}</button></td>)}
         			</tr>
     			</tbody>
 			</table>
