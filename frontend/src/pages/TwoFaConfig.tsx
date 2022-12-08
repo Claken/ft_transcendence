@@ -69,7 +69,7 @@ const TwoFaConfig = (props: IToggleTwofaConfig) => {
 
 	const checkCode = (newUser: IUser) => {
 		if (newUser.isTwoFAValidated) {
-			setTestMsg("Two-Factor Authentication now enabled.");
+			setTestMsg("Two-Factor Authentication enabled.");
 			setIsValid(true);
 			newUser.avatarUrl = user.avatarUrl;
 			setUser(newUser);
@@ -92,6 +92,8 @@ const TwoFaConfig = (props: IToggleTwofaConfig) => {
 	const modifyUser = (newUser: IUser) => {
         newUser.avatarUrl = user.avatarUrl;
 		setUser(newUser);
+		if (user.isTwoFAEnabled && !newUser.isTwoFAEnabled)
+			setTestMsg("Two-Factor Authentication disabled.");
 	};
 	useEffect(() => {
 		socket.on("maj-user-2fa", modifyUser);
@@ -99,6 +101,10 @@ const TwoFaConfig = (props: IToggleTwofaConfig) => {
 			socket.off("maj-user-2fa", modifyUser);
 		};
 	}, [modifyUser]);
+
+	/* ********************************************************* */
+	/*                   	Disable Twofa                        */
+	/* ********************************************************* */
 
 	const disableTwofa = () => {
 		socket.emit("twofa-disable", user);
@@ -122,7 +128,7 @@ const TwoFaConfig = (props: IToggleTwofaConfig) => {
 				</ul>
 			</div>
 			<h4>Scan QR Code</h4>
-			<div className="twoFaRubrik">
+			<div className="twoFaRubrik scanQrCode">
 				<button
 					className="generate2fa"
 					type="button"
@@ -170,19 +176,19 @@ const TwoFaConfig = (props: IToggleTwofaConfig) => {
 					Close
 				</button>
 				<button
-					className="btnconfirm"
+					className="btnconfirm verifyActivate"
 					type="button"
 					onClick={verifyCode}
 				>
 					Verify & activate
 				</button>
-				<button
+				{user?.isTwoFAEnabled && <button
 					className="btnconfirm"
 					type="button"
 					onClick={disableTwofa}
 				>
 					Disable2fa
-				</button>
+				</button>}
 			</div>
 		</div>
 	);

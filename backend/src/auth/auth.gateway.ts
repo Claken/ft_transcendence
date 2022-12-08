@@ -75,7 +75,7 @@ export class AuthGateway
       newUser = await this.usersService.turnOnOffTwoFA(user.id, false);
       newUser = await this.usersService.setTwoFACertif(newUser.id, false);
     }
-    this.server.emit('maj-user-2fa', user);
+    this.server.emit('maj-user-2fa', newUser);
   }
 
   /* ********************************************************* */
