@@ -111,12 +111,12 @@ const ProtoChat = () => {
 		let		time: number = 0;
 		if (window.confirm('Do you want to ban this user ?'))
 		{
-			time = parseInt(prompt('insert the time in minutes please :'));
+			time = parseInt(prompt('insert the time in minute please :'));
 			socket?.emit('banMember', {name: name, channel: activeRoom.name, time: time})
 		}
 		if (window.confirm('Do you want to mute this user ?'))
 		{
-			time = parseInt(prompt('insert the time in minutes please :'));
+			time = parseInt(prompt('insert the time in minute please :'));
 			socket?.emit('muteMember', {name: name, channel: activeRoom.name, time: time})
 		}
 	}
@@ -134,11 +134,11 @@ const ProtoChat = () => {
 	const updateMuteStatus = (member: {status: boolean, channel: string}) => {
 		console.log('MuteStatus');
 		let room = rooms.find((room: IRoom) => {if (room.name === member.channel) return room});
-		room.ban = member.status;
-		if (room.ban)
-			alert('Congratulations, you are banned from ' + member.channel);
+		room.mute = member.status;
+		if (room.mute)
+			alert('Congratulations, you are muted in ' + member.channel);
 		else
-			alert('Congratulations, you are not banned from ' + member.channel + ' anymore');
+			alert('Congratulations, you are not muted in ' + member.channel + ' anymore');
 	};
 
 	const getListsForAChannel = (lists: {channel: string, usersList: any[], adminsList: any[], banList: any[]}) =>
@@ -177,13 +177,17 @@ const ProtoChat = () => {
 		event.preventDefault();
 		const activeRoom = findActiveRoom();
 		console.log('sendChat:   ' + text);
-		if (activeRoom.member)
+		console.log('activeRoom.mute == ' + activeRoom.mute);
+		if (activeRoom.member && activeRoom.mute === false)
 		{
 			socket?.emit('chatToServer', {sender: username, room: activeRoom.name, msg: text});
 		}
 		else
 		{
-			alert('you must be a member of the room bitch !');
+			if (activeRoom.mute)
+				alert('you cannot talk in this room bitch !');
+			else if (activeRoom.member === false)
+				alert('you must be a member of the room bitch !');
 			changeText("");
 		}
 	}
