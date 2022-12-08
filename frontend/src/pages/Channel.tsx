@@ -1,6 +1,6 @@
 import React from "react";
 import Navigation from "../components/Navigation";
-import ProtoChat from "../components/chat/ProtoChat";
+import ProtoChat from "../components/chat/Chat";
 import AppTestSockets from "../components/chat/webSocketTester";
 import "../styles/chat.scss"
 
