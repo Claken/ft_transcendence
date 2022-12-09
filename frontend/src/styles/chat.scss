@@ -23,6 +23,7 @@
 			rgba(82, 59, 130, 1) 100%);
 
 	.left-side {
+
 		display: flex;
 		justify-content: center;
 		align-items: center;
@@ -30,40 +31,79 @@
 		height: 100%;
 		width: 100%;
 		flex-direction: column;
+		overflow: auto;
 
-		ul {
-			width: 90%;
+		.rooms-list {
 			height: 90%;
-			margin: 10px 0;
+			width: 100%;
+			display: flex;
+			justify-content: center;
+			overflow: auto;
 
-			li {
+			ul {
+				width: 90%;
+				height: 90%;
 				margin: 10px 0;
-				list-style: none;
-				width: 100%;
-				height: 10%;
 
-				button {
+				li {
+					margin: 10px 0;
+					list-style: none;
 					width: 100%;
-					background-color: transparent;
-					color: white;
-					cursor: pointer;
-					border: none;
-					border-radius: 10px;
-					height: 100%;
-					background-color: rgb(82, 59, 130);
-					font-weight: 600;
-					font-size: 18px;
+					height: 10%;
+
+					button {
+						width: 100%;
+						background-color: transparent;
+						color: white;
+						cursor: pointer;
+						border: none;
+						border-radius: 10px;
+						height: 100%;
+						background-color: rgb(82, 59, 130);
+						font-weight: 600;
+						font-size: 18px;
+
+					}
+
+					button:hover {
+						background-color: whitesmoke;
+						color: rgb(82, 59, 130);
+					}
 
 				}
-
-				button:hover {
-					background-color: whitesmoke;
-					color: rgb(82, 59, 130);
-				}
-
 			}
 		}
 
+		.room-buttons {
+			width: 100%;
+			height: 10%;
+			display: flex;
+			justify-content: space-evenly;
+			align-items: center;
+			background-color: transparent;
+			form {
+				background-color: transparent;
+				width: 100%;
+				height: 100%;
+				button {
+					width: 100%;
+					height: 100%;
+					cursor: pointer;
+					background-color: transparent;
+					border: none;
+					overflow: auto;
+	
+					.icon {
+						background-color: transparent;
+						color: whitesmoke;
+						height: 70px;
+						width: 70px;
+					}
+				}
+
+			}
+
+		}
 
 	}
 
@@ -246,5 +286,9 @@
 }
 
 ul::-webkit-scrollbar {
+	display: none;
+}
+
+.rooms-list::-webkit-scrollbar {
 	display: none;
 }
