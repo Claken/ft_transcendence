@@ -9,7 +9,6 @@ import { type } from "../../interfaces/enum";
 import Account from "../../pages/Account";
 import "../../styles/chat.scss";
 
-
 // const 	socket = io('http://localhost/3001');
 
 const ProtoChat = () => {
@@ -27,6 +26,8 @@ const ProtoChat = () => {
 
   const [password, setPassword] = useState<string>("");
   const [date, setDate] = useState<Date>(null);
+
+  const chatEndRef = useRef(null);
 
   const auth = useAuth();
 
@@ -200,6 +201,7 @@ const ProtoChat = () => {
         room: activeRoom.name,
         msg: text,
       });
+      // chatEndRef.current.scrollIntoView({ behavior: "smooth" });
     } else {
       if (activeRoom.mute) alert("you cannot talk in this room bitch !");
       else if (activeRoom.member === false)
@@ -222,11 +224,14 @@ const ProtoChat = () => {
     };
 
     rooms.forEach((element: IRoom) => {
-      if (element.name === obj.room) element.messages.push(theroom);
+      if (element.name === obj.room) {
+        element.messages.push(theroom);
+      }
     });
     const roomsCopy = [...rooms];
     setRooms(roomsCopy);
     changeText("");
+    chatEndRef.current.scrollIntoView({ behavior: "smooth" });
   };
 
   const addARoom = (event: any) => {
@@ -559,10 +564,16 @@ const ProtoChat = () => {
     };
   }, [updateMuteStatus]);
 
+  const sortedMessages = findActiveRoom().messages.sort((a, b) => {
+    // Compare the dates of the messages to determine their order
+    return new Date(a.date) - new Date(b.date);
+  });
+
   return (
     <div className="chat-container">
       <div className="left-side">
-        <ul>
+        <div className="rooms-list">
+		<ul>
           {rooms.map((room: any, id: number) => (
 				!(room.type === type.private && room.member === false) ?
 				<li>
@@ -571,16 +582,50 @@ const ProtoChat = () => {
 				: null
           ))}
         </ul>
-        <form onSubmit={addARoom}>
-          <button type="submit">
-            <strong>Add a room</strong>
-          </button>
-        </form>
-        <form onSubmit={deleteARoom}>
-          <button type="submit">
-            <strong>Delete a room</strong>
-          </button>
-        </form>
+        </div>
+        <div className="room-buttons">
+          <form onSubmit={addARoom}>
+            <button type="submit">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="icon icon-tabler icon-tabler-message-plus"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                strokeWidth="2"
+                stroke="currentColor"
+                fill="none"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                <path d="M4 21v-13a3 3 0 0 1 3 -3h10a3 3 0 0 1 3 3v6a3 3 0 0 1 -3 3h-9l-4 4"></path>
+                <line x1="10" y1="11" x2="14" y2="11"></line>
+                <line x1="12" y1="9" x2="12" y2="13"></line>
+              </svg>
+            </button>
+          </form>
+          <form onSubmit={deleteARoom}>
+            <button type="submit">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="icon icon-tabler icon-tabler-message-off"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                strokeWidth="2"
+                stroke="currentColor"
+                fill="none"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                <line x1="3" y1="3" x2="21" y2="21"></line>
+                <path d="M17 17h-9l-4 4v-13c0 -1.086 .577 -2.036 1.44 -2.563m3.561 -.437h8a3 3 0 0 1 3 3v6c0 .575 -.162 1.112 -.442 1.568"></path>
+              </svg>
+            </button>
+          </form>
+        </div>
       </div>
       <div className="middle">
         <div className="top-chat">
@@ -594,7 +639,7 @@ const ProtoChat = () => {
         <div className="chat-box">
           <ul>
             {findActiveRoom().member ? (
-              findActiveRoom().messages.map((msg: any, id: number) => (
+              sortedMessages.map((msg: any, id: number) => (
                 <div
                   className={
                     msg.sender == username
@@ -606,7 +651,7 @@ const ProtoChat = () => {
                     <div className="sender-username">{msg.sender}</div>
                     <p>{msg.message}</p>
                     <div className="message-date">
-                    {msg.date.slice(0, 10) + " " + msg.date.slice(11, 16)}
+                      {msg.date.slice(0, 10) + " " + msg.date.slice(11, 16)}
                     </div>
                   </li>
                 </div>
@@ -614,6 +659,7 @@ const ProtoChat = () => {
             ) : (
               <div></div>
             )}
+              <div ref={chatEndRef} />
           </ul>
         </div>
         <div className="chat-bottom">
