@@ -23,10 +23,10 @@ export class GameController {
     return await this.gameService.getPendingGames();
   }
 
-  @Get('loginLP/:loginLP')
-  async getByloginLP(@Param('loginLP') loginLP: string): Promise<Game> {
-    return await this.gameService.getByloginLP(loginLP);
-  }
+//   @Get('loginLP/:loginLP')
+//   async getByloginLP(@Param('loginLP') loginLP: string): Promise<Game> {
+//     return await this.gameService.getByloginLP(loginLP);
+//   }
 
 //   @Get(':')
 //   async getCurrentGame(@Param('id') name: string): Promise<Game> {

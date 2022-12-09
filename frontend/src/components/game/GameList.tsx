@@ -3,9 +3,11 @@ import { IGame } from "../../interfaces/game.interface";
 import "../../styles/gameList.scss";
 import axios from "../../axios.config";
 import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 const GameList = () => {
 	const [games, setGames] = useState<IGame[]>([]);
+	const navigate = useNavigate();
 
 	const getGames = async () => {
 		await axios
@@ -29,15 +31,17 @@ const GameList = () => {
 		setInterval(() => {getGames()}, 1000);
 	}, []);
 
-	const redirectToGame = () => {}
+	const redirectToGame = (game: IGame) => {
+		navigate("/pong/" + game.id);
+	}
 
 	return (
 		<div className="gameList-container">
 			{games &&
 				games.map((game: IGame, id: number) => (
-                	<button onClick={redirectToGame} key={id} className="game">
-						<div className="loginLP">{game.loginLP}</div>
-						<div className="loginRP">{game.loginRP}</div>
+                	<button onClick={() => redirectToGame(game)} key={id} className="game">
+						<div className="loginLP">{game.nameLP}</div>
+						<div className="loginRP">{game.nameRP}</div>
 					</button>
 				))}
 				{/* TODO: css multiple game navbar disappear  */}

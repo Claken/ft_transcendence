@@ -27,7 +27,7 @@ const Game = (
 	let EmptyGround = 50;
 	const auth = useAuth();
 	const { gameId } = useParams();
-	const [ready, setReady] = useState<boolean>(false);
+	const [init, setInit] = useState<boolean>(false);
 	var key = "";
 	var prev = "";
 	var curr = "";
@@ -39,22 +39,21 @@ const Game = (
 	useEffect(() => {
 		socket.on("updateData", (newData) => {
 			allPos.map = newData.map;
-			if (newData.compteur === 10) {
+			if (newData.compteur === 10)
 				allPos.compteur = newData.compteur;
-			}
 			else
 				allPos.compteur = null;
 			allPos.state = newData.state;
 			allPos.scoreLP = newData.scoreLP;
 			allPos.scoreRP = newData.scoreRP;
-			allPos.loginLP = newData.loginLP;
-			allPos.loginRP = newData.loginRP;
+			allPos.nameLP = newData.nameLP;
+			allPos.nameRP = newData.nameRP;
 			allPos.gameId = gameId;
 			allPos.WinLoseL = newData.WLuserL;
 			allPos.WinLoseR = newData.WLuserR;
-			if (auth.user.name !== allPos.loginLP && auth.user.name !== allPos.loginRP)
+			if (auth.user.name !== allPos.nameLP && auth.user.name !== allPos.nameRP)
 				allPos.viewer = true;
-			setReady(true);
+			setInit(true);
 		});
 
 		if (auth.user) {
@@ -162,29 +161,33 @@ const Game = (
 /*                             USEEFFECT PRINCIPALE                              */
 /* ***************************************************************************** */
 	useEffect(() => {
-		if (ready === false || !auth.user)
+		if (init === false || !auth.user)
 			return ;
 		const canvas = canvasRef.current;
 		if (canvas == null) return;
 		const context = canvas.getContext("2d");
 		if (context == null) return;
+		var ready = false;
 		allPos.width = canvas.width; //largeur du canvas
 		allPos.height = canvas.height; //hauteur du canvas
-		allPos.pLY = allPos.height / 2 - EmptyGround / 2; //placement en hauteur du paddle gauche
-		allPos.pRY = allPos.height / 2 - EmptyGround / 2; //placement en hauteur du paddle droit
 		allPos.paddleH = allPos.height / 8; //hauteur du paddle
 		allPos.paddleW = allPos.width / 150; //largeur du paddle
 		allPos.radius = 10; //taille de la balle
 		allPos.ballW = 15; //largeur de la balle
 		allPos.ballH = allPos.ballW; //hauteur de la balle
+		allPos.EmptyGround = EmptyGround;
+		allPos.mapLP = -1;
+		allPos.mapRP = -1;
+		/**************************************************************** */
+		//TODO: avoir les valeurs actuelles de la game
+		allPos.pLY = allPos.height / 2 - EmptyGround / 2; //placement en hauteur du paddle gauche
+		allPos.pRY = allPos.height / 2 - EmptyGround / 2; //placement en hauteur du paddle droit
 		allPos.ballX = (allPos.width / 2) - (allPos.ballW / 2); //placement en X de la balle
 		allPos.ballY = allPos.height / 2 + EmptyGround / 2; //placement en Y de la balle
 		allPos.vx = -1; //vitesse en X de la balle
 		allPos.vy = -1; //vitesse en Y de la balle
-		allPos.EmptyGround = EmptyGround;
 		allPos.speed = 2;
-		allPos.mapLP = -1;
-		allPos.mapRP = -1;
+		/**************************************************************** */
 		if (allPos.compteur === null)
 			socket.emit("setCompteur", gameId);
 		allPos.key = key;
@@ -212,6 +215,7 @@ const Game = (
 			allPos.scoreLP = newData.scoreLP;
 			allPos.scoreRP = newData.scoreRP;
 			allPos.speed = newData.speed;
+			ready = true;
 		});
 
 		socket.on("updatedPlayer", (newData) => {
@@ -247,6 +251,7 @@ const Game = (
 
 		socket.on("launchGame", (map) => {
 			allPos.img.src = gameBoards[map];
+			ready = true;
 			allPos.state = State.PLAY;
 		});
 
@@ -267,7 +272,7 @@ const Game = (
 		})
 
 		socket.on("updateUser", (user) => {
-			if (user.name === auth.user.name)//TODO: remplacer name par login
+			if (user.name === auth.user.name)
 				auth.user = user;
 		})
 
@@ -296,23 +301,25 @@ const Game = (
 				endPage(context);
 			else if (allPos.state === State.PLAY) {
 				button(context);
-				if (allPos.key === "ArrowUp" ||
+				if (!allPos.viewer &&
+					(allPos.key === "ArrowUp" ||
 					allPos.key === "ArrowDown" ||
 					allPos.key === "w" ||
 					allPos.key === "W" ||
 					allPos.key === "s" ||
 					allPos.key === "S" ||
 					allPos.key === "z" ||
-					allPos.key === "Z")
+					allPos.key === "Z"))
 					socket.emit("movePlayer", allPos, auth.user.name);
-				socket.emit("update", allPos, auth.user);
+				if (!allPos.viewer && ready)
+					socket.emit("update", allPos, auth.user);
 			}
 			context.font = "40px Roboto";
 			context.fillStyle = "black";
 			context.textAlign = "start";
-			context.fillText(allPos.loginLP, 0, 40);
+			context.fillText(allPos.nameLP, 0, 40);
 			context.textAlign = "end";
-			context.fillText(allPos.loginRP, allPos.width, 40);
+			context.fillText(allPos.nameRP, allPos.width, 40);
 			context.textAlign = "center";
 			context.font = "60px Roboto";
 			context.fillText(allPos.scoreLP + " - " + allPos.scoreRP, allPos.width / 2, 45);
@@ -330,7 +337,6 @@ const Game = (
 				context.stroke();
 			animationFrameId = window.requestAnimationFrame(render);
 		}
-		//
 		render();
 
 		return () => {
@@ -349,7 +355,7 @@ const Game = (
 			socket.off("opponentLeave");
 			socket.off("updateUser");
 		};
-	},[ready]);
+	},[init]);
 
 	/* ***************************************************************************** */
 	/*                          balise HTML de la page web                           */

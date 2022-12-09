@@ -32,7 +32,6 @@ export class GameGateway
   async handleConnection(client) {
     // A client has connected
     this.users++;
-	//ajouter le client.id à l'entité user
 }
 
   async handleDisconnect(client) {
@@ -54,12 +53,11 @@ export class GameGateway
 			userQueue.splice(indexUser, 1);
 		}
 		if (user.inGame) {
-			let game = await this.gameService.getCurrentGame(user.name);
+			if (user.login)
+				var game: GameDTO = await this.gameService.getCurrentGame(user.login);
+			else 
+				var game: GameDTO = await this.gameService.getCurrentGame(user.name);
 
-			if (user.name === game.loginLP)
-				var winner = game.loginRP;
-			else
-				var winner = game.loginLP;
 			await this.gameService.updateState(game.id, 6);
 			await this.usersService.updateInGame(user.id, false);
 			this.server.to(game.id).emit("opponentLeave", user.name);
@@ -110,14 +108,13 @@ export class GameGateway
       // Si la balle sort du terrain de droite
       if (right > infos[0].width) {
         infos[0].scoreLP++;
-		this.isConnected(infos[0].loginLP, infos[0].loginRP, infos[0].gameId);
 		this.gameService.updateScore(infos[0].gameId, infos[0].scoreLP, infos[0].scoreRP);
 		if (infos[0].scoreLP >= infos[0].score) {
 			infos[0].state = 6;
 			await this.gameService.updateState(infos[0].gameId, 6);
 			this.server.to(infos[0].gameId).emit('update', infos[0]);
-			this.server.to(infos[0].gameId).emit("endGame", infos[0].loginLP);
-			this.EndGameB(client, infos[0], infos[0].loginLP, infos[0].loginRP, "");
+			this.server.to(infos[0].gameId).emit("endGame", infos[0].nameLP);
+			this.EndGameB(client, infos[0], infos[0].nameLP, infos[0].nameRP, "");
 			return;
 		}
 		else
@@ -127,14 +124,13 @@ export class GameGateway
       // Si la balle sort du terrain de gauche
       if (left < 0) {
         infos[0].scoreRP++;
-		this.isConnected(infos[0].loginLP, infos[0].loginRP, infos[0].gameId);
 		this.gameService.updateScore(infos[0].gameId, infos[0].scoreLP, infos[0].scoreRP);
 		if (infos[0].scoreRP >= infos[0].score) {
 			infos[0].state = 6;
 			await this.gameService.updateState(infos[0].gameId, 6);
 			this.server.to(infos[0].gameId).emit('update', infos[0]);
-			this.server.to(infos[0].gameId).emit("endGame", infos[0].loginRP);
-			this.EndGameB(client, infos[0], infos[0].loginRP, infos[0].loginLP, "");
+			this.server.to(infos[0].gameId).emit("endGame", infos[0].nameRP);
+			this.EndGameB(client, infos[0], infos[0].nameRP, infos[0].nameLP, "");
 			return ;
 		}
 		else
@@ -156,7 +152,7 @@ export class GameGateway
 	|| infos[0].key === 'W'
 	|| infos[0].key === 'z'
 	|| infos[0].key === 'Z') {
-		infos[1] === infos[0].loginLP ? infos[0].pLY -= 6 : infos[0].pRY -= 6 ;
+		infos[1] === infos[0].nameLP ? infos[0].pLY -= 6 : infos[0].pRY -= 6 ;
 		if (infos[0].pLY < 0 + infos[0].EmptyGround)
 			infos[0].pLY = 0 + infos[0].EmptyGround;
 		else if (infos[0].pRY < 0 + infos[0].EmptyGround)
@@ -165,7 +161,7 @@ export class GameGateway
 	if ( infos[0].key === 'ArrowDown'
 		|| infos[0].key === 's'
 		|| infos[0].key === 'S') {
-		infos[1] === infos[0].loginLP ? infos[0].pLY += 6 : infos[0].pRY += 6 ;
+		infos[1] === infos[0].nameLP ? infos[0].pLY += 6 : infos[0].pRY += 6 ;
 		if (infos[0].pLY + infos[0].paddleH > infos[0].height)
 			infos[0].pLY = infos[0].height - infos[0].paddleH;
 		else if (infos[0].pRY + infos[0].paddleH > infos[0].height)
@@ -180,15 +176,15 @@ export class GameGateway
   @SubscribeMessage('abort')
   async Abort(client: any, infos) {
 	this.gameService.updateState(infos[0].gameId, infos[0].state);
-	if (infos[1] === infos[0].loginLP) {
+	if (infos[1] === infos[0].nameLP) {
 		await this.gameService.updateState(infos[0].gameId, 6);
-		this.server.to(infos[0].gameId).emit("endGame", infos[0].loginRP);
-		this.EndGameB(client, infos[0], infos[0].loginRP, infos[0].loginLP, infos[0].loginLP);
+		this.server.to(infos[0].gameId).emit("endGame", infos[0].nameRP);
+		this.EndGameB(client, infos[0], infos[0].nameRP, infos[0].nameLP, infos[0].nameLP);
 	}
 	else {
 		await this.gameService.updateState(infos[0].gameId, 6);
-		this.server.to(infos[0].gameId).emit("endGame", infos[0].loginLP);
-		this.EndGameB(client, infos[0], infos[0].loginLP, infos[0].loginRP, infos[0].loginRP);
+		this.server.to(infos[0].gameId).emit("endGame", infos[0].nameLP);
+		this.EndGameB(client, infos[0], infos[0].nameLP, infos[0].nameRP, infos[0].nameRP);
 	}
   }
 
@@ -201,12 +197,12 @@ export class GameGateway
   @SubscribeMessage('updateData')
   async UpdateData(client: any, gameId: number) {
 	let game: GameDTO = await this.gameService.getById(gameId);
-	let userLeft: UserDTO = await this.usersService.getByName(game.nameLP);//TODO: utiliser Login ? car name peut changer
-	let userRight: UserDTO = await this.usersService.getByName(game.nameRP);//TODO: utiliser Login ? car name peut changer
+	let userLeft: UserDTO = await this.usersService.getByName(game.nameLP);
+	let userRight: UserDTO = await this.usersService.getByName(game.nameRP);
 
 	client.join(gameId);
 	let newData = {
-		loginRP : game.loginRP, loginLP : game.loginLP,
+		nameRP : game.nameRP, nameLP : game.nameLP,
 		scoreLP : game.scoreLP, scoreRP : game.scoreRP,
 		state : game.state, map: game.map, compteur: game.compteur,
 		WLuserL : [userLeft.win, userLeft.lose], WLuserR : [userRight.win, userRight.lose]};
@@ -220,7 +216,7 @@ export class GameGateway
   async Image(client: any, infos) {
 	let game: GameDTO = await this.gameService.getById(infos[1].gameId);
 
-	infos[0] === infos[1].loginLP ? infos[1].mapLP = infos[2] : infos[1].mapRP = infos[2];
+	infos[0] === infos[1].nameLP ? infos[1].mapLP = infos[2] : infos[1].mapRP = infos[2];
 	if (infos[1].mapLP === infos[1].mapRP) {
 		this.deleteInter(game.id);
 		this.gameService.updateCompteur(infos[1].gameId, true);
@@ -242,7 +238,6 @@ export class GameGateway
 	const compteur: number = await this.gameService.updateCompteur(gameId, false);
 	const nbInterval = await this.gameService.getNbInter(gameId);
 
-	console.log("TICK avec comme nbInter: "+nbInter)
 	if (nbInterval !== nbInter)
 		this.deleteInter(gameId);
 	if (compteur === 0) {
@@ -277,7 +272,10 @@ export class GameGateway
   @SubscribeMessage('inQueueOrGame')
   async InQueueOrGame(client: any, user: UserDTO) {
 	if (user && user.inQueue) {
-		let waitingGame: GameDTO = await this.gameService.getPendingGame(user.name)
+		if (user.login)
+			var waitingGame: GameDTO = await this.gameService.getPendingGame(user.login);
+		else 
+			var waitingGame: GameDTO = await this.gameService.getPendingGame(user.name);
 		if (waitingGame) {
 			client.join(waitingGame.id);
 			client.emit("changeQueue", true);
@@ -285,7 +283,10 @@ export class GameGateway
 		return ;
 	}
 	if (user && user.inGame) {
-		let currentGame: GameDTO = await this.gameService.getCurrentGame(user.name)
+		if (user.login)
+				var currentGame: GameDTO = await this.gameService.getCurrentGame(user.login);
+			else 
+				var currentGame: GameDTO = await this.gameService.getCurrentGame(user.name);
 		if (currentGame)
 			client.emit("goPlay", currentGame);
 		return ;
@@ -308,14 +309,21 @@ export class GameGateway
       /**** Take the first pending Game ****/
       const games: GameDTO[] = await this.gameService.getPendingGames();
       /**** Update Game: waitingForOppenent=false AND loginRP=user ****/
-      const updatedGame: GameDTO = await this.gameService.updateGameReady(
-        games[0].id,
-        user.name, user.name);//TODO: remplacer name par login pour le deuxième
+	  if (user.login) {
+		var updatedGame: GameDTO = await this.gameService.updateGameReady(
+		games[0].id,
+		user.login, user.name);
+	  }
+	  else {
+		var updatedGame: GameDTO = await this.gameService.updateGameReady(
+		games[0].id,
+		user.name, user.name);
+	  }
       /**** Join the socket game ****/
 	  client.join(updatedGame.id);
       /**** Find loginLP in UserQueue ****/
       let firstGameUserLp: UserDTO = userQueue.find(
-        (elet: UserDTO) => elet.name === games[0].loginLP,
+        (elet: UserDTO) => elet.name === games[0].nameLP,
       );
       /**** Delete the 2 users in UserQueue ****/
       const indexLP = userQueue.findIndex(
@@ -334,7 +342,8 @@ export class GameGateway
       /**** Redirect in the Frontend to <Game /> ****/
 	  this.server.to(updatedGame.id).emit('goPlay', updatedGame);
 	  this.SetCompteur(client, updatedGame.id);
-    } else {
+    }
+	else {
 	  let login: string;
 	  if (!user.login)
 		login = user.name;
@@ -358,7 +367,10 @@ export class GameGateway
   async LeaveQueue(client: any, user: UserDTO) {
 	let indexLP = userQueue.findIndex((elet: UserDTO) => elet.name === user.name,);
 	if (indexLP !== -1) {
-		const game: GameDTO = await this.gameService.getPendingGame(user.name);
+		if (user.login)
+			var game: GameDTO = await this.gameService.getPendingGame(user.login);
+		else 
+			var game: GameDTO = await this.gameService.getPendingGame(user.name);
 		userQueue.splice(indexLP, 1);
 		user = await this.usersService.updateInQueue(user.id, false);
 		client.leave(game.id);
@@ -371,12 +383,6 @@ export class GameGateway
   /*                               MAJ du/Des users                                */
   /* ***************************************************************************** */
 
-  async isConnected(userL: string, userR: string, gameId: number) {
-	let connected = await this.usersService.isConnected(userL, userR);
-	if (!connected)
-		this.server.to(gameId).emit("opponentLeave");
-  }
-
   @SubscribeMessage('user')
   async User(client: any, userId: number) {
 	const user = await this.usersService.updateSocket(userId, client.id);
@@ -385,7 +391,10 @@ export class GameGateway
 		client.emit("redirect", "");
 	}
 	if (user.inGame === true) {
-		let game = await this.gameService.getCurrentGame(user.name);
+		if (user.login)
+				var game: GameDTO = await this.gameService.getCurrentGame(user.login);
+			else 
+				var game: GameDTO = await this.gameService.getCurrentGame(user.name);
 		if (game)
 			client.emit("redirect", game.id);
 	}
@@ -436,7 +445,7 @@ export class GameGateway
 
   @SubscribeMessage('endGameF')
   async EndGameF(client: any, infos) {
-	let game: GameDTO = await this.gameService.getCurrentGame(infos[0].loginLP);
+	let game: GameDTO = await this.gameService.getCurrentGame(infos[0].nameLP);
 
 	if (game) {
 		let userLeft: UserDTO = await this.usersService.getByName(game.nameLP);

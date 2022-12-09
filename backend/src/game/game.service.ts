@@ -28,22 +28,22 @@ export class GameService {
     });
   }
 
-  async getByloginLP(loginLP: string): Promise<Game> {
-    return await this.gameRepo.findOneBy({
-      loginLP: loginLP,
-    });
-  }
+//   async getByloginLP(loginLP: string): Promise<Game> {
+//     return await this.gameRepo.findOneBy({
+//       loginLP: loginLP,
+//     });
+//   }
 
   async getNbInter(id: number): Promise<number> {
     const game = await this.getById(id);
     return game.nbInter;
   }
 
-  async getCurrentGame(name: string): Promise<Game> {
+  async getCurrentGame(login: string): Promise<Game> {
     return await this.gameRepo.findOne({
 		where: [
-			{ loginLP: name, isFinish: false },
-			{ loginRP: name, isFinish: false },
+			{ loginLP: login, isFinish: false },
+			{ loginRP: login, isFinish: false },
 		],
 	})
   }
@@ -56,11 +56,11 @@ export class GameService {
     });
   }
 
-  async getPendingGame(name: string): Promise<Game> {
+  async getPendingGame(login: string): Promise<Game> {
     return await this.gameRepo.findOne({
 		where: [
-			{loginLP: name, waitingForOppenent: true},
-			{loginRP: name, waitingForOppenent: true},
+			{loginLP: login, waitingForOppenent: true},
+			{loginRP: login, waitingForOppenent: true},
 		],
     });
   }

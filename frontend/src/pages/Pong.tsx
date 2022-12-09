@@ -1,8 +1,6 @@
-import { IUser } from "../interfaces/user.interface";
 import { socket } from "../components/Socket";
 import { useAuth } from "../contexts/AuthContext";
 import { useState, useEffect } from "react";
-import axios from "../axios.config";
 import { IGame } from "../interfaces/game.interface";
 import { useNavigate } from "react-router-dom";
 import "../styles/canvas.css"
@@ -19,8 +17,8 @@ function Pong() {
 	/* ***************************************************************************** */
 	useEffect(() => {
 		if (game?.waitingForOppenent === false
-			&& (game?.loginLP === auth.user.name
-			|| game?.loginRP === auth.user.name)) {
+			&& (game?.nameLP === auth.user.name
+			|| game?.nameRP === auth.user.name)) {
 				navigate("/pong/" + game.id);
 			}
 	}, [game?.waitingForOppenent])

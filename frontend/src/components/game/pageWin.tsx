@@ -1,6 +1,6 @@
 import allPos from "./allPos";
 
-const winPage = (context) => {//TODO: Proposer de faire une autre game ?
+const winPage = (context) => {
 	context.fillStyle = "black";
 	context.font = "61px Roboto";
 	context.fillText("You WIN", allPos.width / 2, allPos.height / 2.2, allPos.width);
