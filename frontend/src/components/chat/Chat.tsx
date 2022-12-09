@@ -231,14 +231,27 @@ const ProtoChat = () => {
 
   const addARoom = (event: any) => {
     event.preventDefault();
-    let askARoom: string = "";
-    while (askARoom === "") {
-      askARoom = prompt("Enter a name for your room: ")!;
-      if (askARoom === null) return;
-      if (askARoom === "") alert("This is not a right name for a room !");
+    let 	askARoom: string = "";
+	let 	typeOfRoom: number = -1;
+	let		pswd: string = null;
+    while (askARoom === "")
+	{
+    	askARoom = prompt("Enter a name for your room: ")!;
+    	if (askARoom === null)
+	  		return;
+    	if (askARoom === "")
+	  		alert("This is not a right name for a room !");
     }
-    const pswd = prompt("Enter a password for your room if you want one: ");
-    const typeOfRoom = pswd === null ? type.public : type.protected;
+	while (typeOfRoom < 0 || typeOfRoom > 2)
+	{
+		let typeOfRoomInString = prompt("Do you want your room to be : (0) public, (1) private, or (2) protected ?");
+		typeOfRoom = parseInt(typeOfRoomInString);
+	}
+	if (typeOfRoom === type.protected)
+	{
+		while (pswd == null)
+			pswd = prompt("Enter a password for your protected room: ");
+	}
     const dbRoom: IChatRoom = {
       chatRoomName: askARoom,
       owner: username,
@@ -546,17 +559,11 @@ const ProtoChat = () => {
       <div className="left-side">
         <ul>
           {rooms.map((room: any, id: number) => (
-            <li>
-              <button
-                onClick={() =>
-                  findRoom(room.name).ban
-                    ? alert("you are banned from this channel")
-                    : setActiveForRoom(room.name)
-                }
-              >
-                {room.name}
-              </button>
-            </li>
+				!(room.type === type.private && room.member === false) ?
+				<li>
+					<button onClick={() => findRoom(room.name).ban ? alert("you are banned from this channel") : setActiveForRoom(room.name)}>{room.name}</button>
+				</li>
+				: null
           ))}
         </ul>
         <form onSubmit={addARoom}>
