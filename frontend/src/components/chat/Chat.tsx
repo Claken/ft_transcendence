@@ -241,6 +241,11 @@ const ProtoChat = () => {
 	  		return;
     	if (askARoom === "")
 	  		alert("This is not a right name for a room !");
+		else if (findRoom(askARoom))
+		{
+			alert("This name is already taken. Try another one.");
+			askARoom = "";
+		}
     }
 	while (typeOfRoom < 0 || typeOfRoom > 2)
 	{
