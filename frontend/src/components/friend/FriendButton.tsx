@@ -3,6 +3,7 @@ import axios from "../../axios.config";
 import { Link } from "react-router-dom";
 import Rouage from "../../assets/img/rouage.png";
 import { useDm } from "../../contexts/DmContext";
+import { useAuth } from "../../contexts/AuthContext";
 import { Dm } from "../../interfaces/dm.interface";
 import { IUser } from "../../interfaces/user.interface";
 import "../../styles/dmchat.css";
@@ -10,6 +11,7 @@ import "../../styles/friend.css";
 
 function FriendButton(props) {
   const dmContext = useDm();
+  const auth = useAuth();
   const [dropDown, setDropDown] = useState(false);
 	const [notifications, setNotifications] = useState<number>(0);
 
@@ -37,6 +39,10 @@ function FriendButton(props) {
       receiver: name,
     });
   };
+
+  const inviteButton = (name: string) => {
+    
+  }
 
   const getNotifications = async () => {
     await axios
@@ -104,6 +110,14 @@ function FriendButton(props) {
               onClick={() => deleteFriend(props.user.name)}
             >
               delete friend
+            </button>
+          </div>
+          <div className="overlaymiddle-friend">
+            <button
+              className="simplebtn"
+              onClick={() => inviteButton(props.user.name)}
+            >
+              invite
             </button>
           </div>
           <div className="overlayright-friend">
