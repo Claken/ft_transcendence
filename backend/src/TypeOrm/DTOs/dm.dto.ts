@@ -2,15 +2,15 @@ import { IsOptional } from 'class-validator';
 
 export class DmDto {
 	@IsOptional()
-	id?: number;
+	id: number;
 
   sender: string;
 
   receiver: string;
 
 	@IsOptional()
-  message?: string;
+  message: string;
 
 	@IsOptional()
-	read?: boolean;
+	read: boolean;
 }

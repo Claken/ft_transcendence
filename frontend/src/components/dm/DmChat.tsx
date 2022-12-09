@@ -15,7 +15,6 @@ function DmChat() {
       sender: dmContext.me.name,
       receiver: dmContext.target.name,
     });
-    console.log("on envoit la lecture");
   };
 
   const receiveMessage = (dm: Dm) => {

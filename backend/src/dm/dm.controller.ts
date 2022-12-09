@@ -1,5 +1,4 @@
-import { Get, Param } from '@nestjs/common';
-import { Controller } from '@nestjs/common';
+import { Get, Param, Controller } from '@nestjs/common';
 import { DmEntity } from 'src/TypeOrm';
 import { DmService } from './dm.service';
 

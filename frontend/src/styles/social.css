@@ -39,6 +39,7 @@
   justify-content: center;
   gap: 10%;
 }
+
 .socialContainer .sortButtons button {
   display: inline-block;
   height: 100%;
@@ -51,6 +52,7 @@
   font-style: bold;
   width: 20%;
 }
+
 .socialContainer .sortButtons button:hover {
   display: inline-block;
   height: 100%;
@@ -61,6 +63,21 @@
   color: whitesmoke;
   font-size: 24px;
   font-style: bold;
+}
+
+.socialContainer .sortButtons .friendNotif {
+	display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.socialContainer .sortButtons .friendNotif::after {
+  content: " ";
+  height: 15px;
+  width: 15px;
+  border-radius: 100%;
+  background-color: rgb(160, 76, 220);
 }
 
 .socialContainer .searchBar {
@@ -111,4 +128,6 @@
   display: flex;
   justify-content: center;
   height: 90%;
+  width: 80%;
+  overflow: auto;
 }

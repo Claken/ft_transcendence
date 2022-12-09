@@ -2,7 +2,6 @@ import {
   WebSocketGateway,
   SubscribeMessage,
   MessageBody,
-  WebSocketServer,
 	ConnectedSocket,
 } from '@nestjs/websockets';
 import { Socket } from 'socket.io'
@@ -11,9 +10,6 @@ import { DmService } from './dm.service';
 
 @WebSocketGateway({ cors: '*:*' })
 export class DmGateway {
-  @WebSocketServer()
-  server;
-
   constructor(private readonly dmService: DmService) {}
 
   @SubscribeMessage('join_dm')

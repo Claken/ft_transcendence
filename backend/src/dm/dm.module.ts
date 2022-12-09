@@ -10,5 +10,6 @@ import { DmUser } from './dm.service';
   imports: [TypeOrmModule.forFeature([DmEntity])],
   controllers: [DmController],
   providers: [DmService, DmGateway, Array<DmUser>],
+	exports: [DmService],
 })
 export class DmModule {}

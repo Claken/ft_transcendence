@@ -2,10 +2,15 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+	ManyToOne,
   OneToMany,
+	JoinTable,
+	JoinColumn,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { Game } from './game.entity';
+import { FriendRequestEntity } from './friendRequest.entity';
+import { FriendEntity } from './friend.entity';
+import { BlockUserEntity } from './blockUser.entity';
 
 // Table in the DB
 @Entity('Users')
@@ -49,7 +54,22 @@ export class UsersEntity {
   @Column({ nullable: true, default: 0})
   lose?: number;
 
+	@OneToMany(() => FriendRequestEntity, (friendRequest: FriendRequestEntity) => friendRequest.sender && friendRequest.receiver)
+	@JoinColumn()
+	friendRequests: FriendRequestEntity[];
+
+	@OneToMany(() => FriendEntity, (friend: FriendEntity) => friend.friendOf)
+	@JoinColumn()
+  friends: FriendEntity[];
+
+	@OneToMany(() => BlockUserEntity, (blockUser: BlockUserEntity) => blockUser.blockBy)
+	@JoinColumn()
+  blockUsers: BlockUserEntity[];
+
+	@OneToMany(() => BlockUserEntity, (blockUser: BlockUserEntity) => blockUser.user)
+	@JoinColumn()
+	blockBys: BlockUserEntity[];
+
   @CreateDateColumn()
   createdAt?: Date;
-
 }

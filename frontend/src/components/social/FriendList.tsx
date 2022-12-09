@@ -1,11 +1,12 @@
-import React from 'react'
+import React from "react";
+import Friend from "../friend/Friend";
 
 function FriendList() {
   return (
-	<div className="friendListContainer">
-		<h1>Friend List</h1>
-	</div>
-  )
+    <div className="friendListContainer">
+      <Friend />
+    </div>
+  );
 }
 
-export default FriendList
+export default FriendList;

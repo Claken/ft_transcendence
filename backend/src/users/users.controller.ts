@@ -10,6 +10,7 @@ import {
 import { UsersService } from './users.service';
 import { UsersEntity } from '../TypeOrm/Entities/users.entity';
 import { UserDTO } from 'src/TypeOrm/DTOs/User.dto';
+import { FriendEntity } from 'src/TypeOrm';
 
 @Controller('users')
 export class UsersController {
@@ -46,4 +47,9 @@ export class UsersController {
   async delete(@Param('id') id: number): Promise<UsersEntity> {
     return await this.usersService.deleteUser(id);
   }
+
+	@Get(':name/friends')
+	async getFriends(@Param('name') name: string): Promise<UsersEntity[] | undefined> {
+		return await this.usersService.getFriends(name);
+	}
 }

@@ -4,6 +4,7 @@ import { UserDTO } from 'src/TypeOrm/DTOs/User.dto';
 import { Repository } from 'typeorm';
 import { UsersEntity } from '../TypeOrm/Entities/users.entity';
 import { Cron, CronExpression } from '@nestjs/schedule';
+import { FriendEntity } from 'src/TypeOrm';
 
 @Injectable()
 export class UsersService {
@@ -26,11 +27,24 @@ export class UsersService {
     return await this.userRepo.find();
   }
 
-  async getByName(nameToFind: string): Promise<UsersEntity> {
+	async getByName(nameToFind: string): Promise<UsersEntity> {
     return await this.userRepo.findOneBy({
       name: nameToFind,
     });
   }
+
+  async getByNameWithRelations(nameToFind: string): Promise<UsersEntity> {
+    return await this.userRepo.findOne({
+      where: { name: nameToFind }, relations: ['friendRequests', 'friends', 'friends.user', 'blockUsers', 'blockUsers.user', 'blockBys', 'blockBys.user']
+    });
+  }
+
+	async getByIdWithRelations(idToFind: number): Promise<UsersEntity> {
+    return await this.userRepo.findOne({
+      where: { id: idToFind }, relations: ['friendRequests', 'friends', 'friends.user', 'blockUsers', 'blockUsers.user', 'blockBys', 'blockBys.user']
+    });
+  }
+
 
   async getById(idToFind: number): Promise<UsersEntity> {
     return await this.userRepo.findOneBy({
@@ -75,4 +89,21 @@ export class UsersService {
     user.isTwoFAValidated = val;
     return await this.userRepo.save(user);
   }
+
+	async save(tosave: Promise<UsersEntity>): Promise<UsersEntity> {
+		return this.userRepo.save(await tosave);
+	}
+
+	async getFriends(name: string): Promise<UsersEntity[] | undefined> {
+		const friends: UsersEntity[] = [];
+		const user = await this.userRepo.findOne({
+      where: { name: name }, relations: ['friends', 'friends.user']
+    });
+		if (user && user.friends) {
+			user.friends.map(friend => friends.push(friend.user));
+			return friends;
+		}
+		else
+			return undefined;
+	}
 }

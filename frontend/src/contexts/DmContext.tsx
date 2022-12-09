@@ -11,7 +11,19 @@ export const DmProvider = ({ children }) => {
   const [haveTarget, setHaveTarget] = useState<boolean>(false);
   const [me, setMe] = useState<IUser>(auth.user);
   const [socket, setSocket] = useState<Socket>(null);
-  const [loading, setLoading] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);  
+	const [friendNotif, setFriendNotif] = useState(false);
+
+  const sendFriendRequest = () => {
+    setFriendNotif(true);
+  };
+
+  useEffect(() => {
+    socket?.on("send_friendRequest", sendFriendRequest);
+    return () => {
+      socket?.off("send_friendRequest", sendFriendRequest);
+    };
+  }, [sendFriendRequest]);
 
   useEffect(() => {
     setMe(auth.user);
@@ -48,6 +60,8 @@ export const DmProvider = ({ children }) => {
         loading,
         setLoading,
         changeTarget,
+				friendNotif,
+				setFriendNotif,
       }}
     >
       {children}

@@ -9,6 +9,8 @@ import { entities } from './TypeOrm';
 import { GameModule } from './game/game.module';
 import { PassportModule } from '@nestjs/passport';
 import { DmModule } from './dm/dm.module';
+import { FriendRequestModule } from './friendRequest/friendRequest.module';
+import { BlockUserModule } from './blockUser/blockUser.module';
 
 @Module({
   imports: [
@@ -38,7 +40,9 @@ import { DmModule } from './dm/dm.module';
     UsersModule,
     AuthModule,
     GameModule,
-		DmModule
+		DmModule,
+		FriendRequestModule,
+		BlockUserModule,
   ],
   controllers: [AppController],
   providers: [AppService],

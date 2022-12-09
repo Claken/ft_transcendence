@@ -1,4 +1,4 @@
-import { Injectable, Inject } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { DmDto } from '../TypeOrm/DTOs/dm.dto';
@@ -15,7 +15,7 @@ export class DmService {
   constructor(
     @InjectRepository(DmEntity)
 		private readonly dmRepo: Repository<DmEntity>,
-		private readonly dmUsers: Array<DmUser>
+		readonly dmUsers: Array<DmUser>
   ) {}
 
 	joinDm(socket: Socket, dm: DmDto) {
@@ -63,5 +63,9 @@ export class DmService {
 		return await this.dmRepo.count({
 			where: {sender: target, receiver: me, read: false}
 		});
+	}
+
+	sendSocket(who: string, message: string) {
+		this.dmUsers.find(dmUser => dmUser.name === who).socket.emit(message)
 	}
 }
