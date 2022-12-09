@@ -5,6 +5,7 @@ import { useAuth } from "../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 
 
+
 function Home() {
 	const auth = useAuth();
 	const navigate = useNavigate();

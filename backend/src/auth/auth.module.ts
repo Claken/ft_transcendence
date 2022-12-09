@@ -16,6 +16,9 @@ import { HttpModule } from '@nestjs/axios';
   imports: [
     HttpModule,
     UsersModule,
+    // MulterModule.register({
+    //   dest: './avatar',
+    // }),    
     PassportModule.register({
       session: true,
     }),

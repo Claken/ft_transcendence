@@ -1,11 +1,16 @@
 import { IsOptional } from 'class-validator';
 
 export class DmDto {
-	id?: number;
+	@IsOptional()
+	id: number;
 
   sender: string;
 
   receiver: string;
 
+	@IsOptional()
   message: string;
+
+	@IsOptional()
+	read: boolean;
 }

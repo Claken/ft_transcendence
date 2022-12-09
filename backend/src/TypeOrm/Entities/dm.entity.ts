@@ -17,4 +17,7 @@ export class DmEntity {
 
 	@Column({ type: "text" })
   message: string;
+
+	@Column()
+	read: boolean;
 }

@@ -1,25 +1,25 @@
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Pong from "./pages/Pong";
+import Game from "./components/game/Game";
 import Social from "./pages/Social";
 import Channel from "./pages/Channel";
 import Account from "./pages/Account";
 import { AuthProvider } from "./contexts/AuthContext";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Layout from "./pages/Layout";
-import { ChatProvider } from "./contexts/ChatContext";
+import { DmProvider } from "./contexts/DmContext";
 import Profile from "./pages/Profile";
 import ProfileDetails from "./pages/ProfileDetails";
 import RequiredOffline from "./components/RequiredRoutes/RequiredOffline";
 import LayoutPong from "./pages/LayoutPong";
-import Game from "./components/game/Game";
 import RequiredAuth from "./components/RequiredRoutes/RequiredAuth";
 import TwoFaConnexion from "./pages/TwoFaConnexion";
 
 function App() {
 	return (
 		<AuthProvider>
-			<ChatProvider>
+			<DmProvider>
 				<BrowserRouter>
 					<Routes>
 						<Route path="/" element={<Layout />}>
@@ -50,7 +50,7 @@ function App() {
 						</Route>
 					</Routes>
 				</BrowserRouter>
-			</ChatProvider>
+			</DmProvider>
 		</AuthProvider>
 	);
 }

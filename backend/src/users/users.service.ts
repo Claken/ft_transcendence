@@ -48,7 +48,7 @@ export class UsersService {
     return await this.userRepo.find({relations: ['ownedChannels', 'memberships', 'memberships.inChannel']});
   }
 
-  async getByName(nameToFind: string): Promise<UsersEntity> {
+	async getByName(nameToFind: string): Promise<UsersEntity> {
     return await this.userRepo.findOneBy({
       name: nameToFind,
     });
@@ -80,6 +80,18 @@ export class UsersService {
       email: emailToFind,
     });
   }
+  async getByNameWithRelations(nameToFind: string): Promise<UsersEntity> {
+    return await this.userRepo.findOne({
+      where: { name: nameToFind }, relations: ['friendRequests', 'friends', 'friends.user', 'blockUsers', 'blockUsers.user', 'blockBys', 'blockBys.user']
+    });
+  }
+
+	async getByIdWithRelations(idToFind: number): Promise<UsersEntity> {
+    return await this.userRepo.findOne({
+      where: { id: idToFind }, relations: ['friendRequests', 'friends', 'friends.user', 'blockUsers', 'blockUsers.user', 'blockBys', 'blockBys.user']
+    });
+  }
+
 
   async getById(idToFind: number): Promise<UsersEntity> {
     return await this.userRepo.findOneBy({
@@ -263,4 +275,20 @@ export class UsersService {
 			const user = await this.findOneByName(name);
 			return user.memberships;
 		}
+	async save(tosave: Promise<UsersEntity>): Promise<UsersEntity> {
+		return this.userRepo.save(await tosave);
+	}
+
+	async getFriends(name: string): Promise<UsersEntity[] | undefined> {
+		const friends: UsersEntity[] = [];
+		const user = await this.userRepo.findOne({
+      where: { name: name }, relations: ['friends', 'friends.user']
+    });
+		if (user && user.friends) {
+			user.friends.map(friend => friends.push(friend.user));
+			return friends;
+		}
+		else
+			return undefined;
+	}
 }

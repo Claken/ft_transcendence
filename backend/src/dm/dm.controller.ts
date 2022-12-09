@@ -1,11 +1,10 @@
-import { Get, Param } from '@nestjs/common';
-import { Controller } from '@nestjs/common';
+import { Get, Param, Controller } from '@nestjs/common';
 import { DmEntity } from 'src/TypeOrm';
 import { DmService } from './dm.service';
 
 @Controller('dm')
 export class DmController {
-	constructor(private dmService: DmService) {}
+	constructor(private readonly dmService: DmService) {}
 
   @Get()
 	async historyDm(): Promise<DmEntity[]> {
@@ -16,4 +15,9 @@ export class DmController {
   async getByName(@Param('me') me: string, @Param('target') target: string): Promise<DmEntity[]> {
     return await this.dmService.getByName(me, target);
   }
+
+	@Get(':me/:target/read')
+	async getRead(@Param('me') me: string, @Param('target') target: string): Promise<number> {
+		return await this.dmService.getRead(me, target);
+	}
 }

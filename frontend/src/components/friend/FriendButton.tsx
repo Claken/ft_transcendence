@@ -1,18 +1,25 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "../../axios.config";
 import { Link } from "react-router-dom";
 import Rouage from "../../assets/img/rouage.png";
 import { useDm } from "../../contexts/DmContext";
 import { Dm } from "../../interfaces/dm.interface";
+import { IUser } from "../../interfaces/user.interface";
 import "../../styles/dmchat.css";
+import "../../styles/friend.css";
 
-function DmUserButton(props) {
+function FriendButton(props) {
   const dmContext = useDm();
   const [dropDown, setDropDown] = useState(false);
-  const [notifications, setNotifications] = useState<number>(0);
+	const [notifications, setNotifications] = useState<number>(0);
 
   const haveNotifications = () => {
     if (notifications > 0) return true;
+    return false;
+  };
+
+  const isConnect = (user: IUser) => {
+    if (user.status === "online") return true;
     return false;
   };
 
@@ -24,10 +31,10 @@ function DmUserButton(props) {
     setDropDown(false);
   };
 
-  const postRequestFriend = (sender: string, receiver: string) => {
-    dmContext.socket.emit("send_friendRequest", {
-      sender,
-      receiver,
+  const deleteFriend = (name: string) => {
+    dmContext.socket.emit("delete_friend", {
+      sender: dmContext.me.name,
+      receiver: name,
     });
   };
 
@@ -66,7 +73,11 @@ function DmUserButton(props) {
           onMouseEnter={onMouseEnter}
           onMouseLeave={onMouseLeave}
         >
-          <div className="nameuser">{props.user.name}</div>
+          {isConnect(props.user) ? (
+            <div className="cercleconnect">{props.user.name}</div>
+          ) : (
+            <div className="cercledisconnect">{props.user.name}</div>
+          )}
           {haveNotifications() && <div className="notifications">{notifications} new message(s)</div>}
           {(!dropDown && <img src={Rouage} className="tourne"></img>) || (
             <img src={Rouage} className="tourne tourneanim"></img>
@@ -77,7 +88,7 @@ function DmUserButton(props) {
           onMouseEnter={onMouseEnter}
           onMouseLeave={onMouseLeave}
         >
-          <div className="overlayleft">
+          <div className="overlayleft-friend">
             <Link to="/channel">
               <button
                 className="simplebtn"
@@ -87,17 +98,15 @@ function DmUserButton(props) {
               </button>
             </Link>
           </div>
-          <div className="overlaymiddle">
+          <div className="overlaymiddle-friend">
             <button
               className="simplebtn"
-              onClick={() =>
-                postRequestFriend(dmContext.me.name, props.user.name)
-              }
+              onClick={() => deleteFriend(props.user.name)}
             >
-              add friend
+              delete friend
             </button>
           </div>
-          <div className="overlayright">
+          <div className="overlayright-friend">
             <Link to={"/profile/" + props.user.name}>
               <button className="simplebtn">Profile</button>
             </Link>
@@ -108,4 +117,4 @@ function DmUserButton(props) {
   );
 }
 
-export default DmUserButton;
+export default FriendButton;

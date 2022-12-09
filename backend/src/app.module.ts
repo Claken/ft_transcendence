@@ -14,6 +14,8 @@ import { PassportModule } from '@nestjs/passport';
 import { DmModule } from './dm/dm.module';
 import { AvatarModule } from './avatar/avatar.module';
 import { EventEmitterModule } from '@nestjs/event-emitter';
+import { FriendRequestModule } from './friendRequest/friendRequest.module';
+import { BlockUserModule } from './blockUser/blockUser.module';
 
 @Module({
   imports: [
@@ -45,7 +47,9 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
     ChatModule,
     GameModule,
 		DmModule,
-		AvatarModule
+		AvatarModule,
+		FriendRequestModule,
+		BlockUserModule,
   ],
   controllers: [AppController],
   providers: [AppService],

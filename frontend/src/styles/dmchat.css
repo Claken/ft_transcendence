@@ -7,6 +7,17 @@
   font-family: "Lucida Sans";
 }
 
+.nameuser {
+  display: flex;
+  width: 150px;
+  height: 50px;
+  font-size: 25px;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  font-family: "Lucida Sans";
+}
+
 .cercleconnect {
   display: flex;
   width: 150px;
@@ -47,21 +58,22 @@
 
 .btndisplay {
   display: flex;
-	flex-direction: column;
+  flex-direction: column;
   list-style: none;
-	width: 100%;
-	height: 100%;
+  width: 100%;
+  height: 100%;
 }
 
 .dmsearchbar {
-	display: flex;
-	justify-content: center;
-	width: 100%;
-	height: 10%;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  height: 10%;
 }
 
 .dmbody {
-  margin-top: 5vh;
+  width: 100%;
+  height: 100%;
   justify-content: center;
   align-items: center;
   text-align: center;
@@ -76,8 +88,8 @@
   justify-content: center;
   align-items: center;
   text-align: center;
-  width: 90%;
-  height: 10vh;
+  width: 100%;
+  height: 10%;
   color: white;
   background: #196f9f;
   border-radius: 30px 30px 0px 0px;
@@ -85,8 +97,8 @@
 }
 
 .dmchat {
-  width: 90%;
-  height: 60vh;
+  width: 100%;
+  height: 80%;
   margin-left: auto;
   margin-right: auto;
   background: #3b3b3b;
@@ -119,8 +131,8 @@
   justify-content: center;
   align-items: center;
   text-align: center;
-  width: 90%;
-  height: 10vh;
+  width: 100%;
+  height: 10%;
   background: #196f9f;
   border-radius: 0px 0px 30px 30px;
 }
@@ -203,7 +215,7 @@
   margin-left: auto;
   margin-top: auto;
   margin-bottom: auto;
-	margin-right: 5%;
+  margin-right: 5%;
   width: 30px;
   height: 30px;
 }
@@ -233,7 +245,7 @@
   justify-content: center;
   align-items: center;
   text-align: center;
-  width: 50%;
+  width: 33%;
   height: 50px;
   border-radius: 75px 0px 0px 75px;
   font-size: 20px;
@@ -241,6 +253,22 @@
   border: none;
   color: white;
   background: #523b82;
+  overflow: hidden;
+}
+
+.overlaymiddle {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  width: 34%;
+  height: 50px;
+  font-size: 20px;
+  cursor: pointer;
+  border: none;
+  color: white;
+  background: #523b82;
+  overflow: hidden;
 }
 
 .overlayright {
@@ -248,7 +276,7 @@
   justify-content: center;
   align-items: center;
   text-align: center;
-  width: 50%;
+  width: 33%;
   height: 50px;
   border-radius: 0px 75px 75px 0px;
   font-size: 20px;
@@ -256,19 +284,12 @@
   border: none;
   color: white;
   background: #523b82;
-}
-
-.overlayleft:hover {
-  opacity: 0.5;
-}
-
-.overlayright:hover {
-  opacity: 0.5;
+  overflow: hidden;
 }
 
 .bodysearchinput {
   width: 100%;
-	margin-top: 2vh;
+  margin-top: 2vh;
   margin-bottom: 3vh;
   justify-content: center;
   align-items: center;
@@ -304,6 +325,35 @@
 
 .btnsend:hover {
   opacity: 0.5;
+}
+
+.notifications {
+  margin-top: auto;
+  margin-bottom: auto;
+	justify-content: center;
+  align-items: center;
+  text-align: center;
+	background: transparent;
+	color: rgb(160, 76, 220);
+	font-family: "Lucida Sans";
+}
+
+.simplebtn {
+  width: fit-content;
+  height: fit-content;
+  cursor: pointer;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  font-family: "Lucida Sans";
+  background: transparent;
+  color: white;
+  border: none;
+  font-size: 20px;
+}
+
+.simplebtn:hover {
+	opacity: 0.5;
 }
 
 a {

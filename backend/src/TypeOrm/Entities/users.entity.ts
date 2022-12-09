@@ -1,14 +1,18 @@
 import {
   Column,
   Entity,
+	OneToOne,
   OneToMany,
-  OneToOne,
   PrimaryGeneratedColumn,
-  JoinColumn
+  JoinColumn,
+	CreateDateColumn
 } from 'typeorm';
 import { Avatar } from './avatar.entity';
 import { ChatRoomEntity } from './chat.entity';
 import { MemberEntity } from './member.entity';
+import { FriendRequestEntity } from './friendRequest.entity';
+import { FriendEntity } from './friend.entity';
+import { BlockUserEntity } from './blockUser.entity';
 
 // Table in the DB
 @Entity('Users')
@@ -74,4 +78,22 @@ export class UsersEntity {
   // })
   // friends: UsersEntity[];
 
+	@OneToMany(() => FriendRequestEntity, (friendRequest: FriendRequestEntity) => friendRequest.sender && friendRequest.receiver)
+	@JoinColumn()
+	friendRequests: FriendRequestEntity[];
+
+	@OneToMany(() => FriendEntity, (friend: FriendEntity) => friend.friendOf)
+	@JoinColumn()
+  friends: FriendEntity[];
+
+	@OneToMany(() => BlockUserEntity, (blockUser: BlockUserEntity) => blockUser.blockBy)
+	@JoinColumn()
+  blockUsers: BlockUserEntity[];
+
+	@OneToMany(() => BlockUserEntity, (blockUser: BlockUserEntity) => blockUser.user)
+	@JoinColumn()
+	blockBys: BlockUserEntity[];
+
+  @CreateDateColumn()
+  createdAt?: Date;
 }
