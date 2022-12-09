@@ -1,15 +1,12 @@
 import {
   Column,
-  CreateDateColumn,
   Entity,
-  Generated,
   OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
   JoinColumn
 } from 'typeorm';
 import { Avatar } from './avatar.entity';
-import { Game } from './game.entity';
 import { ChatRoomEntity } from './chat.entity';
 import { MemberEntity } from './member.entity';
 
@@ -41,10 +38,10 @@ export class UsersEntity {
   isTwoFAValidated?: boolean;
 
   @Column({ default: false })
-  inQueue: boolean;
+  inQueue?: boolean;
 
   @Column({ default: false })
-  inGame: boolean;
+  inGame?: boolean;
 
   @Column({ nullable: true, default: 0})
   win?: number;
@@ -55,15 +52,10 @@ export class UsersEntity {
   @OneToMany(() => ChatRoomEntity, (Chat: ChatRoomEntity) => Chat.owner, {onDelete: 'SET NULL'})
   @JoinColumn()
   ownedChannels?: ChatRoomEntity[];
-//   @OneToMany(() => Game, Game => Game.userLeft)
-//   userLeft: Game[];
 
-//   @OneToMany(() => Game, Game => Game.userRight)
-//   userRight: Game[];
+  @Column({ default: false })
+  lastSocket?: string;
 
-  @CreateDateColumn()
-  createdAt?: Date;
-  
   @Column({ nullable: true, default: 0 })
   avatarId?: number;
   

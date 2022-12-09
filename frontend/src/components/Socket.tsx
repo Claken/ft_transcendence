@@ -3,24 +3,14 @@ import io from "socket.io-client";
 
 export const socket = io('http://localhost:3001');//back
 
-// const Socket= () => {//TODO: Utilité ?
-
-// 	const [response, setResponse] = useState("");
+// const Socket= () => {//TODO: retirer
 
 // 	useEffect(() => {
-// 		socket.on("users", data => {
-// 			console.log("users = " + data);
-// 		   setResponse(data);
+// 		socket.on("user", data => {
+// 			console.log("client id = " + data);
 // 		});
 // 		socket.emit('notification', 'Server online via socket');
-// 		// socket.emit("toto");
 // 	}, []);
-
-// 	return (
-// 		<p>
-// 			It's <time dateTime={response}>{response}</time>
-// 		</p>
-// 	);
 // }
 
 // export default Socket

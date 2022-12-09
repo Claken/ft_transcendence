@@ -2,8 +2,6 @@ import React, { useRef, useEffect, useState } from "react";
 import { socket } from "../Socket";
 import "../../styles/canvas.css"
 import { useAuth } from "../../contexts/AuthContext";
-import axios from "../../axios.config";
-import { IGame } from "../../interfaces/game.interface"
 import { useParams } from "react-router-dom";
 
 import Colors from "./colors";
@@ -15,7 +13,9 @@ import button from "./button";
 import pausePage from "./pagePause";
 import losePage from "./pageLose";
 import winPage from "./pageWin";
+import leavePage from "./pageLeave";
 import initPage from "./pageInit";
+import endPage from "./pageEnd";
 
 const Game = (
 	props: JSX.IntrinsicAttributes &
@@ -25,103 +25,60 @@ const Game = (
 	let CanvasWidth = 1600;
 	let CanvasHeight = 760;
 	let EmptyGround = 50;
-	// const [playerL, setPlayerL] = useState(0); // avoir le profil du user
-	// const [playerR, setPlayerR] = useState(0); // avoir le profil du user
-	const [loginLP, setLoginLP] = useState("Player 1"); // avoir le login du joueur de gauche pour l'afficher
-	const [loginRP, setLoginRP] = useState("Player 2"); // avoir le login du joueur de droite pour l'afficher
-	const [scoreLP, setScoreLP] = useState(0); // Score du joueur gauche
-	const [scoreRP, setScoreRP] = useState(0); // Score du joueur droit
-	const [abort, setAbort] = useState(false);
-	const [game, setGame] = useState<IGame>(null);
-	const [games, setGames] = useState<IGame[]>([]);//TODO: utilité ?
 	const auth = useAuth();
 	const { gameId } = useParams();
-	const [lock, setLock] = useState<boolean>(false);
-	var intervalID = null;
+	const [init, setInit] = useState<boolean>(false);
 	var key = "";
 	var prev = "";
 	var curr = "";
 	const color = [];
 
 	/* ***************************************************************************** */
-	/*               Timer exécuter toutes les 10 premières secondes                 */
-	/* ***************************************************************************** */
-	const tick = () => {
-		if (allPos.compteur === -1)
-			clearInterval(intervalID);
-		if (allPos.compteur === 0) {
-			clearInterval(intervalID);
-			socket.emit("randomMap")
-		}
-		else if (allPos.compteur > 0) {
-			// allPos.compteur--;
-			socket.emit("compteur", allPos.compteur);
-		}
-	}
-
-	/* ***************************************************************************** */
 	/*                 Initialisation de la Game et des 2 joueurs                    */
 	/* ***************************************************************************** */
 	useEffect(() => {
-		if (game) {
-			setLoginLP(game.loginLP);
-			setLoginRP(game.loginRP);
-			setScoreLP(0);
-			setScoreRP(0);
-			allPos.loginLP = game.loginLP;
-			allPos.loginRP = game.loginRP;
-			if (auth.user.name === allPos.loginLP && !lock) {
-				setLock(true)
-				intervalID = setInterval(tick, 1000);
-			}
+		socket.on("updateData", (newData) => {
+			allPos.map = newData.map;
+			if (newData.compteur === 10)
+				allPos.compteur = newData.compteur;
+			else
+				allPos.compteur = null;
+			allPos.state = newData.state;
+			allPos.scoreLP = newData.scoreLP;
+			allPos.scoreRP = newData.scoreRP;
+			allPos.nameLP = newData.nameLP;
+			allPos.nameRP = newData.nameRP;
+			allPos.gameId = gameId;
+			allPos.WinLoseL = newData.WLuserL;
+			allPos.WinLoseR = newData.WLuserR;
+			if (auth.user.name !== allPos.nameLP && auth.user.name !== allPos.nameRP)
+				allPos.viewer = true;
+			setInit(true);
+		});
+
+		if (auth.user) {
+			socket.emit("updateData", gameId);
 		}
-	}, [game])
-
-	const getGameById = async () => {
-		await axios
-			.get("/game/" + gameId)
-			.then((res) => {
-				setGame(res.data);
-			})
-			.catch((error) => {
-				console.log(error);
-			});
-	};
-
-	useEffect(() => {
-		getGameById();
 	}, [])
-
-	//reconnexion en pleine partie
-	useEffect(() => {
-		// socket.emit();
-		console.log("entrée dans le useEffect de la reconnexion (GAME.TSX"); //TODO: retirer
-	}, [auth.user.id])
-
-	//TODO: besoin de useEffect ? Si il déco, setAbort ?
-	//TODO: il rentre forcément dans le useEffect ? Pourquoi ?
-	//Un joueur abort la game car il se fait daronned
-	useEffect(() => {
-		if (abort === true) {
-			// socket.emit();
-			console.log("entrée dans le useEffect du ABORT"); //TODO: retirer
-		}
-	}, [abort])
 
 	/* ***************************************************************************** */
 	/*            Ajout d'event pour écouter les touches/cliques entrant             */
 	/* ***************************************************************************** */
 	const pauseGame = (e) => {
+		if (allPos.viewer)
+			return ;
 		if (e.key === "p"|| e.key === "P" || e.key === " ") {
 			e.preventDefault();
 			if (allPos.state === State.PLAY)
-				socket.emit("pause&play", State.PAUSE, auth.user.name);
+				socket.emit("pauseNplay", State.PAUSE, auth.user.name, gameId);
 			else if (allPos.state === State.PAUSE && auth.user.name === prev)
-				socket.emit("pause&play", State.PLAY, "");
+				socket.emit("pauseNplay", State.PLAY, "", gameId);
 		}
 	};
 
 	const movePlayer = (e) => {
+		if (allPos.viewer)
+			return ;
 		if (
 			e.key === "ArrowUp" ||
 			e.key === "ArrowDown" ||
@@ -140,6 +97,8 @@ const Game = (
 	};
 
 	const stopPlayer = (e) => {
+		if (allPos.viewer)
+			return ;
 		if (
 			e.key === "ArrowUp" ||
 			e.key === "ArrowDown" ||
@@ -158,6 +117,8 @@ const Game = (
 	};
 
 	const clickInterpreter = (e) => {
+		if (allPos.viewer)
+			return ;
 		let x = e.offsetX;
 		let y = e.offsetY;
 		e.preventDefault();
@@ -182,63 +143,58 @@ const Game = (
 				y > 25 - allPos.radius * 2 &&
 				y < 25 + allPos.radius * 2) {
 				if (allPos.state === State.PLAY)
-					socket.emit("pause&play", State.PAUSE, auth.user.name);
+					socket.emit("pauseNplay", State.PAUSE, auth.user.name, gameId);
 				else if(allPos.state === State.PAUSE && auth.user.name === prev)
-					socket.emit("pause&play", State.PLAY, "");
+					socket.emit("pauseNplay", State.PLAY, "", gameId);
 			}
 			else if (//button stop
 				x > allPos.width / 2 + 150 - allPos.radius * 2 &&
 				x < allPos.width / 2 + 150 + allPos.radius * 2 &&
 				y > 25 - allPos.radius * 2 &&
 				y < 25 + allPos.radius * 2) {
-					socket.emit("state", State.PAUSE);
-					//TODO: Abort page ? Le joueur restant est donc gagnant
+					socket.emit("abort", allPos, auth.user.name);
 			}
 		}
-		// if ((allPos.state === State.LOSE || allPos.state === State.WIN) &&
-		// 	x > allPos.width / 2 - 290 &&
-		// 	x < allPos.width / 2 + 290 &&
-		// 	y > allPos.height / 1.6 - 50 &&
-		// 	y < allPos.height / 1.6
-		// ) {
-		// 	socket.emit("state", State.INIT);
-		// }
 	};
 
 /* ***************************************************************************** */
 /*                             USEEFFECT PRINCIPALE                              */
 /* ***************************************************************************** */
 	useEffect(() => {
+		if (init === false || !auth.user)
+			return ;
 		const canvas = canvasRef.current;
 		if (canvas == null) return;
 		const context = canvas.getContext("2d");
 		if (context == null) return;
+		var ready = false;
 		allPos.width = canvas.width; //largeur du canvas
 		allPos.height = canvas.height; //hauteur du canvas
-		allPos.pLY = allPos.height / 2 - EmptyGround / 2; //placement en hauteur du paddle gauche
-		allPos.pRY = allPos.height / 2 - EmptyGround / 2; //placement en hauteur du paddle droit
 		allPos.paddleH = allPos.height / 8; //hauteur du paddle
 		allPos.paddleW = allPos.width / 150; //largeur du paddle
 		allPos.radius = 10; //taille de la balle
 		allPos.ballW = 15; //largeur de la balle
 		allPos.ballH = allPos.ballW; //hauteur de la balle
+		allPos.EmptyGround = EmptyGround;
+		allPos.mapLP = -1;
+		allPos.mapRP = -1;
+		/**************************************************************** */
+		//TODO: avoir les valeurs actuelles de la game
+		allPos.pLY = allPos.height / 2 - EmptyGround / 2; //placement en hauteur du paddle gauche
+		allPos.pRY = allPos.height / 2 - EmptyGround / 2; //placement en hauteur du paddle droit
 		allPos.ballX = (allPos.width / 2) - (allPos.ballW / 2); //placement en X de la balle
 		allPos.ballY = allPos.height / 2 + EmptyGround / 2; //placement en Y de la balle
 		allPos.vx = -1; //vitesse en X de la balle
 		allPos.vy = -1; //vitesse en Y de la balle
-		allPos.scoreLP = scoreLP;
-		allPos.scoreRP = scoreRP;
-		allPos.EmptyGround = EmptyGround;
-		allPos.state = 0; //etat du jeu
-		allPos.score = 5;
 		allPos.speed = 2;
-		allPos.mapLP = -1;
-		allPos.mapRP = -1;
+		/**************************************************************** */
+		if (allPos.compteur === null)
+			socket.emit("setCompteur", gameId);
 		allPos.key = key;
 		let animationFrameId: number;
 		allPos.img = new Image();
+		allPos.img.src = gameBoards[allPos.map];
 		var mignature = [new Image(), new Image(), new Image()];
-		allPos.img.src = gameBoards[0];
 		mignature[0].src = gameBoards[0];
 		mignature[1].src = gameBoards[1];
 		mignature[2].src = gameBoards[2];
@@ -251,25 +207,20 @@ const Game = (
 		/* ***************************************************************************** */
 		/*              Communication avec le back sur l'échange de données              */
 		/* ***************************************************************************** */
-		socket.on("updatedData", (newData) => {
+		socket.on("update", (newData) => {
 			allPos.ballX = newData.ballX;
 			allPos.ballY = newData.ballY;
 			allPos.vy = newData.vy;
 			allPos.vx = newData.vx;
 			allPos.scoreLP = newData.scoreLP;
 			allPos.scoreRP = newData.scoreRP;
-			allPos.score = newData.score;
 			allPos.speed = newData.speed;
-			allPos.state = newData.state;
+			ready = true;
 		});
 
 		socket.on("updatedPlayer", (newData) => {
 			allPos.pLY = newData.pLY;
 			allPos.pRY = newData.pRY;
-		});
-
-		socket.on("updatedState", (newState) => {
-			allPos.state = newState;
 		});
 
 		socket.on("PauseAndPlay", (infos) => {
@@ -299,16 +250,30 @@ const Game = (
 		})
 
 		socket.on("launchGame", (map) => {
-			allPos.compteur = -1;
 			allPos.img.src = gameBoards[map];
+			ready = true;
 			allPos.state = State.PLAY;
 		});
 
-		socket.on("endGame", (winner, capitulator) => {
-			if (capitulator)
-				// setAbort(true);
-			console.log("endGame")
-			auth.user.name === winner ? allPos.state = State.WIN : allPos.state = State.LOSE ;//TODO: allPos ou pas ?
+		socket.on("endGame", (winner) => {
+			if (allPos.viewer){
+				allPos.state = State.END
+				socket.emit("leaveSocket", gameId);
+				return ;
+			}
+			auth.user.name === winner ? allPos.state = State.WIN : allPos.state = State.LOSE ;
+			socket.emit("updateInGame", auth.user, gameId);
+		})
+
+		socket.on("opponentLeave", (abandoner) => {
+			allPos.state = State.LEAVE;
+			socket.emit("updateInGame", auth.user, gameId);
+			socket.emit("endGameF", allPos, auth.user.name, abandoner, "");
+		})
+
+		socket.on("updateUser", (user) => {
+			if (user.name === auth.user.name)
+				auth.user = user;
 		})
 
 		/* ***************************************************************************** */
@@ -330,27 +295,31 @@ const Game = (
 				losePage(context);
 			else if (allPos.state === State.WIN)
 				winPage(context);
+			else if (allPos.state === State.LEAVE)
+				leavePage(context);
+			else if (allPos.state === State.END)
+				endPage(context);
 			else if (allPos.state === State.PLAY) {
 				button(context);
-				if (
-					allPos.key === "ArrowUp" ||
+				if (!allPos.viewer &&
+					(allPos.key === "ArrowUp" ||
 					allPos.key === "ArrowDown" ||
 					allPos.key === "w" ||
 					allPos.key === "W" ||
 					allPos.key === "s" ||
 					allPos.key === "S" ||
 					allPos.key === "z" ||
-					allPos.key === "Z"
-				)
+					allPos.key === "Z"))
 					socket.emit("movePlayer", allPos, auth.user.name);
-				socket.emit("update", allPos);
+				if (!allPos.viewer && ready)
+					socket.emit("update", allPos, auth.user);
 			}
 			context.font = "40px Roboto";
 			context.fillStyle = "black";
 			context.textAlign = "start";
-			context.fillText(allPos.loginLP, 0, 40);
+			context.fillText(allPos.nameLP, 0, 40);
 			context.textAlign = "end";
-			context.fillText(allPos.loginRP, allPos.width, 40);
+			context.fillText(allPos.nameRP, allPos.width, 40);
 			context.textAlign = "center";
 			context.font = "60px Roboto";
 			context.fillText(allPos.scoreLP + " - " + allPos.scoreRP, allPos.width / 2, 45);
@@ -368,7 +337,6 @@ const Game = (
 				context.stroke();
 			animationFrameId = window.requestAnimationFrame(render);
 		}
-		//
 		render();
 
 		return () => {
@@ -377,16 +345,17 @@ const Game = (
 			document.removeEventListener("keydown", movePlayer);
 			document.removeEventListener("keyup", stopPlayer);
 			document.removeEventListener("click", clickInterpreter);
-			socket.off("updatedData");
+			socket.off("update");
 			socket.off("updatedPlayer");
-			socket.off("updatedState");
+			socket.off("PauseAndPlay");
 			socket.off("updateImg");
 			socket.off("compteurUpdated");
 			socket.off("launchGame");
 			socket.off("endGame");
-			socket.off("PauseAndPlay");
+			socket.off("opponentLeave");
+			socket.off("updateUser");
 		};
-	},[loginRP]);
+	},[init]);
 
 	/* ***************************************************************************** */
 	/*                          balise HTML de la page web                           */

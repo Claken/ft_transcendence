@@ -1,11 +1,10 @@
-import { IUser } from "../interfaces/user.interface";
 import { socket } from "../components/Socket";
 import { useAuth } from "../contexts/AuthContext";
 import { useState, useEffect } from "react";
-import axios from "../axios.config";
 import { IGame } from "../interfaces/game.interface";
 import { useNavigate } from "react-router-dom";
 import "../styles/canvas.css"
+import GameList from "../components/game/GameList";
 
 function Pong() {
 	const auth = useAuth();
@@ -18,18 +17,17 @@ function Pong() {
 	/* ***************************************************************************** */
 	useEffect(() => {
 		if (game?.waitingForOppenent === false
-			&& (game?.loginLP === auth.user.name
-			|| game?.loginRP === auth.user.name))
-			navigate("/pong/" + game.id);
+			&& (game?.nameLP === auth.user.name
+			|| game?.nameRP === auth.user.name)) {
+				navigate("/pong/" + game.id);
+			}
 	}, [game?.waitingForOppenent])
 
-	//TODO: reconnexion en pleine partie OU remettre en file d'attente s'il y est déjà
+	/** reconnexion en pleine partie OU remettre en file d'attente s'il y est déjà **/
 	useEffect(() => {
-		//TODO: vérifier si il est en game ? Si oui: navigate sur la bonne game. Laquelle ?
-		//Laquelle ? l'id de la table game qui est liée à celle du User
-		//vérifie si le user est dans la queue
-		socket.emit('inQueueOrGame', auth.user);
-	}, [auth.user.id])
+		if (auth.user)
+			socket.emit('inQueueOrGame', auth.user);
+	}, [auth.user])
 
 	/* ***************************************************************************** */
 	/*                                  socket.on                                    */
@@ -45,6 +43,18 @@ function Pong() {
 		setGame(gameToPlay);
 	});
 
+	socket.on("updateUser", (user) => {
+		if (user.name === auth.user.name)//TODO: remplacer name par login
+			auth.user = user;
+	})
+
+	socket.on("updateUsers", (userLeft, userRight) => {
+		if (auth.user.name === userLeft.name)
+			auth.user = userLeft;
+		else
+			auth.user = userRight;
+	})
+
 	/* ***************************************************************************** */
 	/*                                  fonctions                                    */
 	/* ***************************************************************************** */
@@ -59,8 +69,10 @@ function Pong() {
 		socket.emit("leaveQueue", auth.user);
 	};
 
-	//TODO: - OutQueue:	Avoir le bouton FIND + la liste des user à Watch
-	//TODO: - InQueue:	Avoir le bouton LEAVE + indiquer qu'il est en Queue
+	const DisplayGames = () => {
+		socket.emit("getCurrGames");
+	}
+
 	return (
 		<div>
 			{wait ? (
@@ -146,7 +158,7 @@ function Pong() {
 			)}
 			{wait ? (<div>Waiting for opponent...</div>
 				) : (
-					<h1>LIST HERE</h1>
+					<GameList />
 				)}
 		</div>
 	);

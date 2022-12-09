@@ -23,10 +23,15 @@ export class GameController {
     return await this.gameService.getPendingGames();
   }
 
-  @Get('loginLP/:loginLP')
-  async getByloginLP(@Param('loginLP') loginLP: string): Promise<Game> {
-    return await this.gameService.getByloginLP(loginLP);
-  }
+//   @Get('loginLP/:loginLP')
+//   async getByloginLP(@Param('loginLP') loginLP: string): Promise<Game> {
+//     return await this.gameService.getByloginLP(loginLP);
+//   }
+
+//   @Get(':')
+//   async getCurrentGame(@Param('id') name: string): Promise<Game> {
+//     return await this.gameService.getCurrentGame(name);
+//   }
 
   @Get(':id')
   async getById(@Param('id') idToFind: number): Promise<Game> {
@@ -37,8 +42,9 @@ export class GameController {
   async updateGameReady(
     @Param('id') id: number,
     @Body('loginRP') loginRP: string,
+    @Body('nameRP') nameRP: string,
   ): Promise<Game> {
-    return await this.gameService.updateGameReady(id, loginRP);
+    return await this.gameService.updateGameReady(id, loginRP, nameRP);
   }
 
   @Delete(':id')

@@ -9,13 +9,31 @@ export class GameDTO {
 	
 	@IsOptional()
 	loginRP?: string;
+
+	@IsOptional()
+	nameLP?: string;
+	
+	@IsOptional()
+	nameRP?: string;
 	
 	@IsOptional()
 	scoreLP?: number;
 	
 	@IsOptional()
 	scoreRP?: number;
-	
+
+	@IsOptional()
+	compteur?: number = 10;
+
+	@IsOptional()
+	nbInter?: number = 0;
+
+	@IsOptional()
+	map?: number = 0;
+
+	@IsOptional()
+	state?: number = 0;
+
 	@IsOptional()
 	abort?: string;
 	
