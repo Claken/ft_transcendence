@@ -243,6 +243,21 @@
   background: #523b82;
 }
 
+.overlaycenter {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  width: 50%;
+  height: 50px;
+  border-radius: 0px 0px 0px 0px;
+  font-size: 20px;
+  cursor: pointer;
+  border: none;
+  color: white;
+  background: #523b82;
+}
+
 .overlayright {
   display: flex;
   justify-content: center;
@@ -263,6 +278,10 @@
 }
 
 .overlayright:hover {
+  opacity: 0.5;
+}
+
+.overlaycenter:hover {
   opacity: 0.5;
 }
 
