@@ -11,6 +11,6 @@ import { UsersEntity } from 'src/TypeOrm';
   providers: [GameGateway, GameService],
   controllers: [GameController],
   imports: [UsersModule, UsersEntity, TypeOrmModule.forFeature([Game])],
-  exports: [GameService], //TODO: delete ?
+  exports: [GameService],
 })
 export class GameModule {}

@@ -44,7 +44,7 @@ function Pong() {
 	});
 
 	socket.on("updateUser", (user) => {
-		if (user.name === auth.user.name)//TODO: remplacer name par login
+		if (user.name === auth.user.name)
 			auth.user = user;
 	})
 
@@ -68,10 +68,6 @@ function Pong() {
 		setWait(false);
 		socket.emit("leaveQueue", auth.user);
 	};
-
-	const DisplayGames = () => {
-		socket.emit("getCurrGames");
-	}
 
 	return (
 		<div>

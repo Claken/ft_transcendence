@@ -178,8 +178,6 @@ const Game = (
 		allPos.EmptyGround = EmptyGround;
 		allPos.mapLP = -1;
 		allPos.mapRP = -1;
-		/**************************************************************** */
-		//TODO: avoir les valeurs actuelles de la game
 		allPos.pLY = allPos.height / 2 - EmptyGround / 2; //placement en hauteur du paddle gauche
 		allPos.pRY = allPos.height / 2 - EmptyGround / 2; //placement en hauteur du paddle droit
 		allPos.ballX = (allPos.width / 2) - (allPos.ballW / 2); //placement en X de la balle
@@ -187,7 +185,6 @@ const Game = (
 		allPos.vx = -1; //vitesse en X de la balle
 		allPos.vy = -1; //vitesse en Y de la balle
 		allPos.speed = 2;
-		/**************************************************************** */
 		if (allPos.compteur === null)
 			socket.emit("setCompteur", gameId);
 		allPos.key = key;

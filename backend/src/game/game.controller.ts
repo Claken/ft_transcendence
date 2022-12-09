@@ -1,7 +1,6 @@
 import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
 import { Game } from 'src/TypeOrm/Entities/game.entity';
 import { GameDTO} from "../TypeOrm/DTOs/Game.dto"
-import { DeleteResult, UpdateResult } from 'typeorm';
 import { GameService } from './game.service';
 
 @Controller('game')
@@ -22,16 +21,6 @@ export class GameController {
   async getPendingGames(): Promise<Game[]> {
     return await this.gameService.getPendingGames();
   }
-
-//   @Get('loginLP/:loginLP')
-//   async getByloginLP(@Param('loginLP') loginLP: string): Promise<Game> {
-//     return await this.gameService.getByloginLP(loginLP);
-//   }
-
-//   @Get(':')
-//   async getCurrentGame(@Param('id') name: string): Promise<Game> {
-//     return await this.gameService.getCurrentGame(name);
-//   }
 
   @Get(':id')
   async getById(@Param('id') idToFind: number): Promise<Game> {

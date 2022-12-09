@@ -15,7 +15,6 @@ export interface ObjInterval {
 	gameId:		number,
 	intervalID:	NodeJS.Timer,
 }
-// export var tabIntervalId: ObjInterval[] = [];
 
 @WebSocketGateway({ cors: 'http://localhost:3000' })
 export class GameGateway
@@ -468,13 +467,5 @@ export class GameGateway
 			}
 		}
 	}
-  }
-
-  /* ***************************************************************************** */
-  /*                             affichage des game                                */
-  /* ***************************************************************************** */
-
-  @SubscribeMessage('getCurrGames')
-  async GetCurrGames(client: any, gameId: number) {
   }
 }

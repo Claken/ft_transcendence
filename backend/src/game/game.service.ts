@@ -2,8 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Game } from 'src/TypeOrm/Entities/game.entity';
 import { GameDTO } from '../TypeOrm/DTOs/Game.dto';
-
-import { DeleteResult, Repository, UpdateResult } from 'typeorm';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class GameService {
@@ -27,12 +26,6 @@ export class GameService {
       id: idToFind,
     });
   }
-
-//   async getByloginLP(loginLP: string): Promise<Game> {
-//     return await this.gameRepo.findOneBy({
-//       loginLP: loginLP,
-//     });
-//   }
 
   async getNbInter(id: number): Promise<number> {
     const game = await this.getById(id);
