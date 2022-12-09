@@ -25,6 +25,9 @@ const ProtoChat = () => {
   const [activeRoom, setActiveRoom] = useState<string>("");
 
   const [password, setPassword] = useState<string>("");
+  const [date, setDate] = useState<Date>(null);
+
+  const chatEndRef = useRef(null);
 
   const auth = useAuth();
 
@@ -108,19 +111,24 @@ const ProtoChat = () => {
   const userOptions = (name: string) => {
     const activeRoom = findActiveRoom();
     let time: number = 0;
-	if (!isAdminInActive(name) && window.confirm("Set this user as admin ?"))
-	{
-		socket?.emit("setUserAsAdmin", {name: name, channel: activeRoom.name});
-	}
-    if (window.confirm("Do you want to ban this user ?"))
-	{
-    	time = parseInt(prompt("insert the time in minute please :"));
-		socket?.emit("banMember", {name: name, channel: activeRoom.name, time: time});
+    if (!isAdminInActive(name) && window.confirm("Set this user as admin ?")) {
+      socket?.emit("setUserAsAdmin", { name: name, channel: activeRoom.name });
     }
-    if (window.confirm("Do you want to mute this user ?"))
-	{
-      	time = parseInt(prompt("insert the time in minute please :"));
-      	socket?.emit("muteMember", {name: name, channel: activeRoom.name,time: time});
+    if (window.confirm("Do you want to ban this user ?")) {
+      time = parseInt(prompt("insert the time in minute please :"));
+      socket?.emit("banMember", {
+        name: name,
+        channel: activeRoom.name,
+        time: time,
+      });
+    }
+    if (window.confirm("Do you want to mute this user ?")) {
+      time = parseInt(prompt("insert the time in minute please :"));
+      socket?.emit("muteMember", {
+        name: name,
+        channel: activeRoom.name,
+        time: time,
+      });
     }
   };
 
@@ -128,15 +136,15 @@ const ProtoChat = () => {
     console.log("BanStatus");
     let room = findRoom(member.channel);
     room.ban = member.status;
-    if (room.ban)
-	{
-    	alert("Congratulations, you are banned from " + member.channel);
-    	if (room.name === activeRoom)
-			setActiveForRoom("");
-    }
-	else
-	{
-      	alert("Congratulations, you are not banned from " + member.channel + " anymore");
+    if (room.ban) {
+      alert("Congratulations, you are banned from " + member.channel);
+      if (room.name === activeRoom) setActiveForRoom("");
+    } else {
+      alert(
+        "Congratulations, you are not banned from " +
+          member.channel +
+          " anymore"
+      );
     }
   };
 
@@ -151,32 +159,34 @@ const ProtoChat = () => {
       );
   };
 
-  const getListsForAChannel = (lists: {channel: string; usersList: any[]; adminsList: any[];banList: any[];}) => {
-	let room = findRoom(lists.channel);
+  const getListsForAChannel = (lists: {
+    channel: string;
+    usersList: any[];
+    adminsList: any[];
+    banList: any[];
+  }) => {
+    let room = findRoom(lists.channel);
     let newUsers: string[] = [];
     let newAdmins: string[] = [];
     let newBans: string[] = [];
-    if (lists.usersList.length > 0)
-	{
-      	lists.usersList.forEach((element: any) => {
-        	newUsers.push(element.user.name);
+    if (lists.usersList.length > 0) {
+      lists.usersList.forEach((element: any) => {
+        newUsers.push(element.user.name);
       });
     }
-	room.usersList = newUsers;
-    if (lists.adminsList.length > 0)
-	{
-      	lists.adminsList.forEach((element: any) => {
-        	newAdmins.push(element.user.name);
+    room.usersList = newUsers;
+    if (lists.adminsList.length > 0) {
+      lists.adminsList.forEach((element: any) => {
+        newAdmins.push(element.user.name);
       });
     }
-	room.adminsList = newAdmins;
-    if (lists.banList.length > 0)
-	{
+    room.adminsList = newAdmins;
+    if (lists.banList.length > 0) {
       lists.banList.forEach((element: any) => {
         newBans.push(element.user.name);
       });
     }
-	room.banList = newBans;
+    room.banList = newBans;
     // POUR RERENDER LA PAGE CAR ROOMS EST UN USESTATE, ET QUAND LE USESTATE EST MODIFIE CA RERENDER
     const roomsCopy = [...rooms];
     setRooms(roomsCopy);
@@ -185,17 +195,18 @@ const ProtoChat = () => {
   const sendChatMessage = (event: any) => {
     event.preventDefault();
     const activeRoom = findActiveRoom();
-    if (activeRoom.member && activeRoom.mute === false)
-	{
-      	socket?.emit("chatToServer", {sender: username, room: activeRoom.name, msg: text,});
-    }
-	else
-	{
-    	if (activeRoom.mute)
-			alert("you cannot talk in this room bitch !");
-      	else if (activeRoom.member === false)
-        	alert("you must be a member of the room bitch !");
-      	changeText("");
+    if (activeRoom.member && activeRoom.mute === false) {
+      socket?.emit("chatToServer", {
+        sender: username,
+        room: activeRoom.name,
+        msg: text,
+      });
+      // chatEndRef.current.scrollIntoView({ behavior: "smooth" });
+    } else {
+      if (activeRoom.mute) alert("you cannot talk in this room bitch !");
+      else if (activeRoom.member === false)
+        alert("you must be a member of the room bitch !");
+      changeText("");
     }
   };
 
@@ -213,23 +224,44 @@ const ProtoChat = () => {
     };
 
     rooms.forEach((element: IRoom) => {
-      if (element.name === obj.room) element.messages.push(theroom);
+      if (element.name === obj.room) {
+        element.messages.push(theroom);
+      }
     });
     const roomsCopy = [...rooms];
     setRooms(roomsCopy);
     changeText("");
+    chatEndRef.current.scrollIntoView({ behavior: "smooth" });
   };
 
   const addARoom = (event: any) => {
     event.preventDefault();
-    let askARoom: string = "";
-    while (askARoom === "") {
-      askARoom = prompt("Enter a name for your room: ")!;
-      if (askARoom === null) return;
-      if (askARoom === "") alert("This is not a right name for a room !");
+    let 	askARoom: string = "";
+	let 	typeOfRoom: number = -1;
+	let		pswd: string = null;
+    while (askARoom === "")
+	{
+    	askARoom = prompt("Enter a name for your room: ")!;
+    	if (askARoom === null)
+	  		return;
+    	if (askARoom === "")
+	  		alert("This is not a right name for a room !");
+		else if (findRoom(askARoom))
+		{
+			alert("This name is already taken. Try another one.");
+			askARoom = "";
+		}
     }
-    const pswd = prompt("Enter a password for your room if you want one: ");
-    const typeOfRoom = pswd === null ? type.public : type.protected;
+	while (typeOfRoom < 0 || typeOfRoom > 2)
+	{
+		let typeOfRoomInString = prompt("Do you want your room to be : (0) public, (1) private, or (2) protected ?");
+		typeOfRoom = parseInt(typeOfRoomInString);
+	}
+	if (typeOfRoom === type.protected)
+	{
+		while (pswd == null)
+			pswd = prompt("Enter a password for your protected room: ");
+	}
     const dbRoom: IChatRoom = {
       chatRoomName: askARoom,
       owner: username,
@@ -397,7 +429,10 @@ const ProtoChat = () => {
   };
   const updateChannelPassword = () => {
     const activeRoom = findActiveRoom();
-    if (activeRoom && activeRoom.owner === username && activeRoom.type === type.protected
+    if (
+      activeRoom &&
+      activeRoom.owner === username &&
+      activeRoom.type === type.protected
     )
       socket?.emit("updateChannelPassword", {
         room: activeRoom.name,
@@ -529,34 +564,68 @@ const ProtoChat = () => {
     };
   }, [updateMuteStatus]);
 
+  const sortedMessages = findActiveRoom().messages.sort((a, b) => {
+    // Compare the dates of the messages to determine their order
+    return new Date(a.date) - new Date(b.date);
+  });
+
   return (
     <div className="chat-container">
       <div className="left-side">
-        <ul>
+        <div className="rooms-list">
+		<ul>
           {rooms.map((room: any, id: number) => (
-            <li>
-              <button
-                onClick={() =>
-                  findRoom(room.name).ban
-                    ? alert("you are banned from this channel")
-                    : setActiveForRoom(room.name)
-                }
-              >
-                {room.name}
-              </button>
-            </li>
+				!(room.type === type.private && room.member === false) ?
+				<li>
+					<button onClick={() => findRoom(room.name).ban ? alert("you are banned from this channel") : setActiveForRoom(room.name)}>{room.name}</button>
+				</li>
+				: null
           ))}
         </ul>
-        <form onSubmit={addARoom}>
-          <button type="submit">
-            <strong>Add a room</strong>
-          </button>
-        </form>
-        <form onSubmit={deleteARoom}>
-          <button type="submit">
-            <strong>Delete a room</strong>
-          </button>
-        </form>
+        </div>
+        <div className="room-buttons">
+          <form onSubmit={addARoom}>
+            <button type="submit">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="icon icon-tabler icon-tabler-message-plus"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                strokeWidth="2"
+                stroke="currentColor"
+                fill="none"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                <path d="M4 21v-13a3 3 0 0 1 3 -3h10a3 3 0 0 1 3 3v6a3 3 0 0 1 -3 3h-9l-4 4"></path>
+                <line x1="10" y1="11" x2="14" y2="11"></line>
+                <line x1="12" y1="9" x2="12" y2="13"></line>
+              </svg>
+            </button>
+          </form>
+          <form onSubmit={deleteARoom}>
+            <button type="submit">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="icon icon-tabler icon-tabler-message-off"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                strokeWidth="2"
+                stroke="currentColor"
+                fill="none"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                <line x1="3" y1="3" x2="21" y2="21"></line>
+                <path d="M17 17h-9l-4 4v-13c0 -1.086 .577 -2.036 1.44 -2.563m3.561 -.437h8a3 3 0 0 1 3 3v6c0 .575 -.162 1.112 -.442 1.568"></path>
+              </svg>
+            </button>
+          </form>
+        </div>
       </div>
       <div className="middle">
         <div className="top-chat">
@@ -570,7 +639,7 @@ const ProtoChat = () => {
         <div className="chat-box">
           <ul>
             {findActiveRoom().member ? (
-              findActiveRoom().messages.map((msg: any, id: number) => (
+              sortedMessages.map((msg: any, id: number) => (
                 <div
                   className={
                     msg.sender == username
@@ -579,17 +648,18 @@ const ProtoChat = () => {
                   }
                 >
                   <li>
-                    <p>{msg.message}
-                    <br />
-                    - {msg.sender}</p>
-                    {msg.date} 
-                    {/* {msg.sender} */}
+                    <div className="sender-username">{msg.sender}</div>
+                    <p>{msg.message}</p>
+                    <div className="message-date">
+                      {msg.date.slice(0, 10) + " " + msg.date.slice(11, 16)}
+                    </div>
                   </li>
                 </div>
               ))
             ) : (
               <div></div>
             )}
+              <div ref={chatEndRef} />
           </ul>
         </div>
         <div className="chat-bottom">
@@ -625,9 +695,9 @@ const ProtoChat = () => {
         <br />
         {findActiveRoom().usersList ? (
           findActiveRoom().usersList.map((name: string) =>
-            isAdminInActive(username)
-            && name != username 
-            && name != findActiveRoom().owner ? (
+            isAdminInActive(username) &&
+            name != username &&
+            name != findActiveRoom().owner ? (
               <div>
                 <button onClick={() => userOptions(name)}>{name}</button>
               </div>
@@ -639,8 +709,11 @@ const ProtoChat = () => {
           <div></div>
         )}
         Admins :
-        {findActiveRoom().adminsList ? 
-          findActiveRoom().adminsList.map((name: string) => <div>{name}</div>) : (<div></div>)}
+        {findActiveRoom().adminsList ? (
+          findActiveRoom().adminsList.map((name: string) => <div>{name}</div>)
+        ) : (
+          <div></div>
+        )}
       </div>
     </div>
   );
