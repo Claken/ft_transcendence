@@ -39,7 +39,6 @@
   justify-content: center;
   gap: 10%;
 }
-
 .socialContainer .sortButtons button {
   display: inline-block;
   height: 100%;
@@ -52,7 +51,6 @@
   font-style: bold;
   width: 20%;
 }
-
 .socialContainer .sortButtons button:hover {
   display: inline-block;
   height: 100%;

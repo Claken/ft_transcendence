@@ -56,11 +56,13 @@
         margin: 2%;
       }
       li.active {
+        min-width: fit-content;
         background-color: whitesmoke;
         color: rgb(82, 59, 130);
       }
     
       li:hover {
+        min-width: fit-content;
         font-weight: bold;
         background-color: whitesmoke;
         color: rgb(82, 59, 130);
@@ -100,7 +102,8 @@
       }
   
       .userProfilePicture img {
-        height: 100%;
+        width:70px;
+        height: 70px;
         border-radius: 50%;
       }
     }

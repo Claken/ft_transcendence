@@ -11,7 +11,7 @@ function ButtonProfile() {
     <button className="btnprofile">
       <div className="btnprofile-left">{auth.user.name}</div>
       <div className="btnprofile-right">
-        <img className="profilePic" src={auth.user.pictureUrl} />
+        <img className="profilePic" src={auth.user.avatarUrl} />
       </div>
     </button>
   );

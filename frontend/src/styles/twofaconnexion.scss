@@ -1,0 +1,95 @@
+.twofa-connexion-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 50%;
+    height: fit-content;
+    margin: 2vh auto 5vh;
+
+    h1 {
+        margin-top: 3%;
+        text-align: center;
+        color: rgb(82, 59, 130);
+    }
+    h1 + p {
+        margin: 1vh auto;
+        font-size: 0.8em;
+        color: whitesmoke;
+    }
+
+    .twofa-connexion-box {
+        width: 80%;
+        // min-height: 55vh;
+        height: fit-content;
+        margin: 1vh auto;
+        border-radius: 20px;
+        border: 0.1em solid whitesmoke;
+        background: rgba(255, 255, 255, 0.05);
+        box-shadow: 0 0 4px 0 whitesmoke;
+
+        h2 {
+            margin: 7% auto;
+            width: 50%;
+            text-align: center;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            
+            p {
+                width: 85%;
+                height: 30%;
+                margin: 0 auto 2vh;
+                text-align: center;
+                font-size: 0.85em;
+            }
+
+            input {
+                display: block;
+                width: 90%;
+                height: 3.5em;
+                margin: 0 auto;
+                text-decoration: none;
+                border-radius: 25px;
+                text-align: center;
+                background: #3b3b3b;
+                color: whitesmoke;
+            }
+
+            .failMsg {
+                margin-top: 0.3em;
+                color:rgba(180, 0, 0, 1);
+                font-weight: bold;
+            }
+
+            .btnconfirm {
+                margin: 1.5em 0 2em;
+                width: 90%;
+                background: -moz-linear-gradient(
+                    90deg,
+                    rgba(82, 59, 130, 1) 0%,
+                    rgba(48, 34, 75, 1) 40%,
+                    rgba(82, 59, 130, 1) 100%
+                );
+                background: -webkit-linear-gradient(
+                    90deg,
+                    rgba(82, 59, 130, 1) 0%,
+                    rgba(48, 34, 75, 1) 40%,
+                    rgba(82, 59, 130, 1) 100%
+                );
+                background: linear-gradient(
+                    90deg,
+                    rgba(82, 59, 130, 1) 0%,
+                    rgba(48, 34, 75, 1) 40%,
+                    rgba(82, 59, 130, 1) 100%
+                );
+            }
+            .btnconfirm:hover {
+                box-shadow: 0 0 15px 0 whitesmoke;
+              }
+        }
+    }
+}

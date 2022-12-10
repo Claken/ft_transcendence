@@ -2,8 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Game } from 'src/TypeOrm/Entities/game.entity';
 import { GameDTO } from '../TypeOrm/DTOs/Game.dto';
-
-import { DeleteResult, Repository, UpdateResult } from 'typeorm';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class GameService {
@@ -28,10 +27,18 @@ export class GameService {
     });
   }
 
-  async getByloginLP(loginLP: string): Promise<Game> {
-    return await this.gameRepo.findOneBy({
-      loginLP: loginLP,
-    });
+  async getNbInter(id: number): Promise<number> {
+    const game = await this.getById(id);
+    return game.nbInter;
+  }
+
+  async getCurrentGame(login: string): Promise<Game> {
+    return await this.gameRepo.findOne({
+		where: [
+			{ loginLP: login, isFinish: false },
+			{ loginRP: login, isFinish: false },
+		],
+	})
   }
 
   async getPendingGames(): Promise<Game[]> {
@@ -42,18 +49,72 @@ export class GameService {
     });
   }
 
-  // async getLoginLPById(idToFind: number): Promise<string> {
-  //   const game = await this.gameRepo.findOneBy({
-  //     id: idToFind,
-  //   });
-  //   return game.loginLP;
-  // }
+  async getPendingGame(login: string): Promise<Game> {
+    return await this.gameRepo.findOne({
+		where: [
+			{loginLP: login, waitingForOppenent: true},
+			{loginRP: login, waitingForOppenent: true},
+		],
+    });
+  }
 
-  async updateGameReady(id: number, loginRP: string): Promise<Game> {
+  async gameFinished(id: number, scoreLP: number, scoreRP: number,
+	winner: string, loser: string, capitulator: string): Promise<Game> {
+    const game = await this.getById(id);
+    game.isFinish = true;
+	game.winner = winner;
+	game.loser = loser;
+	game.scoreLP = scoreLP;
+	game.scoreRP = scoreRP;
+	if (capitulator)
+		game.abort = capitulator;
+    return await this.gameRepo.save(game);
+  }
+
+  async updateGameReady(id: number, loginRP: string, nameRP: string): Promise<Game> {
     const game = await this.getById(id);
     game.waitingForOppenent = false;
     game.loginRP = loginRP;
+	game.nameRP = nameRP;
     return await this.gameRepo.save(game);
+  }
+  
+
+  async updateNbInterval(id: number): Promise<number> {
+    const game = await this.getById(id);
+	game.nbInter += 1;
+    await this.gameRepo.save(game);
+	return game.nbInter;
+  }
+
+  async updateCompteur(id: number, end: boolean): Promise<number> {
+	const game = await this.getById(id);
+	if (end)
+		game.compteur = 0;
+	else 
+		game.compteur--;
+	await this.gameRepo.save(game);
+	return game.compteur;
+  }
+
+  async updateMap(id: number, map: number): Promise<Game> {
+    const game = await this.getById(id);
+	game.map = map;
+	game.state = 2;
+	return await this.gameRepo.save(game);
+  }
+
+  async updateState(id: number, state: number): Promise<Game> {
+    const game = await this.getById(id);
+	game.state = state;
+	return await this.gameRepo.save(game);
+  }
+
+  async updateScore(id: number, scoreLP: number, scoreRP: number): Promise<Game> {
+    const game = await this.getById(id);
+	game.scoreLP = scoreLP;
+	game.scoreRP = scoreRP;
+	return await this.gameRepo.save(game);
   }
 
   async deleteGame(id: number): Promise<Game> {

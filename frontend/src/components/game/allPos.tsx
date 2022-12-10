@@ -17,13 +17,19 @@ const allPos = {
 	EmptyGround: null,
 	state: null,
 	key: null,
-	score: null,
+	score: 5,
 	speed: null,
 	compteur: 10,
 	img: null,
-	map: null,
-	loginLP: null,
-	loginRP: null,
+	mapLP: null,
+	mapRP: null,
+	map: 0,
+	nameLP: null,
+	nameRP: null,
+	gameId: null,
+	WinLoseL: [0, 0],
+	WinLoseR: [0, 0],
+	viewer: false,
 };
 
 export default allPos;

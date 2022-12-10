@@ -1,13 +1,15 @@
 import {
   Column,
-  CreateDateColumn,
   Entity,
-	ManyToOne,
+	OneToOne,
   OneToMany,
-	JoinTable,
-	JoinColumn,
   PrimaryGeneratedColumn,
+  JoinColumn,
+	CreateDateColumn
 } from 'typeorm';
+import { Avatar } from './avatar.entity';
+import { ChatRoomEntity } from './chat.entity';
+import { MemberEntity } from './member.entity';
 import { FriendRequestEntity } from './friendRequest.entity';
 import { FriendEntity } from './friend.entity';
 import { BlockUserEntity } from './blockUser.entity';
@@ -27,9 +29,6 @@ export class UsersEntity {
   @Column({ default: '' })
   email?: string;
 
-  @Column({ default: '' })
-  avatar?: string;
-
   @Column({ default: 'online' })
   status?: string;
 
@@ -43,16 +42,41 @@ export class UsersEntity {
   isTwoFAValidated?: boolean;
 
   @Column({ default: false })
-  inQueue: boolean;
+  inQueue?: boolean;
 
   @Column({ default: false })
-  inGame: boolean;
+  inGame?: boolean;
 
   @Column({ nullable: true, default: 0})
   win?: number;
 
   @Column({ nullable: true, default: 0})
   lose?: number;
+
+  @OneToMany(() => ChatRoomEntity, (Chat: ChatRoomEntity) => Chat.owner, {onDelete: 'SET NULL'})
+  @JoinColumn()
+  ownedChannels?: ChatRoomEntity[];
+
+  @Column({ default: false })
+  lastSocket?: string;
+
+  @Column({ nullable: true, default: 0 })
+  avatarId?: number;
+  
+  @OneToOne(() => Avatar, (avatar) => avatar.user, {
+    cascade: true
+  })
+  avatar?: Avatar;
+
+  @OneToMany(() => MemberEntity, (Member: MemberEntity) => Member.user, {onDelete: 'SET NULL'})
+  @JoinColumn()
+  memberships?: MemberEntity[];
+
+  // TODO: friends
+  // @OneToMany(() => UsersEntity, (friends) => friends.id, {
+  //   onDelete: 'SET NULL',
+  // })
+  // friends: UsersEntity[];
 
 	@OneToMany(() => FriendRequestEntity, (friendRequest: FriendRequestEntity) => friendRequest.sender && friendRequest.receiver)
 	@JoinColumn()

@@ -1,6 +1,8 @@
 import { Type } from 'class-transformer';
 import { IsOptional, Length } from 'class-validator';
 import { Request } from 'express';
+import { ChatRoomEntity } from '../Entities/chat.entity';
+import { Avatar } from '../Entities/avatar.entity';
 
 export class UserDTO {
   @IsOptional()
@@ -16,9 +18,6 @@ export class UserDTO {
   email?: string;
 
   @IsOptional()
-  avatar?: string;
-
-  @IsOptional()
   status?: string;
 
   @IsOptional()
@@ -31,19 +30,28 @@ export class UserDTO {
   isTwoFAValidated?: boolean;
 
   @IsOptional()
-  inQueue: boolean;
+  inQueue?: boolean = false;
 
   @IsOptional()
-  inGame: boolean;
+  inGame?: boolean;
+  
+  @IsOptional()
+  ownedChannels?: ChatRoomEntity[];
 
   @IsOptional()
-  createdAt?: Date;
+  lastSocket?: string;
 
   @IsOptional()
   win?: number;
 
   @IsOptional()
   lose?: number;
+
+  @IsOptional()
+  avatar?:Avatar;
+
+  @IsOptional()
+  avatarId?: number;
 }
 
 export interface TwoFAValidation {
@@ -52,11 +60,11 @@ export interface TwoFAValidation {
 }
 
 export interface RequestWithUser extends Request {
-  user?: UserDTO;
+  user: UserDTO;
 }
 
-export class TokenPayload {
-  user?: UserDTO;
-  isSecondFactorAuthenticated: boolean;
-}
+// export class TokenPayload {
+//   user?: UserDTO;
+//   isSecondFactorAuthenticated: boolean;
+// }
 

@@ -5,7 +5,6 @@ const RequiredAuth = () => {
 	const location = useLocation();
 	const { user } = useAuth();
 
-	console.log(JSON.stringify(user));
 	if (
 		user &&
 		(!user.isTwoFAEnabled || (user.isTwoFAEnabled && user.isTwoFAValidated))

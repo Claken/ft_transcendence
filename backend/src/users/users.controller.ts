@@ -18,8 +18,9 @@ export class UsersController {
 
   @Post()
   async create(@Body() post: UserDTO): Promise<UsersEntity> {
-    return await this.usersService.create(post);
+    return await this.usersService.create(post, null);
   }
+
   @Get()
   async findAllUsers(): Promise<UsersEntity[]> {
     return await this.usersService.findAllUsers();
