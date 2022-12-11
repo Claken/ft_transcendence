@@ -112,14 +112,6 @@ function FriendButton(props) {
               delete friend
             </button>
           </div>
-          <div className="overlaymiddle-friend">
-            <button
-              className="simplebtn"
-              onClick={() => inviteButton(props.user.name)}
-            >
-              invite
-            </button>
-          </div>
           <div className="overlayright-friend">
             <Link to={"/profile/" + props.user.name}>
               <button className="simplebtn">Profile</button>

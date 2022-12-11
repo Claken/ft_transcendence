@@ -43,7 +43,7 @@ const ProtoChat = () => {
       mute: false,
       owner: "",
       name: "",
-      type: type.public,
+      type: -1,
       messages: [],
     };
     rooms.forEach((element: IRoom) => {
@@ -444,6 +444,32 @@ const ProtoChat = () => {
       alert("You are not the owner of this channel !");
   };
 
+  const inviteToPrivate = () => {
+	socket?.emit('getFriendsList', username);
+  }
+
+  const askWhichFriend = (friends: any) => {
+	let friendName: string = null;
+	let nameFound: string = null;
+	if (friends.length === 0)
+		alert('you need at least one friend to invite in your room');
+	else
+	{
+		console.log(friends);
+		friendName = prompt('type the name of the friend ');
+		friends.find((friend: any) => {
+			if (friend.user.name === friendName)
+				nameFound = friend.user.name;
+		  });
+		if (nameFound === undefined || nameFound === null)
+			alert('friend not found, sorry');
+		else
+		{
+			
+		}
+	}
+  }
+
   /* ***************************************************************************** */
   /*    						Les différents UseEffets    						 */
   /* ***************************************************************************** */
@@ -564,6 +590,13 @@ const ProtoChat = () => {
     };
   }, [updateMuteStatus]);
 
+  useEffect(() => {
+    socket?.on("recvFriendsList", askWhichFriend);
+    return () => {
+      socket?.off("recvFriendsList", askWhichFriend);
+    };
+  }, [askWhichFriend]);
+
   const sortedMessages = findActiveRoom().messages.sort((a, b) => {
     // Compare the dates of the messages to determine their order
     return new Date(a.date) - new Date(b.date);
@@ -577,7 +610,9 @@ const ProtoChat = () => {
           {rooms.map((room: any, id: number) => (
 				!(room.type === type.private && room.member === false) ?
 				<li>
-					<button onClick={() => findRoom(room.name).ban ? alert("you are banned from this channel") : setActiveForRoom(room.name)}>{room.name}</button>
+					<button onClick={() => findRoom(room.name).ban ?
+						alert("you are banned from this channel")
+						: setActiveForRoom(room.name)}>{room.name}</button>
 				</li>
 				: null
           ))}
@@ -631,9 +666,8 @@ const ProtoChat = () => {
         <div className="top-chat">
           <p>Active room : {activeRoom} </p>
           {activeRoom !== "" ? "Status: " + joinStatus + " " : null}
-          {activeRoom !== "" ? (
-            <button onClick={toggleRoomMembership}>{joinButton}</button>
-          ) : null}
+          {activeRoom !== "" ? (<button onClick={toggleRoomMembership}>{joinButton}</button>) : null}
+          {findActiveRoom().type == type.private && findActiveRoom().owner == username ? (<button onClick={inviteToPrivate}>Invite a friend</button>) : null}
         </div>
 
         <div className="chat-box">
