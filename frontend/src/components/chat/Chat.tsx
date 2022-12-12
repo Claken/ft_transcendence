@@ -455,7 +455,6 @@ const ProtoChat = () => {
 		alert('you need at least one friend to invite in your room');
 	else
 	{
-		console.log(friends);
 		friendName = prompt('type the name of the friend ');
 		friends.find((friend: any) => {
 			if (friend.user.name === friendName)
@@ -465,7 +464,7 @@ const ProtoChat = () => {
 			alert('friend not found, sorry');
 		else
 		{
-			
+
 		}
 	}
   }

@@ -13,6 +13,7 @@ import { MemberEntity } from './member.entity';
 import { FriendRequestEntity } from './friendRequest.entity';
 import { FriendEntity } from './friend.entity';
 import { BlockUserEntity } from './blockUser.entity';
+import { PrivateRoomInviteEntity } from './privateRoomInvite'
 
 // Table in the DB
 @Entity('Users')
@@ -72,15 +73,13 @@ export class UsersEntity {
   @JoinColumn()
   memberships?: MemberEntity[];
 
-  // TODO: friends
-  // @OneToMany(() => UsersEntity, (friends) => friends.id, {
-  //   onDelete: 'SET NULL',
-  // })
-  // friends: UsersEntity[];
-
 	@OneToMany(() => FriendRequestEntity, (friendRequest: FriendRequestEntity) => friendRequest.sender && friendRequest.receiver)
 	@JoinColumn()
 	friendRequests: FriendRequestEntity[];
+
+  @OneToMany(() => PrivateRoomInviteEntity, (privateInvite: PrivateRoomInviteEntity) => privateInvite.sender && privateInvite.receiver)
+	@JoinColumn()
+	privateRoomInvites: PrivateRoomInviteEntity[];
 
 	@OneToMany(() => FriendEntity, (friend: FriendEntity) => friend.friendOf)
 	@JoinColumn()

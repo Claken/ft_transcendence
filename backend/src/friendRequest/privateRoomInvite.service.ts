@@ -10,8 +10,19 @@ export class PrivateRoomInviteService {
 		private readonly prInviteRepo: Repository<PrivateRoomInviteEntity>,
 	) {}
 
-	async getAllPrivateInvites(): Promise<PrivateRoomInviteEntity[]> {
-		return await this.prInviteRepo.find({relations: ['sender', 'receiver']});		
+	async getAllPrInvites(): Promise<PrivateRoomInviteEntity[]> {
+		return await this.prInviteRepo.find({relations: ['sender', 'receiver']});
+	}
+
+	async getPrInvitesFromOne(id: number): Promise<PrivateRoomInviteEntity[]>
+	{
+		return await this.prInviteRepo.find({relations: ['sender', 'receiver'], where: [{ receiver: { id: id }},]});
+	}
+
+	async getPrInviteByUsersId(senderId: number, receiverId: number): Promise<PrivateRoomInviteEntity> {
+		return await this.prInviteRepo.findOne({
+			relations: ['sender', 'receiver',], where: [{ sender: { id: senderId }, receiver: { id: receiverId }}]
+		});
 	}
 
 	async postPrInvite(prInvite: IPInvite): Promise<PrivateRoomInviteEntity>
@@ -20,7 +31,16 @@ export class PrivateRoomInviteService {
 		return await this.prInviteRepo.save(newPrInvite);
 	}
 
-	async deleteInvite(toDelete: PrivateRoomInviteEntity): Promise<void>
+	async alreadyExist(senderId: number, receiverId: number): Promise<PrivateRoomInviteEntity>
+	{
+		return await this.prInviteRepo.findOne({relations: ['sender','receiver'], where: [
+				{ sender: { id: senderId }, receiver: { id: receiverId }},
+				{ sender: { id: receiverId }, receiver: { id: senderId }},
+			]
+		});
+	}
+
+	async deletePrInvite(toDelete: PrivateRoomInviteEntity): Promise<void>
 	{
 		await this.prInviteRepo.remove(toDelete);
 	}

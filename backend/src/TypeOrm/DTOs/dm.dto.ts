@@ -1,16 +1,22 @@
-import { IsOptional } from 'class-validator';
+import { IsOptional, IsString, IsNumber, IsBoolean } from 'class-validator';
 
 export class DmDto {
-	@IsOptional()
-	id: number;
+	
+@IsOptional()
+@IsNumber()
+id: number;
 
-  sender: string;
+@IsString()
+sender: string;
 
-  receiver: string;
+@IsString()
+receiver: string;
 
-	@IsOptional()
-  message: string;
+@IsOptional()
+@IsString()
+message: string;
 
-	@IsOptional()
-	read: boolean;
+@IsOptional()
+@IsBoolean()
+read: boolean;
 }

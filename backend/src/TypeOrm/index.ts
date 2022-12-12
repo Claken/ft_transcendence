@@ -8,7 +8,8 @@ import { Avatar } from "./Entities/avatar.entity";
 import { FriendRequestEntity } from "./Entities/friendRequest.entity";
 import { FriendEntity } from "./Entities/friend.entity";
 import { BlockUserEntity } from "./Entities/blockUser.entity";
+import { PrivateRoomInviteEntity } from "./Entities/privateRoomInvite";
 
-export const entities = [ UsersEntity, DmEntity, Game, ChatRoomEntity, MemberEntity, MessageEntity, Avatar, FriendRequestEntity, FriendEntity, BlockUserEntity];
+export const entities = [ UsersEntity, DmEntity, Game, ChatRoomEntity, MemberEntity, MessageEntity, Avatar, FriendRequestEntity, FriendEntity, BlockUserEntity, PrivateRoomInviteEntity];
 
-export { UsersEntity, DmEntity, Game, ChatRoomEntity, MemberEntity, MessageEntity, Avatar, FriendRequestEntity, FriendEntity, BlockUserEntity };
+export { UsersEntity, DmEntity, Game, ChatRoomEntity, MemberEntity, MessageEntity, Avatar, FriendRequestEntity, FriendEntity, BlockUserEntity, PrivateRoomInviteEntity };
