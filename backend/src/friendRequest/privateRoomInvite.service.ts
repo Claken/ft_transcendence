@@ -31,11 +31,12 @@ export class PrivateRoomInviteService {
 		return await this.prInviteRepo.save(newPrInvite);
 	}
 
-	async alreadyExist(senderId: number, receiverId: number): Promise<PrivateRoomInviteEntity>
+	async alreadyExist(senderId: number, receiverId: number, channel: string): Promise<PrivateRoomInviteEntity>
 	{
 		return await this.prInviteRepo.findOne({relations: ['sender','receiver'], where: [
 				{ sender: { id: senderId }, receiver: { id: receiverId }},
 				{ sender: { id: receiverId }, receiver: { id: senderId }},
+				{ privateRoom: channel}
 			]
 		});
 	}

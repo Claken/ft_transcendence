@@ -10,6 +10,9 @@ import { IFriendRequest } from 'src/TypeOrm/Entities/friendRequest.entity';
 import { UsersService } from 'src/users/users.service';
 import { FriendRequestService } from './friendRequest.service';
 import { PrivateRoomInviteService } from './privateRoomInvite.service'
+import { PrivateRoomInviteEntity, IPInvite } from 'src/TypeOrm/Entities/privateRoomInvite';
+import { OnEvent } from '@nestjs/event-emitter';
+
 
 @WebSocketGateway({ cors: '*:*' })
 export class FriendRequestGateway {
@@ -37,23 +40,22 @@ export class FriendRequestGateway {
 		}
 	}
 
-	@SubscribeMessage('sendPrivateRoomInvite')
+	@OnEvent('sendPrivateRoomInvite')
 	async postPrInvite(@MessageBody() request: DmDto)
 	{
 		const sender = await this.usersService.getByNameWithRelations(request.sender);
 		const receiver = await this.usersService.getByNameWithRelations(request.receiver);
-		if (!await this.prInviteService.alreadyExist(sender.id, receiver.id))
+		if (!await this.prInviteService.alreadyExist(sender.id, receiver.id, request.message))
 		{
-			const inviteCreated = await this.prInviteService.postPrInvite({sender, receiver});
+			const inviteCreated = await this.prInviteService.postPrInvite({sender: sender, receiver: receiver, privateRoom: request.message});
 			sender.privateRoomInvites.push(inviteCreated);
 			await this.usersService.updateUser(sender.id);
 			receiver.privateRoomInvites.push(inviteCreated);
 			await this.usersService.updateUser(receiver.id);
 			this.dmService.dmUsers.find(user =>
-				user.name === request.receiver).socket.emit('recvPrivateRoomInvite', request.sender);
+				user.name === request.receiver).socket.emit('recvPrivateRoomInvite');
 		}
 	}
-
 
 	@SubscribeMessage('accept_friendRequest')
   async acceptFriendRequest(@MessageBody() request: DmDto) {

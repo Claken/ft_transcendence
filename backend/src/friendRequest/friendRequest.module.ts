@@ -8,10 +8,11 @@ import { UsersModule } from 'src/users/users.module';
 import { DmModule } from 'src/dm/dm.module';
 import { FriendEntity, PrivateRoomInviteEntity } from 'src/TypeOrm';
 import { PrivateRoomInviteService } from './privateRoomInvite.service';
+import { PrivateRoomInviteController } from './privateRoomInvite.controller';
 
 @Module({
 	imports: [TypeOrmModule.forFeature([FriendRequestEntity, FriendEntity, PrivateRoomInviteEntity]), UsersModule, DmModule],
-  controllers: [FriendRequestController],
+  controllers: [FriendRequestController, PrivateRoomInviteController],
   providers: [FriendRequestService, FriendRequestGateway, PrivateRoomInviteService],
 	exports: [FriendRequestService],
 })

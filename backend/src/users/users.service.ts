@@ -47,6 +47,7 @@ export class UsersService {
   async findAllUsers(): Promise<UsersEntity[]> {
     return await this.userRepo.find({relations: ['ownedChannels', 'memberships', 'memberships.inChannel',
     'friendRequests', 'friends', 'friends.user',
+    'privateRoomInvites',
     'blockUsers', 'blockUsers.user', 'blockBys', 'blockBys.user']});
   }
 
@@ -78,6 +79,7 @@ export class UsersService {
     return await this.userRepo.findOne({
       where: { name: nameToFind }, relations: ['ownedChannels', 'memberships', 'memberships.inChannel',
       'friendRequests', 'friends', 'friends.user',
+      'privateRoomInvites',
       'blockUsers', 'blockUsers.user', 'blockBys', 'blockBys.user']
     });
   }
@@ -86,6 +88,7 @@ export class UsersService {
     return await this.userRepo.findOne({
       where: { id: idToFind }, relations: ['ownedChannels', 'memberships', 'memberships.inChannel',
       'friendRequests', 'friends', 'friends.user',
+      'privateRoomInvites',
       'blockUsers', 'blockUsers.user', 'blockBys', 'blockBys.user']
     });
   }

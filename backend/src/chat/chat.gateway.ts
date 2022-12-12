@@ -15,6 +15,8 @@ import { type } from 'src/exports/enum';
 import * as bcrypt from 'bcrypt';
 import { DeepPartial } from 'typeorm';
 import { OnEvent } from '@nestjs/event-emitter';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import { DmDto } from 'src/TypeOrm/DTOs/dm.dto';
 
 // {cors: '*'} pour que chaque client dans le frontend puisse se connecter à notre gateway
 @WebSocketGateway({cors: '*'}) // decorator pour dire que la classe ChatGateway sera un gateway /
@@ -23,7 +25,8 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 	constructor(private chatService: ChatService,
 		private usersService: UsersService,
 		private memberService: MemberService,
-		private messageService: MessageService) {}
+		private messageService: MessageService,
+		private eventEmitter: EventEmitter2) {}
 
 	private logger: Logger = new Logger('ChatGateway');
 	private	users = {};
@@ -350,5 +353,16 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 	{
 		const user =  await this.usersService.getByNameWithRelations(username);
 		client.emit('recvFriendsList', user.friends);
+	}
+
+	@SubscribeMessage('emitForAnPrInvite')
+	emitForAnPrInvite(client: Socket, infos: {sender: string, receiver: string, channel: string})
+	{
+		const invite = {
+			sender: infos.sender,
+			receiver: infos.receiver,
+			message: infos.channel
+		}
+		this.eventEmitter.emit('sendPrivateRoomInvite', invite);
 	}
 }

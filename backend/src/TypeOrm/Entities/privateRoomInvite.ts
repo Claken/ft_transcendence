@@ -10,6 +10,9 @@ import {
   export class PrivateRoomInviteEntity {
 	  @PrimaryGeneratedColumn()
 	  id: number;
+
+	  @Column({default: ""})
+	  privateRoom?: string;
   
 	  @ManyToOne(() => UsersEntity, (user: UsersEntity) => user.privateRoomInvites)
 	  sender: UsersEntity;
@@ -20,6 +23,8 @@ import {
   
   export interface IPInvite {
 	  id?: number;
+	  privateRoom?: string;
 	  sender: UsersEntity;
 	  receiver: UsersEntity;
+
   }

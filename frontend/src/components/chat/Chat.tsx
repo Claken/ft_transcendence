@@ -464,7 +464,7 @@ const ProtoChat = () => {
 			alert('friend not found, sorry');
 		else
 		{
-
+			socket?.emit('emitForAnPrInvite', {sender: username, receiver: nameFound, channel: findActiveRoom().name});
 		}
 	}
   }
