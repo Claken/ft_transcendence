@@ -90,4 +90,10 @@ export class FriendRequestGateway {
 		this.dmService.dmUsers.find(user => user.name === request.sender).socket.emit('delete_friend', request.receiver);
 		this.dmService.dmUsers.find(user => user.name === request.receiver).socket.emit('delete_friend', request.sender);
 	}
+
+	// @SubscribeMessage('sendPrivateRoomInvite')
+
+	// @SubscribeMessage('refusePrivateRoomInvite')
+
+	// @SubscribeMessage('acceptPrivateRoomInvite')
 }
