@@ -9,6 +9,7 @@ import { IFriend } from 'src/TypeOrm/Entities/friend.entity';
 import { IFriendRequest } from 'src/TypeOrm/Entities/friendRequest.entity';
 import { UsersService } from 'src/users/users.service';
 import { FriendRequestService } from './friendRequest.service';
+import { OnEvent } from '@nestjs/event-emitter';
 
 @WebSocketGateway({ cors: '*:*' })
 export class FriendRequestGateway {
@@ -73,8 +74,9 @@ export class FriendRequestGateway {
 		this.dmService.dmUsers.find(user => user.name === request.receiver).socket.emit('refuse_friendRequest');
 	}
 
+	@OnEvent('delete_friend')
 	@SubscribeMessage('delete_friend')
-	async deleteFriend(@MessageBody() request: DmDto) {
+	async deleteFriend(@MessageBody() request: DmDto): Promise<void> {
 		const sender = this.usersService.getByNameWithRelations(request.sender);
 		const receiver = this.usersService.getByNameWithRelations(request.receiver);
 		const senderFriend = (await sender).friends.find(friend => friend.user.name === request.receiver);
@@ -89,5 +91,6 @@ export class FriendRequestGateway {
 		await this.usersService.save(receiver);
 		this.dmService.dmUsers.find(user => user.name === request.sender).socket.emit('delete_friend');
 		this.dmService.dmUsers.find(user => user.name === request.receiver).socket.emit('delete_friend');
+		console.log("delete friend");
 	}
 }

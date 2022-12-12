@@ -6,13 +6,11 @@ import { useDm } from "../../contexts/DmContext";
 import { Dm } from "../../interfaces/dm.interface";
 import "../../styles/dmchat.css";
 import UserNotFound from "../social/UserNotFound";
-// import { useChat } from "../../contexts/ChatContext";
 
 function DmUserButton(props) {
   const dmContext = useDm();
   const [dropDown, setDropDown] = useState(false);
   const [notifications, setNotifications] = useState<number>(0);
-  // const chat = useChat();
 
   const haveNotifications = () => {
     if (notifications > 0) return true;
@@ -31,6 +29,20 @@ function DmUserButton(props) {
     dmContext.socket.emit("send_friendRequest", {
       sender,
       receiver,
+    });
+  };
+
+  const blockUser = (sender: number, blocked: number) => {
+    dmContext.socket.emit("block_user", {
+      sender,
+      blocked,
+    });
+  };
+
+  const deblockUser = (sender: number, blocked: number) => {
+    dmContext.socket.emit("deblock_user", {
+      sender,
+      blocked,
     });
   };
 
@@ -61,11 +73,6 @@ function DmUserButton(props) {
     };
   }, [incrementNotifications]);
 
-  // const inviteButton = () => {
-  // console.log(props.user);
-  // console.log(chat.me);
-  // }
-
   return (
     <li key={props.user.id}>
       <div
@@ -75,30 +82,34 @@ function DmUserButton(props) {
       >
         <div className="btnuser">
           <div className="nameuser">{props.user.name}</div>
-          {haveNotifications() && (
+          {(haveNotifications() && (
             <div className="notifications">{notifications} new message(s)</div>
-          )}
-					<div className="overlayup">
-          	<div className="overlayupleft">Messages</div>
-						<div className="overlayupright">Profile</div>
-					</div>
-					<div className="boxtourne">
-          	{(!dropDown && <img src={Rouage} className="tourne"></img>) || (
-          	  <img src={Rouage} className="tourne tourneanim"></img>
-          	)}
-					</div>
+          )) || <div className="notifications"></div>}
+          <div className="overlayup">
+            <div className="overlayupleft">
+              <Link to="/channel">
+                <button
+                  className="simplebtn"
+                  onClick={() => dmContext.changeTarget(props.user)}
+                >
+                  Messages
+                </button>
+              </Link>
+            </div>
+            <div className="overlayupright">
+              <Link to={"/profile/" + props.user.name}>
+                <button className="simplebtn">Profile</button>
+              </Link>
+            </div>
+          </div>
+          <div className="boxtourne">
+            {(!dropDown && <img src={Rouage} className="tourne"></img>) || (
+              <img src={Rouage} className="tourne tourneanim"></img>
+            )}
+          </div>
         </div>
         <div className="overlay">
-          <div className="overlayleft">
-            <Link to="/channel">
-              <button
-                className="simplebtn"
-                onClick={() => dmContext.changeTarget(props.user)}
-              >
-                Messages
-              </button>
-            </Link>
-          </div>
+          <div className="overlayleft">empty</div>
           <div className="overlaymiddle">
             <button
               className="simplebtn"
@@ -106,13 +117,27 @@ function DmUserButton(props) {
                 postRequestFriend(dmContext.me.name, props.user.name)
               }
             >
-              add friend
+              Add friend
             </button>
           </div>
           <div className="overlayright">
-            <Link to={"/profile/" + props.user.name}>
-              <button className="simplebtn">Profile</button>
-            </Link>
+            {(dmContext.blockUsers.findIndex(
+              (blockUser) => blockUser.id === props.user.id
+            ) === -1 && (
+              <button
+                className="simplebtn"
+                onClick={() => blockUser(dmContext.me.id, props.user.id)}
+              >
+                Block user
+              </button>
+            )) || (
+              <button
+                className="simplebtn"
+                onClick={() => deblockUser(dmContext.me.id, props.user.id)}
+              >
+                Deblock user
+              </button>
+            )}
           </div>
         </div>
       </div>

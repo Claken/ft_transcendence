@@ -29,7 +29,7 @@ export class BlockUserService {
 		const listBys: UsersEntity[] = [];
 		const user = (await this.usersService.getByNameWithRelations(name));
 		if (user && user.blockBys) {
-			user.blockBys.map(async blockBy => listBys.push(blockBy.user));
+			user.blockBys.map(async blockBy => listBys.push(blockBy.blockBy));
 			return listBys;
 		}
 		else

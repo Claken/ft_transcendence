@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import io, { Socket } from "socket.io-client";
 import { IUser } from "../interfaces/user.interface";
+import axios from "../axios.config";
 import { useAuth } from "./AuthContext";
 
 const DmContext = React.createContext(null);
@@ -12,11 +13,40 @@ export const DmProvider = ({ children }) => {
   const [me, setMe] = useState<IUser>(auth.user);
   const [socket, setSocket] = useState<Socket>(null);
   const [loading, setLoading] = useState<boolean>(false);  
-	const [friendNotif, setFriendNotif] = useState(false);
+	const [friendNotif, setFriendNotif] = useState<boolean>(false);
+  const [blockUsers, setBlockUsers] = useState<IUser[]>([])
+  const [blockBys, setBlockBys] = useState<IUser[]>([])
 
   const sendFriendRequest = () => {
     setFriendNotif(true);
   };
+
+  const getBlockUsers = async () => {
+    await axios
+    .get(`/blockUser/${DmContext.me.name}/blockUsers`)
+    .then((res) => {
+      setBlockUsers(res.data);
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+  };
+
+  const getBlockBys = async () => {
+    await axios
+    .get(`/blockUser/${DmContext.me.name}/blockBys`)
+    .then((res) => {
+      setBlockBys(res.data);
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+  };
+
+  const blockRefresh = () => {
+    getBlockUsers();
+    getBlockBys();
+  }
 
   useEffect(() => {
     socket?.on("send_friendRequest", sendFriendRequest);
@@ -24,6 +54,20 @@ export const DmProvider = ({ children }) => {
       socket?.off("send_friendRequest", sendFriendRequest);
     };
   }, [sendFriendRequest]);
+
+  useEffect(() => {
+    socket?.on("block_user", blockRefresh);
+    return () => {
+      socket?.off("block_user", blockRefresh);
+    };
+  }, [blockRefresh]);
+
+  useEffect(() => {
+    socket?.on("deblock_user", blockRefresh);
+    return () => {
+      socket?.off("deblock_user", blockRefresh);
+    };
+  }, [blockRefresh]);
 
   useEffect(() => {
     setMe(auth.user);
@@ -62,6 +106,8 @@ export const DmProvider = ({ children }) => {
         changeTarget,
 				friendNotif,
 				setFriendNotif,
+        blockUsers,
+        blockBys,
       }}
     >
       {children}

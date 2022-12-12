@@ -40,27 +40,20 @@ function DmList() {
     getFriends();
   }, []);
 
-  const acceptFriendRequest = (name: string) => {
+  const acceptFriendRequest = () => {
     getUsers();
-    let i = users.findIndex((user) => user.name === name);
-    if (i > -1) users.splice(i, 1);
     getFriends();
-		i = friends.findIndex(
-      (friend) => friend.name === name
-    );
-    if (i > -1) friends.splice(i, 1);
   };
 
-  const deleteFriend = (name: string) => {
+  const deleteFriend = () => {
     getUsers();
-    let i = users.findIndex((user) => user.name === name);
-    if (i > -1) users.splice(i, 1);
     getFriends();
-		i = friends.findIndex(
-      (friend) => friend.name === name
-    );
-    if (i > -1) friends.splice(i, 1);
   };
+
+  const blockRefresh = () => {
+    getUsers();
+    getFriends();
+  }
 
   useEffect(() => {
     dmContext.socket?.on("accept_friendRequest", acceptFriendRequest);
@@ -75,6 +68,20 @@ function DmList() {
       dmContext.socket?.off("delete_friend", deleteFriend);
     };
   }, [deleteFriend]);
+
+  useEffect(() => {
+    dmContext.socket?.on("block_user", blockRefresh);
+    return () => {
+      dmContext.socket?.off("block_user", blockRefresh);
+    };
+  }, [blockRefresh]);
+
+  useEffect(() => {
+    dmContext.socket?.on("deblock_user", blockRefresh);
+    return () => {
+      dmContext.socket?.off("deblock_user", blockRefresh);
+    };
+  }, [blockRefresh]);
 
   const isMe = (id): boolean => {
     if (id === dmContext.me.id) return true;

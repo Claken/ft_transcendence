@@ -11,7 +11,7 @@ import "../../styles/friend.css";
 function FriendButton(props) {
   const dmContext = useDm();
   const [dropDown, setDropDown] = useState(false);
-	const [notifications, setNotifications] = useState<number>(0);
+  const [notifications, setNotifications] = useState<number>(0);
 
   const haveNotifications = () => {
     if (notifications > 0) return true;
@@ -49,16 +49,16 @@ function FriendButton(props) {
       });
   };
 
-	const incrementNotifications = (dm: Dm) => {
-		if (dm.sender === props.user.name && dm.receiver === dmContext.me.name)
-			setNotifications(notifications + 1);
-	}
+  const incrementNotifications = (dm: Dm) => {
+    if (dm.sender === props.user.name && dm.receiver === dmContext.me.name)
+      setNotifications(notifications + 1);
+  };
 
   useEffect(() => {
     getNotifications();
   }, []);
 
-	useEffect(() => {
+  useEffect(() => {
     dmContext.socket?.on("message_dm", incrementNotifications);
     return () => {
       dmContext.socket?.off("message_dm", incrementNotifications);
@@ -67,27 +67,25 @@ function FriendButton(props) {
 
   return (
     <li key={props.user.id}>
-      <div className="btnbody">
-        <button
-          className="btnuser"
-          onMouseEnter={onMouseEnter}
-          onMouseLeave={onMouseLeave}
-        >
+      <div
+        className="btnbody"
+        onMouseEnter={onMouseEnter}
+        onMouseLeave={onMouseLeave}
+      >
+        <div className="btnuser">
           {isConnect(props.user) ? (
             <div className="cercleconnect">{props.user.name}</div>
           ) : (
             <div className="cercledisconnect">{props.user.name}</div>
           )}
-          {haveNotifications() && <div className="notifications">{notifications} new message(s)</div>}
+          {haveNotifications() && (
+            <div className="notifications">{notifications} new message(s)</div>
+          )}
           {(!dropDown && <img src={Rouage} className="tourne"></img>) || (
             <img src={Rouage} className="tourne tourneanim"></img>
           )}
-        </button>
-        <div
-          className="overlay"
-          onMouseEnter={onMouseEnter}
-          onMouseLeave={onMouseLeave}
-        >
+        </div>
+        <div className="overlay">
           <div className="overlayleft-friend">
             <Link to="/channel">
               <button

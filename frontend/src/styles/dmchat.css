@@ -7,17 +7,6 @@
   font-family: "Lucida Sans";
 }
 
-.nameuser {
-  display: flex;
-  width: 26%;
-  height: 50px;
-  font-size: 25px;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-  font-family: "Lucida Sans";
-}
-
 .cercleconnect {
   display: flex;
   width: 150px;
@@ -210,7 +199,30 @@
   background: #523b82;
 }
 
-.boxtourn {
+.nameuser {
+  display: flex;
+  width: 15%;
+  height: 50px;
+  font-size: 25px;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  font-family: "Lucida Sans";
+}
+
+.notifications {
+  display: flex;
+	width: 27%;
+  height: 50px;
+	justify-content: center;
+  align-items: center;
+  text-align: center;
+	background: transparent;
+	color: rgb(160, 76, 220);
+	font-family: "Lucida Sans";
+}
+
+.boxtourne {
 	width: 8%;
 	height: 50px;
 	display: flex;
@@ -223,7 +235,7 @@
   margin-left: auto;
   margin-top: auto;
   margin-bottom: auto;
-  margin-right: 5%;
+  margin-right: auto;
   width: 30px;
   height: 30px;
 }
@@ -243,7 +255,7 @@
 }
 
 .overlayup {
-	width: 66%;
+	width: 50%;
 	height: 50px;
   display: flex;
   flex-direction: row;
@@ -381,17 +393,6 @@
 
 .btnsend:hover {
   opacity: 0.5;
-}
-
-.notifications {
-	width: 30%;
-  height: 50px;
-	justify-content: center;
-  align-items: center;
-  text-align: center;
-	background: transparent;
-	color: rgb(160, 76, 220);
-	font-family: "Lucida Sans";
 }
 
 .simplebtn {

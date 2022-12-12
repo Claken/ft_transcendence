@@ -34,22 +34,26 @@ function Friend() {
       });
   };
 
-  const sendFriendRequest = (name: string) => {
+  const sendFriendRequest = () => {
     getFriendRequests();
   };
 
-  const acceptFriendRequest = (name: string) => {
+  const acceptFriendRequest = () => {
     getFriendRequests();
     getFriends();
   };
 
-  const refuseFriendRequest = (name: string) => {
+  const refuseFriendRequest = () => {
     getFriendRequests();
   };
 
-  const deleteFriend = (name: string) => {
+  const deleteFriend = () => {
     getFriends();
   };
+
+  const blockUserRefresh = () => {
+    getFriends();
+  }
 
   useEffect(() => {
     getFriendRequests();
@@ -83,6 +87,20 @@ function Friend() {
       dmContext.socket?.off("delete_friend", deleteFriend);
     };
   }, [deleteFriend]);
+
+  useEffect(() => {
+    dmContext.socket?.on("block_user", blockUserRefresh);
+    return () => {
+      dmContext.socket?.off("block_user", blockUserRefresh);
+    };
+  }, [blockUserRefresh]);
+
+  useEffect(() => {
+    dmContext.socket?.on("deblock_user", blockUserRefresh);
+    return () => {
+      dmContext.socket?.off("deblock_user", blockUserRefresh);
+    };
+  }, [blockUserRefresh]);
 
   return (
     <ul className="friend-list">
