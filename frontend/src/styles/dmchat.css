@@ -9,7 +9,7 @@
 
 .nameuser {
   display: flex;
-  width: 150px;
+  width: 26%;
   height: 50px;
   font-size: 25px;
   justify-content: center;
@@ -189,6 +189,7 @@
   height: 50px;
   border-radius: 75px 75px 75px 75px;
   overflow: hidden;
+	border: none;
   background: transparent;
   transition: height 1s;
 }
@@ -205,10 +206,17 @@
   height: 50px;
   border-radius: 75px 75px 75px 75px;
   font-size: 20px;
-  cursor: pointer;
-  border: none;
   color: white;
   background: #523b82;
+}
+
+.boxtourn {
+	width: 8%;
+	height: 50px;
+	display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
 }
 
 .tourne {
@@ -234,6 +242,47 @@
   }
 }
 
+.overlayup {
+	width: 66%;
+	height: 50px;
+  display: flex;
+  flex-direction: row;
+}
+
+.overlayupleft {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  width: 50%;
+  height: 50px;
+  border-radius: 75px 0px 0px 75px;
+  font-size: 20px;
+  cursor: pointer;
+  border: none;
+  color: white;
+  background: #523b82;
+  overflow: hidden;
+	font-family: "Lucida Sans";
+}
+
+.overlayupright {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  width: 50%;
+  height: 50px;
+  border-radius: 0px 75px 75px 0px;
+  font-size: 20px;
+  cursor: pointer;
+  border: none;
+  color: white;
+  background: #523b82;
+  overflow: hidden;
+	font-family: "Lucida Sans";
+}
+
 .overlay {
   width: 100%;
   display: flex;
@@ -254,6 +303,7 @@
   color: white;
   background: #523b82;
   overflow: hidden;
+	font-family: "Lucida Sans";
 }
 
 .overlaymiddle {
@@ -269,21 +319,7 @@
   color: white;
   background: #523b82;
   overflow: hidden;
-}
-
-.overlaycenter {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-  width: 50%;
-  height: 50px;
-  border-radius: 0px 0px 0px 0px;
-  font-size: 20px;
-  cursor: pointer;
-  border: none;
-  color: white;
-  background: #523b82;
+	font-family: "Lucida Sans";
 }
 
 .overlayright {
@@ -300,6 +336,7 @@
   color: white;
   background: #523b82;
   overflow: hidden;
+	font-family: "Lucida Sans";
 }
 
 .overlaycenter:hover {
@@ -347,8 +384,8 @@
 }
 
 .notifications {
-  margin-top: auto;
-  margin-bottom: auto;
+	width: 30%;
+  height: 50px;
 	justify-content: center;
   align-items: center;
   text-align: center;

@@ -53,8 +53,8 @@ export class FriendRequestGateway {
 		(await receiver).friends.push(await pushSenderFriend);
 		await this.usersService.save(sender);
 		await this.usersService.save(receiver);
-		this.dmService.dmUsers.find(user => user.name === request.sender).socket.emit('accept_friendRequest', request.receiver);
-		this.dmService.dmUsers.find(user => user.name === request.receiver).socket.emit('accept_friendRequest', request.sender);
+		this.dmService.dmUsers.find(user => user.name === request.sender).socket.emit('accept_friendRequest');
+		this.dmService.dmUsers.find(user => user.name === request.receiver).socket.emit('accept_friendRequest');
 	}
 
 	@SubscribeMessage('refuse_friendRequest')
@@ -69,8 +69,8 @@ export class FriendRequestGateway {
 		await this.friendRequestService.remove(toDelete);
 		await this.usersService.save(sender);
 		await this.usersService.save(receiver);
-		this.dmService.dmUsers.find(user => user.name === request.sender).socket.emit('refuse_friendRequest', request.receiver);
-		this.dmService.dmUsers.find(user => user.name === request.receiver).socket.emit('refuse_friendRequest', request.sender);
+		this.dmService.dmUsers.find(user => user.name === request.sender).socket.emit('refuse_friendRequest');
+		this.dmService.dmUsers.find(user => user.name === request.receiver).socket.emit('refuse_friendRequest');
 	}
 
 	@SubscribeMessage('delete_friend')
@@ -87,7 +87,7 @@ export class FriendRequestGateway {
 		await this.friendRequestService.deleteFriend(receiverFriend);
 		await this.usersService.save(sender);
 		await this.usersService.save(receiver);
-		this.dmService.dmUsers.find(user => user.name === request.sender).socket.emit('delete_friend', request.receiver);
-		this.dmService.dmUsers.find(user => user.name === request.receiver).socket.emit('delete_friend', request.sender);
+		this.dmService.dmUsers.find(user => user.name === request.sender).socket.emit('delete_friend');
+		this.dmService.dmUsers.find(user => user.name === request.receiver).socket.emit('delete_friend');
 	}
 }

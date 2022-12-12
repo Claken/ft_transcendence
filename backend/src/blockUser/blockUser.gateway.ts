@@ -26,8 +26,8 @@ export class BlockUserGateway {
 		const newRequestBlock = this.blockUserService.saveBlockUser(requestBlock);
 		(await blockUser).blockBys.push(await newRequestBlock);
 		(await sender).blockUsers.push(await newRequestBlock)
-		this.usersService.save(sender);
-		this.usersService.save(blockUser);
+		await this.usersService.save(sender);
+		await this.usersService.save(blockUser);
 		this.dmService.dmUsers.find(async dmUser => dmUser.name === (await blockUser).name).socket.emit('block_user');
 		this.dmService.dmUsers.find(async dmUser => dmUser.name === (await sender).name).socket.emit('block_user');
   }
@@ -36,10 +36,14 @@ export class BlockUserGateway {
   async deBlockUser(@MessageBody() request: BlockUserDto) {
 		const sender = this.usersService.getByIdWithRelations(request.sender);
 		const deblockUser = this.usersService.getByIdWithRelations(request.blocked);
-		let i = (await sender).blockUsers.findIndex(async blockUser => blockUser.blockBy === (await sender));
+		let i = (await sender).blockUsers.findIndex(async blockUser => blockUser.user.id === (await deblockUser).id);
 		(await sender).blockUsers.splice(i, 1);
-		i = (await deblockUser).blockBys.findIndex(async blockBy => blockBy.user === (await deblockUser));
+		i = (await deblockUser).blockBys.findIndex(async blockBy => blockBy.blockBy.id === (await sender).id);
 		(await deblockUser).blockBys.splice(i, 1);
-		this.blockUserService.removeblockUser((await deblockUser).id);
+		await this.blockUserService.removeblockUser((await deblockUser).id);
+		await this.usersService.save(sender);
+		await this.usersService.save(deblockUser);
+		this.dmService.dmUsers.find(async dmUser => dmUser.name === (await deblockUser).name).socket.emit('deblock_user');
+		this.dmService.dmUsers.find(async dmUser => dmUser.name === (await sender).name).socket.emit('deblock_user');
 	}
 }

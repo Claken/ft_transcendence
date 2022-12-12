@@ -45,16 +45,16 @@ function DmUserButton(props) {
       });
   };
 
-	const incrementNotifications = (dm: Dm) => {
-		if (dm.sender === props.user.name && dm.receiver === dmContext.me.name)
-			setNotifications(notifications + 1);
-	}
+  const incrementNotifications = (dm: Dm) => {
+    if (dm.sender === props.user.name && dm.receiver === dmContext.me.name)
+      setNotifications(notifications + 1);
+  };
 
   useEffect(() => {
     getNotifications();
   }, []);
 
-	useEffect(() => {
+  useEffect(() => {
     dmContext.socket?.on("message_dm", incrementNotifications);
     return () => {
       dmContext.socket?.off("message_dm", incrementNotifications);
@@ -62,29 +62,33 @@ function DmUserButton(props) {
   }, [incrementNotifications]);
 
   // const inviteButton = () => {
-	// console.log(props.user);
-	// console.log(chat.me);
+  // console.log(props.user);
+  // console.log(chat.me);
   // }
 
   return (
     <li key={props.user.id}>
-      <div className="btnbody">
-        <button
-          className="btnuser"
-          onMouseEnter={onMouseEnter}
-          onMouseLeave={onMouseLeave}
-        >
+      <div
+        className="btnbody"
+        onMouseEnter={onMouseEnter}
+        onMouseLeave={onMouseLeave}
+      >
+        <div className="btnuser">
           <div className="nameuser">{props.user.name}</div>
-          {haveNotifications() && <div className="notifications">{notifications} new message(s)</div>}
-          {(!dropDown && <img src={Rouage} className="tourne"></img>) || (
-            <img src={Rouage} className="tourne tourneanim"></img>
+          {haveNotifications() && (
+            <div className="notifications">{notifications} new message(s)</div>
           )}
-        </button>
-        <div
-          className="overlay"
-          onMouseEnter={onMouseEnter}
-          onMouseLeave={onMouseLeave}
-        >
+					<div className="overlayup">
+          	<div className="overlayupleft">Messages</div>
+						<div className="overlayupright">Profile</div>
+					</div>
+					<div className="boxtourne">
+          	{(!dropDown && <img src={Rouage} className="tourne"></img>) || (
+          	  <img src={Rouage} className="tourne tourneanim"></img>
+          	)}
+					</div>
+        </div>
+        <div className="overlay">
           <div className="overlayleft">
             <Link to="/channel">
               <button

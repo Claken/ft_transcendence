@@ -61,28 +61,28 @@ function Friend() {
     return () => {
       dmContext.socket?.off("send_friendRequest", sendFriendRequest);
     };
-  }, [sendFriendRequest, friendRequests]);
+  }, [sendFriendRequest]);
 
   useEffect(() => {
     dmContext.socket?.on("accept_friendRequest", acceptFriendRequest);
     return () => {
       dmContext.socket?.off("accept_friendRequest", acceptFriendRequest);
     };
-  }, [acceptFriendRequest, friends, friendRequests]);
+  }, [acceptFriendRequest]);
 
   useEffect(() => {
     dmContext.socket?.on("refuse_friendRequest", refuseFriendRequest);
     return () => {
       dmContext.socket?.off("refuse_friendRequest", refuseFriendRequest);
     };
-  }, [refuseFriendRequest, friendRequests]);
+  }, [refuseFriendRequest]);
 
   useEffect(() => {
     dmContext.socket?.on("delete_friend", deleteFriend);
     return () => {
       dmContext.socket?.off("delete_friend", deleteFriend);
     };
-  }, [deleteFriend, friends]);
+  }, [deleteFriend]);
 
   return (
     <ul className="friend-list">

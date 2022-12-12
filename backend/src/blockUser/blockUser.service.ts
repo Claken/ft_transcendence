@@ -18,7 +18,7 @@ export class BlockUserService {
 		const listUsers: UsersEntity[] = [];
 		const user = (await this.usersService.getByNameWithRelations(name));
 		if (user && user.blockUsers) {
-			(await user).blockUsers.map(async blockUser => listUsers.push(blockUser.user));
+			user.blockUsers.map(async blockUser => listUsers.push(blockUser.user));
 			return listUsers;
 		}
 		else
@@ -26,10 +26,10 @@ export class BlockUserService {
 	}
 
 	async getBlockBys(name: string): Promise<UsersEntity[] | undefined> {
-		const listBys: UsersEntity[] = undefined;
+		const listBys: UsersEntity[] = [];
 		const user = (await this.usersService.getByNameWithRelations(name));
 		if (user && user.blockBys) {
-			(await user).blockBys.map(async blockBy => listBys.push(blockBy.user));
+			user.blockBys.map(async blockBy => listBys.push(blockBy.user));
 			return listBys;
 		}
 		else
