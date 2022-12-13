@@ -4,6 +4,7 @@ import Modal from "../modal";
 import useModal from "../../hooks/useModal";
 import { ModalSetAdmin } from "./ModalSetAdmin";
 import ModalMuteUser from "./ModalMuteUser";
+import ModalBanUser from "./ModalBanUser";
 
 const RoomUserList = ({
   findActiveRoom,
@@ -14,64 +15,140 @@ const RoomUserList = ({
   username,
   activeRoom,
 }) => {
-  const { isOpen, toggle } = useModal();
+  const { isOpen: isSetAdminOpen, toggle: toggleSetAdmin } = useModal();
+  const { isOpen: isMuteUserOpen, toggle: toggleMuteUser } = useModal();
+  const { isOpen: isBanUserOpen, toggle: toggleBanUser } = useModal();
 
   return (
     <div className="rigth-side">
-      Members :
-      <br />
       <div className="member-list">
+        <h2> Admins :</h2>
+        <ul>
+          {findActiveRoom().adminsList ? (
+            findActiveRoom().adminsList.map((name: string) => (
+              <div className="member-element" key={name}>
+                <li key={name}>
+                  <div className="member-name">{name}</div>
+                </li>
+              </div>
+            ))
+          ) : (
+            <div key="empty"></div>
+          )}
+        </ul>
+      </div>
+      <div className="member-list">
+        <h2> Members :</h2>
         <ul>
           {findActiveRoom().usersList ? (
             findActiveRoom().usersList.map((name: string) =>
               isAdminInActive(username) &&
               name != username &&
               name != findActiveRoom().owner ? (
-                <li key={name}>
-                  {name}
-                  <button onClick={toggle}>admin</button>
-                  <Modal isOpen={isOpen} toggle={toggle}>
-                    <ModalSetAdmin
-                      name={name}
-                      userSetAdmin={userSetAdmin}
-                      activeRoom={activeRoom}
-                      toggle={toggle}
-                    />
-                  </Modal>
-                  <button onClick={toggle}>mute</button>
-                  <Modal isOpen={isOpen} toggle={toggle}>
-                    <ModalMuteUser
-                      name={name}
-                      userMuteUser={userMuteUser}
-                      activeRoom={activeRoom}
-                      toggle={toggle}
-                    />
-                  </Modal>
-                  <button onClick={() => userBanUser(name)}>ban</button>
-                  {/* <Modal isOpen={isOpen} toggle={toggle}>
-                <ModalBanUser />
-              </Modal> */}
-                </li>
+                <div className="member-element" key={name}>
+                  <li key={name}>
+                    <div className="member-name">{name}</div>
+                    <div className="member-buttons">
+                      <button onClick={toggleSetAdmin}>
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          className="icon icon-tabler icon-tabler-crown"
+                          width="24"
+                          height="24"
+                          viewBox="0 0 24 24"
+                          strokeWidth="2"
+                          stroke="currentColor"
+                          fill="none"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
+                          <path
+                            stroke="none"
+                            d="M0 0h24v24H0z"
+                            fill="none"
+                          ></path>
+                          <path d="M12 6l4 6l5 -4l-2 10h-14l-2 -10l5 4z"></path>
+                        </svg>
+                      </button>
+                      <Modal isOpen={isSetAdminOpen} toggle={toggleSetAdmin}>
+                        <ModalSetAdmin
+                          name={name}
+                          userSetAdmin={userSetAdmin}
+                          activeRoom={activeRoom}
+                          toggle={toggleSetAdmin}
+                        />
+                      </Modal>
+                      <button onClick={toggleMuteUser}>
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          className="icon icon-tabler icon-tabler-volume-3"
+                          width="24"
+                          height="24"
+                          viewBox="0 0 24 24"
+                          strokeWidth="2"
+                          stroke="currentColor"
+                          fill="none"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
+                          <path
+                            stroke="none"
+                            d="M0 0h24v24H0z"
+                            fill="none"
+                          ></path>
+                          <path d="M6 15h-2a1 1 0 0 1 -1 -1v-4a1 1 0 0 1 1 -1h2l3.5 -4.5a0.8 .8 0 0 1 1.5 .5v14a0.8 .8 0 0 1 -1.5 .5l-3.5 -4.5"></path>
+                          <path d="M16 10l4 4m0 -4l-4 4"></path>
+                        </svg>
+                      </button>
+                      <Modal isOpen={isMuteUserOpen} toggle={toggleMuteUser}>
+                        <ModalMuteUser
+                          name={name}
+                          userMuteUser={userMuteUser}
+                          activeRoom={activeRoom}
+                          toggle={toggleMuteUser}
+                        />
+                      </Modal>
+                      <button onClick={toggleBanUser}>
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          className="icon icon-tabler icon-tabler-ban"
+                          width="24"
+                          height="24"
+                          viewBox="0 0 24 24"
+                          strokeWidth="2"
+                          stroke="currentColor"
+                          fill="none"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
+                          <path
+                            stroke="none"
+                            d="M0 0h24v24H0z"
+                            fill="none"
+                          ></path>
+                          <circle cx="12" cy="12" r="9"></circle>
+                          <line x1="5.7" y1="5.7" x2="18.3" y2="18.3"></line>
+                        </svg>
+                      </button>
+					  <Modal isOpen={isBanUserOpen} toggle={toggleBanUser}>
+                        <ModalBanUser
+                          name={name}
+                          userBanUser={userBanUser}
+                          activeRoom={activeRoom}
+                          toggle={toggleBanUser}
+                        />
+                      </Modal>
+                    </div>
+                  </li>
+                </div>
               ) : (
-                <div key={name}>
-                  <li>{name}</li>
+                <div className="member-element" key={name}>
+                  <li key={name}>{name}</li>
                 </div>
               )
             )
           ) : (
-            <div></div>
-          )}
-        </ul>
-      </div>
-      Admins :
-      <div className="admin-list">
-        <ul>
-          {findActiveRoom().adminsList ? (
-            findActiveRoom().adminsList.map((name: string) => (
-              <li key={name}>{name}</li>
-            ))
-          ) : (
-            <div></div>
+            <div key="empty"></div>
           )}
         </ul>
       </div>

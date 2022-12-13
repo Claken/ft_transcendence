@@ -112,30 +112,6 @@ const ProtoChat = () => {
     return value;
   };
 
-  // const userOptions = (name: string) => {
-  //   const activeRoom = findActiveRoom();
-  //   let time: number = 0;
-  //   if (!isAdminInActive(name) && window.confirm("Set this user as admin ?")) {
-  //     socket?.emit("setUserAsAdmin", { name: name, channel: activeRoom.name });
-  //   }
-  //   if (window.confirm("Do you want to ban this user ?")) {
-  //     time = parseInt(prompt("insert the time in minute please :"));
-  //     socket?.emit("banMember", {
-  //       name: name,
-  //       channel: activeRoom.name,
-  //       time: time,
-  //     });
-  //   }
-  //   if (window.confirm("Do you want to mute this user ?")) {
-  //     time = parseInt(prompt("insert the time in minute please :"));
-  //     socket?.emit("muteMember", {
-  //       name: name,
-  //       channel: activeRoom.name,
-  //       time: time,
-  //     });
-  //   }
-  // };
-
   const userSetAdmin = (name: string) => {
     const activeRoom = findActiveRoom();
     if (!isAdminInActive(name)) {
@@ -151,17 +127,12 @@ const ProtoChat = () => {
     });
   };
 
-  const userBanUser = (name: string) => {
-    const activeRoom = findActiveRoom();
-    let time: number = 0;
-    if (window.confirm("Do you want to ban this user ?")) {
-      time = parseInt(prompt("insert the time in minute please :"));
-      socket?.emit("banMember", {
-        name: name,
-        channel: activeRoom.name,
-        time: time,
-      });
-    }
+  const userBanUser = (name: string, timer: number) => {
+    socket?.emit("banMember", {
+      name: name,
+      channel: activeRoom.name,
+      time: timer,
+    });
   };
 
   const updateBanStatus = (member: { status: boolean; channel: string }) => {
@@ -180,11 +151,22 @@ const ProtoChat = () => {
     }
   };
 
-  const updateMuteStatus = (member: { status: boolean; channel: string }) => {
+  const updateMuteStatus = (member: {
+    status: boolean;
+    channel: string;
+    time: number;
+  }) => {
     console.log("MuteStatus");
     let room = findRoom(member.channel);
     room.mute = member.status;
-    if (room.mute) alert("Congratulations, you are muted in " + member.channel);
+    if (room.mute)
+      alert(
+        "Congratulations, you are muted in " +
+          member.channel +
+          "for " +
+          member.time +
+          " minutes"
+      );
     else
       alert(
         "Congratulations, you are not muted in " + member.channel + " anymore"
@@ -721,43 +703,6 @@ const ProtoChat = () => {
         username={username}
         activeRoom={activeRoom}
       />
-      {/* <div className="rigth-side">
-        Members :
-        <br />
-        {findActiveRoom().usersList ? (
-          findActiveRoom().usersList.map((name: string) =>
-            isAdminInActive(username) &&
-            name != username &&
-            name != findActiveRoom().owner ? (
-              <div>
-                {name}
-                <button onClick={() => userSetAdmin(name)}>admin</button>
-                <Modal isOpen={isOpen} toggle={toggle}>
-                  <ModalSetAdmin />
-                </Modal>
-                <button onClick={() => userMuteUser(name)}>mute</button>
-                <Modal isOpen={isOpen} toggle={toggle}>
-                  <ModalMuteUser />
-                </Modal>
-                <button onClick={() => userBanUser(name)}>ban</button>
-                <Modal isOpen={isOpen} toggle={toggle}>
-                  <ModalBanUser />
-                </Modal>
-              </div>
-            ) : (
-              <div>{name}</div>
-            )
-          )
-        ) : (
-          <div></div>
-        )}
-        Admins :
-        {findActiveRoom().adminsList ? (
-          findActiveRoom().adminsList.map((name: string) => <div>{name}</div>)
-        ) : (
-          <div></div>
-        )}
-      </div> */}
     </div>
   );
 };

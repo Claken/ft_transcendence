@@ -15,6 +15,7 @@ import { type } from 'src/exports/enum';
 import * as bcrypt from 'bcrypt';
 import { DeepPartial } from 'typeorm';
 import { OnEvent } from '@nestjs/event-emitter';
+import { time } from 'console';
 
 // {cors: '*'} pour que chaque client dans le frontend puisse se connecter à notre gateway
 @WebSocketGateway({cors: '*'}) // decorator pour dire que la classe ChatGateway sera un gateway /
@@ -328,7 +329,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 		member.isMute = true;
 		member.timeMuteInMinute = user.time;
 		await 	this.memberService.updateMember(member);
-		this.users[user.name].emit('MuteStatus', {status: true, channel: channel.chatRoomName});
+		this.users[user.name].emit('MuteStatus', {status: true, channel: channel.chatRoomName, time : user.time});
 
 		setTimeout(async () => {
 			member.isMute = false;
