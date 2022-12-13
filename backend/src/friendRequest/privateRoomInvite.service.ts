@@ -21,7 +21,7 @@ export class PrivateRoomInviteService {
 
 	async getPrInviteByUsersId(senderId: number, receiverId: number): Promise<PrivateRoomInviteEntity> {
 		return await this.prInviteRepo.findOne({
-			relations: ['sender', 'receiver',], where: [{ sender: { id: senderId }, receiver: { id: receiverId }}]
+			relations: ['sender', 'receiver'], where: [{ sender: { id: senderId }, receiver: { id: receiverId }}]
 		});
 	}
 
@@ -44,5 +44,10 @@ export class PrivateRoomInviteService {
 	async deletePrInvite(toDelete: PrivateRoomInviteEntity): Promise<void>
 	{
 		await this.prInviteRepo.remove(toDelete);
+	}
+
+	async deletePrInviteById(prInviteId: number): Promise<void>
+	{
+		await this.prInviteRepo.delete({id: prInviteId});
 	}
 }

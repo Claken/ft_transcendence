@@ -64,10 +64,6 @@ function Friend() {
     getFriends();
   };
 
-  const setPrivateRoomInvites = () => {
-    getPrInvites();
-  }
-
   useEffect(() => {
     getFriendRequests();
     getFriends();
@@ -104,11 +100,11 @@ function Friend() {
   }, [deleteFriend, friends]);
 
   useEffect(() => {
-    dmContext.socket?.on("recvPrivateRoomInvite", setPrivateRoomInvites);
+    dmContext.socket?.on("updatePrInvites", getPrInvites);
     return () => {
-      dmContext.socket?.off("recvPrivateRoomInvite", setPrivateRoomInvites);
+      dmContext.socket?.off("updatePrInvites", getPrInvites);
     };
-  }, [setPrivateRoomInvites]);
+  }, [getPrInvites]);
 
   return (
     <ul className="friend-list">
