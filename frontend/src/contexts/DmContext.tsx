@@ -26,6 +26,13 @@ export const DmProvider = ({ children }) => {
   }, [sendFriendRequest]);
 
   useEffect(() => {
+    socket?.on("recvPrivateRoomInvite", sendFriendRequest);
+    return () => {
+      socket?.off("recvPrivateRoomInvite", sendFriendRequest);
+    };
+  }, [sendFriendRequest]);
+
+  useEffect(() => {
     setMe(auth.user);
   }, [auth.user]);
 

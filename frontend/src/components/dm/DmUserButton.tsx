@@ -6,13 +6,11 @@ import { useDm } from "../../contexts/DmContext";
 import { Dm } from "../../interfaces/dm.interface";
 import "../../styles/dmchat.css";
 import UserNotFound from "../social/UserNotFound";
-// import { useChat } from "../../contexts/ChatContext";
 
 function DmUserButton(props) {
   const dmContext = useDm();
   const [dropDown, setDropDown] = useState(false);
   const [notifications, setNotifications] = useState<number>(0);
-  // const chat = useChat();
 
   const haveNotifications = () => {
     if (notifications > 0) return true;
@@ -60,11 +58,6 @@ function DmUserButton(props) {
       dmContext.socket?.off("message_dm", incrementNotifications);
     };
   }, [incrementNotifications]);
-
-  // const inviteButton = () => {
-	// console.log(props.user);
-	// console.log(chat.me);
-  // }
 
   return (
     <li key={props.user.id}>

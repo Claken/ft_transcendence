@@ -15,6 +15,8 @@ import { type } from 'src/exports/enum';
 import * as bcrypt from 'bcrypt';
 import { DeepPartial } from 'typeorm';
 import { OnEvent } from '@nestjs/event-emitter';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import { DmDto } from 'src/TypeOrm/DTOs/dm.dto';
 
 // {cors: '*'} pour que chaque client dans le frontend puisse se connecter à notre gateway
 @WebSocketGateway({cors: '*'}) // decorator pour dire que la classe ChatGateway sera un gateway /
@@ -23,7 +25,8 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 	constructor(private chatService: ChatService,
 		private usersService: UsersService,
 		private memberService: MemberService,
-		private messageService: MessageService) {}
+		private messageService: MessageService,
+		private eventEmitter: EventEmitter2) {}
 
 	private logger: Logger = new Logger('ChatGateway');
 	private	users = {};
@@ -52,11 +55,6 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 	AddSocket(client: Socket, name: string): void {
 		this.users[name] = client;
 	}
-
-  // @SubscribeMessage('msgToServer')
-  // HandleMessageToServer(@MessageBody() message: string): void {
-  //   this.server.emit('msgToClient', message);
-  // }
 
 	@SubscribeMessage('msgToServer')
 	HandleMessageToServer(@MessageBody() message: {sender: string, msg: string}): void {
@@ -90,12 +88,20 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 	/*							Pour rejoindre une room   						 */
 	/* ************************************************************************* */
 
+	@OnEvent('joinPrivateRoom')
+	async joinPrivateRoom(infos: {user: string, channel: string})
+	{
+		const client: Socket = this.users[infos.user];
+		await this.HandleJoinRoom(client, {room: infos.channel, user: infos.user, password: ""});
+		await this.HandleLists(infos.channel);
+	}
+
 	@SubscribeMessage('joinRoom')
 	async HandleJoinRoom(client: Socket, infos: {room: string, user: string, password: string}): Promise<void> {
-		console.log('joinRoom');
+		// console.log('joinRoom');
 
 		let		channelJoined = await this.chatService.findOneChatRoomByName(infos.room);
-		let		theUser = await this.usersService.findOneByName(infos.user);
+		let		theUser = await this.usersService.getByNameWithRelations(infos.user);
 
 		if (channelJoined.type === type.protected)
 		{
@@ -131,7 +137,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 		await	this.memberService.deleteMemberById(member.id);
 		if (memberName === channelLeft.owner.name)
 		{
-			let		oldOwner = await this.usersService.findOneByName(infos.user);
+			let		oldOwner = await this.usersService.getByNameWithRelations(infos.user);
 			let		ownedChannels: ChatRoomEntity[] = [...oldOwner.ownedChannels];
 			for (let i = 0; i < ownedChannels.length; i++)
 			{
@@ -154,7 +160,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 		if (admins.length > 0)
 		{
 			admin = admins.find((member: MemberEntity) => member.user.name != oldOwnerName);
-			newOwner = await this.usersService.findOneByName(admin.user.name);
+			newOwner = await this.usersService.getByNameWithRelations(admin.user.name);
 		}
 		else
 		{
@@ -162,7 +168,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 			if (members.length > 0)
 			{
 				member = members.find((member: MemberEntity) => member.user.name != oldOwnerName);
-				newOwner = await this.usersService.findOneByName(member.user.name);
+				newOwner = await this.usersService.getByNameWithRelations(member.user.name);
 			}
 			else
 				await this.HandleDeletionRoom(client, thechannel.chatRoomName);
@@ -190,7 +196,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 	@SubscribeMessage('createChatRoom')
     async HandleCreationRoom(client: Socket, room: ChatRoomDto): Promise<void> {
 
-        const    	theOwner = await this.usersService.findOneByName(room.owner);
+        const    	theOwner = await this.usersService.getByNameWithRelations(room.owner);
 
         const    	hash = room.type === type.protected ? await bcrypt.hash(room.password, 10) : null;
 
@@ -245,6 +251,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 	@SubscribeMessage('getAllChannels')
 	async HandleGettingChannels(client: Socket) : Promise<void> {
 		const Channels = await this.chatService.findAllChatRooms();
+		console.log("CLIENTS.JOIN");
 		Channels.forEach((channel : ChatRoomEntity) => client.join(channel.id));
 		// const Admins = await this.memberService.findAllAdminsFromOneRoom(Channels[0].id);
 		// console.log(Admins);
@@ -255,14 +262,22 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 		client.emit('sendAllChannels', Channels);
 	}
 
+	@OnEvent('getPrivatesForFriend')
+	@SubscribeMessage('getPrivates')
+	async letUsGetPrivateRooms(client: Socket) : Promise<void> {
+		const privates = await this.chatService.findAllPrivateRooms();
+		client.emit('sendPrivates', privates);
+	}
+
 	@SubscribeMessage('getListsForOneClient')
 	async HandleListsForOneClient(client: Socket, chatName: string) : Promise<void> {
 		const theChannel = 	await this.chatService.findOneChatRoomByName(chatName);
 		const admins =		await this.memberService.findAllAdminsFromOneRoom(theChannel.id);
 		const users =		await this.memberService.findAllMembersFromOneRoom(theChannel.id);
 		const bans =		await this.memberService.findAllBannedMembersFromOneRoom(theChannel.id);
+		const mutes =		await this.memberService.findAllMutedMembersFromOneRoom(theChannel.id);
 
-		client.emit('AllLists', {channel: chatName, usersList: users, adminsList: admins, banList: bans});
+		client.emit('AllLists', {channel: chatName, usersList: users, adminsList: admins, banList: bans, muteList: mutes});
 	}
 
 	@OnEvent('GetListsForUser')
@@ -272,8 +287,9 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 		const admins =		await this.memberService.findAllAdminsFromOneRoom(theChannel.id);
 		const users =		await this.memberService.findAllMembersFromOneRoom(theChannel.id);
 		const bans =		await this.memberService.findAllBannedMembersFromOneRoom(theChannel.id);
+		const mutes =		await this.memberService.findAllMutedMembersFromOneRoom(theChannel.id);
 
-		this.server.emit('AllLists', {channel: chatName, usersList: users, adminsList: admins, banList: bans});
+		this.server.emit('AllLists', {channel: chatName, usersList: users, adminsList: admins, banList: bans, muteList: mutes});
 	}
 	
 	@SubscribeMessage('deleteChannelPassword')
@@ -328,13 +344,33 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 		member.isMute = true;
 		member.timeMuteInMinute = user.time;
 		await 	this.memberService.updateMember(member);
-		this.users[user.name].emit('MuteStatus', {status: true, channel: channel.chatRoomName});
+		await 	this.HandleLists(channel.chatRoomName);
+		this.users[user.name].emit('MuteStatus', {status: true, channel: channel.chatRoomName, time : user.time});
 
 		setTimeout(async () => {
 			member.isMute = false;
 			member.timeBanInMinute = 0;
 			await 	this.memberService.updateMember(member);
+			await 	this.HandleLists(channel.chatRoomName);
 			this.users[user.name].emit('MuteStatus', {status: false, channel: channel.chatRoomName});
 		}, user.time * 60000);
+	}
+
+	@SubscribeMessage('getFriendsList')
+	async getFriendsList(client: Socket, username: string) : Promise<void>
+	{
+		const user =  await this.usersService.getByNameWithRelations(username);
+		client.emit('recvFriendsList', user.friends);
+	}
+
+	@SubscribeMessage('emitForAnPrInvite')
+	emitForAnPrInvite(client: Socket, infos: {sender: string, receiver: string, channel: string})
+	{
+		const invite = {
+			sender: infos.sender,
+			receiver: infos.receiver,
+			message: infos.channel
+		}
+		this.eventEmitter.emit('sendPrivateRoomInvite', invite);
 	}
 }

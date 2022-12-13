@@ -24,10 +24,10 @@ function Social() {
           <button onClick={() => setActive("Leaderboard")}>Leaderboard</button>
           {(dmContext.friendNotif && (
             <button onClick={() => setActive("FriendList")}>
-              <div className="friendNotif">Friend List</div>
+              <div className="friendNotif">Friends & Invites List</div>
             </button>
           )) || (
-            <button onClick={() => setActive("FriendList")}>Friend List</button>
+            <button onClick={() => setActive("FriendList")}>Friends & Invites List</button>
           )}
           <button onClick={() => setActive("Search")}>Search</button>
         </div>

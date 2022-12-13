@@ -12,4 +12,5 @@ export interface IRoom {
 	usersList?: string[];
 	adminsList?: string[];
 	banList?: string[];
+	muteList?: string[];
 }

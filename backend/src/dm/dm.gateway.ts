@@ -7,10 +7,14 @@ import {
 import { Socket } from 'socket.io'
 import { DmDto } from '../TypeOrm/DTOs/dm.dto';
 import { DmService } from './dm.service';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 
 @WebSocketGateway({ cors: '*:*' })
 export class DmGateway {
-  constructor(private readonly dmService: DmService) {}
+  constructor(
+    private readonly dmService: DmService,
+    private eventEmitter: EventEmitter2,
+    ) {}
 
   @SubscribeMessage('join_dm')
   async joinDm(@ConnectedSocket() socket: Socket, @MessageBody() dm: DmDto) {
