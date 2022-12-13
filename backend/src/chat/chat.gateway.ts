@@ -275,8 +275,9 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 		const admins =		await this.memberService.findAllAdminsFromOneRoom(theChannel.id);
 		const users =		await this.memberService.findAllMembersFromOneRoom(theChannel.id);
 		const bans =		await this.memberService.findAllBannedMembersFromOneRoom(theChannel.id);
+		const mutes =		await this.memberService.findAllMutedMembersFromOneRoom(theChannel.id);
 
-		client.emit('AllLists', {channel: chatName, usersList: users, adminsList: admins, banList: bans});
+		client.emit('AllLists', {channel: chatName, usersList: users, adminsList: admins, banList: bans, muteList: mutes});
 	}
 
 	@OnEvent('GetListsForUser')
@@ -286,8 +287,9 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 		const admins =		await this.memberService.findAllAdminsFromOneRoom(theChannel.id);
 		const users =		await this.memberService.findAllMembersFromOneRoom(theChannel.id);
 		const bans =		await this.memberService.findAllBannedMembersFromOneRoom(theChannel.id);
+		const mutes =		await this.memberService.findAllMutedMembersFromOneRoom(theChannel.id);
 
-		this.server.emit('AllLists', {channel: chatName, usersList: users, adminsList: admins, banList: bans});
+		this.server.emit('AllLists', {channel: chatName, usersList: users, adminsList: admins, banList: bans, muteList: mutes});
 	}
 	
 	@SubscribeMessage('deleteChannelPassword')
@@ -342,7 +344,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 		member.isMute = true;
 		member.timeMuteInMinute = user.time;
 		await 	this.memberService.updateMember(member);
-		this.users[user.name].emit('MuteStatus', {status: true, channel: channel.chatRoomName});
+		this.users[user.name].emit('MuteStatus', {status: true, channel: channel.chatRoomName, time : user.time});
 
 		setTimeout(async () => {
 			member.isMute = false;

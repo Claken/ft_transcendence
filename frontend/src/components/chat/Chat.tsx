@@ -1,16 +1,17 @@
 import React, { useState, useEffect, useRef } from "react";
+import useModal from "../hooks/useModal";
 import io, { Socket } from "socket.io-client";
+import { isForOfStatement } from "typescript";
 import { IChatRoom } from "../../interfaces/chat.interface";
 import { useAuth } from "../../contexts/AuthContext";
 import { IMessageToBack } from "../../interfaces/messageToBack.interface";
 import { IRoom } from "../../interfaces/room.interface";
 import { type } from "../../interfaces/enum";
 import "../../styles/chat.scss";
-
-// const 	socket = io('http://localhost/3001');
+import RoomUserList from "./RoomUserList";
 
 const Chat = () => {
-  const title = "CHATROOM";
+
   const [text, changeText] = useState<string>("");
 
   const [socket, setSocket] = useState<Socket>();
@@ -84,6 +85,7 @@ const Chat = () => {
     changeText(event.target.value);
   };
 
+
   const wrongPasswordMessage = () => {
     alert("WRONG PASSWORD ! YOU CANNOT JOIN THIS CHANNEL");
   };
@@ -106,28 +108,29 @@ const Chat = () => {
     return value;
   };
 
-  const userOptions = (name: string) => {
+  const userSetAdmin = (name: string) => {
     const activeRoom = findActiveRoom();
-    let time: number = 0;
-    if (!isAdminInActive(name) && window.confirm("Set this user as admin ?")) {
+    if (!isAdminInActive(name)) {
       socket?.emit("setUserAsAdmin", { name: name, channel: activeRoom.name });
     }
-    if (window.confirm("Do you want to ban this user ?")) {
-      time = parseInt(prompt("insert the time in minute please :"));
-      socket?.emit("banMember", {
-        name: name,
-        channel: activeRoom.name,
-        time: time,
-      });
-    }
-    if (window.confirm("Do you want to mute this user ?")) {
-      time = parseInt(prompt("insert the time in minute please :"));
-      socket?.emit("muteMember", {
-        name: name,
-        channel: activeRoom.name,
-        time: time,
-      });
-    }
+  };
+
+  const userMuteUser = (name: string, timer: number) => {
+    const activeRoom = findActiveRoom();
+    socket?.emit("muteMember", {
+      name: name,
+      channel: activeRoom.name,
+      time: timer,
+    });
+  };
+
+  const userBanUser = (name: string, timer: number) => {
+    const activeRoom = findActiveRoom();
+    socket?.emit("banMember", {
+      name: name,
+      channel: activeRoom.name,
+      time: timer,
+    });
   };
 
   const updateBanStatus = (member: { status: boolean; channel: string }) => {
@@ -146,11 +149,22 @@ const Chat = () => {
     }
   };
 
-  const updateMuteStatus = (member: { status: boolean; channel: string }) => {
+  const updateMuteStatus = (member: {
+    status: boolean;
+    channel: string;
+    time: number;
+  }) => {
     console.log("MuteStatus");
     let room = findRoom(member.channel);
     room.mute = member.status;
-    if (room.mute) alert("Congratulations, you are muted in " + member.channel);
+    if (room.mute)
+      alert(
+        "Congratulations, you are muted in " +
+          member.channel +
+          "for " +
+          member.time +
+          " minutes"
+      );
     else
       alert(
         "Congratulations, you are not muted in " + member.channel + " anymore"
@@ -162,11 +176,13 @@ const Chat = () => {
     usersList: any[];
     adminsList: any[];
     banList: any[];
+	muteList: any[];
   }) => {
     let room = findRoom(lists.channel);
     let newUsers: string[] = [];
     let newAdmins: string[] = [];
     let newBans: string[] = [];
+    let newMutes: string[] = [];
     if (lists.usersList.length > 0) {
       lists.usersList.forEach((element: any) => {
         newUsers.push(element.user.name);
@@ -185,6 +201,12 @@ const Chat = () => {
       });
     }
     room.banList = newBans;
+	if (lists.muteList.length > 0) {
+		lists.muteList.forEach((element: any) => {
+			newMutes.push(element.user.name);
+		});
+	  }
+	room.muteList = newMutes;
     // POUR RERENDER LA PAGE CAR ROOMS EST UN USESTATE, ET QUAND LE USESTATE EST MODIFIE CA RERENDER
     const roomsCopy = [...rooms];
     setRooms(roomsCopy);
@@ -688,7 +710,9 @@ const Chat = () => {
             ) : (
               <div></div>
             )}
-              <div ref={chatEndRef} />
+            <li>
+              <div className="endchat" ref={chatEndRef} />
+            </li>
           </ul>
         </div>
         <div className="chat-bottom">
@@ -719,28 +743,17 @@ const Chat = () => {
           </form>
         </div>
       </div>
-      <div className="rigth-side">
-	  {findActiveRoom().adminsList && activeRoom != "" && (findActiveRoom().member || findActiveRoom().type === type.public) ? "Member(s) :" : null}
-        {findActiveRoom().adminsList && activeRoom != "" && (findActiveRoom().member || findActiveRoom().type === type.public) ? 
-		(findActiveRoom().usersList.map((name: string) =>
-            isAdminInActive(username) &&
-            name != username &&
-            name != findActiveRoom().owner ? (
-              <div>
-                <button onClick={() => userOptions(name)}>{name}</button>
-              </div>
-            ) : (
-              <div>{name}</div>
-            )
-          )
-        ) : (<div></div>)}
-		{findActiveRoom().usersList && activeRoom != "" && (findActiveRoom().member || findActiveRoom().type === type.public) ? "Admin(s) :" : null}
-        {findActiveRoom().adminsList && activeRoom != "" && (findActiveRoom().member || findActiveRoom().type === type.public) ? (
-          findActiveRoom().adminsList.map((name: string) => <div>{name}</div>)
-        ) : (
-          <div></div>
-        )}
-      </div>
+      <RoomUserList
+        findActiveRoom={findActiveRoom}
+        isAdminInActive={isAdminInActive}
+        userSetAdmin={userSetAdmin}
+        userBanUser={userBanUser}
+        userMuteUser={userMuteUser}
+        username={username}
+        activeRoom={activeRoom}
+		muteList={findActiveRoom().muteList}
+		banList={findActiveRoom().banList}
+      />
     </div>
   );
 };
