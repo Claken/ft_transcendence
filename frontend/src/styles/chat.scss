@@ -285,10 +285,6 @@
 	}
 }
 
-ul::-webkit-scrollbar {
-	display: none;
-}
-
-.rooms-list::-webkit-scrollbar {
+::-webkit-scrollbar {
 	display: none;
 }

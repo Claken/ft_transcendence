@@ -729,8 +729,8 @@ const ProtoChat = () => {
         </div>
       </div>
       <div className="rigth-side">
-		{findActiveRoom().usersList && activeRoom != "" && findActiveRoom().member ? "Member(s) :" : null}
-        {findActiveRoom().usersList && activeRoom != "" && findActiveRoom().member ? 
+	  {findActiveRoom().adminsList && activeRoom != "" && (findActiveRoom().member || findActiveRoom().type === type.public) ? "Member(s) :" : null}
+        {findActiveRoom().adminsList && activeRoom != "" && (findActiveRoom().member || findActiveRoom().type === type.public) ? 
 		(findActiveRoom().usersList.map((name: string) =>
             isAdminInActive(username) &&
             name != username &&
@@ -743,8 +743,8 @@ const ProtoChat = () => {
             )
           )
         ) : (<div></div>)}
-        {findActiveRoom().usersList && activeRoom != "" && findActiveRoom().member ? "Admin(s) :" : null}
-        {findActiveRoom().adminsList && activeRoom != "" && findActiveRoom().member ? (
+		{findActiveRoom().usersList && activeRoom != "" && (findActiveRoom().member || findActiveRoom().type === type.public) ? "Admin(s) :" : null}
+        {findActiveRoom().adminsList && activeRoom != "" && (findActiveRoom().member || findActiveRoom().type === type.public) ? (
           findActiveRoom().adminsList.map((name: string) => <div>{name}</div>)
         ) : (
           <div></div>
