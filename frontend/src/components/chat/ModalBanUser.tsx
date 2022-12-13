@@ -11,8 +11,7 @@ const ModalBanUser = ({ name, userBanUser, activeRoom, toggle, banList }) => {
 		enter ban duration
 		<input type="text" onChange={(e) => setTimer(e.target.value)} />
 		<br />
-		Do you really want to ban {name} from {activeRoom}
-		for {timer} minutes ?
+		Do you really want to ban {name} from {activeRoom} for {timer} minute.s ?
 		</p>
         <button onClick={() => 
 			{

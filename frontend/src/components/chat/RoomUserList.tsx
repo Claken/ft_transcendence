@@ -109,6 +109,7 @@ const RoomUserList = ({
                           userMuteUser={userMuteUser}
                           activeRoom={activeRoom}
                           toggle={toggleMuteUser}
+                          muteList={muteList}
                         />
                       </Modal>
                       <button onClick={toggleBanUser}>

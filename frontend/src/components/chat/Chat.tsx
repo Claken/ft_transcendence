@@ -159,11 +159,7 @@ const Chat = () => {
     room.mute = member.status;
     if (room.mute)
       alert(
-        "Congratulations, you are muted in " +
-          member.channel +
-          "for " +
-          member.time +
-          " minutes"
+        "Congratulations, you are muted in " + member.channel + " for " + member.time + " minutes"
       );
     else
       alert(
