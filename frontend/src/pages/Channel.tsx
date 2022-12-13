@@ -1,13 +1,14 @@
 import React from "react";
 import Navigation from "../components/Navigation";
-import ProtoChat from "../components/chat/ProtoChat";
+import Chat from "../components/chat/Chat";
 import AppTestSockets from "../components/chat/webSocketTester";
 import "../styles/chat.scss"
+import { C } from "../contexts/ChatContext";
 
 function Channel() {
   return (
     <div>
-      < ProtoChat />
+      < Chat />
     </div>
   );
 }
