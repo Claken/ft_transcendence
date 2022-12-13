@@ -43,6 +43,7 @@ const ChooseName = ({}) => {
 	}
 
 	return (
+		user.inGame || user.inQueue ? null :
 		<div className="username-settings">
 			<h2><button onClick={focus}>{user?.name}</button></h2>
 			<input ref={inputRef} type="text" className="input" onChange={handleChange} placeholder="Change Username" />
