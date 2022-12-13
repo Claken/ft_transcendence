@@ -14,12 +14,27 @@ function GuestForm() {
 		setGuestInput(input);
 	};
 
+	const isAlpha = (input: string) => {
+		for (let index = 0; index < input.length; index++) {
+			const element = input.charCodeAt(index);
+			if ((element < 48 || element > 122) ||
+			element >= 58 && element <=64)
+				return false
+		}
+		return true
+	}
+
 	const guestClient = (
 		event: React.MouseEvent<HTMLButtonElement, MouseEvent>
 	) => {
 		event.preventDefault();
 		setErrorMsg("");
-		if (guestInput === "") setErrorMsg("you need to write a name");
+		if (guestInput === "")
+			setErrorMsg("you need to write a name");
+		else if (guestInput.length >= 10)
+			setErrorMsg("Name too long");
+		else if (isAlpha(guestInput) === false)
+			setErrorMsg("Name contains none alphanumeric character");
 		else {
 			loginAsGuest(guestInput);
 			setGuestInput("");

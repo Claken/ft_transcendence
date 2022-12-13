@@ -24,6 +24,15 @@ const ChooseName = ({}) => {
 		}
 	}, [isNameFree]);
 
+	const isAlpha = (input: string) => {
+		for (let index = 0; index < input.length; index++) {
+			const element = input.charCodeAt(index);
+			if (element < 48 || element > 122)
+				return false
+		}
+		return true
+	}
+
 	const handleClick = () => {
 		const getUserByName = async () => {
 			await axios
@@ -35,7 +44,9 @@ const ChooseName = ({}) => {
 					console.log(err);
 				});
 		};
-		if (input) getUserByName();
+		console.log(input)
+		if (input && input.length <= 10 && isAlpha(input))
+			getUserByName();
 	};
 
 	const focus = () => {
