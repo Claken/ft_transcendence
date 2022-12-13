@@ -6,7 +6,7 @@ const ModalMuteUser = ({ name, userMuteUser, activeRoom, toggle, muteList }) => 
   return (
     <div>
       {muteList.find((mute: string) => mute === name) === undefined ?
-      <div className="not-Mute">
+      <div className="not-mute">
 		<p>
 		enter mute duration
 		<input type="text" onChange={(e) => setTimer(e.target.value)} />
@@ -19,7 +19,7 @@ const ModalMuteUser = ({ name, userMuteUser, activeRoom, toggle, muteList }) => 
 				toggle();
 			}}>confirm</button>
       </div> :
-      <div className="already-Mute">
+      <div className="already-mute">
         This user is already mute !
       </div>
       }  

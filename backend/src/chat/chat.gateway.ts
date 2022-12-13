@@ -344,12 +344,14 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 		member.isMute = true;
 		member.timeMuteInMinute = user.time;
 		await 	this.memberService.updateMember(member);
+		await 	this.HandleLists(channel.chatRoomName);
 		this.users[user.name].emit('MuteStatus', {status: true, channel: channel.chatRoomName, time : user.time});
 
 		setTimeout(async () => {
 			member.isMute = false;
 			member.timeBanInMinute = 0;
 			await 	this.memberService.updateMember(member);
+			await 	this.HandleLists(channel.chatRoomName);
 			this.users[user.name].emit('MuteStatus', {status: false, channel: channel.chatRoomName});
 		}, user.time * 60000);
 	}
