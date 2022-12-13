@@ -13,7 +13,7 @@ import RoomUserList from "./RoomUserList";
 
 // const 	socket = io('http://localhost/3001');
 
-const ProtoChat = () => {
+const Chat = () => {
   const title = "PROTO CHATROOM";
   const [text, changeText] = useState<string>("");
 
