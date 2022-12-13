@@ -152,7 +152,12 @@ function Pong() {
 					</button>
 				</div>
 			)}
-			{wait ? (<div>Waiting for opponent...</div>
+			{wait ? (<div className="loading">
+				<h1>Waiting for an opponent</h1>
+				<span></span>
+				<span></span>
+				<span></span>
+			</div>
 				) : (
 					<GameList />
 				)}
