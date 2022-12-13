@@ -1,12 +1,10 @@
 import React, { useState, useEffect, useRef } from "react";
 import io, { Socket } from "socket.io-client";
-import { isForOfStatement } from "typescript";
 import { IChatRoom } from "../../interfaces/chat.interface";
 import { useAuth } from "../../contexts/AuthContext";
 import { IMessageToBack } from "../../interfaces/messageToBack.interface";
 import { IRoom } from "../../interfaces/room.interface";
 import { type } from "../../interfaces/enum";
-import Account from "../../pages/Account";
 import "../../styles/chat.scss";
 
 // const 	socket = io('http://localhost/3001');
