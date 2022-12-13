@@ -56,11 +56,6 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 		this.users[name] = client;
 	}
 
-  // @SubscribeMessage('msgToServer')
-  // HandleMessageToServer(@MessageBody() message: string): void {
-  //   this.server.emit('msgToClient', message);
-  // }
-
 	@SubscribeMessage('msgToServer')
 	HandleMessageToServer(@MessageBody() message: {sender: string, msg: string}): void {
 		this.server.emit('msgToClient', message);
@@ -97,6 +92,8 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 	async joinPrivateRoom(infos: {user: string, channel: string})
 	{
 		const client: Socket = this.users[infos.user];
+		console.log('joinPrivateRoom');
+		console.log(infos);
 		await this.HandleJoinRoom(client, {room: infos.channel, user: infos.user, password: ""});
 	}
 
@@ -255,6 +252,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 	@SubscribeMessage('getAllChannels')
 	async HandleGettingChannels(client: Socket) : Promise<void> {
 		const Channels = await this.chatService.findAllChatRooms();
+		console.log("CLIENTS.JOIN");
 		Channels.forEach((channel : ChatRoomEntity) => client.join(channel.id));
 		// const Admins = await this.memberService.findAllAdminsFromOneRoom(Channels[0].id);
 		// console.log(Admins);

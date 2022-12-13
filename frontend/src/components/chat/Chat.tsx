@@ -304,6 +304,7 @@ const ProtoChat = () => {
   };
 
   const joinedRoom = (room: string) => {
+    console.log("joined " + room);
     rooms.forEach((element: any) => {
       if (element.name === room) element.member = true;
     });
@@ -469,6 +470,7 @@ const ProtoChat = () => {
 			alert('friend not found, sorry');
 		else
 		{
+      console.log('findActiveRoom().name = ' + findActiveRoom().name);
 			socket?.emit('emitForAnPrInvite', {sender: username, receiver: nameFound, channel: findActiveRoom().name});
 		}
 	}
@@ -541,14 +543,6 @@ const ProtoChat = () => {
   useEffect(() => {
     // console.log('joinedRoom');
     socket?.on("joinedRoom", joinedRoom);
-    return () => {
-      socket?.off("joinedRoom", joinedRoom);
-    };
-  }, [joinedRoom]);
-
-  useEffect(() => {
-    // console.log('joinedRoom');
-    socket?.on("receivedUserName", joinedRoom);
     return () => {
       socket?.off("joinedRoom", joinedRoom);
     };

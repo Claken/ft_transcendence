@@ -9,6 +9,7 @@ function PrRoomInviteButton(props) {
 		dmContext.socket.emit('acceptPrivateRoomInvite', {
 			sender: props.user,
 			receiver: dmContext.me.name,
+			message: props.channel
 		});
 	}
 
