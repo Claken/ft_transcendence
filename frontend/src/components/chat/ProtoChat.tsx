@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import useModal from "../hooks/useModal";
 import io, { Socket } from "socket.io-client";
 import { isForOfStatement } from "typescript";
 import { IChatRoom } from "../../interfaces/chat.interface";
@@ -8,6 +9,7 @@ import { IRoom } from "../../interfaces/room.interface";
 import { type } from "../../interfaces/enum";
 import Account from "../../pages/Account";
 import "../../styles/chat.scss";
+import RoomUserList from "./RoomUserList";
 
 // const 	socket = io('http://localhost/3001');
 
@@ -30,6 +32,8 @@ const ProtoChat = () => {
   const chatEndRef = useRef(null);
 
   const auth = useAuth();
+
+  // const { isOpen, toggle } = useModal();
 
   /* ***************************************************************************** */
   /*    							Functions utiles		    					 */
@@ -108,23 +112,56 @@ const ProtoChat = () => {
     return value;
   };
 
-  const userOptions = (name: string) => {
+  // const userOptions = (name: string) => {
+  //   const activeRoom = findActiveRoom();
+  //   let time: number = 0;
+  //   if (!isAdminInActive(name) && window.confirm("Set this user as admin ?")) {
+  //     socket?.emit("setUserAsAdmin", { name: name, channel: activeRoom.name });
+  //   }
+  //   if (window.confirm("Do you want to ban this user ?")) {
+  //     time = parseInt(prompt("insert the time in minute please :"));
+  //     socket?.emit("banMember", {
+  //       name: name,
+  //       channel: activeRoom.name,
+  //       time: time,
+  //     });
+  //   }
+  //   if (window.confirm("Do you want to mute this user ?")) {
+  //     time = parseInt(prompt("insert the time in minute please :"));
+  //     socket?.emit("muteMember", {
+  //       name: name,
+  //       channel: activeRoom.name,
+  //       time: time,
+  //     });
+  //   }
+  // };
+
+  const userSetAdmin = (name: string) => {
     const activeRoom = findActiveRoom();
-    let time: number = 0;
-    if (!isAdminInActive(name) && window.confirm("Set this user as admin ?")) {
+    if (!isAdminInActive(name)) {
       socket?.emit("setUserAsAdmin", { name: name, channel: activeRoom.name });
     }
-    if (window.confirm("Do you want to ban this user ?")) {
+  };
+
+  const userMuteUser = (name: string) => {
+    const activeRoom = findActiveRoom();
+    let time: number = 0;
+    if (window.confirm("Do you want to mute this user ?")) {
       time = parseInt(prompt("insert the time in minute please :"));
-      socket?.emit("banMember", {
+      socket?.emit("muteMember", {
         name: name,
         channel: activeRoom.name,
         time: time,
       });
     }
-    if (window.confirm("Do you want to mute this user ?")) {
+  };
+
+  const userBanUser = (name: string) => {
+    const activeRoom = findActiveRoom();
+    let time: number = 0;
+    if (window.confirm("Do you want to ban this user ?")) {
       time = parseInt(prompt("insert the time in minute please :"));
-      socket?.emit("muteMember", {
+      socket?.emit("banMember", {
         name: name,
         channel: activeRoom.name,
         time: time,
@@ -557,7 +594,7 @@ const ProtoChat = () => {
         <div className="rooms-list">
           <ul>
             {rooms.map((room: any, id: number) => (
-              <li>
+              <li key={room.name}>
                 <button
                   onClick={() =>
                     findRoom(room.name).ban
@@ -647,7 +684,7 @@ const ProtoChat = () => {
             ) : (
               <div></div>
             )}
-              <div ref={chatEndRef} />
+            <div ref={chatEndRef} />
           </ul>
         </div>
         <div className="chat-bottom">
@@ -678,7 +715,16 @@ const ProtoChat = () => {
           </form>
         </div>
       </div>
-      <div className="rigth-side">
+      <RoomUserList
+        findActiveRoom={findActiveRoom}
+        isAdminInActive={isAdminInActive}
+        userSetAdmin={userSetAdmin}
+        userBanUser={userBanUser}
+        userMuteUser={userMuteUser}
+        username={username}
+        activeRoom={activeRoom}
+      />
+      {/* <div className="rigth-side">
         Members :
         <br />
         {findActiveRoom().usersList ? (
@@ -687,7 +733,19 @@ const ProtoChat = () => {
             name != username &&
             name != findActiveRoom().owner ? (
               <div>
-                <button onClick={() => userOptions(name)}>{name}</button>
+                {name}
+                <button onClick={() => userSetAdmin(name)}>admin</button>
+                <Modal isOpen={isOpen} toggle={toggle}>
+                  <ModalSetAdmin />
+                </Modal>
+                <button onClick={() => userMuteUser(name)}>mute</button>
+                <Modal isOpen={isOpen} toggle={toggle}>
+                  <ModalMuteUser />
+                </Modal>
+                <button onClick={() => userBanUser(name)}>ban</button>
+                <Modal isOpen={isOpen} toggle={toggle}>
+                  <ModalBanUser />
+                </Modal>
               </div>
             ) : (
               <div>{name}</div>
@@ -702,7 +760,7 @@ const ProtoChat = () => {
         ) : (
           <div></div>
         )}
-      </div>
+      </div> */}
     </div>
   );
 };

@@ -128,6 +128,21 @@
 			color: whitesmoke;
 			font-weight: 600;
 			font-size: 15px;
+			
+			button {
+				width: fit-content;
+				padding: 10px;
+				background-color: transparent;
+				color: white;
+				cursor: pointer;
+				border: solid 2px whitesmoke;
+				border-radius: 10px;
+				height: 60%;
+				background-color: rgb(82, 59, 130);
+				font-weight: 600;
+				font-size: 18px;
+
+			}
 		}
 
 		.chat-box {
@@ -282,6 +297,36 @@
 		font-weight: 600;
 		font-size: 20px;
 		align-items: center;
+		.modal-overlay {
+			position: absolute;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			width: 100vw;
+			height: calc(100vh - 10vh);
+			backdrop-filter: blur(10px);
+			background: rgba(255, 255, 255, 0.05);
+			top: 10%;
+			left: 0%;
+		
+			.modal-box {
+			  background: #333333;
+			  overflow: hidden;
+			  min-width: 50%;
+			  width: 50%;
+			  padding: 1rem 0;
+			  border-radius: 1rem;
+			  border: 2px solid whitesmoke;
+			  color: whitesmoke;
+			  
+			  .modal-settings {
+				width: 100%;
+				height: 100%;
+				display: flex;
+				align-items: stretch;
+			  }
+			}
+		}		
 	}
 }
 
