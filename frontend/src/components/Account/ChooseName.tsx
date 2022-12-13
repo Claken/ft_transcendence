@@ -44,7 +44,6 @@ const ChooseName = ({}) => {
 					console.log(err);
 				});
 		};
-		console.log(input)
 		if (input && input.length <= 10 && isAlpha(input))
 			getUserByName();
 	};
