@@ -11,8 +11,8 @@ import "../../styles/chat.scss";
 
 // const 	socket = io('http://localhost/3001');
 
-const ProtoChat = () => {
-  const title = "PROTO CHATROOM";
+const Chat = () => {
+  const title = "CHATROOM";
   const [text, changeText] = useState<string>("");
 
   const [socket, setSocket] = useState<Socket>();
@@ -747,4 +747,4 @@ const ProtoChat = () => {
   );
 };
 
-export default ProtoChat;
+export default Chat;
