@@ -3,6 +3,7 @@ import "../../styles/chat.scss";
 import Modal from "../modal";
 import useModal from "../../hooks/useModal";
 import { ModalSetAdmin } from "./ModalSetAdmin";
+import ModalMuteUser from "./ModalMuteUser";
 
 const RoomUserList = ({
   findActiveRoom,
@@ -11,7 +12,7 @@ const RoomUserList = ({
   userMuteUser,
   isAdminInActive,
   username,
-  activeRoom
+  activeRoom,
 }) => {
   const { isOpen, toggle } = useModal();
 
@@ -33,14 +34,19 @@ const RoomUserList = ({
                     <ModalSetAdmin
                       name={name}
                       userSetAdmin={userSetAdmin}
-					  activeRoom={activeRoom}
-					  toggle={toggle}
+                      activeRoom={activeRoom}
+                      toggle={toggle}
                     />
                   </Modal>
-                  <button onClick={() => userMuteUser(name)}>mute</button>
-                  {/* <Modal isOpen={isOpen} toggle={toggle}>
-                <ModalMuteUser />
-              </Modal> */}
+                  <button onClick={toggle}>mute</button>
+                  <Modal isOpen={isOpen} toggle={toggle}>
+                    <ModalMuteUser
+                      name={name}
+                      userMuteUser={userMuteUser}
+                      activeRoom={activeRoom}
+                      toggle={toggle}
+                    />
+                  </Modal>
                   <button onClick={() => userBanUser(name)}>ban</button>
                   {/* <Modal isOpen={isOpen} toggle={toggle}>
                 <ModalBanUser />

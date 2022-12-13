@@ -8,7 +8,6 @@ export const ModalSetAdmin = ({ name, userSetAdmin, activeRoom, toggle }) => {
       </p>
       <button onClick={userSetAdmin(name)}>confirm</button>
 	  <button onClick={toggle}>close</button>
-
     </div>
   );
 };

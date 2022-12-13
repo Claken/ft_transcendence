@@ -143,17 +143,12 @@ const ProtoChat = () => {
     }
   };
 
-  const userMuteUser = (name: string) => {
-    const activeRoom = findActiveRoom();
-    let time: number = 0;
-    if (window.confirm("Do you want to mute this user ?")) {
-      time = parseInt(prompt("insert the time in minute please :"));
-      socket?.emit("muteMember", {
-        name: name,
-        channel: activeRoom.name,
-        time: time,
-      });
-    }
+  const userMuteUser = (name: string, timer: number) => {
+    socket?.emit("muteMember", {
+      name: name,
+      channel: activeRoom.name,
+      time: timer,
+    });
   };
 
   const userBanUser = (name: string) => {
@@ -684,7 +679,9 @@ const ProtoChat = () => {
             ) : (
               <div></div>
             )}
-            <div ref={chatEndRef} />
+            <li>
+              <div className="endchat" ref={chatEndRef} />
+            </li>
           </ul>
         </div>
         <div className="chat-bottom">
