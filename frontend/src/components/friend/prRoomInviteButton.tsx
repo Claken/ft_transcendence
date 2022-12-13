@@ -13,8 +13,6 @@ function PrRoomInviteButton(props) {
 	}
 
 	const refusePrRoomInvite = () => {
-		console.log('dmContext.me.name = ' + dmContext.me.name);
-		console.log('props.user = ' + props.user);
 		dmContext.socket.emit('refusePrivateRoomInvite', {
 			sender: props.user,
 			receiver: dmContext.me.name,

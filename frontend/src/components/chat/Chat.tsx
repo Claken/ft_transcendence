@@ -292,7 +292,12 @@ const ProtoChat = () => {
 
   const leftRoom = (room: string) => {
     rooms.forEach((element: any) => {
-      if (element.name === room) element.member = false;
+    if (element.name === room)
+	{
+		element.member = false;
+		if (element.type === type.private)
+			setActiveRoom("");
+	}
     });
     setJoinButtonAndStatus();
     socket?.emit("getLists", room);
@@ -724,10 +729,9 @@ const ProtoChat = () => {
         </div>
       </div>
       <div className="rigth-side">
-        Members :
-        <br />
-        {findActiveRoom().usersList ? (
-          findActiveRoom().usersList.map((name: string) =>
+		{findActiveRoom().usersList && activeRoom != "" && findActiveRoom().member ? "Member(s) :" : null}
+        {findActiveRoom().usersList && activeRoom != "" && findActiveRoom().member ? 
+		(findActiveRoom().usersList.map((name: string) =>
             isAdminInActive(username) &&
             name != username &&
             name != findActiveRoom().owner ? (
@@ -738,11 +742,9 @@ const ProtoChat = () => {
               <div>{name}</div>
             )
           )
-        ) : (
-          <div></div>
-        )}
-        Admins :
-        {findActiveRoom().adminsList ? (
+        ) : (<div></div>)}
+        {findActiveRoom().usersList && activeRoom != "" && findActiveRoom().member ? "Admin(s) :" : null}
+        {findActiveRoom().adminsList && activeRoom != "" && findActiveRoom().member ? (
           findActiveRoom().adminsList.map((name: string) => <div>{name}</div>)
         ) : (
           <div></div>
