@@ -111,7 +111,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 		let		channelJoined = await this.chatService.findOneChatRoomByName(infos.room);
 		let		theUser = await this.usersService.getByNameWithRelations(infos.user);
 
-		if (channelJoined.type === type.protected)
+		if (channelJoined.type === type.protected && channelJoined.password != null)
 		{
 			const isMatch = await bcrypt.compare(infos.password, channelJoined.password);
 			if (!isMatch)
