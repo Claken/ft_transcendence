@@ -14,6 +14,10 @@ export class BlockUserService {
 	private readonly usersService: UsersService
 	) {}
 
+	async getAllBlockUsers(): Promise<BlockUserEntity[]> {
+		return await this.blockUserRepo.find({relations: ['user', 'blockBy']});
+	}
+
 	async getBlockUsers(name: string): Promise<UsersEntity[] | undefined> {
 		const listUsers: UsersEntity[] = [];
 		const user = (await this.usersService.getByNameWithRelations(name));
@@ -41,8 +45,7 @@ export class BlockUserService {
 		return await this.blockUserRepo.save(newrequest);
 	}
 
-	async removeblockUser(id: number): Promise<BlockUserEntity> {
-		const newrequest = await this.blockUserRepo.findOne({ relations: ['user'], where: { user: { id: id }}});
-		return await this.blockUserRepo.remove(newrequest);
+	async removeblockUser(toDelete: BlockUserEntity): Promise<BlockUserEntity> {
+		return await this.blockUserRepo.remove(toDelete);
 	}
 }

@@ -38,6 +38,11 @@ function DmList() {
   useEffect(() => {
     getUsers();
     getFriends();
+  }, [dmContext.setSocket]);
+
+  useEffect(() => {
+    getUsers();
+    getFriends();
   }, []);
 
   const acceptFriendRequest = () => {

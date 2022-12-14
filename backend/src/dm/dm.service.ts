@@ -22,9 +22,10 @@ export class DmService {
 		const newDmUser: DmUser = {name: dm.sender, socket: socket};
 		const i = this.dmUsers.findIndex(dmUser => dmUser.name === dm.sender)
 		if (i >= 0) {
-			this.dmUsers.splice(i, 1);
+			this.dmUsers[i].socket = socket;
 		}
-		this.dmUsers.push(newDmUser);
+		else
+			this.dmUsers.push(newDmUser);
 	}
 
   async newDm(dm: DmDto) {

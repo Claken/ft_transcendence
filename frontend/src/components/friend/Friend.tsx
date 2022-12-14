@@ -58,6 +58,11 @@ function Friend() {
   useEffect(() => {
     getFriendRequests();
     getFriends();
+  }, [dmContext.setSocket]);
+
+  useEffect(() => {
+    getFriendRequests();
+    getFriends();
   }, []);
 
   useEffect(() => {
