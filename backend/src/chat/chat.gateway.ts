@@ -384,12 +384,47 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 	}
 
 	@SubscribeMessage('createGameInvite')
-	CreateGameInvite(client: Socket, infos: {user: UserDTO, userList: string[]}) {
+	async CreateGameInvite(client: Socket, infos: {user: UserDTO, userList: string[]}) {
+		infos.user = await this.usersService.getById(infos.user.id);
+		infos.user.hasSentAnInvite = true;
+		await this.usersService.updateUser(infos.user.id);
 		this.eventEmitter.emit('createGameInvite', infos);
 	}
 
 	@OnEvent('sendGameInvite')
-	SendGameInvite(infos: {gameId: number, inviter: string}) {
-		this.users[infos.inviter].emit('recvGameInvite', infos.gameId);
+	async SendGameInvite(infos: {gameId: number, inviter: string, room: string}) {
+		let channel = await this.chatService.findOneChatRoomByName(infos.room);
+		channel.InviteGameId = infos.gameId;
+		channel.InviteUserName = infos.inviter;
+		await this.chatService.saveChatRoom(channel);
+		this.users[infos.inviter].emit('recvGameInvite');
+		this.server.to(channel.id).emit("changeGameButton", "join");
 	}
+	
+	@SubscribeMessage('inviteAcceptCancel')
+	async InvitJoinCancel(client: Socket, infos: {user: string, room: string}) {
+		let channel = await this.chatService.findOneChatRoomByName(infos.room);
+		if (channel.InviteGameId === 0)
+			client.emit("changeGameButton", "invite");
+		else if (channel.InviteUserName !== infos.user)
+			client.emit("changeGameButton", "accept");
+		else
+			client.emit("changeGameButton", "cancel");
+	}
+	
+	@OnEvent('updateGameButton')
+	async UpdateGameButton(infos: {gameId: number, status: string, inviter: string, room: string}) {
+		//On cherche le channel
+		const channel = await this.chatService.findOneChatRoomByName(infos.room);
+		//On set les param avec ceux reçu
+		channel.InviteGameId = infos.gameId;
+		channel.InviteUserName = infos.inviter;
+		//On met à jours la game
+		await this.chatService.saveChatRoom(channel);
+		//il faut emit à ceux du channel pour mettre à jours le button
+		this.server.to(channel.id).emit("changeGameButton", infos.status);
+	}
+	
+	//TODO: faire fct pour cancel l'invit (penser à eventemitter dans gameGateway pour cancelInvite)
+
 }

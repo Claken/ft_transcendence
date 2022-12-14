@@ -26,6 +26,8 @@ const Chat = () => {
   const [password, setPassword] = useState<string>("");
   const [date, setDate] = useState<Date>(null);
 
+  const [gameButton, setGameButton] = useState<string>("invite");
+
   const chatEndRef = useRef(null);
 
   const auth = useAuth();
@@ -70,13 +72,19 @@ const Chat = () => {
     }
   };
 
-  const setActiveForRoom = (roomName: string) => {
+  const setActiveForRoom = (roomName: string) => {//TODO: update button
     rooms.forEach((element: IRoom) => {
       element.active = element.name === roomName ? true : false;
     });
     setActiveRoom(roomName);
     setJoinButtonAndStatus();
-  };
+    if (findActiveRoom().InviteUserName === username)
+    	setGameButton("cancel");
+	else if (findActiveRoom().InviteUserName !== "")
+		setGameButton("join");
+	else
+		setGameButton("invite");
+};
 
   /* ***************************************************************************** */
   /*    					Functions pour la gestion des chats 					 */
@@ -391,6 +399,7 @@ const Chat = () => {
         owner: element.owner.name,
         name: element.chatRoomName,
         type: element.type,
+        InviteUserName: element.InviteUserName,
         messages: [],
       };
       [...element.messages].reverse().forEach((oneMessage: any) => {
@@ -427,6 +436,7 @@ const Chat = () => {
       owner: channel.owner.name,
       name: channel.chatRoomName,
       type: channel.type,
+      InviteUserName: channel.InviteUserName,
       messages: [],
     };
     if (channel.messages !== undefined) {
@@ -512,25 +522,35 @@ const Chat = () => {
     }
   };
 
-	const CreateGameInvite = () => {
+  const CreateGameInvite = () => {
 	const roomActive = findActiveRoom();
-	if (activeRoom !== "" && roomActive.member && roomActive.usersList.length > 1)
-		socket?.emit('createGameInvit', auth.user, roomActive.usersList);
+	if (activeRoom !== "" &&
+	roomActive.member &&
+	roomActive.usersList.length > 1 &&
+	auth.user.hasSentAnInvite === false &&
+	auth.user.inGame === false &&
+	auth.user.inQueue === false)
+		socket?.emit('createGameInvit', auth.user, roomActive.usersList, roomActive.name);
 	else
 		alert('You cannot send a game invite !');
   }
 
-  const sendGameInviteMessage = (gameId: number) => {
-	console.log("on passe dans la fct sendGameInviteMessage")
-	//TODO: lien de la game dans le message ?
-    const inviteMessage: string = username + " send an invite to a Pong game: " + gameId;
+  const sendGameInviteMessage = () => {
+	console.log("La game est creé")
+    const inviteMessage: string = username + " send an invite to a Pong game";
     socket?.emit("chatToServer", {
       sender: username,
       room: findActiveRoom().name,
       msg: inviteMessage,
     });
+	console.log("Message envoyé, on navigate.")
 	navigate("/pong/");
   }
+
+  socket?.on("changeGameButton", (status) => {
+	setGameButton(status);
+	console.log("On change le button. button = " + status)
+  });
 
   /* ***************************************************************************** */
   /*    						Les différents UseEffets    						 */
@@ -545,6 +565,12 @@ const Chat = () => {
 
   useEffect(() => {
     changeUsername(auth.user.name);
+	//TODO: parser pour afficher le bon bouton (raquette/encoche/croix)
+	const roomActive = findActiveRoom();
+	if (!roomActive)
+		setGameButton("invite")
+	else
+    	socket?.emit("inviteAcceptCancel", username, roomActive.name);
   }, []);
 
   useEffect(() => {
@@ -785,6 +811,7 @@ const Chat = () => {
           </ul>
         </div>
         <div className="chat-bottom">
+          <div className="chat-send-msg">
           <form onSubmit={sendChatMessage}>
             <input
               type="text"
@@ -811,20 +838,20 @@ const Chat = () => {
             </button>
           </form>
         </div>
-		<div className="chat-bottom">
+        <div className="chat-game-btn">
 			<form onSubmit={CreateGameInvite}>
 				<button type="submit">
 				<svg
 					xmlns="http://www.w3.org/2000/svg"
-					class="icon icon-tabler icon-tabler-ping-pong"
+					className="icon icon-tabler icon-tabler-ping-pong"
 					width="24"
 					height="24"
 					viewBox="0 0 24 24"
 					stroke-width="2"
 					stroke="currentColor"
 					fill="none"
-					stroke-linecap="round"
-					stroke-linejoin="round"
+					strokeLinecap="round"
+					strokeLinejoin="round"
 				>
 					<path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
 					<path d="M12.718 20.713a7.64 7.64 0 0 1 -7.48 -12.755l.72 -.72a7.643 7.643 0 0 1 9.105 -1.283l2.387 -2.345a2.08 2.08 0 0 1 3.057 2.815l-.116 .126l-2.346 2.387a7.644 7.644 0 0 1 -1.052 8.864"></path>
@@ -833,7 +860,6 @@ const Chat = () => {
 				</svg>
 				</button>
 			</form>
-		</div>
       </div>
       <RoomUserList
         findActiveRoom={findActiveRoom}

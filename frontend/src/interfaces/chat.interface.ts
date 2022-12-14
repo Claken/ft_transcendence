@@ -14,6 +14,10 @@ export interface IChatRoom {
 
 	password?: string;
 
+	InviteUserName?: string;
+
+	InviteGameId?: number;
+
 	// active?: boolean;
 
 	// member?: boolean;

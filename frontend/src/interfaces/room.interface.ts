@@ -8,6 +8,7 @@ export interface IRoom {
 	owner: string;
 	name: string;
 	type: number;
+	InviteUserName?: string;
 	messages: IMessageToBack[];
 	usersList?: string[];
 	adminsList?: string[];

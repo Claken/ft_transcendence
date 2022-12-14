@@ -34,6 +34,9 @@ export class UserDTO {
 
   @IsOptional()
   inGame?: boolean;
+
+  @IsOptional()
+  hasSentAnInvite?: boolean = false;
   
   @IsOptional()
   ownedChannels?: ChatRoomEntity[];

@@ -18,6 +18,7 @@ export interface ObjInterval {
 }
 export interface ObjInvite {
 	gameId:		number,
+	roomName:	string,
 	Inviter:	UserDTO;
 	userList:	string[],
 }
@@ -276,14 +277,14 @@ export class GameGateway
   /*                     Vérifie si le user est en Queue/Game                      */
   /* ***************************************************************************** */
 
-  @SubscribeMessage('inQueueOrGame')//TODO: check si game invit
+  @SubscribeMessage('inQueueOrGame')
   async InQueueOrGame(client: any, user: UserDTO) {
 	const res = this.tabGameInvite.filter((ObjInvite: ObjInvite) => ObjInvite.Inviter === user);
+	console.log("res = "+res)
 	if (user && res[0]) {
 		console.log("Le user à envoyé une invite et attend un joueur")
 		client.join(res[0].gameId);
-		client.emit("changeQueue", true);
-		// client.emit("goPlay", currentGame);
+		client.emit("changeQueue", "invite");
 		return ;
 	}
 	if (user && user.inQueue) {
@@ -293,7 +294,7 @@ export class GameGateway
 			var waitingGame: GameDTO = await this.gameService.getPendingGame(user.name);
 		if (waitingGame) {
 			client.join(waitingGame.id);
-			client.emit("changeQueue", true);
+			client.emit("changeQueue", "queue");
 		}
 		return ;
 	}
@@ -306,7 +307,7 @@ export class GameGateway
 			client.emit("goPlay", currentGame);
 		return ;
 	}
-	client.emit("changeQueue", false);
+	client.emit("changeQueue", "join");
   }
 
   /* ***************************************************************************** */
@@ -490,7 +491,7 @@ export class GameGateway
   /* ***************************************************************************** */
 
   @OnEvent('createGameInvite')
-  async CreateGameInvite(infos: {inviter: UserDTO, userList: string[]}) {
+  async CreateGameInvite(infos: {inviter: UserDTO, userList: string[], roomName: string}) {
 	let login: string;
 	if (!infos.inviter.login)
 		login = infos.inviter.name;
@@ -504,8 +505,25 @@ export class GameGateway
 	waitingForInvit: true,
 	waitingForOppenent: true,
 	});
-	this.tabGameInvite.push({gameId: game.id, Inviter: infos.inviter, userList: infos.userList});
-	this.eventEmitter.emit('sendGameInvite', {gameId: game.id, inviter: infos.inviter.name});
-	//lancer la game ?
+	this.tabGameInvite.push({gameId: game.id, roomName: infos.roomName, Inviter: infos.inviter, userList: infos.userList});
+	this.eventEmitter.emit('sendGameInvite', {gameId: game.id, inviter: infos.inviter.name, room: infos.roomName});
   }
+
+  @SubscribeMessage('cancelInvite')
+  async CancelInvite(client: any, user: UserDTO) {
+	const res = this.tabGameInvite.filter((ObjInvite: ObjInvite) => ObjInvite.Inviter === user);
+	if (user.login)
+		var game: GameDTO = await this.gameService.getPendingGame(user.login);
+	else 
+		var game: GameDTO = await this.gameService.getPendingGame(user.name);
+	client.leave(game.id);
+	await this.gameService.deleteGame(game.id);
+	const index = this.tabGameInvite.findIndex(
+		(ObjInvite: ObjInvite) => ObjInvite.Inviter.name === user.name);
+	if (index !== -1) {
+		console.log("on supprime la game en attente d'une invite")
+		this.tabIntervalId.splice(index, 1);
+	}
+	this.eventEmitter.emit('updateGameButton', {gameId: 0, status: "invite", inviter: "", roomName: res[0].roomName});
+}
 }

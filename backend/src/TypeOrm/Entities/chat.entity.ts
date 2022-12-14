@@ -36,6 +36,12 @@ export class ChatRoomEntity {
 	@Column({default: type.public})
 	type: number;
 
+	@Column({default: 0})
+	InviteGameId: number;
+
+	@Column({default: ""})
+	InviteUserName: string;
+
 	@Column({ nullable: true, default: null})
 	password?: string;
 

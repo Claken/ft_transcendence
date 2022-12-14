@@ -28,5 +28,11 @@ export class ChatRoomDto {
 	type: number;
 
 	@IsOptional()
+	InviteGameId: number;
+
+	@IsOptional()
+	InviteUserName: string;
+
+	@IsOptional()
 	password: string;
 }

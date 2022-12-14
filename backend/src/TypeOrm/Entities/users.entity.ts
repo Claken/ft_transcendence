@@ -48,6 +48,9 @@ export class UsersEntity {
   @Column({ default: false })
   inGame?: boolean;
 
+  @Column({ default: false })
+  hasSentAnInvite?: boolean;
+
   @Column({ nullable: true, default: 0})
   win?: number;
 
