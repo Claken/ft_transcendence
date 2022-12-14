@@ -57,6 +57,7 @@ const Game = (
 		});
 
 		if (auth.user) {
+			//Si game sur invit, alors faire les prepa ?
 			socket.emit("updateData", gameId);
 		}
 	}, [])
@@ -152,7 +153,7 @@ const Game = (
 				x < allPos.width / 2 + 150 + allPos.radius * 2 &&
 				y > 25 - allPos.radius * 2 &&
 				y < 25 + allPos.radius * 2) {
-					socket.emit("abort", allPos, auth.user.name);
+					socket.emit("abort", allPos, auth.user.name);//TODO: si compteur = 10 => give up party
 			}
 		}
 	};

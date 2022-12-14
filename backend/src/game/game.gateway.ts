@@ -9,11 +9,17 @@ import { UserDTO } from '../TypeOrm/DTOs/User.dto';
 import { GameDTO } from '../TypeOrm/DTOs/Game.dto';
 import { GameService } from './game.service';
 import { UsersService } from 'src/users/users.service';
+import { OnEvent, EventEmitter2 } from '@nestjs/event-emitter';
 
 export var userQueue: UserDTO[] = [];
 export interface ObjInterval {
 	gameId:		number,
 	intervalID:	NodeJS.Timer,
+}
+export interface ObjInvite {
+	gameId:		number,
+	Inviter:	UserDTO;
+	userList:	string[],
 }
 
 @WebSocketGateway({ cors: 'http://localhost:3000' })
@@ -22,11 +28,13 @@ export class GameGateway
 {
   constructor(
 	private readonly gameService: GameService,
-	private readonly usersService: UsersService) {}
+	private readonly usersService: UsersService,
+	private eventEmitter: EventEmitter2) {}
 
   @WebSocketServer() server;
   users: number = 0;
   tabIntervalId: ObjInterval[] = [];
+  tabGameInvite: ObjInvite[] = [];
 
   async handleConnection(client) {
     // A client has connected
@@ -42,7 +50,7 @@ export class GameGateway
 	}, 1500)
   }
 
-  async isDisconnect(client: string) {
+  async isDisconnect(client: string) {//TODO: supprimer game si Invit
 	let user: UserDTO = await this.usersService.getByClient(client);
 	if (user) {
 		if (user.inQueue) {
@@ -268,8 +276,16 @@ export class GameGateway
   /*                     Vérifie si le user est en Queue/Game                      */
   /* ***************************************************************************** */
 
-  @SubscribeMessage('inQueueOrGame')
+  @SubscribeMessage('inQueueOrGame')//TODO: check si game invit
   async InQueueOrGame(client: any, user: UserDTO) {
+	const res = this.tabGameInvite.filter((ObjInvite: ObjInvite) => ObjInvite.Inviter === user);
+	if (user && res[0]) {
+		console.log("Le user à envoyé une invite et attend un joueur")
+		client.join(res[0].gameId);
+		client.emit("changeQueue", true);
+		// client.emit("goPlay", currentGame);
+		return ;
+	}
 	if (user && user.inQueue) {
 		if (user.login)
 			var waitingGame: GameDTO = await this.gameService.getPendingGame(user.login);
@@ -467,5 +483,29 @@ export class GameGateway
 			}
 		}
 	}
+  }
+
+  /* ***************************************************************************** */
+  /*                               invit de partie                                 */
+  /* ***************************************************************************** */
+
+  @OnEvent('createGameInvite')
+  async CreateGameInvite(infos: {inviter: UserDTO, userList: string[]}) {
+	let login: string;
+	if (!infos.inviter.login)
+		login = infos.inviter.name;
+	else
+		login = infos.inviter.login;
+	const game = await this.gameService.create({
+	loginLP: login,
+	nameLP: infos.inviter.name,
+	loginRP: '',
+	nameRP: '',
+	waitingForInvit: true,
+	waitingForOppenent: true,
+	});
+	this.tabGameInvite.push({gameId: game.id, Inviter: infos.inviter, userList: infos.userList});
+	this.eventEmitter.emit('sendGameInvite', {gameId: game.id, inviter: infos.inviter.name});
+	//lancer la game ?
   }
 }

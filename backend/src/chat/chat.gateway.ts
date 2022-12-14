@@ -17,6 +17,7 @@ import { DeepPartial } from 'typeorm';
 import { OnEvent } from '@nestjs/event-emitter';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { DmDto } from 'src/TypeOrm/DTOs/dm.dto';
+import { UserDTO } from 'src/TypeOrm/DTOs/User.dto';
 
 // {cors: '*'} pour que chaque client dans le frontend puisse se connecter à notre gateway
 @WebSocketGateway({cors: '*'}) // decorator pour dire que la classe ChatGateway sera un gateway /
@@ -380,5 +381,15 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 			message: infos.channel
 		}
 		this.eventEmitter.emit('sendPrivateRoomInvite', invite);
+	}
+
+	@SubscribeMessage('createGameInvite')
+	CreateGameInvite(client: Socket, infos: {user: UserDTO, userList: string[]}) {
+		this.eventEmitter.emit('createGameInvite', infos);
+	}
+
+	@OnEvent('sendGameInvite')
+	SendGameInvite(infos: {gameId: number, inviter: string}) {
+		this.users[infos.inviter].emit('recvGameInvite', infos.gameId);
 	}
 }

@@ -44,5 +44,8 @@ export class GameDTO {
 	date?: Date;
 
 	@IsOptional()
-	waitingForOppenent?: boolean;
+	waitingForOppenent?: boolean = true;
+
+	@IsOptional()
+	waitingForInvit?: boolean = false;
 }

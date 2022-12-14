@@ -9,6 +9,7 @@ import { IRoom } from "../../interfaces/room.interface";
 import { type } from "../../interfaces/enum";
 import "../../styles/chat.scss";
 import RoomUserList from "./RoomUserList";
+import { useNavigate } from "react-router-dom";
 
 const Chat = () => {
   const [text, changeText] = useState<string>("");
@@ -28,6 +29,8 @@ const Chat = () => {
   const chatEndRef = useRef(null);
 
   const auth = useAuth();
+
+  const navigate = useNavigate();
 
   /* ***************************************************************************** */
   /*    							Functions utiles		    					 */
@@ -509,6 +512,26 @@ const Chat = () => {
     }
   };
 
+	const CreateGameInvite = () => {
+	const roomActive = findActiveRoom();
+	if (activeRoom !== "" && roomActive.member && roomActive.usersList.length > 1)
+		socket?.emit('createGameInvit', auth.user, roomActive.usersList);
+	else
+		alert('You cannot send a game invite !');
+  }
+
+  const sendGameInviteMessage = (gameId: number) => {
+	console.log("on passe dans la fct sendGameInviteMessage")
+	//TODO: lien de la game dans le message ?
+    const inviteMessage: string = username + " send an invite to a Pong game: " + gameId;
+    socket?.emit("chatToServer", {
+      sender: username,
+      room: findActiveRoom().name,
+      msg: inviteMessage,
+    });
+	navigate("/pong/");
+  }
+
   /* ***************************************************************************** */
   /*    						Les différents UseEffets    						 */
   /* ***************************************************************************** */
@@ -634,6 +657,20 @@ const Chat = () => {
       socket?.off("handleProtected", handlingPasswordPart2);
     };
   }, [handlingPasswordPart2]);
+
+  // useEffect(() => {
+  //   socket?.on("navigateGameInviter", navigateGameInviter);
+  //   return () => {
+  //     socket?.off("handleProtected", navigateGameInviter);
+  //   };
+  // }, [navigateGameInviter]);
+
+    useEffect(() => {
+    socket?.on("recvGameInvite", sendGameInviteMessage);
+    return () => {
+      socket?.off("recvGameInvite", sendGameInviteMessage);
+    };
+  }, [sendGameInviteMessage]);
 
   const sortedMessages = findActiveRoom().messages.sort((a, b) => {
     // Compare the dates of the messages to determine their order
@@ -772,27 +809,31 @@ const Chat = () => {
                 <path d="M15 10l-4 4l6 6l4 -16l-18 7l4 2l2 6l3 -4"></path>
               </svg>
             </button>
-            <button>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                class="icon icon-tabler icon-tabler-ping-pong"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                stroke-width="2"
-                stroke="currentColor"
-                fill="none"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              >
-                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                <path d="M12.718 20.713a7.64 7.64 0 0 1 -7.48 -12.755l.72 -.72a7.643 7.643 0 0 1 9.105 -1.283l2.387 -2.345a2.08 2.08 0 0 1 3.057 2.815l-.116 .126l-2.346 2.387a7.644 7.644 0 0 1 -1.052 8.864"></path>
-                <circle cx="14" cy="18" r="3"></circle>
-                <path d="M9.3 5.3l9.4 9.4"></path>
-              </svg>
-            </button>
           </form>
         </div>
+		<div className="chat-bottom">
+			<form onSubmit={CreateGameInvite}>
+				<button type="submit">
+				<svg
+					xmlns="http://www.w3.org/2000/svg"
+					class="icon icon-tabler icon-tabler-ping-pong"
+					width="24"
+					height="24"
+					viewBox="0 0 24 24"
+					stroke-width="2"
+					stroke="currentColor"
+					fill="none"
+					stroke-linecap="round"
+					stroke-linejoin="round"
+				>
+					<path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+					<path d="M12.718 20.713a7.64 7.64 0 0 1 -7.48 -12.755l.72 -.72a7.643 7.643 0 0 1 9.105 -1.283l2.387 -2.345a2.08 2.08 0 0 1 3.057 2.815l-.116 .126l-2.346 2.387a7.644 7.644 0 0 1 -1.052 8.864"></path>
+					<circle cx="14" cy="18" r="3"></circle>
+					<path d="M9.3 5.3l9.4 9.4"></path>
+				</svg>
+				</button>
+			</form>
+		</div>
       </div>
       <RoomUserList
         findActiveRoom={findActiveRoom}

@@ -56,6 +56,9 @@ export class Game implements IGame {
   @Column({ default: true })
   waitingForOppenent?: boolean;
 
+  @Column({ default: false })
+  waitingForInvit?: boolean;
+
   @CreateDateColumn()
   date?: Date;
 }
