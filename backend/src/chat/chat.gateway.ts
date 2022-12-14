@@ -96,6 +96,14 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 		await this.HandleLists(infos.channel);
 	}
 
+	@SubscribeMessage('checkPswdStatus')
+	async checkPswdStatus(client: Socket, infos: {room: string, user: string})
+	{
+		const	channelJoined = await this.chatService.findOneChatRoomByName(infos.room);
+		const	pswd: boolean = channelJoined.password === null ? false : true;
+		client.emit('handleProtected', {room: infos.room, user: infos.user, pswdStatus: pswd});
+	}
+
 	@SubscribeMessage('joinRoom')
 	async HandleJoinRoom(client: Socket, infos: {room: string, user: string, password: string}): Promise<void> {
 		// console.log('joinRoom');

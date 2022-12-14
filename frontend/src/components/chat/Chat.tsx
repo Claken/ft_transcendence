@@ -328,24 +328,45 @@ const Chat = () => {
     socket?.emit("getLists", room);
   };
 
-  const toggleRoomMembership = (event: any) => {
-    event.preventDefault();
-    const activeRoom = findActiveRoom();
-    let pswd: string = null;
-    if (activeRoom.member) {
-      socket?.emit("leaveRoom", { room: activeRoom.name, user: username });
-    } else {
-      if (activeRoom.type === type.protected)
-        pswd = prompt(
-          "you need a password to join this channel, please type it: "
-        );
-      socket?.emit("joinRoom", {
-        room: activeRoom.name,
-        user: username,
+  const handlingPasswordPart1 = (room: string, user: string) => {
+    socket?.emit('checkPswdStatus', {room: room, user: user});
+  }
+
+  const handlingPasswordPart2 = (infos: {room: string, user: string, pswdStatus: boolean}) => 
+  {
+    let pswd: string = undefined;
+    if (infos.pswdStatus)
+	{
+		pswd = prompt("you need a password to join this channel, please type it: ");
+	}
+	socket?.emit("joinRoom", {
+        room: infos.room,
+        user: infos.user,
         password: pswd,
-      });
-    }
-  };
+	});
+  }
+
+	const toggleRoomMembership = (event: any) => {
+		event.preventDefault();
+		const activeRoom = findActiveRoom();
+		if (activeRoom.member)
+		{
+			socket?.emit("leaveRoom", { room: activeRoom.name, user: username });
+		}
+		else 
+		{
+			if (activeRoom.type === type.protected)
+			{
+				handlingPasswordPart1(activeRoom.name, username);
+				return ;
+			}
+			socket?.emit("joinRoom", {
+				room: activeRoom.name,
+				user: username,
+				password: undefined,
+			});
+		}
+	};
 
   const receiveAllChannels = (channels: any[]) => {
     let roomsCopy = [...rooms];
@@ -609,6 +630,13 @@ const Chat = () => {
       socket?.off("recvFriendsList", askWhichFriend);
     };
   }, [askWhichFriend]);
+
+  useEffect(() => {
+    socket?.on("handleProtected", handlingPasswordPart2);
+    return () => {
+      socket?.off("handleProtected", handlingPasswordPart2);
+    };
+  }, [handlingPasswordPart2]);
 
   const sortedMessages = findActiveRoom().messages.sort((a, b) => {
     // Compare the dates of the messages to determine their order
