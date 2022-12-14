@@ -46,6 +46,9 @@ export const DmProvider = ({ children }) => {
   const blockRefresh = () => {
     getBlockUsers();
     getBlockBys();
+    console.log("all block users:");
+    blockUsers.map(blockUser => console.log(blockUser.name));
+    console.log("|end");
   }
 
   useEffect(() => {
@@ -92,6 +95,12 @@ export const DmProvider = ({ children }) => {
     setLoading(true);
   };
 
+  const isBlock = (id: number) => {
+    if (blockUsers.findIndex((blockUser) => blockUser.id === id) > -1)
+      return true;
+    return false;
+  }
+
   return (
     <DmContext.Provider
       value={{
@@ -108,6 +117,7 @@ export const DmProvider = ({ children }) => {
 				setFriendNotif,
         blockUsers,
         blockBys,
+        isBlock,
       }}
     >
       {children}

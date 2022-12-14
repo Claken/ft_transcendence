@@ -82,13 +82,13 @@ export class UsersService {
   }
   async getByNameWithRelations(nameToFind: string): Promise<UsersEntity> {
     return await this.userRepo.findOne({
-      where: { name: nameToFind }, relations: ['friendRequests', 'friends', 'friends.user', 'blockUsers', 'blockUsers.user', 'blockBys', 'blockBys.user']
+      where: { name: nameToFind }, relations: ['friendRequests', 'friends', 'friends.user', 'blockUsers', 'blockUsers.user', 'blockBys', 'blockBys.blockBy']
     });
   }
 
 	async getByIdWithRelations(idToFind: number): Promise<UsersEntity> {
     return await this.userRepo.findOne({
-      where: { id: idToFind }, relations: ['friendRequests', 'friends', 'friends.user', 'blockUsers', 'blockUsers.user', 'blockBys', 'blockBys.user']
+      where: { id: idToFind }, relations: ['friendRequests', 'friends', 'friends.user', 'blockUsers', 'blockUsers.user', 'blockBys', 'blockBys.blockBy']
     });
   }
 

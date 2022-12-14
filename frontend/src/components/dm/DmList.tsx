@@ -50,11 +50,6 @@ function DmList() {
     getFriends();
   };
 
-  const blockRefresh = () => {
-    getUsers();
-    getFriends();
-  }
-
   useEffect(() => {
     dmContext.socket?.on("accept_friendRequest", acceptFriendRequest);
     return () => {
@@ -68,20 +63,6 @@ function DmList() {
       dmContext.socket?.off("delete_friend", deleteFriend);
     };
   }, [deleteFriend]);
-
-  useEffect(() => {
-    dmContext.socket?.on("block_user", blockRefresh);
-    return () => {
-      dmContext.socket?.off("block_user", blockRefresh);
-    };
-  }, [blockRefresh]);
-
-  useEffect(() => {
-    dmContext.socket?.on("deblock_user", blockRefresh);
-    return () => {
-      dmContext.socket?.off("deblock_user", blockRefresh);
-    };
-  }, [blockRefresh]);
 
   const isMe = (id): boolean => {
     if (id === dmContext.me.id) return true;

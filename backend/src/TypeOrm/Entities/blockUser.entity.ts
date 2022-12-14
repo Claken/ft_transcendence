@@ -10,10 +10,10 @@ export class BlockUserEntity {
 	@PrimaryGeneratedColumn()
 	id: number;
 
-	@ManyToOne(() => UsersEntity, (user: UsersEntity) => user.blockUsers)
+	@ManyToOne(() => UsersEntity, (user: UsersEntity) => user.blockBys)
 	user: UsersEntity;
 
-	@ManyToOne(() => UsersEntity, (user: UsersEntity) => user.blockBys)
+	@ManyToOne(() => UsersEntity, (user: UsersEntity) => user.blockUsers)
 	blockBy: UsersEntity;
 }
 

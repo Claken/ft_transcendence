@@ -121,21 +121,19 @@ function DmUserButton(props) {
             </button>
           </div>
           <div className="overlayright">
-            {(dmContext.blockUsers.findIndex(
-              (blockUser) => blockUser.id === props.user.id
-            ) === -1 && (
-              <button
-                className="simplebtn"
-                onClick={() => blockUser(dmContext.me.id, props.user.id)}
-              >
-                Block user
-              </button>
-            )) || (
+            {(dmContext.isBlock(props.user.id) && (
               <button
                 className="simplebtn"
                 onClick={() => deblockUser(dmContext.me.id, props.user.id)}
               >
                 Deblock user
+              </button>
+            )) || (
+              <button
+                className="simplebtn"
+                onClick={() => blockUser(dmContext.me.id, props.user.id)}
+              >
+                Block user
               </button>
             )}
           </div>

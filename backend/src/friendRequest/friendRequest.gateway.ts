@@ -32,7 +32,8 @@ export class FriendRequestGateway {
 			(await receiver).friendRequests.push(await pushFriendRequest);
 			await this.usersService.save(sender);
 			await this.usersService.save(receiver);
-			this.dmService.dmUsers.find(user => user.name === request.receiver).socket.emit('send_friendRequest', request.sender);
+			this.dmService.dmUsers.find(user => user.name === request.sender).socket.emit('send_friendRequest');
+			this.dmService.dmUsers.find(user => user.name === request.receiver).socket.emit('send_friendRequest');
 		}
 	}
 
