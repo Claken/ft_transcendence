@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 
 const ModalMuteUser = ({ name, userMuteUser, activeRoom, toggle, muteList }) => {
-  const [timer, setTimer] = useState(0);
+  const [timer, setTimer] = useState<number>(0);
 
   return (
     <div>
