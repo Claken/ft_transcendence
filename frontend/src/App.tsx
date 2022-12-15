@@ -23,8 +23,9 @@ function App() {
 				<BrowserRouter>
 					<Routes>
 						<Route path="/" element={<Layout />}>
+							{/* todo: refresh amene sur la page Home, comportement voulu ? */}
 							<Route index element={<Home />} />
-							<Route path="*" element={<Home />} />
+							<Route path="*" element={<Pong />} />
 							<Route element={<RequiredOffline />}>
 								<Route path="/login" element={<Login />} />
 							</Route>

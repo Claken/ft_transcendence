@@ -112,6 +112,12 @@ export class UsersService {
     return await this.userRepo.save(user);
   }
 
+  async updateInviteUser(id: number, invite: boolean): Promise<UsersEntity> {
+    const user = await this.getById(id);
+    user.hasSentAnInvite = invite;
+    return await this.userRepo.save(user);
+  }
+
   async updateName(id: number, name: string): Promise<UsersEntity> {
     const user = await this.getById(id);
     user.name = name;
@@ -126,6 +132,7 @@ export class UsersService {
   async updateSocket(id: number, socket: string): Promise<UsersEntity> {
     const user = await this.getById(id);
 	user.lastSocket = socket;
+	user.status = "online";
     return await this.userRepo.save(user);
   }
 
@@ -144,10 +151,15 @@ export class UsersService {
   //   await this.userRepo.save(user);
   //   return await this.getById(id);
   // }
-
   async updateInQueue(id: number, bool: boolean): Promise<UsersEntity> {
     const user = await this.getById(id);
     user.inQueue = bool;
+    return await this.userRepo.save(user);
+  }
+
+  async updateInviteSend(id: number, bool: boolean): Promise<UsersEntity> {
+    const user = await this.getById(id);
+    user.hasSentAnInvite = bool;
     return await this.userRepo.save(user);
   }
 

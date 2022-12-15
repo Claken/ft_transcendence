@@ -31,7 +31,7 @@ function GuestForm() {
 		setErrorMsg("");
 		if (guestInput === "")
 			setErrorMsg("you need to write a name");
-		else if (guestInput.length >= 10)
+		else if (guestInput.length > 10)
 			setErrorMsg("Name too long");
 		else if (isAlpha(guestInput) === false)
 			setErrorMsg("Name contains none alphanumeric character");

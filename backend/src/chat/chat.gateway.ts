@@ -17,6 +17,7 @@ import { DeepPartial } from 'typeorm';
 import { OnEvent } from '@nestjs/event-emitter';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { DmDto } from 'src/TypeOrm/DTOs/dm.dto';
+import { UserDTO } from 'src/TypeOrm/DTOs/User.dto';
 
 // {cors: '*'} pour que chaque client dans le frontend puisse se connecter à notre gateway
 @WebSocketGateway({cors: '*'}) // decorator pour dire que la classe ChatGateway sera un gateway /
@@ -138,7 +139,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
 	@SubscribeMessage('leaveRoom')
 	async HandleLeaveRoom(client: Socket, infos: {room: string, user: string}): Promise<void> {
-		console.log('leaveRoom');
+		// console.log('leaveRoom');
 		let		channelLeft = await this.chatService.findOneChatRoomByName(infos.room);
 		let		member = await this.memberService.getMemberByNameAndChannel(infos.user, channelLeft);
 		let		memberName = member.user.name;
@@ -259,7 +260,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 	@SubscribeMessage('getAllChannels')
 	async HandleGettingChannels(client: Socket) : Promise<void> {
 		const Channels = await this.chatService.findAllChatRooms();
-		console.log("CLIENTS.JOIN");
+		// console.log("CLIENTS.JOIN");
 		Channels.forEach((channel : ChatRoomEntity) => client.join(channel.id));
 		// const Admins = await this.memberService.findAllAdminsFromOneRoom(Channels[0].id);
 		// console.log(Admins);
@@ -304,16 +305,18 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 	async deleteChannelPassword(client: Socket, room: string) {
 		let channel = await this.chatService.findOneChatRoomByName(room);
 		channel.password = null;
-		await this.chatService.saveChatRoom(channel);
+		if (await this.chatService.saveChatRoom(channel))
+			client.emit('Password deleted');
 	}
 
 	@SubscribeMessage('updateChannelPassword')
-	async updateChannelPassword(client: Socket, @MessageBody() message: { room: string, newPassword: string}) {
+	async updateChannelPassword(client: Socket, message: { room: string, newPassword: string}) {
 		const { room, newPassword } = message;
 		const channel = await this.chatService.findOneChatRoomByName(room);
 		const hash = await bcrypt.hash(newPassword, 10);
 		channel.password = hash;
-		await this.chatService.saveChatRoom(channel);
+		if (await this.chatService.saveChatRoom(channel))
+			client.emit('Password updated');
 	}
 
 	@SubscribeMessage('setUserAsAdmin')
@@ -381,4 +384,70 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 		}
 		this.eventEmitter.emit('sendPrivateRoomInvite', invite);
 	}
+
+	@SubscribeMessage('createGameInvite')
+	async CreateGameInvite(client: Socket, infos: {user: UserDTO, userList: string[], name: string}) {
+		infos.user = await this.usersService.updateInviteUser(infos.user.id, true);
+		this.eventEmitter.emit('createGameInvite', {inviter: infos.user, userList: infos.userList, roomName: infos.name});
+	}
+
+	@SubscribeMessage('invitationAccepted')
+	async InvitationAccepted(client: Socket, infos: {user: UserDTO, inviter: string, gameId: number, name: string}) {
+		this.eventEmitter.emit('acceptInvite', {user: infos.user, inviter: infos.inviter, gameId: infos.gameId, roomName: infos.name});
+	}
+
+	@OnEvent('sendGameInvite')
+	async SendGameInvite(infos: {gameId: number, inviter: string, room: string}) {
+		let channel = await this.chatService.findOneChatRoomByName(infos.room);
+		channel.InviteGameId = infos.gameId;
+		channel.InviteUserName = infos.inviter;
+		channel = await this.chatService.saveChatRoom(channel);
+		this.users[infos.inviter].emit('recvGameInvite');
+		this.server.to(channel.id).emit("changeGameButton", {status: "join", channel: channel});
+	}
+
+	@OnEvent('gamePrepareToTheJoin')
+	async GamePrepareToTheJoin(infos: {joiner: string, room: string}) {
+		let channel = await this.chatService.findOneChatRoomByName(infos.room);
+		let updatedUser: UserDTO = await this.usersService.getByName(infos.joiner)
+		updatedUser = await this.usersService.updateUser(updatedUser.id)
+		this.users[infos.joiner].emit('updateUser', updatedUser);
+		channel.InviteGameId = 0;
+		channel.InviteUserName = "";
+		channel = await this.chatService.saveChatRoom(channel);
+		this.users[infos.joiner].emit('navigateToTheGame');
+		this.server.to(channel.id).emit("changeGameButton", {status: "invite", channel: channel});
+	}
+	
+	@SubscribeMessage('inviteAcceptCancel')
+	async InvitJoinCancel(client: Socket, infos: {user: string, room: string}) {
+		let channel = await this.chatService.findOneChatRoomByName(infos.room);
+		if (channel.InviteGameId === 0)
+			client.emit("changeGameButton", {status: "invite", channel: channel});
+		else if (channel.InviteUserName !== infos.user)
+			client.emit("changeGameButton", {status: "accept", channel: channel});
+		else
+			client.emit("changeGameButton", {status: "cancel", channel: channel});
+	}
+	
+	@OnEvent('updateGameButton')
+	async UpdateGameButton(infos: {gameId: number, status: string, inviter: string, room: string}) {
+		//On cherche le channel
+		const channel = await this.chatService.findOneChatRoomByName(infos.room);
+		//On set les param avec ceux reçu
+		channel.InviteGameId = infos.gameId;
+		channel.InviteUserName = infos.inviter;
+		//On met à jours la game
+		await this.chatService.saveChatRoom(channel);
+		//il faut emit à ceux du channel pour mettre à jours le button
+		this.server.to(channel.id).emit("changeGameButton", {status: infos.status, channel: channel});
+	}
+
+	@SubscribeMessage('askToCancelGameInvite')
+	askToCancelGameInvite(client: Socket, user: UserDTO) {
+	this.eventEmitter.emit('askToCancelInvite', user);
+	}
+	
+	//TODO: faire fct pour cancel l'invit (penser à eventemitter dans gameGateway pour cancelInvite)
+
 }

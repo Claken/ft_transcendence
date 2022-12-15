@@ -1,5 +1,5 @@
 import { Type } from 'class-transformer';
-import { IsOptional, Length } from 'class-validator';
+import { IsAlphanumeric, IsOptional, isString, Length, MaxLength } from 'class-validator';
 import { Request } from 'express';
 import { ChatRoomEntity } from '../Entities/chat.entity';
 import { Avatar } from '../Entities/avatar.entity';
@@ -34,6 +34,9 @@ export class UserDTO {
 
   @IsOptional()
   inGame?: boolean;
+
+  @IsOptional()
+  hasSentAnInvite?: boolean = false;
   
   @IsOptional()
   ownedChannels?: ChatRoomEntity[];

@@ -28,7 +28,10 @@ const GameList = () => {
 
 	useEffect(() => {
         getGames();
-		setInterval(() => {getGames()}, 1000);
+		const interval = setInterval(() => {getGames()}, 1000);
+		return () => {
+			clearInterval(interval);
+		}
 	}, []);
 
 	const redirectToGame = (game: IGame) => {

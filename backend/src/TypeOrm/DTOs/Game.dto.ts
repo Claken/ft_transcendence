@@ -1,25 +1,31 @@
-import { IsOptional } from 'class-validator';
+import { IsBoolean, IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class GameDTO {
 	@IsOptional()
 	id?: number;
 	
 	@IsOptional()
+	@IsString()
 	loginLP?: string;
 	
 	@IsOptional()
+	@IsString()
 	loginRP?: string;
 
 	@IsOptional()
+	@IsString()
 	nameLP?: string;
 	
 	@IsOptional()
+	@IsString()
 	nameRP?: string;
 	
 	@IsOptional()
+	@IsNumber()
 	scoreLP?: number;
 	
 	@IsOptional()
+	@IsNumber()
 	scoreRP?: number;
 
 	@IsOptional()
@@ -38,11 +44,15 @@ export class GameDTO {
 	abort?: string;
 	
 	@IsOptional()
+	@IsBoolean()
 	isFinish?: boolean;
 
 	@IsOptional()
 	date?: Date;
 
 	@IsOptional()
-	waitingForOppenent?: boolean;
+	waitingForOppenent?: boolean = true;
+
+	@IsOptional()
+	waitingForInvit?: boolean = false;
 }
