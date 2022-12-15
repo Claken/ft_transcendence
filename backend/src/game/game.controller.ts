@@ -17,6 +17,11 @@ export class GameController {
     return await this.gameService.findAllGames();
   }
 
+  @Get('login/:login')
+  async getGameByLogin(@Param('login') loginToFind: string): Promise<Game[]> {
+    return await this.gameService.getGameByLogin(loginToFind);
+  }
+
   @Get('pendingGames')
   async getPendingGames(): Promise<Game[]> {
     return await this.gameService.getPendingGames();

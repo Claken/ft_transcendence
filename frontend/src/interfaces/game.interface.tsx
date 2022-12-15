@@ -9,5 +9,6 @@ export interface IGame {
 	abort?: string;
 	isFinish?: boolean;
 	waitingForOppenent?: boolean;
+	map?: number;
 	date?: Date;
 }

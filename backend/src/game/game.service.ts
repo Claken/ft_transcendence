@@ -26,6 +26,14 @@ export class GameService {
       id: idToFind,
     });
   }
+  async getGameByLogin(loginToFind: string): Promise<Game[]> {
+    return await this.gameRepo.find({
+      where: [
+        { loginLP: loginToFind, isFinish: true },
+        { loginRP: loginToFind, isFinish: true }
+      ]
+    });
+  }
 
   async getNbInter(id: number): Promise<number> {
     const game = await this.getById(id);
