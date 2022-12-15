@@ -7,8 +7,6 @@ export interface IChatRoom {
 	chatRoomName?: string;
 
 	owner?: string;
-  
-	administrators?: string;
 
 	type: number;
 

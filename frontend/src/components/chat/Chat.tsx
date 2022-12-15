@@ -93,7 +93,7 @@ const Chat = () => {
 	for (let index = 0; index < input.length; index++) {
 		const element = input.charCodeAt(index);
 		if ((element < 48 || element > 122) ||
-		element >= 58 && element <=64)
+		element >= 58 && element <= 64)
 			return false;
 	}
 		return true;
@@ -113,7 +113,7 @@ const Chat = () => {
 	}
 	else if (isAlpha(roomName) === false)
 	{
-		alert ('the name contains none alphanumeric character');
+		alert ('the name contains none alphanumeric character.s');
 		status = false;
 	}
 	return status;
