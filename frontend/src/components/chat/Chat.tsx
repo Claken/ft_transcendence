@@ -360,7 +360,8 @@ const Chat = () => {
       }
     });
     setJoinButtonAndStatus();
-    socket?.emit("getLists", room);
+	if (findRoom(room) !== undefined)
+    	socket?.emit("getLists", room);
   };
 
   const joinedRoom = (room: string) => {
