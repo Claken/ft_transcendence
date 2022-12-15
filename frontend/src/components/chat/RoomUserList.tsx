@@ -16,7 +16,7 @@ const RoomUserList = ({
   username,
   activeRoom,
   banList,
-  muteList
+  muteList,
 }) => {
   const { isOpen: isSetAdminOpen, toggle: toggleSetAdmin } = useModal();
   const { isOpen: isMuteUserOpen, toggle: toggleMuteUser } = useModal();
@@ -27,7 +27,9 @@ const RoomUserList = ({
       <div className="member-list">
         <h2> Admins :</h2>
         <ul>
-          {findActiveRoom().adminsList && activeRoom != "" && (findActiveRoom().member || findActiveRoom().type === type.public) ? (
+          {findActiveRoom().adminsList &&
+          activeRoom != "" &&
+          (findActiveRoom().member || findActiveRoom().type === type.public) ? (
             findActiveRoom().adminsList.map((name: string) => (
               <div className="member-element" key={name}>
                 <li key={name}>
@@ -43,7 +45,9 @@ const RoomUserList = ({
       <div className="member-list">
         <h2> Members :</h2>
         <ul>
-          {findActiveRoom().adminsList && activeRoom != "" && (findActiveRoom().member || findActiveRoom().type === type.public) ? (
+          {findActiveRoom().adminsList &&
+          activeRoom != "" &&
+          (findActiveRoom().member || findActiveRoom().type === type.public) ? (
             findActiveRoom().usersList.map((name: string) =>
               isAdminInActive(username) &&
               name != username &&
@@ -134,7 +138,7 @@ const RoomUserList = ({
                           <line x1="5.7" y1="5.7" x2="18.3" y2="18.3"></line>
                         </svg>
                       </button>
-					  <Modal isOpen={isBanUserOpen} toggle={toggleBanUser}>
+                      <Modal isOpen={isBanUserOpen} toggle={toggleBanUser}>
                         <ModalBanUser
                           name={name}
                           userBanUser={userBanUser}

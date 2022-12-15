@@ -13,6 +13,7 @@ import { useNavigate } from "react-router-dom";
 import GameInviteButton from "./GameInviteButton";
 import CancelInviteButton from "./CancelInviteButton";
 import JoinInviteButton from "./JoinInviteButton";
+import RoomSettings from "./RoomSettings";
 
 const Chat = () => {
   const [text, changeText] = useState<string>("");
@@ -575,10 +576,8 @@ const Chat = () => {
         auth.user,
         roomActive.usersList,
         roomActive.name
-        );
-      }
-    else
-      alert("You cannot send a game invite !");
+      );
+    } else alert("You cannot send a game invite !");
   };
 
   const CancelGameInvite = (event: any) => {
@@ -824,7 +823,32 @@ const Chat = () => {
           ) : null}
           {findActiveRoom().type == type.private &&
           findActiveRoom().owner == username ? (
-            <button onClick={inviteToPrivate}>Invite a friend</button>
+            <button onClick={inviteToPrivate}>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="icon icon-tabler icon-tabler-user-plus"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                stroke-width="2"
+                stroke="currentColor"
+                fill="none"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                <circle cx="9" cy="7" r="4"></circle>
+                <path d="M3 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2"></path>
+                <path d="M16 11h6m-3 -3v6"></path>
+              </svg>
+            </button>
+          ) : null}
+          {findActiveRoom().owner == username ? (
+            <RoomSettings
+              activeRoom={activeRoom}
+              muteList={findActiveRoom().muteList}
+              banList={findActiveRoom().banList}
+            />
           ) : null}
         </div>
         <div className="chat-box">
@@ -883,9 +907,15 @@ const Chat = () => {
               </button>
             </form>
           </div>
-              {gameButton === "invite" && <GameInviteButton CreateGameInvite={CreateGameInvite} />}
-              {gameButton === "cancel" && <CancelInviteButton CancelGameInvite={CancelGameInvite} />}
-              {gameButton === "join" && <JoinInviteButton JoinGameInvite={JoinGameInvite} />}
+          {gameButton === "invite" && (
+            <GameInviteButton CreateGameInvite={CreateGameInvite} />
+          )}
+          {gameButton === "cancel" && (
+            <CancelInviteButton CancelGameInvite={CancelGameInvite} />
+          )}
+          {gameButton === "join" && (
+            <JoinInviteButton JoinGameInvite={JoinGameInvite} />
+          )}
         </div>
       </div>
       <RoomUserList
