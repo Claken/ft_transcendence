@@ -513,23 +513,14 @@ const Chat = () => {
 
   const deleteChannelPassword = () => {
     const activeRoom = findActiveRoom();
-    if (
-      activeRoom &&
-      activeRoom.owner === username &&
-      activeRoom.type === type.protected
-    )
-      socket?.emit("deleteChannelPassword", activeRoom.name);
-    else if (activeRoom.type != type.protected)
-      alert("this channel is not protected");
-    else if (activeRoom.owner != username)
-      alert("You are not the owner of this channel !");
+	if (window.confirm('Are you sure you want to delete the password of this room ?'))
+    	socket?.emit("deleteChannelPassword", activeRoom.name);
   };
 
   const updateChannelPassword = () => {
     const activeRoom = findActiveRoom();
     const pswd = prompt('Enter new password: ');
-    if (pswd == null) return
-    else
+    if (pswd != null)
 		socket?.emit("updateChannelPassword", {
 			room: activeRoom.name,
 			newPassword: pswd,
