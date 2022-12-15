@@ -541,6 +541,7 @@ const Chat = () => {
   const askWhichFriend = (friends: any) => {
     let friendName: string = null;
     let nameFound: string = null;
+    const roomActive = findActiveRoom();
     if (friends.length === 0)
       alert("you need at least one friend to invite in your room");
     else {
@@ -548,16 +549,16 @@ const Chat = () => {
       friends.find((friend: any) => {
         if (friend.user.name === friendName) nameFound = friend.user.name;
       });
-      if (nameFound === undefined || nameFound === null)
+      if (nameFound === undefined)
         alert("friend not found, sorry");
-      else if (findActiveRoom().usersList.find((name: string) => name === nameFound) != undefined) {
+      else if (roomActive.usersList.find((name: string) => name === nameFound) != undefined) {
         alert(nameFound + " is already in the room, oh almighty corrector !");
       }
-        else {
+        else if (friendName != null) {
         socket?.emit("emitForAnPrInvite", {
           sender: username,
           receiver: nameFound,
-          channel: findActiveRoom().name,
+          channel: roomActive.name,
         });
       }
     }
