@@ -132,6 +132,14 @@ const Chat = () => {
     alert("WRONG PASSWORD ! YOU CANNOT JOIN THIS CHANNEL");
   };
 
+  const pswdDeletedMessage = () => {
+    alert("the password has been successfully deleted");
+  }
+
+  const pswdUpdateMessage = () => {
+    alert("the password has been successfully updated");
+  }
+
   const changeChannelOwner = (update: {
     newOwner: string;
     channel: string;
@@ -696,125 +704,12 @@ const Chat = () => {
     };
   }, [wrongPasswordMessage]);
 
-  // USEEFFECT POUR CHANGER LE OWNER
+  //USEFFECT POUR UN PASSWORD DELETED
   useEffect(() => {
-    console.log("newOwner message");
-    socket?.on("newOwner", changeChannelOwner);
+    socket?.on("Password deleted", pswdDeletedMessage);
     return () => {
-      socket?.off("newOwner", changeChannelOwner);
-    };
-  }, [changeChannelOwner]);
-
-  // GET LISTS
-  useEffect(() => {
-    socket?.on("AllLists", getListsForAChannel);
-    return () => {
-      socket?.off("AllLists", getListsForAChannel);
-    };
-  }, [getListsForAChannel]);
-
-  // UPDATE BAN STATUS
-  useEffect(() => {
-    socket?.on("BanStatus", updateBanStatus);
-    return () => {
-      socket?.off("BanStatus", updateBanStatus);
-    };
-  }, [updateBanStatus]);
-
-  useEffect(() => {
-    socket?.on("MuteStatus", updateMuteStatus);
-    return () => {
-      socket?.off("MuteStatus", updateMuteStatus);
-    };
-  }, [updateMuteStatus]);
-
-  useEffect(() => {
-    socket?.on("recvFriendsList", askWhichFriend);
-    return () => {
-      socket?.off("recvFriendsList", askWhichFriend);
-    };
-  }, [askWhichFriend]);
-
-  useEffect(() => {
-    socket?.on("handleProtected", handlingPasswordPart2);
-    return () => {
-      socket?.off("handleProtected", handlingPasswordPart2);
-    };
-  }, [handlingPasswordPart2]);
-
-  useEffect(() => {
-    socket?.on("recvGameInvite", sendGameInviteMessage);
-    return () => {
-      socket?.off("recvGameInvite", sendGameInviteMessage);
-    };
-  }, [sendGameInviteMessage]);
-
-  const sortedMessages = findActiveRoom().messages.sort((a, b) => {
-    // Compare the dates of the messages to determine their order
-    return new Date(a.date) - new Date(b.date);
-  });
-
-  return (
-    <div className="chat-container">
-      <div className="left-side">
-        <div className="rooms-list">
-          <ul>
-            {rooms.map((room: any, id: number) =>
-              !(room.type === type.private && room.member === false) ? (
-                <li>
-                  <button
-                    onClick={() =>
-                      findRoom(room.name).ban
-                        ? alert("you are banned from this channel")
-                        : setActiveForRoom(room.name)
-                    }
-                  >
-                    {room.name}
-                  </button>
-                </li>
-              ) : null
-            )}
-          </ul>
-        </div>
-        <div className="room-buttons">
-          <form onSubmit={addARoom}>
-            <button type="submit">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="icon icon-tabler icon-tabler-message-plus"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                strokeWidth="2"
-                stroke="currentColor"
-                fill="none"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                <path d="M4 21v-13a3 3 0 0 1 3 -3h10a3 3 0 0 1 3 3v6a3 3 0 0 1 -3 3h-9l-4 4"></path>
-                <line x1="10" y1="11" x2="14" y2="11"></line>
-                <line x1="12" y1="9" x2="12" y2="13"></line>
-              </svg>
-            </button>
-          </form>
-          <form onSubmit={deleteARoom}>
-            <button type="submit">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="icon icon-tabler icon-tabler-message-off"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                strokeWidth="2"
-                stroke="currentColor"
-                fill="none"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                <line x1="3" y1="3" x2="21" y2="21"></line>
-                <path d="M17 17h-9l-4 4v-13c0 -1.086 .577 -2.036 1.44 -2.563m3.561 -.437h8a3 3 0 0 1 3 3v6c0 .575 -.162 1.112 -.442 1.568"></path>
+      socket?.off("Password deleted", pswdDeletedMessage);
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    0 -1.086 .577 -2.036 1.44 -2.563m3.561 -.437h8a3 3 0 0 1 3 3v6c0 .575 -.162 1.112 -.442 1.568"></path>
               </svg>
             </button>
           </form>
@@ -827,6 +722,7 @@ const Chat = () => {
           {activeRoom !== "" ? (
             <button onClick={toggleRoomMembership}>{joinButton}</button>
           ) : null}
+          {findActiveRoom().type == type.protected && findActiveRoom().owner == username ? (<button onClick={deleteChannelPassword}>delete pswd</button>) : null}
           {findActiveRoom().type == type.private &&
           findActiveRoom().owner == username ? (
             <button onClick={inviteToPrivate}>

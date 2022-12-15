@@ -305,16 +305,18 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 	async deleteChannelPassword(client: Socket, room: string) {
 		let channel = await this.chatService.findOneChatRoomByName(room);
 		channel.password = null;
-		await this.chatService.saveChatRoom(channel);
+		if (await this.chatService.saveChatRoom(channel))
+			client.emit('Password deleted');
 	}
 
 	@SubscribeMessage('updateChannelPassword')
-	async updateChannelPassword(client: Socket, @MessageBody() message: { room: string, newPassword: string}) {
+	async updateChannelPassword(client: Socket, message: { room: string, newPassword: string}) {
 		const { room, newPassword } = message;
 		const channel = await this.chatService.findOneChatRoomByName(room);
 		const hash = await bcrypt.hash(newPassword, 10);
 		channel.password = hash;
-		await this.chatService.saveChatRoom(channel);
+		if (await this.chatService.saveChatRoom(channel))
+			client.emit('Password updated');
 	}
 
 	@SubscribeMessage('setUserAsAdmin')
