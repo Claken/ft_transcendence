@@ -549,14 +549,12 @@ const Chat = () => {
 
   const CancelGameInvite = (event: any) => {
     event.preventDefault();
-
-
+	socket?.emit('askToCancelGameInvite', auth.user);
   };
 
   const JoinGameInvite = (event: any) => {
     event.preventDefault();
   };
-
 
   const sendGameInviteMessage = () => {
     console.log("La game est creé");

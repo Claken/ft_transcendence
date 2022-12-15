@@ -509,6 +509,7 @@ export class GameGateway
 	this.eventEmitter.emit('sendGameInvite', {gameId: game.id, inviter: infos.inviter.name, room: infos.roomName});
   }
 
+  @OnEvent('askToCancelGameInvite')
   @SubscribeMessage('cancelInvite')
   async CancelInvite(client: any, user: UserDTO) {
 	const res = this.tabGameInvite.filter((ObjInvite: ObjInvite) => ObjInvite.Inviter === user);

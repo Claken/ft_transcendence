@@ -425,6 +425,12 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 		//il faut emit à ceux du channel pour mettre à jours le button
 		this.server.to(channel.id).emit("changeGameButton", infos.status);
 	}
+
+	@SubscribeMessage('askToCancelGameInvite')
+	askToCancelGameInvite(client: Socket, user: UserDTO)
+	{
+		this.eventEmitter.emit('askToCancelInvite', user);
+	}
 	
 	//TODO: faire fct pour cancel l'invit (penser à eventemitter dans gameGateway pour cancelInvite)
 
