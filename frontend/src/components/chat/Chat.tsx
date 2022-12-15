@@ -88,6 +88,36 @@ const Chat = () => {
     else setGameButton("invite");
   };
 
+  const isAlpha = (input: string) => {
+	for (let index = 0; index < input.length; index++) {
+		const element = input.charCodeAt(index);
+		if ((element < 48 || element > 122) ||
+		element >= 58 && element <=64)
+			return false;
+	}
+		return true;
+	}
+
+  const parseRoomName = (roomName: string) => {
+	let status: boolean = true;
+	if (roomName === "")
+	{
+		alert('you need to write a name please');
+		status = false;
+	}
+	else if (roomName.length > 20)
+	{
+		alert('the name cannot exceed 20 characters');
+		status = false;
+	}
+	else if (isAlpha(roomName) === false)
+	{
+		alert ('the name contains none alphanumeric character');
+		status = false;
+	}
+	return status;
+  }
+
   /* ***************************************************************************** */
   /*    					Functions pour la gestion des chats 					 */
   /* ***************************************************************************** */
@@ -270,11 +300,15 @@ const Chat = () => {
     let askARoom: string = "";
     let typeOfRoom: number = -1;
     let pswd: string = null;
-    while (askARoom === "") {
+    while (askARoom === "")
+	{
       askARoom = prompt("Enter a name for your room: ")!;
-      if (askARoom === null) return;
-      if (askARoom === "") alert("This is not a right name for a room !");
-      else if (findRoom(askARoom)) {
+      if (askARoom === null)
+	  		return;
+      if (!parseRoomName(askARoom))
+	  		askARoom = "";
+      else if (findRoom(askARoom))
+	  {
         alert("This name is already taken. Try another one.");
         askARoom = "";
       }
