@@ -193,7 +193,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 				member.isAdmin = true;
 				await 	this.memberService.updateMember(member);
 			}
-			this.server.to(thechannel.id).emit('newOwner',
+			this.server.to(thechannel.id).emit("newOwner",
 			{newOwner: newOwner.name, channel: thechannel.chatRoomName});
 		}
   }

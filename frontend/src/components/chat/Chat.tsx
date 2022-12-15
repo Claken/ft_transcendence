@@ -27,7 +27,6 @@ const Chat = () => {
 
   const [activeRoom, setActiveRoom] = useState<string>("");
 
-  const [password, setPassword] = useState<string>("");
   const [date, setDate] = useState<Date>(null);
 
   const [gameButton, setGameButton] = useState<string>("invite");
@@ -124,7 +123,6 @@ const Chat = () => {
   /* ***************************************************************************** */
 
   const handleChange = (event: any) => {
-    // console.log("handleChange");
     changeText(event.target.value);
   };
 
@@ -133,11 +131,11 @@ const Chat = () => {
   };
 
   const pswdDeletedMessage = () => {
-    alert("the password has been successfully deleted");
+    alert("The password has been successfully deleted");
   }
 
   const pswdUpdateMessage = () => {
-    alert("the password has been successfully updated");
+    alert("The password has been successfully updated");
   }
 
   const changeChannelOwner = (update: {
@@ -514,34 +512,19 @@ const Chat = () => {
     setRooms(roomsCopy);
   };
 
-  const deleteChannelPassword = () => {
+  const deleteChannelPassword = (event: any) => {
+	event.preventDefault();
     const activeRoom = findActiveRoom();
-    if (
-      activeRoom &&
-      activeRoom.owner === username &&
-      activeRoom.type === type.protected
-    )
-      socket?.emit("deleteChannelPassword", activeRoom.name);
-    else if (activeRoom.type != type.protected)
-      alert("this channel is not protected");
-    else if (activeRoom.owner != username)
-      alert("You are not the owner of this channel !");
+    if (window.confirm('Are you sure you want to delete the password of this channel ?'))
+		socket?.emit("deleteChannelPassword", activeRoom.name);
   };
-  const updateChannelPassword = () => {
+
+  const updateChannelPassword = (event: any) => {
+    event.preventDefault();
     const activeRoom = findActiveRoom();
-    if (
-      activeRoom &&
-      activeRoom.owner === username &&
-      activeRoom.type === type.protected
-    )
-      socket?.emit("updateChannelPassword", {
-        room: activeRoom.name,
-        newPassword: password,
-      });
-    else if (activeRoom.type != type.protected)
-      alert("this channel is not protected");
-    else if (activeRoom.owner != username)
-      alert("You are not the owner of this channel !");
+	const pswd = prompt('Enter new password: ');
+	if (pswd != null)
+		socket?.emit("updateChannelPassword", {room: activeRoom.name, newPassword: pswd});
   };
 
   const inviteToPrivate = () => {
@@ -611,7 +594,7 @@ const Chat = () => {
 };
 
   const sendGameInviteMessage = () => {
-    const inviteMessage: string = username + " send an invite to a Pong game";
+    const inviteMessage: string = "!!!*** " + username + " SEND AN INVITE TO A PONG GAME ***!!!";
     socket?.emit("chatToServer", {
       sender: username,
       room: findActiveRoom().name,
@@ -668,6 +651,13 @@ const Chat = () => {
   useEffect(() => {
     socket?.emit("addSocket", username);
   });
+
+  useEffect(() => {
+    socket?.on("newOwner", changeChannelOwner);
+    return () => {
+      socket?.off("newOwner", changeChannelOwner);
+    };
+  }, [changeChannelOwner]);
 
   useEffect(() => {
     socket?.on("sendAllChannels", receiveAllChannels);
@@ -729,9 +719,16 @@ const Chat = () => {
   useEffect(() => {
     socket?.on("Password deleted", pswdDeletedMessage);
     return () => {
-      socket?.off("newOwner", changeChannelOwner);
+      socket?.off("Password deleted", pswdDeletedMessage);
     };
-  }, [changeChannelOwner]);
+  }, [pswdDeletedMessage]);
+
+  useEffect(() => {
+    socket?.on("Password updated", pswdUpdateMessage);
+    return () => {
+      socket?.off("Password updated", pswdUpdateMessage);
+    };
+  }, [pswdUpdateMessage]);
 
   // GET LISTS
   useEffect(() => {
@@ -843,6 +840,7 @@ const Chat = () => {
             <button onClick={toggleRoomMembership}>{joinButton}</button>
           ) : null}
           {findActiveRoom().type == type.protected && findActiveRoom().owner == username ? (<button onClick={deleteChannelPassword}>delete pswd</button>) : null}
+          {findActiveRoom().type == type.protected && findActiveRoom().owner == username ? (<button onClick={updateChannelPassword}>update pswd</button>) : null}
           {findActiveRoom().type == type.private &&
           findActiveRoom().owner == username ? (
             <button onClick={inviteToPrivate}>
