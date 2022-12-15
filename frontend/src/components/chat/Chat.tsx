@@ -545,7 +545,8 @@ const Chat = () => {
     if (friends.length === 0)
       alert("you need at least one friend to invite in your room");
     else {
-      friendName = prompt("type the name of the friend ");
+      if ((friendName = prompt("type the name of the friend ")) == null)
+        return;
       friends.find((friend: any) => {
         if (friend.user.name === friendName) nameFound = friend.user.name;
       });
@@ -554,7 +555,7 @@ const Chat = () => {
       else if (roomActive.usersList.find((name: string) => name === nameFound) != undefined) {
         alert(nameFound + " is already in the room, oh almighty corrector !");
       }
-        else if (friendName != null) {
+        else {
         socket?.emit("emitForAnPrInvite", {
           sender: username,
           receiver: nameFound,
