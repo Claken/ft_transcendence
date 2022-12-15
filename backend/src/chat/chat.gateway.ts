@@ -384,7 +384,8 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 	}
 
 	@SubscribeMessage('createGameInvite')
-	async CreateGameInvite(client: Socket, infos: {user: UserDTO, userList: string[]}) {
+	async CreateGameInvite(client: Socket, infos: {user: UserDTO, userList: string[], name: string}) {
+		console.log("user = " + infos.user);
 		infos.user = await this.usersService.getById(infos.user.id);
 		infos.user.hasSentAnInvite = true;
 		await this.usersService.updateUser(infos.user.id);

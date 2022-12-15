@@ -10,6 +10,9 @@ import { type } from "../../interfaces/enum";
 import "../../styles/chat.scss";
 import RoomUserList from "./RoomUserList";
 import { useNavigate } from "react-router-dom";
+import GameInviteButton from "./GameInviteButton";
+import CancelInviteButton from "./CancelInviteButton";
+import JoinInviteButton from "./JoinInviteButton";
 
 const Chat = () => {
   const [text, changeText] = useState<string>("");
@@ -72,19 +75,18 @@ const Chat = () => {
     }
   };
 
-  const setActiveForRoom = (roomName: string) => {//TODO: update button
+  const setActiveForRoom = (roomName: string) => {
+    //TODO: update button
     rooms.forEach((element: IRoom) => {
       element.active = element.name === roomName ? true : false;
     });
     setActiveRoom(roomName);
     setJoinButtonAndStatus();
-    if (findActiveRoom().InviteUserName === username)
-    	setGameButton("cancel");
-	else if (findActiveRoom().InviteUserName !== "")
-		setGameButton("join");
-	else
-		setGameButton("invite");
-};
+    const roomActive = findActiveRoom();
+    if (roomActive.InviteUserName === username) setGameButton("cancel");
+    else if (roomActive.InviteUserName !== "") setGameButton("join");
+    else setGameButton("invite");
+  };
 
   /* ***************************************************************************** */
   /*    					Functions pour la gestion des chats 					 */
@@ -336,44 +338,44 @@ const Chat = () => {
   };
 
   const handlingPasswordPart1 = (room: string, user: string) => {
-    socket?.emit('checkPswdStatus', {room: room, user: user});
-  }
+    socket?.emit("checkPswdStatus", { room: room, user: user });
+  };
 
-  const handlingPasswordPart2 = (infos: {room: string, user: string, pswdStatus: boolean}) => 
-  {
+  const handlingPasswordPart2 = (infos: {
+    room: string;
+    user: string;
+    pswdStatus: boolean;
+  }) => {
     let pswd: string = undefined;
-    if (infos.pswdStatus)
-	{
-		pswd = prompt("you need a password to join this channel, please type it: ");
-	}
-	socket?.emit("joinRoom", {
-        room: infos.room,
-        user: infos.user,
-        password: pswd,
-	});
-  }
+    if (infos.pswdStatus) {
+      pswd = prompt(
+        "you need a password to join this channel, please type it: "
+      );
+    }
+    socket?.emit("joinRoom", {
+      room: infos.room,
+      user: infos.user,
+      password: pswd,
+    });
+  };
 
-	const toggleRoomMembership = (event: any) => {
-		event.preventDefault();
-		const activeRoom = findActiveRoom();
-		if (activeRoom.member)
-		{
-			socket?.emit("leaveRoom", { room: activeRoom.name, user: username });
-		}
-		else 
-		{
-			if (activeRoom.type === type.protected)
-			{
-				handlingPasswordPart1(activeRoom.name, username);
-				return ;
-			}
-			socket?.emit("joinRoom", {
-				room: activeRoom.name,
-				user: username,
-				password: undefined,
-			});
-		}
-	};
+  const toggleRoomMembership = (event: any) => {
+    event.preventDefault();
+    const activeRoom = findActiveRoom();
+    if (activeRoom.member) {
+      socket?.emit("leaveRoom", { room: activeRoom.name, user: username });
+    } else {
+      if (activeRoom.type === type.protected) {
+        handlingPasswordPart1(activeRoom.name, username);
+        return;
+      }
+      socket?.emit("joinRoom", {
+        room: activeRoom.name,
+        user: username,
+        password: undefined,
+      });
+    }
+  };
 
   const receiveAllChannels = (channels: any[]) => {
     let roomsCopy = [...rooms];
@@ -522,34 +524,55 @@ const Chat = () => {
     }
   };
 
-  const CreateGameInvite = () => {
-	const roomActive = findActiveRoom();
-	if (activeRoom !== "" &&
-	roomActive.member &&
-	roomActive.usersList.length > 1 &&
-	auth.user.hasSentAnInvite === false &&
-	auth.user.inGame === false &&
-	auth.user.inQueue === false)
-		socket?.emit('createGameInvit', auth.user, roomActive.usersList, roomActive.name);
-	else
-		alert('You cannot send a game invite !');
-  }
+  const CreateGameInvite = (event: any) => {
+    event.preventDefault();
+    const roomActive = findActiveRoom();
+    if (
+      activeRoom !== "" &&
+      roomActive.member &&
+      roomActive.usersList.length > 1 &&
+      auth.user.hasSentAnInvite === false &&
+      auth.user.inGame === false &&
+      auth.user.inQueue === false
+    ) {
+      console.log(auth.user);
+      socket?.emit(
+        "createGameInvite",
+        auth.user,
+        roomActive.usersList,
+        roomActive.name
+        );
+      }
+    else
+      alert("You cannot send a game invite !");
+  };
+
+  const CancelGameInvite = (event: any) => {
+    event.preventDefault();
+
+
+  };
+
+  const JoinGameInvite = (event: any) => {
+    event.preventDefault();
+  };
+
 
   const sendGameInviteMessage = () => {
-	console.log("La game est creé")
+    console.log("La game est creé");
     const inviteMessage: string = username + " send an invite to a Pong game";
     socket?.emit("chatToServer", {
       sender: username,
       room: findActiveRoom().name,
       msg: inviteMessage,
     });
-	console.log("Message envoyé, on navigate.")
-	navigate("/pong/");
-  }
+    console.log("Message envoyé, on navigate.");
+    navigate("/pong/");
+  };
 
   socket?.on("changeGameButton", (status) => {
-	setGameButton(status);
-	console.log("On change le button. button = " + status)
+    setGameButton(status);
+    console.log("On change le button. button = " + status);
   });
 
   /* ***************************************************************************** */
@@ -565,12 +588,10 @@ const Chat = () => {
 
   useEffect(() => {
     changeUsername(auth.user.name);
-	//TODO: parser pour afficher le bon bouton (raquette/encoche/croix)
-	const roomActive = findActiveRoom();
-	if (!roomActive)
-		setGameButton("invite")
-	else
-    	socket?.emit("inviteAcceptCancel", username, roomActive.name);
+    //TODO: parser pour afficher le bon bouton (raquette/encoche/croix)
+    const roomActive = findActiveRoom();
+    if (!roomActive) setGameButton("invite");
+    else socket?.emit("inviteAcceptCancel", username, roomActive.name);
   }, []);
 
   useEffect(() => {
@@ -684,14 +705,7 @@ const Chat = () => {
     };
   }, [handlingPasswordPart2]);
 
-  // useEffect(() => {
-  //   socket?.on("navigateGameInviter", navigateGameInviter);
-  //   return () => {
-  //     socket?.off("handleProtected", navigateGameInviter);
-  //   };
-  // }, [navigateGameInviter]);
-
-    useEffect(() => {
+  useEffect(() => {
     socket?.on("recvGameInvite", sendGameInviteMessage);
     return () => {
       socket?.off("recvGameInvite", sendGameInviteMessage);
@@ -781,7 +795,6 @@ const Chat = () => {
             <button onClick={inviteToPrivate}>Invite a friend</button>
           ) : null}
         </div>
-
         <div className="chat-box">
           <ul>
             {findActiveRoom().member ? (
@@ -812,54 +825,36 @@ const Chat = () => {
         </div>
         <div className="chat-bottom">
           <div className="chat-send-msg">
-          <form onSubmit={sendChatMessage}>
-            <input
-              type="text"
-              value={text}
-              onChange={handleChange}
-              placeholder="Type something ..."
-            />
-            <button type="submit">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="icon icon-tabler icon-tabler-brand-telegram"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                strokeWidth="2"
-                stroke="currentColor"
-                fill="none"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                <path d="M15 10l-4 4l6 6l4 -16l-18 7l4 2l2 6l3 -4"></path>
-              </svg>
-            </button>
-          </form>
+            <form onSubmit={sendChatMessage}>
+              <input
+                type="text"
+                value={text}
+                onChange={handleChange}
+                placeholder="Type something ..."
+              />
+              <button type="submit">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="icon icon-tabler icon-tabler-brand-telegram"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  strokeWidth="2"
+                  stroke="currentColor"
+                  fill="none"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                  <path d="M15 10l-4 4l6 6l4 -16l-18 7l4 2l2 6l3 -4"></path>
+                </svg>
+              </button>
+            </form>
+          </div>
+              {gameButton === "invite" && <GameInviteButton CreateGameInvite={CreateGameInvite} />}
+              {gameButton === "cancel" && <CancelInviteButton CancelGameInvite={CancelGameInvite} />}
+              {gameButton === "join" && <JoinInviteButton JoinGameInvite={JoinGameInvite} />}
         </div>
-        <div className="chat-game-btn">
-			<form onSubmit={CreateGameInvite}>
-				<button type="submit">
-				<svg
-					xmlns="http://www.w3.org/2000/svg"
-					className="icon icon-tabler icon-tabler-ping-pong"
-					width="24"
-					height="24"
-					viewBox="0 0 24 24"
-					stroke-width="2"
-					stroke="currentColor"
-					fill="none"
-					strokeLinecap="round"
-					strokeLinejoin="round"
-				>
-					<path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-					<path d="M12.718 20.713a7.64 7.64 0 0 1 -7.48 -12.755l.72 -.72a7.643 7.643 0 0 1 9.105 -1.283l2.387 -2.345a2.08 2.08 0 0 1 3.057 2.815l-.116 .126l-2.346 2.387a7.644 7.644 0 0 1 -1.052 8.864"></path>
-					<circle cx="14" cy="18" r="3"></circle>
-					<path d="M9.3 5.3l9.4 9.4"></path>
-				</svg>
-				</button>
-			</form>
       </div>
       <RoomUserList
         findActiveRoom={findActiveRoom}
