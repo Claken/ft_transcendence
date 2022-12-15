@@ -124,7 +124,7 @@ export class FriendRequestGateway {
 	async acceptPrInvite(@MessageBody() request: DmDto)
 	{
 		await this.deletePrInviteThenEmit(request);
-	  this.eventEmitter.emit('joinPrivateRoom', {user: request.receiver, channel: request.message});
+	  	this.eventEmitter.emit('joinPrivateRoom', {user: request.receiver, channel: request.message});
 	}
 
 	async deletePrInviteThenEmit(request: DmDto)

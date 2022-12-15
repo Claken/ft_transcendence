@@ -594,7 +594,7 @@ const Chat = () => {
 };
 
   const sendGameInviteMessage = () => {
-    const inviteMessage: string = "!!!*** " + username + " SEND AN INVITE TO A PONG GAME ***!!!";
+    const inviteMessage: string = "--- " + username + " has sent an invite to a Pong game ---";
     socket?.emit("chatToServer", {
       sender: username,
       room: findActiveRoom().name,
@@ -604,7 +604,7 @@ const Chat = () => {
   };
 
   const navigateToTheGame = () => {
-    const inviteMessage: string = username + " has join the Pong game";
+    const inviteMessage: string = "--- " + username + " has joined the Pong game ---";
     socket?.emit("chatToServer", {
       sender: username,
       room: findActiveRoom().name,

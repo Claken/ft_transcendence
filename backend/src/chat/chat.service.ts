@@ -45,9 +45,4 @@ export class ChatService {
 	  async deleteChatRoomById(id: string): Promise<void> {
 		await this.chatRepo.delete({ id: id });
 	  }
-
-	//   async updateChatRoom(chatRoomId: string): Promise<ChatRoomEntity> {
-	// 	const chatRoom = await this.findOneChatRoomById(chatRoomId);
-	// 	return this.chatRepo.save(chatRoom);
-	//   }
 }
