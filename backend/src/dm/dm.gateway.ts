@@ -13,7 +13,7 @@ import { EventEmitter2 } from '@nestjs/event-emitter';
 export class DmGateway {
   constructor(
     private readonly dmService: DmService,
-    private eventEmitter: EventEmitter2,
+    // private eventEmitter: EventEmitter2,
     ) {}
 
   @SubscribeMessage('join_dm')

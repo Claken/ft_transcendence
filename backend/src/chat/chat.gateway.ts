@@ -139,7 +139,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
 	@SubscribeMessage('leaveRoom')
 	async HandleLeaveRoom(client: Socket, infos: {room: string, user: string}): Promise<void> {
-		console.log('leaveRoom');
+		// console.log('leaveRoom');
 		let		channelLeft = await this.chatService.findOneChatRoomByName(infos.room);
 		let		member = await this.memberService.getMemberByNameAndChannel(infos.user, channelLeft);
 		let		memberName = member.user.name;
@@ -260,7 +260,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 	@SubscribeMessage('getAllChannels')
 	async HandleGettingChannels(client: Socket) : Promise<void> {
 		const Channels = await this.chatService.findAllChatRooms();
-		console.log("CLIENTS.JOIN");
+		// console.log("CLIENTS.JOIN");
 		Channels.forEach((channel : ChatRoomEntity) => client.join(channel.id));
 		// const Admins = await this.memberService.findAllAdminsFromOneRoom(Channels[0].id);
 		// console.log(Admins);
@@ -387,11 +387,13 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
 	@SubscribeMessage('createGameInvite')
 	async CreateGameInvite(client: Socket, infos: {user: UserDTO, userList: string[], name: string}) {
-		console.log("user = " + infos.user);
-		infos.user = await this.usersService.getById(infos.user.id);
-		infos.user.hasSentAnInvite = true;
-		await this.usersService.updateUser(infos.user.id);
-		this.eventEmitter.emit('createGameInvite', infos);
+		infos.user = await this.usersService.updateInviteUser(infos.user.id, true);
+		this.eventEmitter.emit('createGameInvite', {inviter: infos.user, userList: infos.userList, roomName: infos.name});
+	}
+
+	@SubscribeMessage('invitationAccepted')
+	async InvitationAccepted(client: Socket, infos: {user: UserDTO, inviter: string, gameId: number, name: string}) {
+		this.eventEmitter.emit('acceptInvite', {user: infos.user, inviter: infos.inviter, gameId: infos.gameId, roomName: infos.name});
 	}
 
 	@OnEvent('sendGameInvite')
@@ -399,20 +401,33 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 		let channel = await this.chatService.findOneChatRoomByName(infos.room);
 		channel.InviteGameId = infos.gameId;
 		channel.InviteUserName = infos.inviter;
-		await this.chatService.saveChatRoom(channel);
+		channel = await this.chatService.saveChatRoom(channel);
 		this.users[infos.inviter].emit('recvGameInvite');
-		this.server.to(channel.id).emit("changeGameButton", "join");
+		this.server.to(channel.id).emit("changeGameButton", {status: "join", channel: channel});
+	}
+
+	@OnEvent('gamePrepareToTheJoin')
+	async GamePrepareToTheJoin(infos: {joiner: string, room: string}) {
+		let channel = await this.chatService.findOneChatRoomByName(infos.room);
+		let updatedUser: UserDTO = await this.usersService.getByName(infos.joiner)
+		updatedUser = await this.usersService.updateUser(updatedUser.id)
+		this.users[infos.joiner].emit('updateUser', updatedUser);
+		channel.InviteGameId = 0;
+		channel.InviteUserName = "";
+		channel = await this.chatService.saveChatRoom(channel);
+		this.users[infos.joiner].emit('navigateToTheGame');
+		this.server.to(channel.id).emit("changeGameButton", {status: "invite", channel: channel});
 	}
 	
 	@SubscribeMessage('inviteAcceptCancel')
 	async InvitJoinCancel(client: Socket, infos: {user: string, room: string}) {
 		let channel = await this.chatService.findOneChatRoomByName(infos.room);
 		if (channel.InviteGameId === 0)
-			client.emit("changeGameButton", "invite");
+			client.emit("changeGameButton", {status: "invite", channel: channel});
 		else if (channel.InviteUserName !== infos.user)
-			client.emit("changeGameButton", "accept");
+			client.emit("changeGameButton", {status: "accept", channel: channel});
 		else
-			client.emit("changeGameButton", "cancel");
+			client.emit("changeGameButton", {status: "cancel", channel: channel});
 	}
 	
 	@OnEvent('updateGameButton')
@@ -425,13 +440,12 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 		//On met à jours la game
 		await this.chatService.saveChatRoom(channel);
 		//il faut emit à ceux du channel pour mettre à jours le button
-		this.server.to(channel.id).emit("changeGameButton", infos.status);
+		this.server.to(channel.id).emit("changeGameButton", {status: infos.status, channel: channel});
 	}
 
 	@SubscribeMessage('askToCancelGameInvite')
-	askToCancelGameInvite(client: Socket, user: UserDTO)
-	{
-		this.eventEmitter.emit('askToCancelInvite', user);
+	askToCancelGameInvite(client: Socket, user: UserDTO) {
+	this.eventEmitter.emit('askToCancelInvite', user);
 	}
 	
 	//TODO: faire fct pour cancel l'invit (penser à eventemitter dans gameGateway pour cancelInvite)

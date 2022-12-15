@@ -124,7 +124,7 @@ const Chat = () => {
   /* ***************************************************************************** */
 
   const handleChange = (event: any) => {
-    console.log("handleChange");
+    // console.log("handleChange");
     changeText(event.target.value);
   };
 
@@ -184,7 +184,7 @@ const Chat = () => {
   };
 
   const updateBanStatus = (member: { status: boolean; channel: string }) => {
-    console.log("BanStatus");
+    // console.log("BanStatus");
     let room = findRoom(member.channel);
     room.ban = member.status;
     if (room.ban) {
@@ -204,7 +204,7 @@ const Chat = () => {
     channel: string;
     time: number;
   }) => {
-    console.log("MuteStatus");
+    // console.log("MuteStatus");
     let room = findRoom(member.channel);
     room.mute = member.status;
     if (room.mute)
@@ -286,7 +286,7 @@ const Chat = () => {
     content: string;
     date: Date;
   }) => {
-    console.log("receiveChatMessage + " + username);
+    // console.log("receiveChatMessage + " + username);
     const theroom: IMessageToBack = {
       sender: obj.sender,
       message: obj.content,
@@ -373,7 +373,7 @@ const Chat = () => {
   };
 
   const joinedRoom = (room: string) => {
-    console.log("joined " + room);
+    // console.log("joined " + room);
     rooms.forEach((element: any) => {
       if (element.name === room) element.member = true;
     });
@@ -446,6 +446,7 @@ const Chat = () => {
         name: element.chatRoomName,
         type: element.type,
         InviteUserName: element.InviteUserName,
+		InviteGameId: element.InviteGameId,
         messages: [],
       };
       [...element.messages].reverse().forEach((oneMessage: any) => {
@@ -483,7 +484,8 @@ const Chat = () => {
       name: channel.chatRoomName,
       type: channel.type,
       InviteUserName: channel.InviteUserName,
-      messages: [],
+	  InviteGameId: channel.InviteGameId,
+	  messages: [],
     };
     if (channel.messages !== undefined) {
       [...channel.messages].reverse().forEach((oneMessage: any) => {
@@ -584,14 +586,14 @@ const Chat = () => {
       auth.user.inGame === false &&
       auth.user.inQueue === false
     ) {
-      console.log(auth.user);
       socket?.emit(
         "createGameInvite",
-        auth.user,
-        roomActive.usersList,
-        roomActive.name
-      );
-    } else alert("You cannot send a game invite !");
+        {user: auth.user,
+		userList: roomActive.usersList,
+		name: roomActive.name}
+      );}
+	  else
+		alert("You cannot send a game invite !");
   };
 
   const CancelGameInvite = (event: any) => {
@@ -601,23 +603,43 @@ const Chat = () => {
 
   const JoinGameInvite = (event: any) => {
     event.preventDefault();
-  };
+    const roomActive = findActiveRoom();
+	socket?.emit('invitationAccepted', {
+		user: auth.user, inviter: roomActive.InviteUserName,
+		gameId: roomActive.InviteGameId,
+		name: roomActive.name});
+};
 
   const sendGameInviteMessage = () => {
-    console.log("La game est creé");
     const inviteMessage: string = username + " send an invite to a Pong game";
     socket?.emit("chatToServer", {
       sender: username,
       room: findActiveRoom().name,
       msg: inviteMessage,
     });
-    console.log("Message envoyé, on navigate.");
     navigate("/pong/");
   };
 
-  socket?.on("changeGameButton", (status) => {
-    setGameButton(status);
-    console.log("On change le button. button = " + status);
+  const navigateToTheGame = () => {
+    const inviteMessage: string = username + " has join the Pong game";
+    socket?.emit("chatToServer", {
+      sender: username,
+      room: findActiveRoom().name,
+      msg: inviteMessage,
+    });
+    navigate("/pong/");
+  };
+
+  socket?.on("updateUser", user => {
+		if (user.name === username)
+		auth.user = user;
+  });
+
+  socket?.on("changeGameButton", (infos: {status: string, channel: any}) => {
+    setGameButton(infos.status);
+	let roomActive = findActiveRoom();
+	roomActive.InviteGameId = infos.channel.InviteGameId;
+	roomActive.InviteUserName = infos.channel.InviteUserName;
   });
 
   /* ***************************************************************************** */
@@ -626,14 +648,13 @@ const Chat = () => {
 
   // USEEFFECT POUR CREER UN SOCKET
   useEffect(() => {
-    console.log("connect");
+    // console.log("connect");
     const newSocket = io("http://localhost:3001");
     setSocket(newSocket);
   }, [setSocket]);
 
   useEffect(() => {
     changeUsername(auth.user.name);
-    //TODO: parser pour afficher le bon bouton (raquette/encoche/croix)
     const roomActive = findActiveRoom();
     if (!roomActive) setGameButton("invite");
     else socket?.emit("inviteAcceptCancel", username, roomActive.name);
@@ -673,7 +694,7 @@ const Chat = () => {
   useEffect(() => {
     socket?.on("chatToClient", receiveChatMessage);
     return () => {
-      console.log("chatToClient name === " + username);
+    //   console.log("chatToClient name === " + username);
       socket?.off("chatToClient", receiveChatMessage);
     };
   }, [receiveChatMessage]);
@@ -755,6 +776,13 @@ const Chat = () => {
       socket?.off("recvGameInvite", sendGameInviteMessage);
     };
   }, [sendGameInviteMessage]);
+
+  useEffect(() => {
+    socket?.on("navigateToTheGame", navigateToTheGame);
+    return () => {
+      socket?.off("navigateToTheGame", navigateToTheGame);
+    };
+  }, [navigateToTheGame]);
 
   const sortedMessages = findActiveRoom().messages.sort((a, b) => {
     // Compare the dates of the messages to determine their order
@@ -901,15 +929,9 @@ const Chat = () => {
               </button>
             </form>
           </div>
-          {gameButton === "invite" && (
-            <GameInviteButton CreateGameInvite={CreateGameInvite} />
-          )}
-          {gameButton === "cancel" && (
-            <CancelInviteButton CancelGameInvite={CancelGameInvite} />
-          )}
-          {gameButton === "join" && (
-            <JoinInviteButton JoinGameInvite={JoinGameInvite} />
-          )}
+              {gameButton === "invite" && <GameInviteButton CreateGameInvite={CreateGameInvite} />}
+              {gameButton === "cancel" && <CancelInviteButton CancelGameInvite={CancelGameInvite} />}
+              {gameButton === "join" && <JoinInviteButton joinGameInvite={JoinGameInvite} />}
         </div>
       </div>
       <RoomUserList

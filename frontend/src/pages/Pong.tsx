@@ -26,16 +26,18 @@ function Pong() {
 
   /** reconnexion en pleine partie OU remettre en file d'attente s'il y est déjà **/
   useEffect(() => {
-    if (auth.user) socket.emit("inQueueOrGame", auth.user);
+    if (auth.user)
+		// socket.emit("updateTheUser", auth.user);
+		socket.emit("inQueueOrGame", auth.user);
   }, [auth.user]);
 
-  /* ***************************************************************************** */
-  /*                                  socket.on                                    */
-  /* ***************************************************************************** */
-  /**** Display the Queue, cause the user is in ****/
-  socket.on("changeQueue", (bool) => {
-    setStatus(bool);
-  });
+	/* ***************************************************************************** */
+	/*                                  socket.on                                    */
+	/* ***************************************************************************** */
+	/**** Display the Queue, cause the user is in ****/
+	socket.on("changeQueue", (status) => {
+		setStatus(status);
+	});
 
   /**** Join user in Queue and play ****/
   socket.on("goPlay", (gameToPlay) => {
@@ -44,7 +46,8 @@ function Pong() {
   });
 
   socket.on("updateUser", (user) => {
-    if (user.name === auth.user.name) auth.user = user;
+    if (user.name === auth.user.name)
+		auth.user = user;
   });
 
   socket.on("updateUsers", (userLeft, userRight) => {

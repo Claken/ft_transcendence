@@ -14,7 +14,7 @@ function Account() {
 		if (auth.user?.login) {
 			window.location.href = "http://localhost:3001/auth/42/logout";
 		} else {
-			console.log("logout: " + JSON.stringify(auth.user));
+			// console.log("logout: " + JSON.stringify(auth.user));
 			auth.deleteGuestUser();
 			if (sessionStorage.getItem("MY_PONG_APP")) {
 				sessionStorage.removeItem("MY_PONG_APP");

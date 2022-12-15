@@ -45,7 +45,7 @@ export class AuthController {
   async logOut(@Req() req: RequestWithUser) {
     // logOut() => removes the session from the memory of the webserver
     if (req.user) {
-	  console.log("infos: "+req.user.name+", "+req.user.inGame)
+	//   console.log("infos: "+req.user.name+", "+req.user.inGame)
       this.usersService.updateStatusUser(req.user.id, 'offline');
       if (req.user.isTwoFAValidated)
         this.usersService.setTwoFACertif(req.user.id, false);
