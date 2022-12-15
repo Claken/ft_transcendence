@@ -540,7 +540,7 @@ const Chat = () => {
 
   const askWhichFriend = (friends: any) => {
     let friendName: string = null;
-    let nameFound: string = null;
+    let nameFound: string = undefined;
     const roomActive = findActiveRoom();
     if (friends.length === 0)
       alert("you need at least one friend to invite in your room");
