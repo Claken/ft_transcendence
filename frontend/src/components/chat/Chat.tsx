@@ -550,7 +550,10 @@ const Chat = () => {
       });
       if (nameFound === undefined || nameFound === null)
         alert("friend not found, sorry");
-      else {
+      else if (findActiveRoom().usersList.find((name: string) => name === nameFound) != undefined) {
+        alert(nameFound + " is already in the room, oh almighty corrector !");
+      }
+        else {
         socket?.emit("emitForAnPrInvite", {
           sender: username,
           receiver: nameFound,
