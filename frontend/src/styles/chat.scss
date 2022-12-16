@@ -515,6 +515,19 @@
 					padding-left: 10px;
 				}
 			}
+			.pass-for-protected {
+				width: 40%;
+				input {
+					width: 60%;
+					height: 80%;
+					background-color: transparent;
+					border: 2px solid whitesmoke;
+					border-radius: 10px;
+					color: whitesmoke;
+					font-size: 20px;
+					padding-left: 10px;
+				}
+			}
 			.addARoom-buttons {
 				width: 60%;
 				height: 20%;
