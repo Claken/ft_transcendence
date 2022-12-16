@@ -30,14 +30,12 @@ function Pong() {
 	const updateUserApply = (user: IUser) => {
 		if (user.name === auth.user.name) {
 			user.avatarUrl = auth.user.avatarUrl
-			console.log("user inQueue = "+user.inQueue)
 			auth.user = user;
 		}
 	  }; 
 	socket.on("updateUser", updateUserApply);		
 
     if (auth.user) {
-		console.log("on passe dans useEffect")
 		socket.emit("inQueueOrGame", auth.user);
 	}
 	return () => {
@@ -50,7 +48,6 @@ function Pong() {
 	/* ***************************************************************************** */
 	/**** Display the Queue, cause the user is in ****/
 	const changeQueueApply = (status: string) => {
-		console.log("change status par "+status)
 		setStatus(status);
 	};
 	useEffect(() => {

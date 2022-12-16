@@ -333,7 +333,6 @@ export class GameGateway
 		userQueue.push(user);
     }
 	else {
-		console.log("apdfjnadblakdjknbkgd")
 	  const game: GameDTO = await this.gameService.getCurrentGame(user.login);
 	  client.join(game.id);
 	  client.emit("updateUser", user);
