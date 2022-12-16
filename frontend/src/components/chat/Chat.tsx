@@ -360,16 +360,13 @@ const Chat = () => {
     socket?.emit("checkPswdStatus", { room: room, user: user });
   };
 
-  const handlingPasswordPart2 = (infos: {
-    room: string;
-    user: string;
-    pswdStatus: boolean;
-  }) => {
+  const handlingPasswordPart2 = (infos: {room: string; user: string; pswdStatus: boolean;}) => {
     let pswd: string = undefined;
     if (infos.pswdStatus) {
       pswd = prompt(
         "you need a password to join this channel, please type it: "
       );
+      if (pswd === null) return;
     }
     socket?.emit("joinRoom", {
       room: infos.room,
