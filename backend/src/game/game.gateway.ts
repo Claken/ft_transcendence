@@ -38,7 +38,6 @@ export class GameGateway
   tabGameInvite: ObjInvite[] = [];
   
   async handleConnection(client) {
-	console.log("client connected. client.id = "+client.id)
   }
 
   async handleDisconnect(client) {
