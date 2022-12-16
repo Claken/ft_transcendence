@@ -15,6 +15,7 @@ import CancelInviteButton from "./CancelInviteButton";
 import JoinInviteButton from "./JoinInviteButton";
 import RoomSettings from "./RoomSettings";
 import { IUser } from "../../interfaces/user.interface";
+import RoomsList from "./RoomsList";
 
 const Chat = () => {
   const [text, changeText] = useState<string>("");
@@ -596,9 +597,9 @@ const Chat = () => {
 
   socket?.on("updateUser", (user: IUser) => {
     if (user.name === username) {
-		user.avatarUrl = auth.user.avatarUrl
-		auth.user = user;
-	}
+      user.avatarUrl = auth.user.avatarUrl;
+      auth.user = user;
+    }
   });
 
   socket?.on("changeGameButton", (infos: { status: string; channel: any }) => {
@@ -771,7 +772,13 @@ const Chat = () => {
 
   return (
     <div className="chat-container">
-      <div className="left-side">
+      <RoomsList
+        rooms={rooms}
+        findRoom={findRoom}
+        setActiveForRoom={setActiveForRoom}
+        addARoom={addARoom}
+      />
+      {/* <div className="left-side">
         <div className="rooms-list">
           <ul>
             {rooms.map((room: any, id: number) =>
@@ -814,7 +821,7 @@ const Chat = () => {
             </button>
           </form>
         </div>
-      </div>
+      </div> */}
       <div className="middle">
         <div className="top-chat">
           <p>Active room : {activeRoom} </p>

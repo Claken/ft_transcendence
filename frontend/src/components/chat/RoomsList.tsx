@@ -1,14 +1,12 @@
 import React from "react";
 import "../../styles/chat.scss";
 import { type } from "../../interfaces/enum";
+import Modal from "../modal";
+import useModal from "../../hooks/useModal";
+import ModalAddARoom from "./ModalAddARoom";
 
-const RoomsList = ({
-  rooms,
-  findRoom,
-  setActiveForRoom,
-  addARoom,
-  deleteARoom,
-}) => {
+const RoomsList = ({ rooms, findRoom, setActiveForRoom, addARoom }) => {
+  const { isOpen, toggle } = useModal()
   return (
     <div className="left-side">
       <div className="rooms-list">
@@ -52,26 +50,9 @@ const RoomsList = ({
             </svg>
           </button>
         </form>
-        <form onSubmit={deleteARoom}>
-          <button type="submit">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="icon icon-tabler icon-tabler-message-off"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              strokeWidth="2"
-              stroke="currentColor"
-              fill="none"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-              <line x1="3" y1="3" x2="21" y2="21"></line>
-              <path d="M17 17h-9l-4 4v-13c0 -1.086 .577 -2.036 1.44 -2.563m3.561 -.437h8a3 3 0 0 1 3 3v6c0 .575 -.162 1.112 -.442 1.568"></path>
-            </svg>
-          </button>
-        </form>
+        <Modal isOpen={isOpen} toggle={toggle}>
+          <ModalAddARoom addARoom={addARoom}/>
+      </Modal>
       </div>
     </div>
   );
