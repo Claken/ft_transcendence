@@ -91,29 +91,29 @@ const Chat = () => {
     else setGameButton("invite");
   };
 
-  const isAlpha = (input: string) => {
-    for (let index = 0; index < input.length; index++) {
-      const element = input.charCodeAt(index);
-      if (element < 48 || element > 122 || (element >= 58 && element <= 64))
-        return false;
-    }
-    return true;
-  };
+  // const isAlpha = (input: string) => {
+  //   for (let index = 0; index < input.length; index++) {
+  //     const element = input.charCodeAt(index);
+  //     if (element < 48 || element > 122 || (element >= 58 && element <= 64))
+  //       return false;
+  //   }
+  //   return true;
+  // };
 
-  const parseRoomName = (roomName: string) => {
-    let status: boolean = true;
-    if (roomName === "") {
-      alert("you need to write a name please");
-      status = false;
-    } else if (roomName.length > 20) {
-      alert("the name cannot exceed 20 characters");
-      status = false;
-    } else if (isAlpha(roomName) === false) {
-      alert("the name contains none alphanumeric character.s");
-      status = false;
-    }
-    return status;
-  };
+  // const parseRoomName = (roomName: string) => {
+  //   let status: boolean = true;
+  //   if (roomName === "") {
+  //     alert("you need to write a name please");
+  //     status = false;
+  //   } else if (roomName.length > 20) {
+  //     alert("the name cannot exceed 20 characters");
+  //     status = false;
+  //   } else if (isAlpha(roomName) === false) {
+  //     alert("the name contains none alphanumeric character.s");
+  //     status = false;
+  //   }
+  //   return status;
+  // };
 
   /* ***************************************************************************** */
   /*    					Functions pour la gestion des chats 					 */
