@@ -6,11 +6,26 @@ import { useDm } from "../../contexts/DmContext";
 import { Dm } from "../../interfaces/dm.interface";
 import "../../styles/dmchat.css";
 import UserNotFound from "../social/UserNotFound";
+import { IUser } from "../../interfaces/user.interface";
 
 function DmUserButton(props) {
   const dmContext = useDm();
   const [dropDown, setDropDown] = useState(false);
   const [notifications, setNotifications] = useState<number>(0);
+
+  const meGuest = (user: IUser) => {
+    if (user.login !== "")
+    return false;
+  alert("You are a guest you can't be friend with others players!");
+  return true;
+  }
+
+  const isGuest = (user: IUser) => {
+    if (user.login !== "")
+      return false;
+    alert("You can't be friend with a guest!");
+    return true;
+  }
 
   const haveNotifications = () => {
     if (notifications > 0) {
@@ -32,7 +47,7 @@ function DmUserButton(props) {
   };
 
   const postRequestFriend = (sender: string, receiver: string, id: number) => {
-    if (!dmContext.isBlock(id) && !dmContext.isBlocked(id)) {
+    if (!meGuest(dmContext.me) && !isGuest(props.user) && !dmContext.isBlock(id) && !dmContext.isBlocked(id)) {
       dmContext.socket.emit("send_friendRequest", {
         sender,
         receiver,
