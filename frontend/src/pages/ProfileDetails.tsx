@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from "react";
 import axios from "../axios.config";
 import { IUser } from "../interfaces/user.interface";
-import { useAuth } from "../contexts/AuthContext";
 import UserNotFound from "../components/social/UserNotFound";
 
 function ProfileDetails() {
-  const auth = useAuth();
   const [user, setUser] = useState<IUser>();
   const [users, setUsers] = useState<IUser[]>([]);
   // const [avatar, setAvatar] = useState<string>();
@@ -94,9 +92,8 @@ function ProfileDetails() {
               </div> */}
               <div className="profile-stats">
                 <h1> {user?.name}</h1>
-                <h2>
-                  Win - lose : {user?.win} -{auth.user?.lose}
-                </h2>
+                <h2>Win: {user?.win}</h2>
+                <h2>Lose: {user?.lose}</h2>
               </div>
             </div>
             <div className="right-container">
@@ -112,10 +109,16 @@ function ProfileDetails() {
                           key={id}
                           className={"gamePlayed gamePlayed" + game.map}
                         >
-                          <li>
-                            {game.loginLP} {game.scoreLP} - {game.loginRP}{" "}
-                            {game.scoreRP}
-                            {game.abort && <li>abort by: {game.abort}</li>}
+                          <li key={id}>
+                            <p>
+                              {game.loginLP} {game.scoreLP} - {game.loginRP}
+                              {game.scoreRP}
+                            </p>
+                            <br />
+                            <p>
+                              {game.abort ? "game abort by " : null}
+                              {game.abort ? game.abort : null}
+                            </p>
                           </li>
                         </div>
                       ))}
