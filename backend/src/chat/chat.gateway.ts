@@ -227,6 +227,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
         const sockets = await this.server.fetchSockets();
         sockets.forEach((socket: any) => socket.join(channelCreated.id));
+		client.emit("Channel created");
         this.server.emit('sendNewChannel', channelCreated);
     }
 

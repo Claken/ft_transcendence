@@ -91,29 +91,29 @@ const Chat = () => {
     else setGameButton("invite");
   };
 
-  const isAlpha = (input: string) => {
-    for (let index = 0; index < input.length; index++) {
-      const element = input.charCodeAt(index);
-      if (element < 48 || element > 122 || (element >= 58 && element <= 64))
-        return false;
-    }
-    return true;
-  };
+  // const isAlpha = (input: string) => {
+  //   for (let index = 0; index < input.length; index++) {
+  //     const element = input.charCodeAt(index);
+  //     if (element < 48 || element > 122 || (element >= 58 && element <= 64))
+  //       return false;
+  //   }
+  //   return true;
+  // };
 
-  const parseRoomName = (roomName: string) => {
-    let status: boolean = true;
-    if (roomName === "") {
-      alert("you need to write a name please");
-      status = false;
-    } else if (roomName.length > 20) {
-      alert("the name cannot exceed 20 characters");
-      status = false;
-    } else if (isAlpha(roomName) === false) {
-      alert("the name contains none alphanumeric character.s");
-      status = false;
-    }
-    return status;
-  };
+  // const parseRoomName = (roomName: string) => {
+  //   let status: boolean = true;
+  //   if (roomName === "") {
+  //     alert("you need to write a name please");
+  //     status = false;
+  //   } else if (roomName.length > 20) {
+  //     alert("the name cannot exceed 20 characters");
+  //     status = false;
+  //   } else if (isAlpha(roomName) === false) {
+  //     alert("the name contains none alphanumeric character.s");
+  //     status = false;
+  //   }
+  //   return status;
+  // };
 
   /* ***************************************************************************** */
   /*    					Functions pour la gestion des chats 					 */
@@ -134,6 +134,10 @@ const Chat = () => {
   const pswdUpdateMessage = () => {
     alert("The password has been successfully updated");
   };
+
+  const channelCreatedMsg = () => {
+    alert('The room has been successfully created');
+  }
 
   const changeChannelOwner = (update: {
     newOwner: string;
@@ -264,17 +268,16 @@ const Chat = () => {
   const sendChatMessage = (event: any) => {
     event.preventDefault();
     const activeRoom = findActiveRoom();
-    if (activeRoom.member && activeRoom.mute === false) {
+    if (activeRoom.member && activeRoom.mute === false && text.trim().length !== 0) {
       socket?.emit("chatToServer", {
         sender: username,
         room: activeRoom.name,
         msg: text,
       });
-      // chatEndRef.current.scrollIntoView({ behavior: "smooth" });
     } else {
       if (activeRoom.mute) alert("you cannot talk in this room bitch !");
       else if (activeRoom.member === false)
-        alert("you must be a member of the room bitch !");
+        alert("you must join a room to send a");
       changeText("");
     }
   };
@@ -309,7 +312,7 @@ const Chat = () => {
         alert("This name is already taken. Try another one.");
         return;
       }
-      else if (roomName === "" || roomName === null || roomName.trim().length === 0)
+      if (roomName === "" || roomName === null || roomName.trim().length === 0)
       {
         alert("The room name cannot be empty.");
         return;
@@ -357,16 +360,13 @@ const Chat = () => {
     socket?.emit("checkPswdStatus", { room: room, user: user });
   };
 
-  const handlingPasswordPart2 = (infos: {
-    room: string;
-    user: string;
-    pswdStatus: boolean;
-  }) => {
+  const handlingPasswordPart2 = (infos: {room: string; user: string; pswdStatus: boolean;}) => {
     let pswd: string = undefined;
     if (infos.pswdStatus) {
       pswd = prompt(
         "you need a password to join this channel, please type it: "
       );
+      if (pswd === null) return;
     }
     socket?.emit("joinRoom", {
       room: infos.room,
@@ -762,6 +762,13 @@ const Chat = () => {
       socket?.off("navigateToTheGame", navigateToTheGame);
     };
   }, [navigateToTheGame]);
+
+  useEffect(() => {
+    socket?.on("Channel created", channelCreatedMsg);
+    return () => {
+      socket?.off("Channel created", channelCreatedMsg);
+    };
+  }, [channelCreatedMsg]);
 
   const sortedMessages = findActiveRoom().messages.sort((a, b) => {
     // Compare the dates of the messages to determine their order
