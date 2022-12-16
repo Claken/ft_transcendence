@@ -255,87 +255,88 @@
 			width: 100%;
 			height: 10%;
 			display: flex;
-			
+
 			.chat-send-msg {
 				width: 100%;
 				height: 100%;
 				display: flex;
 				flex: 5;
 
-			form {
-				display: flex;
-				justify-content: space-evenly;
-				align-items: center;
-				margin: auto;
-				width: 100%;
-				height: 100%;
-
-				input {
-					width: 75%;
-					height: 80%;
-					background-color: transparent;
-					border: 2px solid whitesmoke;
-					border-radius: 10px;
-					color: whitesmoke;
-					font-size: 20px;
-					padding-left: 10px;
-				}
-
-				input::placeholder {
-					color: whitesmoke;
-				}
-				
-				button {
+				form {
 					display: flex;
-					justify-content: center;
+					justify-content: space-evenly;
 					align-items: center;
-					height: 80%;
-					width: 20%;
-					background-color: transparent;
-					color: whitesmoke;
-					border: none;
-
-					.icon {
-						height: 80%;
-						width: 80%;
-					}
-				}
-			}
-
-		}
-		.chat-game-btn {
-			width: 100%;
-			height: 100%;
-			display: flex;
-			flex: 1;
-			
-			form {
-				display: flex;
-				justify-content: space-evenly;
-				align-items: center;
-				margin: auto;
-				width: 100%;
-				height: 100%;
-
-				button {
-					display: flex;
-					justify-content: center;
-					align-items: center;
-					height: 80%;
+					margin: auto;
 					width: 100%;
-					background-color: transparent;
-					color: whitesmoke;
-					border: none;
+					height: 100%;
 
-					.icon {
+					input {
+						width: 75%;
 						height: 80%;
-						width: 80%;
+						background-color: transparent;
+						border: 2px solid whitesmoke;
+						border-radius: 10px;
+						color: whitesmoke;
+						font-size: 20px;
+						padding-left: 10px;
+					}
+
+					input::placeholder {
+						color: whitesmoke;
+					}
+
+					button {
+						display: flex;
+						justify-content: center;
+						align-items: center;
+						height: 80%;
+						width: 20%;
+						background-color: transparent;
+						color: whitesmoke;
+						border: none;
+
+						.icon {
+							height: 80%;
+							width: 80%;
+						}
 					}
 				}
+
 			}
 
+			.chat-game-btn {
+				width: 100%;
+				height: 100%;
+				display: flex;
+				flex: 1;
+
+				form {
+					display: flex;
+					justify-content: space-evenly;
+					align-items: center;
+					margin: auto;
+					width: 100%;
+					height: 100%;
+
+					button {
+						display: flex;
+						justify-content: center;
+						align-items: center;
+						height: 80%;
+						width: 100%;
+						background-color: transparent;
+						color: whitesmoke;
+						border: none;
+
+						.icon {
+							height: 80%;
+							width: 80%;
+						}
+					}
+				}
+
+			}
 		}
-	}
 
 
 	}
@@ -454,7 +455,19 @@
 
 	.modal-box {
 		background: rgb(82, 59, 130);
-		;
+		background: -moz-linear-gradient(90deg,
+				rgba(82, 59, 130, 1) 0%,
+				rgba(48, 34, 75, 1) 40%,
+				rgba(82, 59, 130, 1) 100%);
+		background: -webkit-linear-gradient(90deg,
+				rgba(82, 59, 130, 1) 0%,
+				rgba(48, 34, 75, 1) 40%,
+				rgba(82, 59, 130, 1) 100%);
+		background: linear-gradient(90deg,
+				rgba(82, 59, 130, 1) 0%,
+				rgba(48, 34, 75, 1) 40%,
+				rgba(82, 59, 130, 1) 100%);
+	
 		overflow: hidden;
 		width: 60%;
 		height: 60%;
@@ -467,5 +480,124 @@
 		align-items: center;
 		justify-content: center;
 
+		.room-settings {
+			width: 100%;
+			height: 100%;
+
+
+			.top-settings {
+				display: flex;
+				justify-content: center;
+				align-items: flex-start;
+				width: 100%;
+				height: 10%;
+			}
+
+			.sides-room-settings {
+				display: flex;
+				flex-direction: row;
+				width: 100%;
+				height: 90%;
+
+				.room-settings-left {
+					height: 100%;
+					display: flex;
+					justify-content: center;
+					align-items: center;
+					flex: 1;
+					flex-direction: column;
+
+					.delete-room-settings {
+						display: flex;
+						justify-content: center;
+						align-items: center;
+						width: 100%;
+						flex: 1;
+					}
+
+					.password-settings {
+						display: flex;
+						justify-content: center;
+						align-items: center;
+						width: 100%;
+						flex: 1;
+						flex-direction: column;
+
+					}
+
+				}
+
+				.room-settings-right {
+					height: 100%;
+					display: flex;
+					justify-content: center;
+					align-items: center;
+					flex: 1;
+					flex-direction: column;
+					.room-settings-lists
+					{
+						width: 100%;
+						height: 100%;
+						display: flex;
+						justify-content: center;
+						flex-direction: column;
+						.banmute-list
+						{
+							display: flex;
+							align-items: center;
+							justify-content: flex-start;
+							flex-direction: column;
+							flex: 1;
+							h3 {
+								height: 10%;
+								width: 1005;
+							}
+							ul {
+								width: 90%;
+								height: 100%;
+				
+				
+								.member-element {
+				
+									display: flex;
+									justify-content: start;
+									align-items: center;
+				
+									list-style: none;
+									width: 100%;
+									height: 10%;
+									background-color: rgb(82, 59, 130);
+									border-radius: 10px;
+									font-weight: 600;
+									font-size: 18px;
+									list-style: none;
+									color: whitesmoke;
+									margin: 10px 0;
+				
+				
+									li {
+										margin-left: 10px;
+										display: flex;
+										align-items: center;
+										width: 100%;
+				
+										.member-name {
+											display: flex;
+											align-items: center;
+											width: 50%;
+											display: flex;
+											flex: 1;
+											float: left;
+										}
+				
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+
 	}
+}
 }

@@ -488,7 +488,6 @@ const Chat = () => {
   };
 
   const deleteChannelPassword = (event: any) => {
-    event.preventDefault();
     const activeRoom = findActiveRoom();
     if (
       window.confirm(
@@ -847,7 +846,6 @@ const Chat = () => {
               muteList={findActiveRoom().muteList}
               banList={findActiveRoom().banList}
               updateChannelPassword={updateChannelPassword}
-              owner={findActiveRoom().owner}
               type={findActiveRoom().type}
               deleteChannelPassword={deleteChannelPassword}
               deleteARoom={deleteARoom}

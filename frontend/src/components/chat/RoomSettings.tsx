@@ -5,7 +5,7 @@ import useModal from "../../hooks/useModal";
 import { type } from "../../interfaces/enum";
 import ModalRoomSettings from "./ModalRoomSettings";
 
-const RoomSettings = ({activeRoom, muteList, banList, type, owner,deleteChannelPassword, updateChannelPassword, deleteARoom}) => {
+const RoomSettings = ({activeRoom, muteList, banList, type, deleteChannelPassword, updateChannelPassword, deleteARoom}) => {
   const { isOpen, toggle } = useModal();
 
   return (
@@ -33,7 +33,6 @@ const RoomSettings = ({activeRoom, muteList, banList, type, owner,deleteChannelP
         updateChannelPassword={updateChannelPassword}
         muteList={muteList}
         banList={banList}
-        owner={owner}
         type={type}
         deleteChannelPassword={deleteChannelPassword}
         deleteARoom={deleteARoom}
