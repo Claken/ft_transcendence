@@ -51,8 +51,11 @@ function Pong() {
   });
 
   socket.on("updateUsers", (userLeft, userRight) => {
-    if (auth.user.name === userLeft.name) auth.user = userLeft;
-    else auth.user = userRight;
+	console.log("upd called")
+	if (auth.user.name === userLeft.name)
+		auth.user = userLeft;
+    else
+		auth.user = userRight;
   });
 
   /* ***************************************************************************** */

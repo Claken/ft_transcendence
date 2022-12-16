@@ -276,7 +276,8 @@ export class GameGateway
   }
 
   @SubscribeMessage('setCompteur')
-  async SetCompteur(gameId: number) {
+  async SetCompteur(client: any, gameId: number) {
+	console.log("gameId dans SetCompteur = "+gameId)
 	let nbInter = await this.gameService.updateNbInterval(gameId);
 	const interval = setInterval(this.tick, 1000, gameId, nbInter);
 	this.tabIntervalId.push({gameId, intervalID: interval});
@@ -313,7 +314,8 @@ export class GameGateway
 			else 
 				var currentGame: GameDTO = await this.gameService.getCurrentGame(user.name);
 		if (currentGame) {
-			client.join(currentGame.id);
+			if (currentGame.waitingForInvit)
+				client.join(currentGame.id);
 			client.emit("goPlay", currentGame);
 		}
 		return ;
@@ -368,7 +370,7 @@ export class GameGateway
 	  this.server.to(updatedGame.id).emit("updateUsers", firstGameUserLp, user);
       /**** Redirect in the Frontend to <Game /> ****/
 	  this.server.to(updatedGame.id).emit('goPlay', updatedGame);
-	  this.SetCompteur(updatedGame.id);
+	  this.SetCompteur(null, updatedGame.id);
     }
 	else {
 	  let login: string;
@@ -428,12 +430,6 @@ export class GameGateway
 	}
   }
 
-  @SubscribeMessage('updateTheUser')
-  async UpdateTheUser(client: any, user: UserDTO) {
-	user = await this.usersService.updateInGame(user.id, false);
-	client.emit("updateUser", user);
-  }
-
   @SubscribeMessage('updateInGame')
   async UpdateInGame(client: any, user: UserDTO, gameId: number) {
 	user = await this.usersService.updateInGame(user.id, false);
@@ -457,10 +453,9 @@ export class GameGateway
 	if (game) {
 		let userLeft: UserDTO = await this.usersService.getByName(game.nameLP);
 		let userRight: UserDTO = await this.usersService.getByName(game.nameRP);
-		if (client.id === userLeft.lastSocket)
-			this.UpdateInGame(client, userLeft, allPos.gameId);
-		else
-			this.UpdateInGame(client, userRight, allPos.gameId);
+		userLeft = await this.usersService.updateInGame(userLeft.id, false);
+		userRight = await this.usersService.updateInGame(userRight.id, false);
+		this.server.emit("updateUsers", userLeft, userRight);
 		if (game.isFinish === false && userLeft && userRight) {
 			game = await this.gameService.gameFinished(
 				allPos.gameId, allPos.scoreLP, allPos.scoreRP,
@@ -484,10 +479,9 @@ export class GameGateway
 	if (game) {
 		let userLeft: UserDTO = await this.usersService.getByName(game.nameLP);
 		let userRight: UserDTO = await this.usersService.getByName(game.nameRP);
-		if (client.id === userLeft.lastSocket)
-			this.UpdateInGame(client, userLeft, infos[0].gameId);
-		else
-			this.UpdateInGame(client, userRight, infos[0].gameId);
+		userLeft = await this.usersService.updateInGame(userLeft.id, false);
+		userRight = await this.usersService.updateInGame(userRight.id, false);
+		this.server.emit("updateUsers", userLeft, userRight);
 		if (game.isFinish === false && userLeft && userRight) {
 			game = await this.gameService.gameFinished(
 				infos[0].gameId, infos[0].scoreLP, infos[0].scoreRP,
@@ -554,7 +548,7 @@ export class GameGateway
 	  this.server.emit("updateUsers", firstGameUserLp, infos.user);
 	  this.server.to(updatedGame.id).emit('goPlay', updatedGame);
 	  this.eventEmitter.emit('gamePrepareToTheJoin', {joiner: infos.user.name, room: infos.roomName});
-	  this.SetCompteur(updatedGame.id);
+	  this.SetCompteur(null, updatedGame.id);
   }
 
   @SubscribeMessage('cancelInvite')
