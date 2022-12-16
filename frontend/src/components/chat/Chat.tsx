@@ -184,7 +184,11 @@ const Chat = () => {
     room.ban = member.status;
     if (room.ban) {
       alert("Congratulations, you are banned from " + member.channel);
-      if (room.name === activeRoom) setActiveForRoom("");
+      if (room.name === activeRoom)
+      {
+        setActiveForRoom("");
+        setGameButton("invite");
+      }
     } else {
       alert(
         "Congratulations, you are not banned from " +
@@ -303,7 +307,17 @@ const Chat = () => {
     
       if (findRoom(roomName)) {
         alert("This name is already taken. Try another one.");
-        return
+        return;
+      }
+      else if (roomName === "" || roomName === null || roomName.trim().length === 0)
+      {
+        alert("The room name cannot be empty.");
+        return;
+      }
+      if (typeRoom === "-1")
+      {
+        alert("You must choose a room type, please !");
+        return;
       }
     const dbRoom: IChatRoom = {
       chatRoomName: roomName,
@@ -311,11 +325,7 @@ const Chat = () => {
       type: parseInt(typeRoom, 10),
       password: password,
     };
-    if (roomName !== "")
-    {
-      socket?.emit("createChatRoom", dbRoom)
-    }
-    
+      socket?.emit("createChatRoom", dbRoom);
   };
 
   const deleteARoom = (roomName: string) => {
@@ -471,6 +481,7 @@ const Chat = () => {
       if (roomsCopy[i].name === channel) {
         roomsCopy.splice(i, 1);
         setActiveForRoom("");
+        setGameButton("invite");
       }
     }
     setRooms(roomsCopy);

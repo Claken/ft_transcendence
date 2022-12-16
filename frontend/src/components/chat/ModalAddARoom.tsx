@@ -3,7 +3,7 @@ import React, { useState } from "react";
 const ModalAddARoom = ({ addARoom, toggle }) => {
   const [password, setPassword] = useState<String>(null);
   const [roomName, setRoomName] = useState<String>(null);
-  const [typeRoom, setTypeRoom] = useState<Number>(-1);
+  const [typeRoom, setTypeRoom] = useState<String>("-1");
 
   const handleSubmit = (event) => {
     event.preventDefault();
