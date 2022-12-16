@@ -4,8 +4,10 @@ import { IUser } from "../interfaces/user.interface";
 import UserNotFound from "../components/social/UserNotFound";
 
 function ProfileDetails() {
-  const [user, setUser] = useState<IUser>();
   const [users, setUsers] = useState<IUser[]>([]);
+  const [user, setUser] = useState<IUser>();
+  const [games, setGames] = useState<IGame[]>([]);
+
   // const [avatar, setAvatar] = useState<string>();
 
   const userProfile = window.location.pathname.substring(
@@ -13,23 +15,6 @@ function ProfileDetails() {
   );
   const names = users && users.map((user: IUser) => user?.name);
   const isValidName = names && names.includes(userProfile);
-  const [games, setGames] = useState<IGame[]>([]);
-
-  useEffect(() => {
-    const getMyGames = () => {
-      axios
-        .get("game/login/" + user?.login)
-        .then((res) => {
-          setGames(res.data);
-        })
-        .catch((error) => {
-          console.log(error);
-        });
-    };
-    if (user?.login) {
-      getMyGames();
-    }
-  }, []);
 
   useEffect(() => {
     const getData = async () => {
@@ -61,6 +46,22 @@ function ProfileDetails() {
     };
     getUserData();
   });
+
+  useEffect(() => {
+    const getMyGames = () => {
+      axios
+        .get("game/login/" + user?.login)
+        .then((res) => {
+          setGames(res.data);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    };
+    if (user?.login) {
+      getMyGames();
+    }
+  }, []);
 
   // useEffect(() => {
   //   const getAvatar = async () => {
