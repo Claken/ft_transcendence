@@ -4,8 +4,7 @@ import axios from "../../axios.config";
 import { useAuth } from "../../contexts/AuthContext";
 import { IGame } from "../../interfaces/game.interface";
 
-const MatchHistory = () => {
-  const { user } = useAuth();
+const MatchHistory = ({ user }) => {
   const [games, setGames] = useState<IGame[]>([]);
 
   useEffect(() => {
