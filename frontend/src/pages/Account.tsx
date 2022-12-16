@@ -38,8 +38,10 @@ function Account() {
 						<div className="profile-stats">
 							<h1> {auth.user?.name}</h1>
 							<h2>
-								Win - lose : {auth.user?.win} -{" "}
-								{auth.user?.lose}{" "}
+								Win: {auth.user?.win}
+							</h2>
+							<h2>
+								Lose: {auth.user?.lose}
 							</h2>
 						</div>
 						<div className="profile-buttons">

@@ -17,7 +17,6 @@ import RoomSettings from "./RoomSettings";
 import { useDm } from "../../contexts/DmContext";
 
 const Chat = () => {
-  const dmContext = useDm();
   const [text, changeText] = useState<string>("");
 
   const [socket, setSocket] = useState<Socket>();
@@ -29,7 +28,6 @@ const Chat = () => {
 
   const [activeRoom, setActiveRoom] = useState<string>("");
 
-  const [password, setPassword] = useState<string>("");
   const [date, setDate] = useState<Date>(null);
 
   const [gameButton, setGameButton] = useState<string>("invite");
@@ -37,6 +35,8 @@ const Chat = () => {
   const chatEndRef = useRef(null);
 
   const auth = useAuth();
+
+  const dmContext = useDm();
 
   const navigate = useNavigate();
 
@@ -120,7 +120,6 @@ const Chat = () => {
   /* ***************************************************************************** */
 
   const handleChange = (event: any) => {
-    // console.log("handleChange");
     changeText(event.target.value);
   };
 
@@ -129,11 +128,11 @@ const Chat = () => {
   };
 
   const pswdDeletedMessage = () => {
-    alert("the password has been successfully deleted");
+    alert("The password has been successfully deleted");
   };
 
   const pswdUpdateMessage = () => {
-    alert("the password has been successfully updated");
+    alert("The password has been successfully updated");
   };
 
   const changeChannelOwner = (update: {
@@ -185,7 +184,11 @@ const Chat = () => {
     room.ban = member.status;
     if (room.ban) {
       alert("Congratulations, you are banned from " + member.channel);
-      if (room.name === activeRoom) setActiveForRoom("");
+      if (room.name === activeRoom)
+      {
+        setActiveForRoom("");
+        setGameButton("invite");
+      }
     } else {
       alert(
         "Congratulations, you are not banned from " +
@@ -261,30 +264,30 @@ const Chat = () => {
   const sendChatMessage = (event: any) => {
     event.preventDefault();
     const activeRoom = findActiveRoom();
-    if (activeRoom.member && activeRoom.mute === false) {
+    if (activeRoom.member && activeRoom.mute === false && text.trim().length !== 0) {
       socket?.emit("chatToServer", {
         sender: username,
         room: activeRoom.name,
         msg: text,
       });
-      // chatEndRef.current.scrollIntoView({ behavior: "smooth" });
     } else {
-      if (activeRoom.mute) alert("you cannot talk in this room bitch !");
+      if (activeRoom.mute) alert("You cannot talk in this room bitch !");
       else if (activeRoom.member === false)
-        alert("you must be a member of the room bitch !");
+        alert("You must join a room to send a message.");
       changeText("");
     }
   };
 
   const receiveChatMessage = (obj: {
     sender: string;
+    senderId: number,
     room: string;
     content: string;
     date: Date;
   }) => {
-    // console.log("receiveChatMessage + " + username);
     const theroom: IMessageToBack = {
       sender: obj.sender,
+      senderId: obj.senderId,
       message: obj.content,
       date: obj.date,
     };
@@ -333,23 +336,9 @@ const Chat = () => {
     socket?.emit("createChatRoom", dbRoom);
   };
 
-  const deleteARoom = (event: any) => {
-    event.preventDefault();
-    let askARoom = "";
-    let findARoom: IRoom = undefined;
-    while (askARoom === "") {
-      askARoom = prompt("Enter the name of the room you want to delete: ")!;
-      if (askARoom === null) return;
-      if (askARoom === "") alert("This is not a right name for a room !");
-      else if ((findARoom = findRoom(askARoom)) === undefined) {
-        alert("This room does not exist");
-        askARoom = "";
-      } else if (findARoom.owner !== username) {
-        alert("You are not the owner of this channel !");
-        return;
-      }
-    }
-    socket?.emit("deleteChatRoom", askARoom);
+  const deleteARoom = (roomName: string) => {
+    if (window.confirm("Are you sure you want to delete " + roomName + " ?"))
+      socket?.emit("deleteChatRoom", roomName);
   };
 
   const leftRoom = (room: string) => {
@@ -437,7 +426,7 @@ const Chat = () => {
         name: element.chatRoomName,
         type: element.type,
         InviteUserName: element.InviteUserName,
-        InviteGameId: element.InviteGameId,
+		    InviteGameId: element.InviteGameId,
         messages: [],
       };
       [...element.messages].reverse().forEach((oneMessage: any) => {
@@ -445,6 +434,7 @@ const Chat = () => {
           sender: oneMessage.sender,
           message: oneMessage.content,
           date: oneMessage.createdAt,
+          senderId: oneMessage.senderId,
         });
       });
       roomsCopy.push(newRoom);
@@ -484,6 +474,7 @@ const Chat = () => {
           sender: oneMessage.sender,
           message: oneMessage.content,
           date: oneMessage.createdAt,
+          senderId: oneMessage.senderId,
         });
       });
     }
@@ -500,39 +491,28 @@ const Chat = () => {
       if (roomsCopy[i].name === channel) {
         roomsCopy.splice(i, 1);
         setActiveForRoom("");
+        setGameButton("invite");
       }
     }
     setRooms(roomsCopy);
   };
 
-  const deleteChannelPassword = () => {
+  const deleteChannelPassword = (event: any) => {
     const activeRoom = findActiveRoom();
     if (
-      activeRoom &&
-      activeRoom.owner === username &&
-      activeRoom.type === type.protected
+      window.confirm(
+        "Are you sure you want to delete the password of this channel ?"
+      )
     )
       socket?.emit("deleteChannelPassword", activeRoom.name);
-    else if (activeRoom.type != type.protected)
-      alert("this channel is not protected");
-    else if (activeRoom.owner != username)
-      alert("You are not the owner of this channel !");
   };
-  const updateChannelPassword = () => {
+
+  const updateChannelPassword = (newPwd: string) => {
     const activeRoom = findActiveRoom();
-    if (
-      activeRoom &&
-      activeRoom.owner === username &&
-      activeRoom.type === type.protected
-    )
-      socket?.emit("updateChannelPassword", {
-        room: activeRoom.name,
-        newPassword: password,
-      });
-    else if (activeRoom.type != type.protected)
-      alert("this channel is not protected");
-    else if (activeRoom.owner != username)
-      alert("You are not the owner of this channel !");
+    socket?.emit("updateChannelPassword", {
+      room: activeRoom.name,
+      newPassword: newPwd,
+    });
   };
 
   const inviteToPrivate = () => {
@@ -602,7 +582,8 @@ const Chat = () => {
   };
 
   const sendGameInviteMessage = () => {
-    const inviteMessage: string = username + " send an invite to a Pong game";
+    const inviteMessage: string =
+      "--- " + username + " has sent an invite to a Pong game ---";
     socket?.emit("chatToServer", {
       sender: username,
       room: findActiveRoom().name,
@@ -612,7 +593,8 @@ const Chat = () => {
   };
 
   const navigateToTheGame = () => {
-    const inviteMessage: string = username + " has join the Pong game";
+    const inviteMessage: string =
+      "--- " + username + " has joined the Pong game ---";
     socket?.emit("chatToServer", {
       sender: username,
       room: findActiveRoom().name,
@@ -658,6 +640,13 @@ const Chat = () => {
   useEffect(() => {
     socket?.emit("addSocket", username);
   });
+
+  useEffect(() => {
+    socket?.on("newOwner", changeChannelOwner);
+    return () => {
+      socket?.off("newOwner", changeChannelOwner);
+    };
+  }, [changeChannelOwner]);
 
   useEffect(() => {
     socket?.on("sendAllChannels", receiveAllChannels);
@@ -719,9 +708,16 @@ const Chat = () => {
   useEffect(() => {
     socket?.on("Password deleted", pswdDeletedMessage);
     return () => {
-      socket?.off("newOwner", changeChannelOwner);
+      socket?.off("Password deleted", pswdDeletedMessage);
     };
-  }, [changeChannelOwner]);
+  }, [pswdDeletedMessage]);
+
+  useEffect(() => {
+    socket?.on("Password updated", pswdUpdateMessage);
+    return () => {
+      socket?.off("Password updated", pswdUpdateMessage);
+    };
+  }, [pswdUpdateMessage]);
 
   // GET LISTS
   useEffect(() => {
@@ -859,10 +855,6 @@ const Chat = () => {
           {activeRoom !== "" ? (
             <button onClick={toggleRoomMembership}>{joinButton}</button>
           ) : null}
-          {findActiveRoom().type == type.protected &&
-          findActiveRoom().owner == username ? (
-            <button onClick={deleteChannelPassword}>delete pswd</button>
-          ) : null}
           {findActiveRoom().type == type.private &&
           findActiveRoom().owner == username ? (
             <button onClick={inviteToPrivate}>
@@ -890,6 +882,10 @@ const Chat = () => {
               activeRoom={activeRoom}
               muteList={findActiveRoom().muteList}
               banList={findActiveRoom().banList}
+              updateChannelPassword={updateChannelPassword}
+              type={findActiveRoom().type}
+              deleteChannelPassword={deleteChannelPassword}
+              deleteARoom={deleteARoom}
             />
           ) : null}
         </div>
@@ -897,8 +893,8 @@ const Chat = () => {
           <ul>
             {findActiveRoom().member ? (
               sortedMessages.map((msg: any, id: number) => (
-                <div
-                  key={id}
+                !dmContext.isBlock(msg.senderId) &&
+                <div key={id}
                   className={
                     msg.sender == username
                       ? "owner_messages"
@@ -913,7 +909,7 @@ const Chat = () => {
                     </div>
                   </li>
                 </div>
-              ))
+                )) 
             ) : (
               <div></div>
             )}

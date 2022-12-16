@@ -72,7 +72,7 @@ const Game = (
 			e.preventDefault();
 			if (allPos.state === State.PLAY)
 				socket.emit("pauseNplay", State.PAUSE, auth.user.name, gameId);
-			else if (allPos.state === State.PAUSE && auth.user.name === prev)
+			else if (allPos.state === State.PAUSE)
 				socket.emit("pauseNplay", State.PLAY, "", gameId);
 		}
 	};
@@ -145,7 +145,7 @@ const Game = (
 				y < 25 + allPos.radius * 2) {
 				if (allPos.state === State.PLAY)
 					socket.emit("pauseNplay", State.PAUSE, auth.user.name, gameId);
-				else if(allPos.state === State.PAUSE && auth.user.name === prev)
+				else if(allPos.state === State.PAUSE)
 					socket.emit("pauseNplay", State.PLAY, "", gameId);
 			}
 			else if (//button stop

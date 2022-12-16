@@ -70,14 +70,16 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 	async HandleMessageToRoom(@MessageBody() message: {sender: string, room: string, msg: string}): Promise<void> {
 
 		let theRoom = await this.chatService.findOneChatRoomByName(message.room);
+		const sender = await this.usersService.getByNameWithRelations(message.sender);
 
-		const messageCreated = await this.messageService.createMessage({sender: message.sender, content: message.msg})
+		const messageCreated = await this.messageService.createMessage({sender: message.sender, senderId: sender.id, content: message.msg})
 		theRoom.messages.push(messageCreated);
 		
 		await this.chatService.saveChatRoom(theRoom);
 		
 		const newMessage = {
 			sender: message.sender,
+			senderId: sender.id,
 			room: message.room,
 			content: message.msg,
 			date: messageCreated.createdAt,
@@ -193,7 +195,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 				member.isAdmin = true;
 				await 	this.memberService.updateMember(member);
 			}
-			this.server.to(thechannel.id).emit('newOwner',
+			this.server.to(thechannel.id).emit("newOwner",
 			{newOwner: newOwner.name, channel: thechannel.chatRoomName});
 		}
   }
@@ -242,32 +244,11 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 		this.server.emit('sendDeleteMessage', room);
 	}
 
-	@SubscribeMessage('updateChatRoom')
-    async HandleChangingName(client: Socket, update: ChatRoomDto)
-    {
-        let    channel = await this.chatService.findOneChatRoomByName(update.chatRoomName);
-
-        channel.chatRoomName = update.chatRoomName ? update.chatRoomName : channel.chatRoomName;
-
-        channel.password = update.password ? update.password : channel.password;
-        
-        channel.type = update.type ? update.type : channel.type;
-
-        await this.chatService.saveChatRoom(channel);
-    }
-
-
 	@SubscribeMessage('getAllChannels')
 	async HandleGettingChannels(client: Socket) : Promise<void> {
 		const Channels = await this.chatService.findAllChatRooms();
 		// console.log("CLIENTS.JOIN");
 		Channels.forEach((channel : ChatRoomEntity) => client.join(channel.id));
-		// const Admins = await this.memberService.findAllAdminsFromOneRoom(Channels[0].id);
-		// console.log(Admins);
-		// const Members = await this.memberService.findAllMembersFromOneRoom(Channels[0].id);
-		// console.log(Members);
-		// console.log(Channels[0].owner.name);
-		// console.log(Channels[0].messages);
 		client.emit('sendAllChannels', Channels);
 	}
 

@@ -18,6 +18,9 @@ import {
 	@Column()
 	sender: string;
 
+	@Column()
+	senderId: number;
+
 	@ManyToOne(() => ChatRoomEntity, (Channel: ChatRoomEntity) => Channel.messages, {onDelete: 'CASCADE'})
 	channel?: ChatRoomEntity;
 
@@ -31,6 +34,7 @@ import {
   export interface IChatMessage {
 	id?: number,
 	sender?: string,
+	senderId?: number,
 	channel?: ChatRoomEntity,
 	content?: string,
 	createdAt?: Date,
