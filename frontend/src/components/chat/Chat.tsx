@@ -793,6 +793,7 @@ const Chat = () => {
         findRoom={findRoom}
         setActiveForRoom={setActiveForRoom}
         addARoom={addARoom}
+        switchDm={switchDm}
       />
       <div className="middle">
         <div className="top-chat">
