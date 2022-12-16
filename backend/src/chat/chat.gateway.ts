@@ -195,7 +195,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 				member.isAdmin = true;
 				await 	this.memberService.updateMember(member);
 			}
-			this.server.to(thechannel.id).emit('newOwner',
+			this.server.to(thechannel.id).emit("newOwner",
 			{newOwner: newOwner.name, channel: thechannel.chatRoomName});
 		}
   }
@@ -244,40 +244,11 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 		this.server.emit('sendDeleteMessage', room);
 	}
 
-	@SubscribeMessage('updateChatRoom')
-    async HandleChangingName(client: Socket, update: ChatRoomDto)
-    {
-        let    channel = await this.chatService.findOneChatRoomByName(update.chatRoomName);
-
-        channel.chatRoomName = update.chatRoomName ? update.chatRoomName : channel.chatRoomName;
-
-        channel.password = update.password ? update.password : channel.password;
-        
-        channel.type = update.type ? update.type : channel.type;
-
-        await this.chatService.saveChatRoom(channel);
-    }
-
-
 	@SubscribeMessage('getAllChannels')
 	async HandleGettingChannels(client: Socket) : Promise<void> {
 		const Channels = await this.chatService.findAllChatRooms();
-		// console.log("CLIENTS.JOIN");
 		Channels.forEach((channel : ChatRoomEntity) => client.join(channel.id));
-		// const Admins = await this.memberService.findAllAdminsFromOneRoom(Channels[0].id);
-		// console.log(Admins);
-		// const Members = await this.memberService.findAllMembersFromOneRoom(Channels[0].id);
-		// console.log(Members);
-		// console.log(Channels[0].owner.name);
-		// console.log(Channels[0].messages);
 		client.emit('sendAllChannels', Channels);
-	}
-
-	@OnEvent('getPrivatesForFriend')
-	@SubscribeMessage('getPrivates')
-	async letUsGetPrivateRooms(client: Socket) : Promise<void> {
-		const privates = await this.chatService.findAllPrivateRooms();
-		client.emit('sendPrivates', privates);
 	}
 
 	@SubscribeMessage('getListsForOneClient')

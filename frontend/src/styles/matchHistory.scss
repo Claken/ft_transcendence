@@ -1,55 +1,66 @@
 .matchHistory {
-    display: flex;
-    justify-content: center;
-      flex-direction: column;
-      align-items: flex-start;
-    width: 90%;
-    height: 90%;
-    background-color: #7355b1;
-    margin: auto;
-    border-radius: 20px;
-    border: 2px solid #f5f5f5;
-    overflow: auto;
+     display: flex;
+     justify-content: center;
+     flex-direction: column;
+     align-items: flex-start;
+     width: 90%;
+     height: 90%;
+     background-color: #7355b1;
+     margin: auto;
+     border-radius: 20px;
+     border: 2px solid #f5f5f5;
+     overflow: auto;
 
-    .matchHistory-header {
-      width: 100%;
-      height: 10%;
-      background-color: #5c4290;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      color: whitesmoke;
-    }
+     .matchHistory-header {
+          width: 100%;
+          height: 10%;
+          background-color: #5c4290;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          color: whitesmoke;
+     }
 
-    .matchHistory-content {
-      display: flex;
-      justify-content: space-evenly;
-      align-items: center;
-      flex-direction: column;
-      height: 90%;
-      background-color: rgba(48, 0, 75, 0.5);
+     .matchHistory-content {
+          display: flex;
+          justify-content: flex-start;
+          align-items: center;
 
-       .gamePlayed {
-            width: 17em;
-            height: 10em;
-            color: white;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-direction: row;
-       }
-       .gamePlayed0 {
-            background-image: url("https://emotionsnumeriques.files.wordpress.com/2017/04/srjc9512.jpg?w=640");
-            background-size: cover;    
-       }
-       .gamePlayed1 {
-            background-image: url("https://cdn.pocket-lint.com/r/s/1200x630/assets/images/149352-games-news-gwent-the-witcher-card-game-is-coming-to-ios-and-you-can-pre-order-it-for-free-now-image1-dkpsimikqa.jpg");
-            background-size: cover;    
-       }
-       .gamePlayed2 {
-            background-image: url("https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/e8f138b7-dfde-4001-9305-eabae23b82ff/df6krl3-1950d728-786e-4aee-8504-bcd07f7c9b71.jpg?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7InBhdGgiOiJcL2ZcL2U4ZjEzOGI3LWRmZGUtNDAwMS05MzA1LWVhYmFlMjNiODJmZlwvZGY2a3JsMy0xOTUwZDcyOC03ODZlLTRhZWUtODUwNC1iY2QwN2Y3YzliNzEuanBnIn1dXSwiYXVkIjpbInVybjpzZXJ2aWNlOmZpbGUuZG93bmxvYWQiXX0.PxPrKzBYn4B63khYSVcan9XNsDDaxoq0X2oRXWaIJNQ");
-            background-size: cover;    
-       }
-    }
+          flex-direction: column;
+          width: 100%;
+          height: 90%;
+          background-color: rgba(48, 0, 75, 0.5);
+          gap: 10px;
+
+          .gamePlayed {
+               margin-top: 10px;
+               margin-left: 5%;
+               margin-right: 5%;
+               border-radius: 30px;
+               width: 90%;
+               height: 30%;
+               color: white;
+               display: flex;
+               justify-content: center;
+               align-items: center;
+               flex-direction: row;
+               overflow: auto;
+          }
+
+          .gamePlayed0 {
+               background-image: url("https://emotionsnumeriques.files.wordpress.com/2017/04/srjc9512.jpg?w=640");
+               background-size: cover;
+          }
+
+          .gamePlayed1 {
+               background-image: url("https://cdn.pocket-lint.com/r/s/1200x630/assets/images/149352-games-news-gwent-the-witcher-card-game-is-coming-to-ios-and-you-can-pre-order-it-for-free-now-image1-dkpsimikqa.jpg");
+               background-size: cover;
+          }
+
+          .gamePlayed2 {
+               background-image: url("https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/e8f138b7-dfde-4001-9305-eabae23b82ff/df6krl3-1950d728-786e-4aee-8504-bcd07f7c9b71.jpg?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7InBhdGgiOiJcL2ZcL2U4ZjEzOGI3LWRmZGUtNDAwMS05MzA1LWVhYmFlMjNiODJmZlwvZGY2a3JsMy0xOTUwZDcyOC03ODZlLTRhZWUtODUwNC1iY2QwN2Y3YzliNzEuanBnIn1dXSwiYXVkIjpbInVybjpzZXJ2aWNlOmZpbGUuZG93bmxvYWQiXX0.PxPrKzBYn4B63khYSVcan9XNsDDaxoq0X2oRXWaIJNQ");
+               background-size: cover;
+          }
+     }
 
 }
