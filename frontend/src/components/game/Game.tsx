@@ -189,7 +189,6 @@ const Game = (
 		allPos.speed = 4;
 		if (allPos.compteur === null)
 			socket.emit("setCompteur", gameId);
-		}
 		allPos.key = key;
 		let animationFrameId: number;
 		allPos.img = new Image();
