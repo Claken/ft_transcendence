@@ -95,6 +95,5 @@ export class FriendRequestGateway {
 		await this.usersService.save(receiver);
 		this.dmService.dmUsers.find(user => user.name === request.sender).socket.emit('delete_friend');
 		this.dmService.dmUsers.find(user => user.name === request.receiver).socket.emit('delete_friend');
-		console.log("delete friend");
 	}
 }

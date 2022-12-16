@@ -103,6 +103,7 @@ export class AuthGateway
     body: { newName: string; userId: number },
   ) {
     const { newName, userId } = body;
+    const oldName = await this.usersService.getName(userId);
     await this.usersService.updateName(userId, newName);
     const memberships = await this.usersService.getMembershipsFromOneUserId(
       userId,
@@ -110,5 +111,7 @@ export class AuthGateway
     memberships.forEach((member: MemberEntity) => {
       this.eventEmitter.emit('GetListsForUser', member.inChannel.chatRoomName);
     });
+    // this.eventEmitter.emit('modify_name_dm', {newName, oldName});
+    // this.server.emit('reload_user');
   }
 }

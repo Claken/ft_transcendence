@@ -12,13 +12,13 @@ export class BlockUserController {
     return await this.BlockUserService.getAllBlockUsers();
 	}
 
-	@Get(':name/blockUsers')
-	async getBlockUsers(@Param('name') name: string): Promise<UsersEntity[] | undefined> {
-    return await this.BlockUserService.getBlockUsers(name);
+	@Get(':id/blockUsers')
+	async getBlockUsers(@Param('id') id: number): Promise<UsersEntity[] | undefined> {
+    return await this.BlockUserService.getBlockUsers(id);
   }
 
-	@Get(':name/blockBys')
-	async getBlockBys(@Param('name') name: string): Promise<UsersEntity[] | undefined> {
-		return await this.BlockUserService.getBlockBys(name);
+	@Get(':id/blockBys')
+	async getBlockBys(@Param('id') id: number): Promise<UsersEntity[] | undefined> {
+		return await this.BlockUserService.getBlockBys(id);
 	}
 }

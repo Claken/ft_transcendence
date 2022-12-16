@@ -10,22 +10,18 @@ export const DmProvider = ({ children }) => {
   const auth = useAuth();
   const [target, setTarget] = useState<IUser>();
   const [haveTarget, setHaveTarget] = useState<boolean>(false);
-  const [me, setMe] = useState<IUser>(auth.user);
+  const [me, setMe] = useState<IUser>(null);
   const [socket, setSocket] = useState<Socket>(null);
   const [loading, setLoading] = useState<boolean>(false);
-  const [friendNotif, setFriendNotif] = useState<boolean>(false);
   const [blockUsers, setBlockUsers] = useState<IUser[]>([]);
   const [blockBys, setBlockBys] = useState<IUser[]>([]);
 
-  const sendFriendRequest = () => {
-    setFriendNotif(true);
-  };
-
   const getBlockUsers = async () => {
     await axios
-      .get(`/blockUser/${me.name}/blockUsers`)
+      .get(`/blockUser/${me.id}/blockUsers`)
       .then((res) => {
         setBlockUsers(res.data);
+        if (blockUsers === undefined) setBlockUsers([]);
       })
       .catch((error) => {
         console.log(error);
@@ -34,9 +30,10 @@ export const DmProvider = ({ children }) => {
 
   const getBlockBys = async () => {
     await axios
-      .get(`/blockUser/${me.name}/blockBys`)
+      .get(`/blockUser/${me.id}/blockBys`)
       .then((res) => {
         setBlockBys(res.data);
+        if (blockBys === undefined) setBlockBys([]);
       })
       .catch((error) => {
         console.log(error);
@@ -46,17 +43,7 @@ export const DmProvider = ({ children }) => {
   const blockRefresh = () => {
     getBlockUsers();
     getBlockBys();
-    console.log("all block users:");
-    blockUsers.map((blockUser) => console.log(blockUser.name));
-    console.log("|end");
   };
-
-  useEffect(() => {
-    socket?.on("send_friendRequest", sendFriendRequest);
-    return () => {
-      socket?.off("send_friendRequest", sendFriendRequest);
-    };
-  }, [sendFriendRequest]);
 
   useEffect(() => {
     socket?.on("block_user", blockRefresh);
@@ -83,7 +70,7 @@ export const DmProvider = ({ children }) => {
 
   useEffect(() => {
     if (me && socket) {
-      console.log("new socket")
+      console.log("new socket connect " + me.name);
       socket.emit("join_dm", {
         sender: me.name,
         receiver: me.name,
@@ -100,13 +87,20 @@ export const DmProvider = ({ children }) => {
   };
 
   const isBlock = (id: number) => {
-    if (blockUsers.findIndex((blockUser) => blockUser.id === id) > -1)
+    if (
+      blockUsers !== undefined &&
+      blockUsers.findIndex((blockUser) => blockUser.id === id) > -1
+    )
       return true;
     return false;
   };
 
   const isBlocked = (id: number) => {
-    if (blockBys.findIndex((blockBy) => blockBy.id === id) > -1) return true;
+    if (
+      blockBys !== undefined &&
+      blockBys.findIndex((blockBy) => blockBy.id === id) > -1
+    )
+      return true;
     return false;
   };
 
@@ -122,8 +116,6 @@ export const DmProvider = ({ children }) => {
         loading,
         setLoading,
         changeTarget,
-        friendNotif,
-        setFriendNotif,
         blockUsers,
         blockBys,
         isBlock,

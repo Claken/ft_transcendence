@@ -291,4 +291,9 @@ export class UsersService {
 		else
 			return undefined;
 	}
+
+  async getName(id: number): Promise<string> {
+    const user = await this.findOneById(id);
+    return user.name;
+  }
 }

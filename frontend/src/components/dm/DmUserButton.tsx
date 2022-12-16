@@ -25,11 +25,13 @@ function DmUserButton(props) {
     setDropDown(false);
   };
 
-  const postRequestFriend = (sender: string, receiver: string) => {
-    dmContext.socket.emit("send_friendRequest", {
-      sender,
-      receiver,
-    });
+  const postRequestFriend = (sender: string, receiver: string, id: number) => {
+    if (!dmContext.isBlock(id) && !dmContext.isBlocked(id)) {
+      dmContext.socket.emit("send_friendRequest", {
+        sender,
+        receiver,
+      });
+    }
   };
 
   const blockUser = (sender: number, blocked: number) => {
@@ -86,7 +88,7 @@ function DmUserButton(props) {
             <div className="notifications">{notifications} new message(s)</div>
           )) || <div className="notifications"></div>}
           <div className="overlayup">
-            <div className="overlayupleft">
+            <div className="overlayupright">
               <Link to="/channel">
                 <button
                   className="simplebtn"
@@ -94,11 +96,6 @@ function DmUserButton(props) {
                 >
                   Messages
                 </button>
-              </Link>
-            </div>
-            <div className="overlayupright">
-              <Link to={"/profile/" + props.user.name}>
-                <button className="simplebtn">Profile</button>
               </Link>
             </div>
           </div>
@@ -109,12 +106,20 @@ function DmUserButton(props) {
           </div>
         </div>
         <div className="overlay">
-          <div className="overlayleft">empty</div>
+          <div className="overlayleft">
+            <Link to={"/profile/" + props.user.name}>
+              <button className="simplebtn">Profile</button>
+            </Link>
+          </div>
           <div className="overlaymiddle">
             <button
               className="simplebtn"
               onClick={() =>
-                postRequestFriend(dmContext.me.name, props.user.name)
+                postRequestFriend(
+                  dmContext.me.name,
+                  props.user.name,
+                  props.user.id
+                )
               }
             >
               Add friend

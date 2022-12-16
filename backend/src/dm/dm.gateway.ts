@@ -17,6 +17,11 @@ export class DmGateway {
 		this.dmService.joinDm(socket, dm);
   }
 
+  @SubscribeMessage('modify_name_dm')
+  async modifyName(@ConnectedSocket() socket: Socket, @MessageBody() dm: DmDto) {
+		this.dmService.modifyName(socket, dm);
+  }
+
   @SubscribeMessage('message_dm')
   async newDm(@MessageBody() dm: DmDto) {
 		await this.dmService.newDm(dm);

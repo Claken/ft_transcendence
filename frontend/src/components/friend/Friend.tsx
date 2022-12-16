@@ -107,6 +107,18 @@ function Friend() {
     };
   }, [blockUserRefresh]);
 
+  const reloadPage = () => {
+    getFriendRequests();
+    getFriends();
+  }
+
+  useEffect(() => {
+    dmContext.socket?.on("reload_user", reloadPage);
+    return () => {
+      dmContext.socket?.off("reload_user", reloadPage);
+    };
+  }, [reloadPage]);
+
   return (
     <ul className="friend-list">
       <li className="friendsearchbar">

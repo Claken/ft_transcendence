@@ -21,11 +21,21 @@ export class DmService {
 	joinDm(socket: Socket, dm: DmDto) {
 		const newDmUser: DmUser = {name: dm.sender, socket: socket};
 		const i = this.dmUsers.findIndex(dmUser => dmUser.name === dm.sender)
-		if (i >= 0) {
+		if (i >= 0 && this.dmUsers[i].socket !== socket) {
 			this.dmUsers[i].socket = socket;
+			this.dmUsers.find(user => user.name === dm.sender).socket.emit('block_user');
 		}
-		else
-			this.dmUsers.push(newDmUser);
+		else if (i === -1) {
+			this.dmUsers.unshift(newDmUser);
+			this.dmUsers.find(user => user.name === dm.sender).socket.emit('block_user');
+		}
+	}
+
+	modifyName(socket: Socket, dm: DmDto) {
+		const i = this.dmUsers.findIndex(dmUser => dmUser.name === dm.receiver)
+		if (i >= 0 && this.dmUsers[i].name !== dm.sender) {
+			this.dmUsers[i].name = dm.sender;
+		}
 	}
 
   async newDm(dm: DmDto) {

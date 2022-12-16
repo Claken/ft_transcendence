@@ -38,6 +38,20 @@ function FriendButton(props) {
     });
   };
 
+  const blockUser = (sender: number, blocked: number) => {
+    dmContext.socket.emit("block_user", {
+      sender,
+      blocked,
+    });
+  };
+
+  const deblockUser = (sender: number, blocked: number) => {
+    dmContext.socket.emit("deblock_user", {
+      sender,
+      blocked,
+    });
+  };
+
   const getNotifications = async () => {
     await axios
       .get(`/dm/${dmContext.me.name}/${props.user.name}/read`)
@@ -78,36 +92,57 @@ function FriendButton(props) {
           ) : (
             <div className="cercledisconnect">{props.user.name}</div>
           )}
-          {haveNotifications() && (
+          {(haveNotifications() && (
             <div className="notifications">{notifications} new message(s)</div>
-          )}
-          {(!dropDown && <img src={Rouage} className="tourne"></img>) || (
-            <img src={Rouage} className="tourne tourneanim"></img>
-          )}
+          )) || <div className="notifications"></div>}
+          <div className="overlayup">
+            <div className="overlayupright">
+              <Link to="/channel">
+                <button
+                  className="simplebtn"
+                  onClick={() => dmContext.changeTarget(props.user)}
+                >
+                  Messages
+                </button>
+              </Link>
+            </div>
+          </div>
+          <div className="boxtourne">
+            {(!dropDown && <img src={Rouage} className="tourne"></img>) || (
+              <img src={Rouage} className="tourne tourneanim"></img>
+            )}
+          </div>
         </div>
         <div className="overlay">
-          <div className="overlayleft-friend">
-            <Link to="/channel">
-              <button
-                className="simplebtn"
-                onClick={() => dmContext.changeTarget(props.user)}
-              >
-                Messages
-              </button>
+          <div className="overlayleft">
+            <Link to={"/profile/" + props.user.name}>
+              <button className="simplebtn">Profile</button>
             </Link>
           </div>
-          <div className="overlaymiddle-friend">
+          <div className="overlaymiddle">
             <button
               className="simplebtn"
               onClick={() => deleteFriend(props.user.name)}
             >
-              delete friend
+              Delete friend
             </button>
           </div>
-          <div className="overlayright-friend">
-            <Link to={"/profile/" + props.user.name}>
-              <button className="simplebtn">Profile</button>
-            </Link>
+          <div className="overlayright">
+            {(dmContext.isBlock(props.user.id) && (
+              <button
+                className="simplebtn"
+                onClick={() => deblockUser(dmContext.me.id, props.user.id)}
+              >
+                Deblock user
+              </button>
+            )) || (
+              <button
+                className="simplebtn"
+                onClick={() => blockUser(dmContext.me.id, props.user.id)}
+              >
+                Block user
+              </button>
+            )}
           </div>
         </div>
       </div>

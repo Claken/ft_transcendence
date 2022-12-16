@@ -18,9 +18,9 @@ export class BlockUserService {
 		return await this.blockUserRepo.find({relations: ['user', 'blockBy']});
 	}
 
-	async getBlockUsers(name: string): Promise<UsersEntity[] | undefined> {
+	async getBlockUsers(id: number): Promise<UsersEntity[] | undefined> {
 		const listUsers: UsersEntity[] = [];
-		const user = (await this.usersService.getByNameWithRelations(name));
+		const user = (await this.usersService.getByIdWithRelations(id));
 		if (user && user.blockUsers) {
 			user.blockUsers.map(async blockUser => listUsers.push(blockUser.user));
 			return listUsers;
@@ -29,9 +29,9 @@ export class BlockUserService {
 			return undefined;
 	}
 
-	async getBlockBys(name: string): Promise<UsersEntity[] | undefined> {
+	async getBlockBys(id: number): Promise<UsersEntity[] | undefined> {
 		const listBys: UsersEntity[] = [];
-		const user = (await this.usersService.getByNameWithRelations(name));
+		const user = (await this.usersService.getByIdWithRelations(id));
 		if (user && user.blockBys) {
 			user.blockBys.map(async blockBy => listBys.push(blockBy.blockBy));
 			return listBys;
