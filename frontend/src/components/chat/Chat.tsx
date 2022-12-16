@@ -184,7 +184,11 @@ const Chat = () => {
     room.ban = member.status;
     if (room.ban) {
       alert("Congratulations, you are banned from " + member.channel);
-      if (room.name === activeRoom) setActiveForRoom("");
+      if (room.name === activeRoom)
+      {
+        setActiveForRoom("");
+        setGameButton("invite");
+      }
     } else {
       alert(
         "Congratulations, you are not banned from " +
@@ -488,6 +492,7 @@ const Chat = () => {
       if (roomsCopy[i].name === channel) {
         roomsCopy.splice(i, 1);
         setActiveForRoom("");
+        setGameButton("invite");
       }
     }
     setRooms(roomsCopy);
