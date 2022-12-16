@@ -264,7 +264,7 @@ const Chat = () => {
   const sendChatMessage = (event: any) => {
     event.preventDefault();
     const activeRoom = findActiveRoom();
-    if (activeRoom.member && activeRoom.mute === false) {
+    if (activeRoom.member && activeRoom.mute === false && text.trim().length !== 0) {
       socket?.emit("chatToServer", {
         sender: username,
         room: activeRoom.name,
