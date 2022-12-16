@@ -115,13 +115,14 @@
 
     .modal-box {
       background: #333333;
-      overflow: hidden;
       min-width: 50%;
       width: 50%;
+      height: fit-content;
       padding: 1rem 0;
       border-radius: 1rem;
       border: 2px solid whitesmoke;
       color: whitesmoke;
+      overflow: auto;
       
       .modal-settings {
         width: 100%;
