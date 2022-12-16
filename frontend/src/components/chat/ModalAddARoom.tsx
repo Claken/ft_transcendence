@@ -7,27 +7,29 @@ const ModalAddARoom = ({ addARoom, toggle }) => {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    addARoom(roomName, type, password);
+    addARoom(roomName, typeRoom, password);
   };
 
   return (
     <div>
       <h1>create a room</h1>
-      <form>
-        room name
+		<div className="text-input">
+		room name
         <input
           type="text"
           value={roomName}
           onChange={(event) => setRoomName(event.target.value)}
         />
+		</div>
         <br />
-        room type
+		<div className="radio-inputs">
+		room type
         <input
           type="radio"
           name="typeRoom"
           id="public"
-          value={0}
-          checked={typeRoom === 0}
+          value="0"
+          checked={typeRoom === "0"}
           onChange={(event) => setTypeRoom(event.target.value)}
         />
         public
@@ -35,8 +37,8 @@ const ModalAddARoom = ({ addARoom, toggle }) => {
           type="radio"
           name="typeRoom"
           id="private"
-          value={1}
-          checked={typeRoom === 1}
+          value="1"
+          checked={typeRoom === "1"}
           onChange={(event) => setTypeRoom(event.target.value)}
         />
         private
@@ -44,13 +46,14 @@ const ModalAddARoom = ({ addARoom, toggle }) => {
           type="radio"
           name="typeRoom"
           id="protected"
-          value={2}
-          checked={typeRoom === 2}
+          value="2"
+          checked={typeRoom === "2"}
           onChange={(event) => setTypeRoom(event.target.value)}
         />
         protected
+		</div>
         <br />
-        {typeRoom === 2 && (
+        {typeRoom === "2" && (
           <div className="pass-for-protected">
             password
             <input
@@ -61,7 +64,6 @@ const ModalAddARoom = ({ addARoom, toggle }) => {
           </div>
         )}
         <button onClick={handleSubmit}>confirm</button>
-      </form>
       <button onClick={toggle}>close</button>
     </div>
   );

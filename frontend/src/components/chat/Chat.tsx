@@ -16,6 +16,7 @@ import JoinInviteButton from "./JoinInviteButton";
 import RoomSettings from "./RoomSettings";
 import { IUser } from "../../interfaces/user.interface";
 import RoomsList from "./RoomsList";
+import { parseInt } from 'lodash';
 
 const Chat = () => {
   const [text, changeText] = useState<string>("");
@@ -298,34 +299,16 @@ const Chat = () => {
     chatEndRef.current.scrollIntoView({ behavior: "smooth" });
   };
 
-  const addARoom = (roomName : string, type : number, password : string) => {
-    let askARoom: string = "";
-    let typeOfRoom: number = -1;
-    let pswd: string = null;
-    // while (askARoom === "") {
-    //   askARoom = prompt("Enter a name for your room: ")!;
-    //   if (askARoom === null) return;
-    //   if (!parseRoomName(askARoom)) askARoom = "";
-      if (findRoom(askARoom)) {
+  const addARoom = (roomName : string, typeRoom : string, password : string) => {
+    
+      if (findRoom(roomName)) {
         alert("This name is already taken. Try another one.");
         return
       }
-    //   }
-    // }
-    // while (typeOfRoom < 0 || typeOfRoom > 2) {
-    //   let typeOfRoomInString = prompt(
-    //     "Do you want your room to be : (0) public, (1) private, or (2) protected ?"
-    //   );
-    //   typeOfRoom = parseInt(typeOfRoomInString);
-    // }
-    // if (typeOfRoom === type.protected) {
-    //   while (pswd == null)
-    //     pswd = prompt("Enter a password for your protected room: ");
-    // }
     const dbRoom: IChatRoom = {
       chatRoomName: roomName,
       owner: username,
-      type: type,
+      type: parseInt(typeRoom, 10),
       password: password,
     };
     if (roomName !== "")
