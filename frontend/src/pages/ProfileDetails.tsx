@@ -2,8 +2,12 @@ import React, { useState, useEffect } from "react";
 import axios from "../axios.config";
 import { IUser } from "../interfaces/user.interface";
 import UserNotFound from "../components/social/UserNotFound";
+import { socket } from "../components/Socket";
+import { IGame } from "../interfaces/game.interface";
+import { useAuth } from "../contexts/AuthContext";
 
 function ProfileDetails() {
+  const auth = useAuth();
   const [users, setUsers] = useState<IUser[]>([]);
   const [user, setUser] = useState<IUser>();
   const [games, setGames] = useState<IGame[]>([]);
@@ -127,7 +131,7 @@ function ProfileDetails() {
             </div>
           </div>
         </div>
-      )) || <UserNotFound />}
+      )) || null}
     </div>
   );
 }
