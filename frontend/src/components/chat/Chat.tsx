@@ -569,6 +569,10 @@ const Chat = () => {
   const JoinGameInvite = (event: any) => {
     event.preventDefault();
     const roomActive = findActiveRoom();
+	if (joinStatus === "Not joined") {
+		alert("You cannot join a game invite if you'r not in the channel !")
+		return;
+	}
     socket?.emit("invitationAccepted", {
       user: auth.user,
       inviter: roomActive.InviteUserName,
@@ -793,7 +797,7 @@ const Chat = () => {
         findRoom={findRoom}
         setActiveForRoom={setActiveForRoom}
         addARoom={addARoom}
-        switchDm={switchDm}
+		switchDm={switchDm}
       />
       <div className="middle">
         <div className="top-chat">
