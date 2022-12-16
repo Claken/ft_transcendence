@@ -29,8 +29,7 @@ const RoomsList = ({ rooms, findRoom, setActiveForRoom, addARoom }) => {
         </ul>
       </div>
       <div className="room-buttons">
-        <form onSubmit={addARoom}>
-          <button type="submit">
+          <button onClick={toggle}>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               className="icon icon-tabler icon-tabler-message-plus"
@@ -49,9 +48,8 @@ const RoomsList = ({ rooms, findRoom, setActiveForRoom, addARoom }) => {
               <line x1="12" y1="9" x2="12" y2="13"></line>
             </svg>
           </button>
-        </form>
         <Modal isOpen={isOpen} toggle={toggle}>
-          <ModalAddARoom addARoom={addARoom}/>
+          <ModalAddARoom addARoom={addARoom} toggle={toggle}/>
       </Modal>
       </div>
     </div>

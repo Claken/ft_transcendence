@@ -298,37 +298,41 @@ const Chat = () => {
     chatEndRef.current.scrollIntoView({ behavior: "smooth" });
   };
 
-  const addARoom = (event: any) => {
-    event.preventDefault();
+  const addARoom = (roomName : string, type : number, password : string) => {
     let askARoom: string = "";
     let typeOfRoom: number = -1;
     let pswd: string = null;
-    while (askARoom === "") {
-      askARoom = prompt("Enter a name for your room: ")!;
-      if (askARoom === null) return;
-      if (!parseRoomName(askARoom)) askARoom = "";
-      else if (findRoom(askARoom)) {
+    // while (askARoom === "") {
+    //   askARoom = prompt("Enter a name for your room: ")!;
+    //   if (askARoom === null) return;
+    //   if (!parseRoomName(askARoom)) askARoom = "";
+      if (findRoom(askARoom)) {
         alert("This name is already taken. Try another one.");
-        askARoom = "";
+        return
       }
-    }
-    while (typeOfRoom < 0 || typeOfRoom > 2) {
-      let typeOfRoomInString = prompt(
-        "Do you want your room to be : (0) public, (1) private, or (2) protected ?"
-      );
-      typeOfRoom = parseInt(typeOfRoomInString);
-    }
-    if (typeOfRoom === type.protected) {
-      while (pswd == null)
-        pswd = prompt("Enter a password for your protected room: ");
-    }
+    //   }
+    // }
+    // while (typeOfRoom < 0 || typeOfRoom > 2) {
+    //   let typeOfRoomInString = prompt(
+    //     "Do you want your room to be : (0) public, (1) private, or (2) protected ?"
+    //   );
+    //   typeOfRoom = parseInt(typeOfRoomInString);
+    // }
+    // if (typeOfRoom === type.protected) {
+    //   while (pswd == null)
+    //     pswd = prompt("Enter a password for your protected room: ");
+    // }
     const dbRoom: IChatRoom = {
-      chatRoomName: askARoom,
+      chatRoomName: roomName,
       owner: username,
-      type: typeOfRoom,
-      password: pswd,
+      type: type,
+      password: password,
     };
-    socket?.emit("createChatRoom", dbRoom);
+    if (roomName !== "")
+    {
+      socket?.emit("createChatRoom", dbRoom)
+    }
+    
   };
 
   const deleteARoom = (roomName: string) => {
