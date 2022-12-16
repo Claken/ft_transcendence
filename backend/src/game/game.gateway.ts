@@ -430,7 +430,7 @@ export class GameGateway
 
   @SubscribeMessage('updateTheUser')
   async UpdateTheUser(client: any, user: UserDTO) {
-	user = await this.usersService.updateInGame(user.id, false);
+	console.log("passage fct update depuis account")
 	client.emit("updateUser", user);
   }
 
@@ -592,4 +592,6 @@ export class GameGateway
 	}
 	this.eventEmitter.emit('updateGameButton', {gameId: 0, status: "invite", inviter: "", roomName: res[0].roomName});
   }
+
+  UpdateUserAccount
 }

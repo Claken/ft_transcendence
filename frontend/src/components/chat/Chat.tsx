@@ -14,6 +14,7 @@ import GameInviteButton from "./GameInviteButton";
 import CancelInviteButton from "./CancelInviteButton";
 import JoinInviteButton from "./JoinInviteButton";
 import RoomSettings from "./RoomSettings";
+import { IUser } from "../../interfaces/user.interface";
 
 const Chat = () => {
   const [text, changeText] = useState<string>("");
@@ -593,8 +594,11 @@ const Chat = () => {
     navigate("/pong/");
   };
 
-  socket?.on("updateUser", (user) => {
-    if (user.name === username) auth.user = user;
+  socket?.on("updateUser", (user: IUser) => {
+    if (user.name === username) {
+		user.avatarUrl = auth.user.avatarUrl
+		auth.user = user;
+	}
   });
 
   socket?.on("changeGameButton", (infos: { status: string; channel: any }) => {

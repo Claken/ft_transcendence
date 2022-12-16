@@ -16,6 +16,7 @@ import winPage from "./pageWin";
 import leavePage from "./pageLeave";
 import initPage from "./pageInit";
 import endPage from "./pageEnd";
+import { IUser } from "../../interfaces/user.interface";
 
 const Game = (
 	props: JSX.IntrinsicAttributes &
@@ -269,9 +270,11 @@ const Game = (
 			socket.emit("endGameF", allPos, auth.user.name, abandoner, "");
 		})
 
-		socket.on("updateUser", (user) => {
-			if (user.name === auth.user.name)
+		socket.on("updateUser", (user: IUser) => {
+			if (user.name === auth.user.name) {
+				user.avatarUrl = auth.user.avatarUrl
 				auth.user = user;
+			}
 		})
 
 		/* ***************************************************************************** */

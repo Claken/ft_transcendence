@@ -5,11 +5,29 @@ import { useAuth } from "../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 import ModalSettings from "../components/Account/ModalSettings";
 import MatchHistory from "../components/Account/MatchHistory";
+import { socket } from "../components/Socket";
+import { IUser } from "../interfaces/user.interface";
+import { useState, useEffect } from "react";
 
 function Account() {
 	const auth = useAuth();
 	const navigate = useNavigate();
+	const [updated, setUpdated] = useState<boolean>(false);
 
+	useEffect(() => {
+		if (auth.user)
+			socket.emit("updateTheUser", auth.user);
+	}, [auth.user]);
+
+	socket.on("updateUser", (user: IUser) => {
+		if (user.name === auth.user.name) {
+			user.avatarUrl = auth.user.avatarUrl;
+			auth.user = user;
+			console.log("user updated. win/lose = "+user.win+"/"+user.lose);
+			setUpdated(true);
+		}
+	});
+	
 	const handleLogout = () => {
 		// only api42 have a login field
 		if (auth.user?.login) {
