@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from "react";
 import axios from "../axios.config";
 import { IUser } from "../interfaces/user.interface";
-import { useAuth } from "../contexts/AuthContext";
 import UserNotFound from "../components/social/UserNotFound";
 
 function ProfileDetails() {
-  const auth = useAuth();
-  const [user, setUser] = useState<IUser>();
   const [users, setUsers] = useState<IUser[]>([]);
+  const [user, setUser] = useState<IUser>();
+  const [games, setGames] = useState<IGame[]>([]);
+
   // const [avatar, setAvatar] = useState<string>();
 
   const userProfile = window.location.pathname.substring(
@@ -15,23 +15,6 @@ function ProfileDetails() {
   );
   const names = users && users.map((user: IUser) => user?.name);
   const isValidName = names && names.includes(userProfile);
-  const [games, setGames] = useState<IGame[]>([]);
-
-  useEffect(() => {
-    const getMyGames = () => {
-      axios
-        .get("game/login/" + user?.login)
-        .then((res) => {
-          setGames(res.data);
-        })
-        .catch((error) => {
-          console.log(error);
-        });
-    };
-    if (user?.login) {
-      getMyGames();
-    }
-  }, []);
 
   useEffect(() => {
     const getData = async () => {
@@ -64,6 +47,22 @@ function ProfileDetails() {
     getUserData();
   });
 
+  useEffect(() => {
+    const getMyGames = () => {
+      axios
+        .get("game/login/" + user?.login)
+        .then((res) => {
+          setGames(res.data);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    };
+    if (user?.login) {
+      getMyGames();
+    }
+  }, []);
+
   // useEffect(() => {
   //   const getAvatar = async () => {
   //     await axios
@@ -94,9 +93,8 @@ function ProfileDetails() {
               </div> */}
               <div className="profile-stats">
                 <h1> {user?.name}</h1>
-                <h2>
-                  Win - lose : {user?.win} -{auth.user?.lose}
-                </h2>
+                <h2>Win: {user?.win}</h2>
+                <h2>Lose: {user?.lose}</h2>
               </div>
             </div>
             <div className="right-container">
@@ -112,10 +110,14 @@ function ProfileDetails() {
                           key={id}
                           className={"gamePlayed gamePlayed" + game.map}
                         >
-                          <li>
-                            {game.loginLP} {game.scoreLP} - {game.loginRP}{" "}
-                            {game.scoreRP}
-                            {game.abort && <li>abort by: {game.abort}</li>}
+                          <li key={id}>
+                            <p>
+                              {game.loginLP} {game.scoreLP} - {game.scoreRP} {game.loginRP}
+                            </p>
+                            <br />
+                            <p>
+                              {game.abort ? "game aborted by " + game.abort : null}
+                            </p>
                           </li>
                         </div>
                       ))}

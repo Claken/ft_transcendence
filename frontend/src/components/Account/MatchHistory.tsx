@@ -30,17 +30,23 @@ const MatchHistory = () => {
         <h1>Match History</h1>
       </div>
       <div className="matchHistory-content">
-        {games &&
-          games.map((game: IGame, id: number) => (
-            <div key={id} className={"gamePlayed gamePlayed" + game.map}>
-              <table>
-                <tr>
-                  {game.loginLP} {game.scoreLP} - {game.loginRP} {game.scoreRP}
-                </tr>
-                {game.abort && <tr>abort by: {game.abort}</tr>}
-              </table>
-            </div>
-          ))}
+        <ul>
+          {games &&
+            games.map((game: IGame, id: number) => (
+              <div key={id} className={"gamePlayed gamePlayed" + game.map}>
+                <li>
+                  <p>
+                    {game.loginLP} {game.scoreLP} - {" "} {game.loginRP}
+                    {game.scoreRP}
+                  </p>
+                  <br />
+                  <p>
+                    {game.abort ? "game aborted by " + game.abort : null}
+                  </p>
+                </li>
+              </div>
+            ))}
+        </ul>
       </div>
     </div>
   );

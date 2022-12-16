@@ -6,6 +6,7 @@ import { ModalSetAdmin } from "./ModalSetAdmin";
 import ModalMuteUser from "./ModalMuteUser";
 import ModalBanUser from "./ModalBanUser";
 import { type } from "../../interfaces/enum";
+import { Link } from "react-router-dom";
 
 const RoomUserList = ({
   findActiveRoom,
@@ -56,6 +57,30 @@ const RoomUserList = ({
                   <li key={name}>
                     <div className="member-name">{name}</div>
                     <div className="member-buttons">
+                    <Link to={"/profile/" + name}>
+                      <button>
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          className="icon icon-tabler icon-tabler-user"
+                          width="24"
+                          height="24"
+                          viewBox="0 0 24 24"
+                          strokeWidth="2"
+                          stroke="currentColor"
+                          fill="none"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
+                          <path
+                            stroke="none"
+                            d="M0 0h24v24H0z"
+                            fill="none"
+                          ></path>
+                          <circle cx="12" cy="7" r="4"></circle>
+                          <path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2"></path>
+                        </svg>
+                      </button>
+                    </Link>
                       <button onClick={toggleSetAdmin}>
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
@@ -152,7 +177,35 @@ const RoomUserList = ({
                 </div>
               ) : (
                 <div className="member-element" key={name}>
-                  <li key={name}>{name}</li>
+                  <li key={name}>
+                    <div className="member-name">{name}</div>
+                    <div className="member-buttons">
+                    <Link to={"/profile/" + name}>
+                      <button>
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          className="icon icon-tabler icon-tabler-user"
+                          width="24"
+                          height="24"
+                          viewBox="0 0 24 24"
+                          strokeWidth="2"
+                          stroke="currentColor"
+                          fill="none"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
+                          <path
+                            stroke="none"
+                            d="M0 0h24v24H0z"
+                            fill="none"
+                          ></path>
+                          <circle cx="12" cy="7" r="4"></circle>
+                          <path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2"></path>
+                        </svg>
+                      </button>
+                    </Link>
+                    </div>
+                  </li>
                 </div>
               )
             )

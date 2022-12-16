@@ -467,7 +467,7 @@
 				rgba(82, 59, 130, 1) 0%,
 				rgba(48, 34, 75, 1) 40%,
 				rgba(82, 59, 130, 1) 100%);
-	
+
 		overflow: hidden;
 		width: 60%;
 		height: 60%;
@@ -479,6 +479,36 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
+
+		.setAdmin {
+			width: 100%;
+			height: 100%;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			flex-direction: column;
+
+			.setAdmin-buttons {
+				width: 100%;
+				height: 30%;
+
+				button {
+					display: flex;
+					justify-content: center;
+					align-items: center;
+					height: 80%;
+					width: 100%;
+					background-color: transparent;
+					color: whitesmoke;
+					border: 2px solid whitesmoke;
+					border-radius: 10px;
+					font-size: 24px;
+
+				}
+
+			}
+
+		}
 
 		.room-settings {
 			width: 100%;
@@ -522,6 +552,7 @@
 						width: 100%;
 						flex: 1;
 						flex-direction: column;
+						gap: 20px;
 
 					}
 
@@ -534,35 +565,37 @@
 					align-items: center;
 					flex: 1;
 					flex-direction: column;
-					.room-settings-lists
-					{
+
+					.room-settings-lists {
 						width: 100%;
 						height: 100%;
 						display: flex;
 						justify-content: center;
 						flex-direction: column;
-						.banmute-list
-						{
+
+						.banmute-list {
 							display: flex;
 							align-items: center;
 							justify-content: flex-start;
 							flex-direction: column;
 							flex: 1;
+
 							h3 {
 								height: 10%;
 								width: 1005;
 							}
+
 							ul {
 								width: 90%;
 								height: 100%;
-				
-				
+
+
 								.member-element {
-				
+
 									display: flex;
 									justify-content: start;
 									align-items: center;
-				
+
 									list-style: none;
 									width: 100%;
 									height: 10%;
@@ -573,14 +606,14 @@
 									list-style: none;
 									color: whitesmoke;
 									margin: 10px 0;
-				
-				
+
+
 									li {
 										margin-left: 10px;
 										display: flex;
 										align-items: center;
 										width: 100%;
-				
+
 										.member-name {
 											display: flex;
 											align-items: center;
@@ -589,15 +622,15 @@
 											flex: 1;
 											float: left;
 										}
-				
+
+									}
 								}
 							}
 						}
 					}
 				}
 			}
-		}
 
+		}
 	}
-}
 }

@@ -4,23 +4,19 @@
   height: 80vh;
   margin-top: 5vh;
   margin-left: 5%;
-  background: rgb(0, 138, 214);
-  background: -moz-radial-gradient(
-    circle,
-    rgba(0, 138, 214, 1) 35%,
-    rgba(92, 180, 229, 1) 100%
-  );
-  background: -webkit-radial-gradient(
-    circle,
-    rgba(0, 138, 214, 1) 35%,
-    rgba(92, 180, 229, 1) 100%
-  );
-  background: radial-gradient(
-    circle,
-    rgba(0, 138, 214, 1) 35%,
-    rgba(92, 180, 229, 1) 100%
-  );
-  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#008ad6",endColorstr="#5cb4e5",GradientType=1);
+  background: rgb(82, 59, 130);
+  background: -moz-linear-gradient(90deg,
+      rgba(82, 59, 130, 1) 0%,
+      rgba(48, 34, 75, 1) 40%,
+      rgba(82, 59, 130, 1) 100%);
+  background: -webkit-linear-gradient(90deg,
+      rgba(82, 59, 130, 1) 0%,
+      rgba(48, 34, 75, 1) 40%,
+      rgba(82, 59, 130, 1) 100%);
+  background: linear-gradient(90deg,
+      rgba(82, 59, 130, 1) 0%,
+      rgba(48, 34, 75, 1) 40%,
+      rgba(82, 59, 130, 1) 100%);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -57,8 +53,8 @@
   border-radius: 70px;
   border: none;
   max-width: 100%;
-  background-color: #523b82;
-  color: whitesmoke;
+  background-color: whitesmoke;
+  color: rgb(82, 59, 130);
   font-size: 24px;
   font-style: bold;
 }
