@@ -186,7 +186,7 @@ const Game = (
 		allPos.ballY = allPos.height / 2 + EmptyGround / 2; //placement en Y de la balle
 		allPos.vx = -1; //vitesse en X de la balle
 		allPos.vy = -1; //vitesse en Y de la balle
-		allPos.speed = 2;
+		allPos.speed = 4;
 		if (allPos.compteur === null)
 			socket.emit("setCompteur", gameId);
 		allPos.key = key;

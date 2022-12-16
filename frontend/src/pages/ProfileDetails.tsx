@@ -4,15 +4,13 @@ import { IUser } from "../interfaces/user.interface";
 import UserNotFound from "../components/social/UserNotFound";
 import { socket } from "../components/Socket";
 import { IGame } from "../interfaces/game.interface";
-import { useAuth } from "../contexts/AuthContext";
 
 function ProfileDetails() {
-  const auth = useAuth();
   const [users, setUsers] = useState<IUser[]>([]);
   const [user, setUser] = useState<IUser>();
   const [games, setGames] = useState<IGame[]>([]);
 
-  // const [avatar, setAvatar] = useState<string>();
+  const [avatar, setAvatar] = useState<string>();
 
   const userProfile = window.location.pathname.substring(
     window.location.pathname.lastIndexOf("/") + 1
@@ -67,22 +65,22 @@ function ProfileDetails() {
     }
   }, []);
 
-  // useEffect(() => {
-  //   const getAvatar = async () => {
-  //     await axios
-  //       .get("avatar")
-  //       .then((res) => {
-  //         if (res.data) {
-  //           setAvatar(null);
-  //           setAvatar(res.data);
-  //         }
-  //       })
-  //       .catch((error) => {
-  //         console.log(error);
-  //       });
-  //   };
-  //   getAvatar();
-  // });
+  useEffect(() => {
+    const getAvatar = async () => {
+      await axios
+        .get("avatar")
+        .then((res) => {
+          if (res.data) {
+            setAvatar(null);
+            setAvatar(res.data);
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    };
+    getAvatar();
+  });
 
   if (!user) return null;
 
@@ -92,9 +90,9 @@ function ProfileDetails() {
         <div className="account-container">
           <div className="profile-container">
             <div className="left-container">
-              {/* <div className="profile-picture">
+              {<div className="profile-picture">
                 <img src="" alt="profilePic" />
-              </div> */}
+              </div>}
               <div className="profile-stats">
                 <h1> {user?.name}</h1>
                 <h2>Win: {user?.win}</h2>
@@ -131,7 +129,7 @@ function ProfileDetails() {
             </div>
           </div>
         </div>
-      )) || null}
+      ))}
     </div>
   );
 }
