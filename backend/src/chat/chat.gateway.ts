@@ -70,14 +70,16 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 	async HandleMessageToRoom(@MessageBody() message: {sender: string, room: string, msg: string}): Promise<void> {
 
 		let theRoom = await this.chatService.findOneChatRoomByName(message.room);
+		const sender = await this.usersService.getByNameWithRelations(message.sender);
 
-		const messageCreated = await this.messageService.createMessage({sender: message.sender, content: message.msg})
+		const messageCreated = await this.messageService.createMessage({sender: message.sender, senderId: sender.id, content: message.msg})
 		theRoom.messages.push(messageCreated);
 		
 		await this.chatService.saveChatRoom(theRoom);
 		
 		const newMessage = {
 			sender: message.sender,
+			senderId: sender.id,
 			room: message.room,
 			content: message.msg,
 			date: messageCreated.createdAt,
