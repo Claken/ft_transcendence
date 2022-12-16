@@ -11,19 +11,19 @@ const ModalAddARoom = ({ addARoom, toggle }) => {
   };
 
   return (
-    <div>
-      <h1>create a room</h1>
-		<div className="text-input">
-		room name
+    <div className="add-a-room">
+      <h1>Create a room</h1>
+      <div className="text-input">
+        room name:{" "}
         <input
           type="text"
           value={roomName}
           onChange={(event) => setRoomName(event.target.value)}
         />
-		</div>
-        <br />
-		<div className="radio-inputs">
-		room type
+      </div>
+      <br />
+      <div className="radio-inputs">
+        room type:{" "}
         <input
           type="radio"
           name="typeRoom"
@@ -32,7 +32,7 @@ const ModalAddARoom = ({ addARoom, toggle }) => {
           checked={typeRoom === "0"}
           onChange={(event) => setTypeRoom(event.target.value)}
         />
-        public
+        public{" "}
         <input
           type="radio"
           name="typeRoom"
@@ -41,7 +41,7 @@ const ModalAddARoom = ({ addARoom, toggle }) => {
           checked={typeRoom === "1"}
           onChange={(event) => setTypeRoom(event.target.value)}
         />
-        private
+        private{" "}
         <input
           type="radio"
           name="typeRoom"
@@ -50,21 +50,23 @@ const ModalAddARoom = ({ addARoom, toggle }) => {
           checked={typeRoom === "2"}
           onChange={(event) => setTypeRoom(event.target.value)}
         />
-        protected
-		</div>
-        <br />
-        {typeRoom === "2" && (
-          <div className="pass-for-protected">
-            password
-            <input
-              type="password"
-              value={password}
-              onChange={(event) => setPassword(event.target.value)}
-            />
-          </div>
-        )}
+        protected{" "}
+      </div>
+      <br />
+      {typeRoom === "2" && (
+        <div className="pass-for-protected">
+          password:{" 	"}
+          <input
+            type="password"
+            value={password}
+            onChange={(event) => setPassword(event.target.value)}
+          />
+        </div>
+      )}
+      <div className="addARoom-buttons">
         <button onClick={handleSubmit}>confirm</button>
-      <button onClick={toggle}>close</button>
+        <button onClick={toggle}>close</button>
+      </div>
     </div>
   );
 };
