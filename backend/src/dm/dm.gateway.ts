@@ -3,6 +3,7 @@ import {
   SubscribeMessage,
   MessageBody,
 	ConnectedSocket,
+  OnGatewayDisconnect,
 } from '@nestjs/websockets';
 import { Socket } from 'socket.io'
 import { DmDto } from '../TypeOrm/DTOs/dm.dto';
@@ -10,11 +11,14 @@ import { DmService } from './dm.service';
 import { OnEvent } from '@nestjs/event-emitter';
 
 @WebSocketGateway({ cors: '*:*' })
-export class DmGateway {
+export class DmGateway implements OnGatewayDisconnect {
   constructor(
     private readonly dmService: DmService,
-    // private eventEmitter: EventEmitter2,
     ) {}
+
+  async handleDisconnect(client: Socket) {
+    this.dmService.deleteName(client);
+  }
 
   @SubscribeMessage('join_dm')
   async joinDm(@ConnectedSocket() socket: Socket, @MessageBody() dm: DmDto) {

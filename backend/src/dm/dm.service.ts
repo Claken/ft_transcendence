@@ -44,8 +44,13 @@ export class DmService {
 		if (i >= 0 && this.dmUsers[i].name !== dm.sender) {
 			this.dmUsers[i].name = dm.sender;
 		}
-		console.log("all sockets:");
-		this.dmUsers.map(user => console.log("name = " + user.name + " socket = " + user.socket.id));
+	}
+
+	deleteName(client: Socket) {
+		const i = this.dmUsers.findIndex(dmUser => dmUser.socket.id === client.id)
+		if (i >= 0) {
+			this.dmUsers.splice(i, 1);
+		}
 	}
 
   async newDm(dm: DmDto): Promise<DmEntity> {
