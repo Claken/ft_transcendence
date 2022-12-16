@@ -112,7 +112,7 @@ function Account() {
 						</div>
 					</div>
 					<div className="right-container">
-						<MatchHistory />
+						<MatchHistory user={auth.user}/>
 					</div>
 				</div>
 			</div>
