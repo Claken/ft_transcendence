@@ -4,6 +4,7 @@ import useModal from "../hooks/useModal";
 import { useAuth } from "../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 import ModalSettings from "../components/Account/ModalSettings";
+import MatchHistory from "../components/Account/MatchHistory";
 
 function Account() {
 	const auth = useAuth();
@@ -14,7 +15,7 @@ function Account() {
 		if (auth.user?.login) {
 			window.location.href = "http://localhost:3001/auth/42/logout";
 		} else {
-			console.log("logout: " + JSON.stringify(auth.user));
+			// console.log("logout: " + JSON.stringify(auth.user));
 			auth.deleteGuestUser();
 			if (sessionStorage.getItem("MY_PONG_APP")) {
 				sessionStorage.removeItem("MY_PONG_APP");
@@ -92,12 +93,7 @@ function Account() {
 						</div>
 					</div>
 					<div className="right-container">
-						<div className="matchHistory">
-							<div className="matchHistory-header">
-								<h1>Match History</h1>
-							</div>
-							<div className="matchHistory-content"></div>
-						</div>
+						<MatchHistory />
 					</div>
 				</div>
 			</div>

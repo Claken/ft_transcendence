@@ -5,6 +5,7 @@ export class IUser {
 	email?: string;
 	inQueue: boolean;
 	inGame: boolean;
+	hasSentAnInvite: boolean;
 	status?: string;
 	twoFASecret?: string;
 	isTwoFAEnabled?: boolean;

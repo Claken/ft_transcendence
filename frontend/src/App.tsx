@@ -23,12 +23,13 @@ function App() {
 				<BrowserRouter>
 					<Routes>
 						<Route path="/" element={<Layout />}>
+							{/* todo: refresh amene sur la page Home, comportement voulu ? */}
 							<Route index element={<Home />} />
-							<Route path="*" element={<Home />} />
+							<Route path="*" element={<Pong />} />
 							<Route element={<RequiredOffline />}>
 								<Route path="/login" element={<Login />} />
 							</Route>
-							{/* <Route element={<RequiredAuth />}> */}
+							<Route element={<RequiredAuth />}>
 								<Route path="/account" element={<Account />} />
 								<Route path="/social" element={<Social />} />
 								<Route path="/channel" element={<Channel />} />
@@ -41,7 +42,7 @@ function App() {
 									path="profile/:userId"
 									element={<ProfileDetails />}
 								/>
-							{/* </Route> */}
+							</Route>
 							{/* pim la page */}
 							<Route
 								path="twofa-validation"

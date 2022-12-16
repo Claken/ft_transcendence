@@ -7,12 +7,14 @@ export interface IChatRoom {
 	chatRoomName?: string;
 
 	owner?: string;
-  
-	administrators?: string;
 
 	type: number;
 
 	password?: string;
+
+	InviteUserName?: string;
+
+	InviteGameId?: number;
 
 	// active?: boolean;
 

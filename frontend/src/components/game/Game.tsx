@@ -57,6 +57,7 @@ const Game = (
 		});
 
 		if (auth.user) {
+			//Si game sur invit, alors faire les prepa ?
 			socket.emit("updateData", gameId);
 		}
 	}, [])
@@ -152,7 +153,7 @@ const Game = (
 				x < allPos.width / 2 + 150 + allPos.radius * 2 &&
 				y > 25 - allPos.radius * 2 &&
 				y < 25 + allPos.radius * 2) {
-					socket.emit("abort", allPos, auth.user.name);
+					socket.emit("abort", allPos, auth.user.name);//TODO: si compteur = 10 => give up party
 			}
 		}
 	};
@@ -185,8 +186,10 @@ const Game = (
 		allPos.vx = -1; //vitesse en X de la balle
 		allPos.vy = -1; //vitesse en Y de la balle
 		allPos.speed = 2;
-		if (allPos.compteur === null)
+		if (allPos.compteur === null) {
+			console.log("gameId = "+gameId)
 			socket.emit("setCompteur", gameId);
+		}
 		allPos.key = key;
 		let animationFrameId: number;
 		allPos.img = new Image();

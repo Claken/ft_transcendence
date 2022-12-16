@@ -5,6 +5,7 @@ import { IChatRoom, ChatRoomEntity } from '../TypeOrm/Entities/chat.entity';
 import { ChatRoomDto } from '../TypeOrm/DTOs/chat.dto'
 import { UsersService } from 'src/users/users.service';
 import { MemberEntity } from 'src/TypeOrm';
+import { type } from 'src/exports/enum';
 
 @Injectable()
 export class ChatService {
@@ -15,6 +16,10 @@ export class ChatService {
 
 	  async findAllChatRooms(): Promise<ChatRoomEntity[]> {
 		return await this.chatRepo.find({relations: ['owner', 'members', 'members.user', 'messages']});
+	  }
+
+	  async findAllPrivateRooms(): Promise<ChatRoomEntity[]> {
+		return await this.chatRepo.find({where: {type: type.private}, relations: ['owner', 'members', 'members.user', 'messages']});
 	  }
 
 	  async findOneChatRoomByName(name: string): Promise<ChatRoomEntity> {

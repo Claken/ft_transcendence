@@ -9,11 +9,19 @@ import { UserDTO } from '../TypeOrm/DTOs/User.dto';
 import { GameDTO } from '../TypeOrm/DTOs/Game.dto';
 import { GameService } from './game.service';
 import { UsersService } from 'src/users/users.service';
+import { OnEvent, EventEmitter2 } from '@nestjs/event-emitter';
+import { stringify } from 'querystring';
 
 export var userQueue: UserDTO[] = [];
 export interface ObjInterval {
 	gameId:		number,
 	intervalID:	NodeJS.Timer,
+}
+export interface ObjInvite {
+	gameId:		number,
+	roomName:	string,
+	Inviter:	UserDTO;
+	userList:	string[],
 }
 
 @WebSocketGateway({ cors: 'http://localhost:3000' })
@@ -22,34 +30,44 @@ export class GameGateway
 {
   constructor(
 	private readonly gameService: GameService,
-	private readonly usersService: UsersService) {}
+	private readonly usersService: UsersService,
+	private eventEmitter: EventEmitter2) {}
 
   @WebSocketServer() server;
-  users: number = 0;
   tabIntervalId: ObjInterval[] = [];
-
+  tabGameInvite: ObjInvite[] = [];
+  
   async handleConnection(client) {
-    // A client has connected
-    this.users++;
-}
-
-  async handleDisconnect(client) {
-    // A client has disconnected
-    this.users--;
-	//wait 1sec then check if the user is disconnect
-	setTimeout(() => {
-		this.isDisconnect(client.id);
-	}, 1500)
+	console.log("client connected. client.id = "+client.id)
   }
 
-  async isDisconnect(client: string) {
-	let user: UserDTO = await this.usersService.getByClient(client);
-	if (user) {
-		if (user.inQueue) {
+  async handleDisconnect(client) {
+	setTimeout(() => {
+		this.isDisconnect(client);
+	}, 2000)
+  }
+
+  async isDisconnect(client: any) {
+	  let user: UserDTO = await this.usersService.getByClient(client.id);
+	  if (user) {
+		this.usersService.updateStatusUser(user.id, 'offline');
+		if (user.hasSentAnInvite) {
+			const res = this.tabGameInvite.filter((ObjInvite: ObjInvite) => ObjInvite.Inviter.name === user.name);
+			var game: GameDTO = await this.gameService.getCurrentGame(user.login);
+			await this.gameService.deleteGame(game.id);
 			const indexUser = userQueue.findIndex(
 				(elet: UserDTO) => elet.name === user.name);
-			await this.usersService.updateInQueue(user.id, false)
 			userQueue.splice(indexUser, 1);
+			await this.usersService.updateInviteSend(user.id, false)
+			this.eventEmitter.emit('updateGameButton', {gameId: 0, status: "invite", inviter: "", roomName: res[0].roomName});
+		}
+		if (user.inQueue) {
+			var game: GameDTO = await this.gameService.getCurrentGame(user.login);
+			await this.gameService.deleteGame(game.id);
+			const indexUser = userQueue.findIndex(
+				(elet: UserDTO) => elet.name === user.name);
+			userQueue.splice(indexUser, 1);
+			await this.usersService.updateInQueue(user.id, false)
 		}
 		if (user.inGame) {
 			if (user.login)
@@ -259,6 +277,7 @@ export class GameGateway
 
   @SubscribeMessage('setCompteur')
   async SetCompteur(client: any, gameId: number) {
+	console.log("gameId dans SetCompteur = "+gameId)
 	let nbInter = await this.gameService.updateNbInterval(gameId);
 	const interval = setInterval(this.tick, 1000, gameId, nbInter);
 	this.tabIntervalId.push({gameId, intervalID: interval});
@@ -270,6 +289,14 @@ export class GameGateway
 
   @SubscribeMessage('inQueueOrGame')
   async InQueueOrGame(client: any, user: UserDTO) {
+	const res = this.tabGameInvite.filter((ObjInvite: ObjInvite) => ObjInvite.Inviter.name === user.name);
+	if (user && res[0]) {
+		user.hasSentAnInvite = true;
+		client.emit("updateUser", user);
+		client.join(res[0].gameId);
+		client.emit("changeQueue", "invite");
+		return ;
+	}
 	if (user && user.inQueue) {
 		if (user.login)
 			var waitingGame: GameDTO = await this.gameService.getPendingGame(user.login);
@@ -277,7 +304,7 @@ export class GameGateway
 			var waitingGame: GameDTO = await this.gameService.getPendingGame(user.name);
 		if (waitingGame) {
 			client.join(waitingGame.id);
-			client.emit("changeQueue", true);
+			client.emit("changeQueue", "queue");
 		}
 		return ;
 	}
@@ -286,11 +313,14 @@ export class GameGateway
 				var currentGame: GameDTO = await this.gameService.getCurrentGame(user.login);
 			else 
 				var currentGame: GameDTO = await this.gameService.getCurrentGame(user.name);
-		if (currentGame)
+		if (currentGame) {
+			if (currentGame.waitingForInvit)
+				client.join(currentGame.id);
 			client.emit("goPlay", currentGame);
+		}
 		return ;
 	}
-	client.emit("changeQueue", false);
+	client.emit("changeQueue", "join");
   }
 
   /* ***************************************************************************** */
@@ -340,7 +370,7 @@ export class GameGateway
 	  this.server.to(updatedGame.id).emit("updateUsers", firstGameUserLp, user);
       /**** Redirect in the Frontend to <Game /> ****/
 	  this.server.to(updatedGame.id).emit('goPlay', updatedGame);
-	  this.SetCompteur(client, updatedGame.id);
+	  this.SetCompteur(null, updatedGame.id);
     }
 	else {
 	  let login: string;
@@ -365,6 +395,7 @@ export class GameGateway
   @SubscribeMessage('leaveQueue')
   async LeaveQueue(client: any, user: UserDTO) {
 	let indexLP = userQueue.findIndex((elet: UserDTO) => elet.name === user.name,);
+	user = await this.usersService.updateInQueue(user.id, false);
 	if (indexLP !== -1) {
 		if (user.login)
 			var game: GameDTO = await this.gameService.getPendingGame(user.login);
@@ -422,10 +453,9 @@ export class GameGateway
 	if (game) {
 		let userLeft: UserDTO = await this.usersService.getByName(game.nameLP);
 		let userRight: UserDTO = await this.usersService.getByName(game.nameRP);
-		if (client.id === userLeft.lastSocket)
-			this.UpdateInGame(client, userLeft, allPos.gameId);
-		else
-			this.UpdateInGame(client, userRight, allPos.gameId);
+		userLeft = await this.usersService.updateInGame(userLeft.id, false);
+		userRight = await this.usersService.updateInGame(userRight.id, false);
+		this.server.emit("updateUsers", userLeft, userRight);
 		if (game.isFinish === false && userLeft && userRight) {
 			game = await this.gameService.gameFinished(
 				allPos.gameId, allPos.scoreLP, allPos.scoreRP,
@@ -449,10 +479,9 @@ export class GameGateway
 	if (game) {
 		let userLeft: UserDTO = await this.usersService.getByName(game.nameLP);
 		let userRight: UserDTO = await this.usersService.getByName(game.nameRP);
-		if (client.id === userLeft.lastSocket)
-			this.UpdateInGame(client, userLeft, infos[0].gameId);
-		else
-			this.UpdateInGame(client, userRight, infos[0].gameId);
+		userLeft = await this.usersService.updateInGame(userLeft.id, false);
+		userRight = await this.usersService.updateInGame(userRight.id, false);
+		this.server.emit("updateUsers", userLeft, userRight);
 		if (game.isFinish === false && userLeft && userRight) {
 			game = await this.gameService.gameFinished(
 				infos[0].gameId, infos[0].scoreLP, infos[0].scoreRP,
@@ -467,5 +496,94 @@ export class GameGateway
 			}
 		}
 	}
+  }
+
+  /* ***************************************************************************** */
+  /*                               invit de partie                                 */
+  /* ***************************************************************************** */
+
+  @OnEvent('createGameInvite')
+  async CreateGameInvite(infos: {inviter: UserDTO, userList: string[], roomName: string}) {
+	let login: string;
+	if (!infos.inviter.login)
+		login = infos.inviter.name;
+	else
+		login = infos.inviter.login;
+	const game = await this.gameService.create({
+	loginLP: login,
+	nameLP: infos.inviter.name,
+	loginRP: '',
+	nameRP: '',
+	waitingForInvit: true,
+	waitingForOppenent: true,
+	});
+	this.tabGameInvite.push({gameId: game.id, roomName: infos.roomName, Inviter: infos.inviter, userList: infos.userList});
+	this.eventEmitter.emit('sendGameInvite', {gameId: game.id, inviter: infos.inviter.name, room: infos.roomName});
+  }
+
+  @OnEvent('acceptInvite')
+  async AcceptInvite(infos: {user: UserDTO, inviter: string, gameId: number, roomName: string}) {
+      const game: GameDTO = await this.gameService.getById(infos.gameId);
+	  if (infos.user.login) {
+		var updatedGame: GameDTO = await this.gameService.updateGameReady(
+		game.id,
+		infos.user.login, infos.user.name);
+	  }
+	  else {
+		var updatedGame: GameDTO = await this.gameService.updateGameReady(
+		game.id,
+		infos.user.name, infos.user.name);
+	  }
+	  let firstGameUserLp: UserDTO = await this.usersService.getByName(infos.inviter);
+	  firstGameUserLp = await this.usersService.updateInviteSend(firstGameUserLp.id, false);
+      /**** Delete the 2 users in UserQueue ****/
+	  const index = this.tabGameInvite.findIndex(
+		(ObjInvite: ObjInvite) => ObjInvite.Inviter.name === infos.inviter);
+	  if (index !== -1) {
+		this.tabGameInvite.splice(index, 1);
+	  }
+	  firstGameUserLp = await this.usersService.updateInGame(firstGameUserLp.id, true)
+	  infos.user = await this.usersService.updateInGame(infos.user.id, true)
+	//   this.server.to(updatedGame.id).emit("updateUsers", firstGameUserLp, infos.user);
+	  this.server.emit("updateUsers", firstGameUserLp, infos.user);
+	  this.server.to(updatedGame.id).emit('goPlay', updatedGame);
+	  this.eventEmitter.emit('gamePrepareToTheJoin', {joiner: infos.user.name, room: infos.roomName});
+	  this.SetCompteur(null, updatedGame.id);
+  }
+
+  @SubscribeMessage('cancelInvite')
+  async CancelInvite(client: any, user: UserDTO) {
+	const res = this.tabGameInvite.filter((ObjInvite: ObjInvite) => ObjInvite.Inviter.name === user.name);
+	if (user.login)
+		var game: GameDTO = await this.gameService.getPendingGame(user.login);
+	else 
+		var game: GameDTO = await this.gameService.getPendingGame(user.name);
+	client.leave(game.id);
+	user = await this.usersService.updateInviteSend(user.id, false);
+	client.emit("updateUser", user);
+	await this.gameService.deleteGame(game.id);
+	const index = this.tabGameInvite.findIndex(
+		(ObjInvite: ObjInvite) => ObjInvite.Inviter.name === user.name);
+	if (index !== -1) {
+		this.tabGameInvite.splice(index, 1);
+	}
+	this.eventEmitter.emit('updateGameButton', {gameId: 0, status: "invite", inviter: "", roomName: res[0].roomName});
+  }
+
+  @OnEvent('askToCancelInvite')
+  async AskToCancelInvite(user: UserDTO) {
+	const res = this.tabGameInvite.filter((ObjInvite: ObjInvite) => ObjInvite.Inviter.name === user.name);
+	if (user.login)
+		var game: GameDTO = await this.gameService.getPendingGame(user.login);
+	else 
+		var game: GameDTO = await this.gameService.getPendingGame(user.name);
+	user = await this.usersService.updateInviteSend(user.id, false);
+	await this.gameService.deleteGame(game.id);
+	const index = this.tabGameInvite.findIndex(
+		(ObjInvite: ObjInvite) => ObjInvite.Inviter.name === user.name);
+	if (index !== -1) {
+		this.tabGameInvite.splice(index, 1);
+	}
+	this.eventEmitter.emit('updateGameButton', {gameId: 0, status: "invite", inviter: "", roomName: res[0].roomName});
   }
 }

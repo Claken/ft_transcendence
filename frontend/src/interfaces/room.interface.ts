@@ -8,8 +8,11 @@ export interface IRoom {
 	owner: string;
 	name: string;
 	type: number;
+	InviteUserName?: string;
+	InviteGameId?: number;
 	messages: IMessageToBack[];
 	usersList?: string[];
 	adminsList?: string[];
 	banList?: string[];
+	muteList?: string[];
 }

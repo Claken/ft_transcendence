@@ -31,6 +31,10 @@ export class MemberService {
 			return await this.memberRepo.find({relations: ['inChannel', 'user'], where: {inChannel: {id: roomId}, isBan: true}});
 		}
 
+		async findAllMutedMembersFromOneRoom(roomId: string) :  Promise<MemberEntity[]> {
+			return await this.memberRepo.find({relations: ['inChannel', 'user'], where: {inChannel: {id: roomId}, isMute: true}});
+		}
+
 		async getMemberById(memberId: string) : Promise<MemberEntity> {
 			return await this.memberRepo.findOne({where: {id: memberId}, relations: ['inChannel', 'user']});
 		}

@@ -27,7 +27,8 @@ export class AuthGateway
   @WebSocketServer()
   server: Server;
 
-  afterInit(server: Server) {}
+  afterInit(server: Server) {
+  }
 
   async handleConnection(client: Socket) {}
 
@@ -96,7 +97,6 @@ export class AuthGateway
   /* ********************************************************* */
   /*                     Choosename.tsx                        */
   /* ********************************************************* */
-
   @SubscribeMessage('update-username')
   async updateUsername(
     client: Socket,
@@ -111,7 +111,7 @@ export class AuthGateway
     memberships.forEach((member: MemberEntity) => {
       this.eventEmitter.emit('GetListsForUser', member.inChannel.chatRoomName);
     });
-    // this.eventEmitter.emit('modify_name_dm', {newName, oldName});
-    // this.server.emit('reload_user');
+    this.eventEmitter.emit('modify_name_dm', {sender: newName, receiver: oldName});
+    this.server.emit('reload_user');
   }
 }

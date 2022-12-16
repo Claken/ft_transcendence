@@ -45,21 +45,16 @@ export class UsersService {
   // find() is a Repository Typeorm method to call SELECT query
   // TODO: throw exception if not found ?
   async findAllUsers(): Promise<UsersEntity[]> {
-    return await this.userRepo.find({relations: ['ownedChannels', 'memberships', 'memberships.inChannel']});
+    return await this.userRepo.find({relations: ['ownedChannels', 'memberships', 'memberships.inChannel',
+    'friendRequests', 'friends', 'friends.user',
+    'privateRoomInvites',
+    'blockUsers', 'blockUsers.user', 'blockUsers.blockBy', 'blockBys', 'blockBys.blockBy']});
   }
 
 	async getByName(nameToFind: string): Promise<UsersEntity> {
     return await this.userRepo.findOneBy({
       name: nameToFind,
     });
-  }
-
-  async findOneByName(nameToFind: string) : Promise<UsersEntity> {
-    return await this.userRepo.findOne({where: {name: nameToFind}, relations: ['ownedChannels', 'memberships', 'memberships.inChannel']});
-  }
-
-	async findOneById(idToFind: number) : Promise<UsersEntity> {
-    return await this.userRepo.findOne({where: {id: idToFind}, relations: ['ownedChannels', 'memberships', 'memberships.inChannel']});
   }
   
   async getByLogin(loginToFind: string): Promise<UsersEntity> {
@@ -82,16 +77,21 @@ export class UsersService {
   }
   async getByNameWithRelations(nameToFind: string): Promise<UsersEntity> {
     return await this.userRepo.findOne({
-      where: { name: nameToFind }, relations: ['friendRequests', 'friends', 'friends.user', 'blockUsers', 'blockUsers.user', 'blockUsers.blockBy', 'blockBys', 'blockBys.blockBy']
+      where: { name: nameToFind }, relations: ['ownedChannels', 'memberships', 'memberships.inChannel',
+      'friendRequests', 'friends', 'friends.user',
+      'privateRoomInvites',
+      'blockUsers', 'blockUsers.user', 'blockUsers.blockBy', 'blockBys', 'blockBys.blockBy']
     });
   }
 
 	async getByIdWithRelations(idToFind: number): Promise<UsersEntity> {
     return await this.userRepo.findOne({
-      where: { id: idToFind }, relations: ['friendRequests', 'friends', 'friends.user', 'blockUsers', 'blockUsers.user', 'blockUsers.blockBy', 'blockBys', 'blockBys.blockBy']
+      where: { id: idToFind }, relations: ['ownedChannels', 'memberships', 'memberships.inChannel',
+      'friendRequests', 'friends', 'friends.user',
+      'privateRoomInvites',
+      'blockUsers', 'blockUsers.user', 'blockUsers.blockBy', 'blockBys', 'blockBys.blockBy']
     });
   }
-
 
   async getById(idToFind: number): Promise<UsersEntity> {
     return await this.userRepo.findOneBy({
@@ -112,6 +112,12 @@ export class UsersService {
     return await this.userRepo.save(user);
   }
 
+  async updateInviteUser(id: number, invite: boolean): Promise<UsersEntity> {
+    const user = await this.getById(id);
+    user.hasSentAnInvite = invite;
+    return await this.userRepo.save(user);
+  }
+
   async updateName(id: number, name: string): Promise<UsersEntity> {
     const user = await this.getById(id);
     user.name = name;
@@ -126,6 +132,7 @@ export class UsersService {
   async updateSocket(id: number, socket: string): Promise<UsersEntity> {
     const user = await this.getById(id);
 	user.lastSocket = socket;
+	user.status = "online";
     return await this.userRepo.save(user);
   }
 
@@ -144,10 +151,15 @@ export class UsersService {
   //   await this.userRepo.save(user);
   //   return await this.getById(id);
   // }
-
   async updateInQueue(id: number, bool: boolean): Promise<UsersEntity> {
     const user = await this.getById(id);
     user.inQueue = bool;
+    return await this.userRepo.save(user);
+  }
+
+  async updateInviteSend(id: number, bool: boolean): Promise<UsersEntity> {
+    const user = await this.getById(id);
+    user.hasSentAnInvite = bool;
     return await this.userRepo.save(user);
   }
 
@@ -266,13 +278,13 @@ export class UsersService {
 
 		async getMembershipsFromOneUserId(id: number) : Promise<MemberEntity[]>
 		{
-			const user = await this.findOneById(id);
+			const user = await this.getByIdWithRelations(id);
 			return user.memberships;
 		}
 
 		async getMembershipsFromOneUserName(name: string) : Promise<MemberEntity[]>
 		{
-			const user = await this.findOneByName(name);
+			const user = await this.getByNameWithRelations(name);
 			return user.memberships;
 		}
 	async save(tosave: Promise<UsersEntity>): Promise<UsersEntity> {
@@ -293,7 +305,7 @@ export class UsersService {
 	}
 
   async getName(id: number): Promise<string> {
-    const user = await this.findOneById(id);
+    const user = await this.getById(id);
     return user.name;
   }
 }

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import useModal from "../hooks/useModal";
 import io, { Socket } from "socket.io-client";
 import { isForOfStatement } from "typescript";
 import { IChatRoom } from "../../interfaces/chat.interface";
@@ -6,13 +7,17 @@ import { useAuth } from "../../contexts/AuthContext";
 import { IMessageToBack } from "../../interfaces/messageToBack.interface";
 import { IRoom } from "../../interfaces/room.interface";
 import { type } from "../../interfaces/enum";
-import Account from "../../pages/Account";
 import "../../styles/chat.scss";
+import RoomUserList from "./RoomUserList";
+import { useNavigate } from "react-router-dom";
+import GameInviteButton from "./GameInviteButton";
+import CancelInviteButton from "./CancelInviteButton";
+import JoinInviteButton from "./JoinInviteButton";
+import RoomSettings from "./RoomSettings";
+import { useDm } from "../../contexts/DmContext";
 
-// const 	socket = io('http://localhost/3001');
-
-const ProtoChat = () => {
-  const title = "PROTO CHATROOM";
+const Chat = () => {
+  const dmContext = useDm();
   const [text, changeText] = useState<string>("");
 
   const [socket, setSocket] = useState<Socket>();
@@ -27,9 +32,13 @@ const ProtoChat = () => {
   const [password, setPassword] = useState<string>("");
   const [date, setDate] = useState<Date>(null);
 
+  const [gameButton, setGameButton] = useState<string>("invite");
+
   const chatEndRef = useRef(null);
 
   const auth = useAuth();
+
+  const navigate = useNavigate();
 
   /* ***************************************************************************** */
   /*    							Functions utiles		    					 */
@@ -43,7 +52,7 @@ const ProtoChat = () => {
       mute: false,
       owner: "",
       name: "",
-      type: type.public,
+      type: -1,
       messages: [],
     };
     rooms.forEach((element: IRoom) => {
@@ -70,11 +79,40 @@ const ProtoChat = () => {
   };
 
   const setActiveForRoom = (roomName: string) => {
+    //TODO: update button
     rooms.forEach((element: IRoom) => {
       element.active = element.name === roomName ? true : false;
     });
     setActiveRoom(roomName);
     setJoinButtonAndStatus();
+    const roomActive = findActiveRoom();
+    if (roomActive.InviteUserName === username) setGameButton("cancel");
+    else if (roomActive.InviteUserName !== "") setGameButton("join");
+    else setGameButton("invite");
+  };
+
+  const isAlpha = (input: string) => {
+    for (let index = 0; index < input.length; index++) {
+      const element = input.charCodeAt(index);
+      if (element < 48 || element > 122 || (element >= 58 && element <= 64))
+        return false;
+    }
+    return true;
+  };
+
+  const parseRoomName = (roomName: string) => {
+    let status: boolean = true;
+    if (roomName === "") {
+      alert("you need to write a name please");
+      status = false;
+    } else if (roomName.length > 20) {
+      alert("the name cannot exceed 20 characters");
+      status = false;
+    } else if (isAlpha(roomName) === false) {
+      alert("the name contains none alphanumeric character.s");
+      status = false;
+    }
+    return status;
   };
 
   /* ***************************************************************************** */
@@ -82,12 +120,20 @@ const ProtoChat = () => {
   /* ***************************************************************************** */
 
   const handleChange = (event: any) => {
-    console.log("handleChange");
+    // console.log("handleChange");
     changeText(event.target.value);
   };
 
   const wrongPasswordMessage = () => {
     alert("WRONG PASSWORD ! YOU CANNOT JOIN THIS CHANNEL");
+  };
+
+  const pswdDeletedMessage = () => {
+    alert("the password has been successfully deleted");
+  };
+
+  const pswdUpdateMessage = () => {
+    alert("the password has been successfully updated");
   };
 
   const changeChannelOwner = (update: {
@@ -108,32 +154,33 @@ const ProtoChat = () => {
     return value;
   };
 
-  const userOptions = (name: string) => {
+  const userSetAdmin = (name: string) => {
     const activeRoom = findActiveRoom();
-    let time: number = 0;
-    if (!isAdminInActive(name) && window.confirm("Set this user as admin ?")) {
+    if (!isAdminInActive(name)) {
       socket?.emit("setUserAsAdmin", { name: name, channel: activeRoom.name });
-    }
-    if (window.confirm("Do you want to ban this user ?")) {
-      time = parseInt(prompt("insert the time in minute please :"));
-      socket?.emit("banMember", {
-        name: name,
-        channel: activeRoom.name,
-        time: time,
-      });
-    }
-    if (window.confirm("Do you want to mute this user ?")) {
-      time = parseInt(prompt("insert the time in minute please :"));
-      socket?.emit("muteMember", {
-        name: name,
-        channel: activeRoom.name,
-        time: time,
-      });
     }
   };
 
+  const userMuteUser = (name: string, timer: number) => {
+    const activeRoom = findActiveRoom();
+    socket?.emit("muteMember", {
+      name: name,
+      channel: activeRoom.name,
+      time: timer,
+    });
+  };
+
+  const userBanUser = (name: string, timer: number) => {
+    const activeRoom = findActiveRoom();
+    socket?.emit("banMember", {
+      name: name,
+      channel: activeRoom.name,
+      time: timer,
+    });
+  };
+
   const updateBanStatus = (member: { status: boolean; channel: string }) => {
-    console.log("BanStatus");
+    // console.log("BanStatus");
     let room = findRoom(member.channel);
     room.ban = member.status;
     if (room.ban) {
@@ -148,11 +195,22 @@ const ProtoChat = () => {
     }
   };
 
-  const updateMuteStatus = (member: { status: boolean; channel: string }) => {
-    console.log("MuteStatus");
+  const updateMuteStatus = (member: {
+    status: boolean;
+    channel: string;
+    time: number;
+  }) => {
+    // console.log("MuteStatus");
     let room = findRoom(member.channel);
     room.mute = member.status;
-    if (room.mute) alert("Congratulations, you are muted in " + member.channel);
+    if (room.mute)
+      alert(
+        "Congratulations, you are muted in " +
+          member.channel +
+          " for " +
+          member.time +
+          " minutes"
+      );
     else
       alert(
         "Congratulations, you are not muted in " + member.channel + " anymore"
@@ -164,11 +222,13 @@ const ProtoChat = () => {
     usersList: any[];
     adminsList: any[];
     banList: any[];
+    muteList: any[];
   }) => {
     let room = findRoom(lists.channel);
     let newUsers: string[] = [];
     let newAdmins: string[] = [];
     let newBans: string[] = [];
+    let newMutes: string[] = [];
     if (lists.usersList.length > 0) {
       lists.usersList.forEach((element: any) => {
         newUsers.push(element.user.name);
@@ -187,6 +247,12 @@ const ProtoChat = () => {
       });
     }
     room.banList = newBans;
+    if (lists.muteList.length > 0) {
+      lists.muteList.forEach((element: any) => {
+        newMutes.push(element.user.name);
+      });
+    }
+    room.muteList = newMutes;
     // POUR RERENDER LA PAGE CAR ROOMS EST UN USESTATE, ET QUAND LE USESTATE EST MODIFIE CA RERENDER
     const roomsCopy = [...rooms];
     setRooms(roomsCopy);
@@ -216,7 +282,7 @@ const ProtoChat = () => {
     content: string;
     date: Date;
   }) => {
-    console.log("receiveChatMessage + " + username);
+    // console.log("receiveChatMessage + " + username);
     const theroom: IMessageToBack = {
       sender: obj.sender,
       message: obj.content,
@@ -236,32 +302,28 @@ const ProtoChat = () => {
 
   const addARoom = (event: any) => {
     event.preventDefault();
-    let 	askARoom: string = "";
-	let 	typeOfRoom: number = -1;
-	let		pswd: string = null;
-    while (askARoom === "")
-	{
-    	askARoom = prompt("Enter a name for your room: ")!;
-    	if (askARoom === null)
-	  		return;
-    	if (askARoom === "")
-	  		alert("This is not a right name for a room !");
-		else if (findRoom(askARoom))
-		{
-			alert("This name is already taken. Try another one.");
-			askARoom = "";
-		}
+    let askARoom: string = "";
+    let typeOfRoom: number = -1;
+    let pswd: string = null;
+    while (askARoom === "") {
+      askARoom = prompt("Enter a name for your room: ")!;
+      if (askARoom === null) return;
+      if (!parseRoomName(askARoom)) askARoom = "";
+      else if (findRoom(askARoom)) {
+        alert("This name is already taken. Try another one.");
+        askARoom = "";
+      }
     }
-	while (typeOfRoom < 0 || typeOfRoom > 2)
-	{
-		let typeOfRoomInString = prompt("Do you want your room to be : (0) public, (1) private, or (2) protected ?");
-		typeOfRoom = parseInt(typeOfRoomInString);
-	}
-	if (typeOfRoom === type.protected)
-	{
-		while (pswd == null)
-			pswd = prompt("Enter a password for your protected room: ");
-	}
+    while (typeOfRoom < 0 || typeOfRoom > 2) {
+      let typeOfRoomInString = prompt(
+        "Do you want your room to be : (0) public, (1) private, or (2) protected ?"
+      );
+      typeOfRoom = parseInt(typeOfRoomInString);
+    }
+    if (typeOfRoom === type.protected) {
+      while (pswd == null)
+        pswd = prompt("Enter a password for your protected room: ");
+    }
     const dbRoom: IChatRoom = {
       chatRoomName: askARoom,
       owner: username,
@@ -292,13 +354,17 @@ const ProtoChat = () => {
 
   const leftRoom = (room: string) => {
     rooms.forEach((element: any) => {
-      if (element.name === room) element.member = false;
+      if (element.name === room) {
+        element.member = false;
+        if (element.type === type.private) setActiveRoom("");
+      }
     });
     setJoinButtonAndStatus();
-    socket?.emit("getLists", room);
+    if (findRoom(room) !== undefined) socket?.emit("getLists", room);
   };
 
   const joinedRoom = (room: string) => {
+    // console.log("joined " + room);
     rooms.forEach((element: any) => {
       if (element.name === room) element.member = true;
     });
@@ -306,21 +372,42 @@ const ProtoChat = () => {
     socket?.emit("getLists", room);
   };
 
+  const handlingPasswordPart1 = (room: string, user: string) => {
+    socket?.emit("checkPswdStatus", { room: room, user: user });
+  };
+
+  const handlingPasswordPart2 = (infos: {
+    room: string;
+    user: string;
+    pswdStatus: boolean;
+  }) => {
+    let pswd: string = undefined;
+    if (infos.pswdStatus) {
+      pswd = prompt(
+        "you need a password to join this channel, please type it: "
+      );
+    }
+    socket?.emit("joinRoom", {
+      room: infos.room,
+      user: infos.user,
+      password: pswd,
+    });
+  };
+
   const toggleRoomMembership = (event: any) => {
     event.preventDefault();
     const activeRoom = findActiveRoom();
-    let pswd: string = null;
     if (activeRoom.member) {
       socket?.emit("leaveRoom", { room: activeRoom.name, user: username });
     } else {
-      if (activeRoom.type === type.protected)
-        pswd = prompt(
-          "you need a password to join this channel, please type it: "
-        );
+      if (activeRoom.type === type.protected) {
+        handlingPasswordPart1(activeRoom.name, username);
+        return;
+      }
       socket?.emit("joinRoom", {
         room: activeRoom.name,
         user: username,
-        password: pswd,
+        password: undefined,
       });
     }
   };
@@ -349,6 +436,8 @@ const ProtoChat = () => {
         owner: element.owner.name,
         name: element.chatRoomName,
         type: element.type,
+        InviteUserName: element.InviteUserName,
+        InviteGameId: element.InviteGameId,
         messages: [],
       };
       [...element.messages].reverse().forEach((oneMessage: any) => {
@@ -385,6 +474,8 @@ const ProtoChat = () => {
       owner: channel.owner.name,
       name: channel.chatRoomName,
       type: channel.type,
+      InviteUserName: channel.InviteUserName,
+      InviteGameId: channel.InviteGameId,
       messages: [],
     };
     if (channel.messages !== undefined) {
@@ -444,19 +535,119 @@ const ProtoChat = () => {
       alert("You are not the owner of this channel !");
   };
 
+  const inviteToPrivate = () => {
+    socket?.emit("getFriendsList", username);
+  };
+
+  const askWhichFriend = (friends: any) => {
+    let friendName: string = null;
+    let nameFound: string = undefined;
+    const roomActive = findActiveRoom();
+    if (friends.length === 0)
+      alert("you need at least one friend to invite in your room");
+    else {
+      if ((friendName = prompt("type the name of the friend ")) == null) return;
+      friends.find((friend: any) => {
+        if (friend.user.name === friendName) nameFound = friend.user.name;
+      });
+      if (nameFound === undefined) alert("friend not found, sorry");
+      else if (
+        roomActive.usersList.find((name: string) => name === nameFound) !=
+        undefined
+      ) {
+        alert(nameFound + " is already in the room, oh almighty corrector !");
+      } else {
+        socket?.emit("emitForAnPrInvite", {
+          sender: username,
+          receiver: nameFound,
+          channel: roomActive.name,
+        });
+      }
+    }
+  };
+
+  const CreateGameInvite = (event: any) => {
+    event.preventDefault();
+    const roomActive = findActiveRoom();
+    if (
+      activeRoom !== "" &&
+      roomActive.member &&
+      roomActive.usersList.length > 1 &&
+      auth.user.hasSentAnInvite === false &&
+      auth.user.inGame === false &&
+      auth.user.inQueue === false
+    ) {
+      socket?.emit("createGameInvite", {
+        user: auth.user,
+        userList: roomActive.usersList,
+        name: roomActive.name,
+      });
+    } else alert("You cannot send a game invite !");
+  };
+
+  const CancelGameInvite = (event: any) => {
+    event.preventDefault();
+    socket?.emit("askToCancelGameInvite", auth.user);
+  };
+
+  const JoinGameInvite = (event: any) => {
+    event.preventDefault();
+    const roomActive = findActiveRoom();
+    socket?.emit("invitationAccepted", {
+      user: auth.user,
+      inviter: roomActive.InviteUserName,
+      gameId: roomActive.InviteGameId,
+      name: roomActive.name,
+    });
+  };
+
+  const sendGameInviteMessage = () => {
+    const inviteMessage: string = username + " send an invite to a Pong game";
+    socket?.emit("chatToServer", {
+      sender: username,
+      room: findActiveRoom().name,
+      msg: inviteMessage,
+    });
+    navigate("/pong/");
+  };
+
+  const navigateToTheGame = () => {
+    const inviteMessage: string = username + " has join the Pong game";
+    socket?.emit("chatToServer", {
+      sender: username,
+      room: findActiveRoom().name,
+      msg: inviteMessage,
+    });
+    navigate("/pong/");
+  };
+
+  socket?.on("updateUser", (user) => {
+    if (user.name === username) auth.user = user;
+  });
+
+  socket?.on("changeGameButton", (infos: { status: string; channel: any }) => {
+    setGameButton(infos.status);
+    let roomActive = findActiveRoom();
+    roomActive.InviteGameId = infos.channel.InviteGameId;
+    roomActive.InviteUserName = infos.channel.InviteUserName;
+  });
+
   /* ***************************************************************************** */
   /*    						Les différents UseEffets    						 */
   /* ***************************************************************************** */
 
   // USEEFFECT POUR CREER UN SOCKET
   useEffect(() => {
-    console.log("connect");
+    // console.log("connect");
     const newSocket = io("http://localhost:3001");
     setSocket(newSocket);
   }, [setSocket]);
 
   useEffect(() => {
     changeUsername(auth.user.name);
+    const roomActive = findActiveRoom();
+    if (!roomActive) setGameButton("invite");
+    else socket?.emit("inviteAcceptCancel", username, roomActive.name);
   }, []);
 
   useEffect(() => {
@@ -493,7 +684,7 @@ const ProtoChat = () => {
   useEffect(() => {
     socket?.on("chatToClient", receiveChatMessage);
     return () => {
-      console.log("chatToClient name === " + username);
+      //   console.log("chatToClient name === " + username);
       socket?.off("chatToClient", receiveChatMessage);
     };
   }, [receiveChatMessage]);
@@ -516,14 +707,6 @@ const ProtoChat = () => {
     };
   }, [joinedRoom]);
 
-  useEffect(() => {
-    // console.log('joinedRoom');
-    socket?.on("receivedUserName", joinedRoom);
-    return () => {
-      socket?.off("joinedRoom", joinedRoom);
-    };
-  }, [joinedRoom]);
-
   // USEEFFECT POUR UN MAUVAIS MOT DE PASSE
   useEffect(() => {
     socket?.on("wrongPasswordForTheJoin", wrongPasswordMessage);
@@ -532,10 +715,9 @@ const ProtoChat = () => {
     };
   }, [wrongPasswordMessage]);
 
-  // USEEFFECT POUR CHANGER LE OWNER
+  //USEFFECT POUR UN PASSWORD DELETED
   useEffect(() => {
-    console.log("newOwner message");
-    socket?.on("newOwner", changeChannelOwner);
+    socket?.on("Password deleted", pswdDeletedMessage);
     return () => {
       socket?.off("newOwner", changeChannelOwner);
     };
@@ -564,24 +746,65 @@ const ProtoChat = () => {
     };
   }, [updateMuteStatus]);
 
+  useEffect(() => {
+    socket?.on("recvFriendsList", askWhichFriend);
+    return () => {
+      socket?.off("recvFriendsList", askWhichFriend);
+    };
+  }, [askWhichFriend]);
+
+  useEffect(() => {
+    socket?.on("handleProtected", handlingPasswordPart2);
+    return () => {
+      socket?.off("handleProtected", handlingPasswordPart2);
+    };
+  }, [handlingPasswordPart2]);
+
+  useEffect(() => {
+    socket?.on("recvGameInvite", sendGameInviteMessage);
+    return () => {
+      socket?.off("recvGameInvite", sendGameInviteMessage);
+    };
+  }, [sendGameInviteMessage]);
+
+  useEffect(() => {
+    socket?.on("navigateToTheGame", navigateToTheGame);
+    return () => {
+      socket?.off("navigateToTheGame", navigateToTheGame);
+    };
+  }, [navigateToTheGame]);
+
   const sortedMessages = findActiveRoom().messages.sort((a, b) => {
     // Compare the dates of the messages to determine their order
     return new Date(a.date) - new Date(b.date);
   });
 
+  const switchDm = (event: any) => {
+    event.preventDefault();
+    dmContext.switchDm();
+  };
+
   return (
     <div className="chat-container">
       <div className="left-side">
         <div className="rooms-list">
-		<ul>
-          {rooms.map((room: any, id: number) => (
-				!(room.type === type.private && room.member === false) ?
-				<li>
-					<button onClick={() => findRoom(room.name).ban ? alert("you are banned from this channel") : setActiveForRoom(room.name)}>{room.name}</button>
-				</li>
-				: null
-          ))}
-        </ul>
+          <ul>
+            {rooms.map((room: any, id: number) =>
+              !(room.type === type.private && room.member === false) ? (
+                <li key={room.name}>
+                  <button
+                    onClick={() =>
+                      findRoom(room.name).ban
+                        ? alert("you are banned from this channel")
+                        : setActiveForRoom(room.name)
+                    }
+                  >
+                    {room.name}
+                  </button>
+                </li>
+              ) : null
+            )}
+          </ul>
         </div>
         <div className="room-buttons">
           <form onSubmit={addARoom}>
@@ -605,11 +828,11 @@ const ProtoChat = () => {
               </svg>
             </button>
           </form>
-          <form onSubmit={deleteARoom}>
-            <button type="submit">
+          <form onSubmit={switchDm}>
+            <button>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                className="icon icon-tabler icon-tabler-message-off"
+                className="icon icon-tabler icon-tabler-switch-3"
                 width="24"
                 height="24"
                 viewBox="0 0 24 24"
@@ -620,8 +843,10 @@ const ProtoChat = () => {
                 strokeLinejoin="round"
               >
                 <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                <line x1="3" y1="3" x2="21" y2="21"></line>
-                <path d="M17 17h-9l-4 4v-13c0 -1.086 .577 -2.036 1.44 -2.563m3.561 -.437h8a3 3 0 0 1 3 3v6c0 .575 -.162 1.112 -.442 1.568"></path>
+                <path d="M3 17h2.397a5 5 0 0 0 4.096 -2.133l.177 -.253m3.66 -5.227l.177 -.254a5 5 0 0 1 4.096 -2.133h3.397"></path>
+                <path d="M18 4l3 3l-3 3"></path>
+                <path d="M3 7h2.397a5 5 0 0 1 4.096 2.133l4.014 5.734a5 5 0 0 0 4.096 2.133h3.397"></path>
+                <path d="M18 20l3 -3l-3 -3"></path>
               </svg>
             </button>
           </form>
@@ -634,20 +859,53 @@ const ProtoChat = () => {
           {activeRoom !== "" ? (
             <button onClick={toggleRoomMembership}>{joinButton}</button>
           ) : null}
+          {findActiveRoom().type == type.protected &&
+          findActiveRoom().owner == username ? (
+            <button onClick={deleteChannelPassword}>delete pswd</button>
+          ) : null}
+          {findActiveRoom().type == type.private &&
+          findActiveRoom().owner == username ? (
+            <button onClick={inviteToPrivate}>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="icon icon-tabler icon-tabler-user-plus"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                strokeWidth="2"
+                stroke="currentColor"
+                fill="none"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                <circle cx="9" cy="7" r="4"></circle>
+                <path d="M3 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2"></path>
+                <path d="M16 11h6m-3 -3v6"></path>
+              </svg>
+            </button>
+          ) : null}
+          {findActiveRoom().owner == username ? (
+            <RoomSettings
+              activeRoom={activeRoom}
+              muteList={findActiveRoom().muteList}
+              banList={findActiveRoom().banList}
+            />
+          ) : null}
         </div>
-
         <div className="chat-box">
           <ul>
             {findActiveRoom().member ? (
               sortedMessages.map((msg: any, id: number) => (
                 <div
+                  key={id}
                   className={
                     msg.sender == username
                       ? "owner_messages"
                       : "others-messages"
                   }
                 >
-                  <li>
+                  <li key={id}>
                     <div className="sender-username">{msg.sender}</div>
                     <p>{msg.message}</p>
                     <div className="message-date">
@@ -659,64 +917,63 @@ const ProtoChat = () => {
             ) : (
               <div></div>
             )}
-              <div ref={chatEndRef} />
+            <li key="end">
+              <div className="endchat" ref={chatEndRef} />
+            </li>
           </ul>
         </div>
         <div className="chat-bottom">
-          <form onSubmit={sendChatMessage}>
-            <input
-              type="text"
-              value={text}
-              onChange={handleChange}
-              placeholder="Type something ..."
-            />
-            <button type="submit">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="icon icon-tabler icon-tabler-brand-telegram"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                strokeWidth="2"
-                stroke="currentColor"
-                fill="none"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                <path d="M15 10l-4 4l6 6l4 -16l-18 7l4 2l2 6l3 -4"></path>
-              </svg>
-            </button>
-          </form>
+          <div className="chat-send-msg">
+            <form onSubmit={sendChatMessage}>
+              <input
+                type="text"
+                value={text}
+                onChange={handleChange}
+                placeholder="Type something ..."
+              />
+              <button type="submit">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="icon icon-tabler icon-tabler-brand-telegram"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  strokeWidth="2"
+                  stroke="currentColor"
+                  fill="none"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                  <path d="M15 10l-4 4l6 6l4 -16l-18 7l4 2l2 6l3 -4"></path>
+                </svg>
+              </button>
+            </form>
+          </div>
+          {gameButton === "invite" && (
+            <GameInviteButton CreateGameInvite={CreateGameInvite} />
+          )}
+          {gameButton === "cancel" && (
+            <CancelInviteButton CancelGameInvite={CancelGameInvite} />
+          )}
+          {gameButton === "join" && (
+            <JoinInviteButton joinGameInvite={JoinGameInvite} />
+          )}
         </div>
       </div>
-      <div className="rigth-side">
-        Members :
-        <br />
-        {findActiveRoom().usersList ? (
-          findActiveRoom().usersList.map((name: string) =>
-            isAdminInActive(username) &&
-            name != username &&
-            name != findActiveRoom().owner ? (
-              <div>
-                <button onClick={() => userOptions(name)}>{name}</button>
-              </div>
-            ) : (
-              <div>{name}</div>
-            )
-          )
-        ) : (
-          <div></div>
-        )}
-        Admins :
-        {findActiveRoom().adminsList ? (
-          findActiveRoom().adminsList.map((name: string) => <div>{name}</div>)
-        ) : (
-          <div></div>
-        )}
-      </div>
+      <RoomUserList
+        findActiveRoom={findActiveRoom}
+        isAdminInActive={isAdminInActive}
+        userSetAdmin={userSetAdmin}
+        userBanUser={userBanUser}
+        userMuteUser={userMuteUser}
+        username={username}
+        activeRoom={activeRoom}
+        muteList={findActiveRoom().muteList}
+        banList={findActiveRoom().banList}
+      />
     </div>
   );
 };
 
-export default ProtoChat;
+export default Chat;

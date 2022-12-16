@@ -24,6 +24,15 @@ const ChooseName = ({}) => {
 		}
 	}, [isNameFree]);
 
+	const isAlpha = (input: string) => {
+		for (let index = 0; index < input.length; index++) {
+			const element = input.charCodeAt(index);
+			if (element < 48 || element > 122)
+				return false
+		}
+		return true
+	}
+
 	const handleClick = () => {
 		const getUserByName = async () => {
 			await axios
@@ -35,7 +44,8 @@ const ChooseName = ({}) => {
 					console.log(err);
 				});
 		};
-		if (input) getUserByName();
+		if (input && input.length <= 10 && isAlpha(input))
+			getUserByName();
 	};
 
 	const focus = () => {
@@ -43,6 +53,7 @@ const ChooseName = ({}) => {
 	}
 
 	return (
+		user.inGame || user.inQueue || user.hasSentAnInvite ? null :
 		<div className="username-settings">
 			<h2><button onClick={focus}>{user?.name}</button></h2>
 			<input ref={inputRef} type="text" className="input" onChange={handleChange} placeholder="Change Username" />

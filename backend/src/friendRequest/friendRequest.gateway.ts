@@ -9,14 +9,19 @@ import { IFriend } from 'src/TypeOrm/Entities/friend.entity';
 import { IFriendRequest } from 'src/TypeOrm/Entities/friendRequest.entity';
 import { UsersService } from 'src/users/users.service';
 import { FriendRequestService } from './friendRequest.service';
-import { OnEvent } from '@nestjs/event-emitter';
+import { PrivateRoomInviteService } from './privateRoomInvite.service'
+import { PrivateRoomInviteEntity, IPInvite } from 'src/TypeOrm/Entities/privateRoomInvite';
+import { OnEvent, EventEmitter2 } from '@nestjs/event-emitter';
+
 
 @WebSocketGateway({ cors: '*:*' })
 export class FriendRequestGateway {
   constructor(
 		private readonly friendRequestService: FriendRequestService,
 		private readonly usersService: UsersService,
-		private dmService: DmService
+		private readonly prInviteService: PrivateRoomInviteService,
+		private dmService: DmService,
+		private eventEmitter: EventEmitter2
 		) {}
 
 	@SubscribeMessage('send_friendRequest')
@@ -95,5 +100,58 @@ export class FriendRequestGateway {
 		await this.usersService.save(receiver);
 		this.dmService.dmUsers.find(user => user.name === request.sender).socket.emit('delete_friend');
 		this.dmService.dmUsers.find(user => user.name === request.receiver).socket.emit('delete_friend');
+	}
+
+	@OnEvent('sendPrivateRoomInvite')
+	async postPrInvite(@MessageBody() request: DmDto)
+	{
+		const sender = await this.usersService.getByNameWithRelations(request.sender);
+		const receiver = await this.usersService.getByNameWithRelations(request.receiver);
+		if (!await this.prInviteService.alreadyExist(sender.id, receiver.id, request.message))
+		{
+			const inviteCreated = await this.prInviteService.postPrInvite({sender: sender, receiver: receiver, privateRoom: request.message});
+			sender.privateRoomInvites.push(inviteCreated);
+			await this.usersService.updateUser(sender.id);
+			receiver.privateRoomInvites.push(inviteCreated);
+			await this.usersService.updateUser(receiver.id);
+			this.dmService.dmUsers.find(user =>
+				user.name === request.receiver).socket.emit('recvPrivateRoomInvite');
+		}
+	}
+
+	@SubscribeMessage('refusePrivateRoomInvite')
+	async refusePrInvite(@MessageBody() request: DmDto)
+	{
+		await this.deletePrInviteThenEmit(request);
+	}
+
+	@SubscribeMessage('acceptPrivateRoomInvite')
+	async acceptPrInvite(@MessageBody() request: DmDto)
+	{
+		await this.deletePrInviteThenEmit(request);
+	  this.eventEmitter.emit('joinPrivateRoom', {user: request.receiver, channel: request.message});
+	}
+
+	async deletePrInviteThenEmit(request: DmDto)
+	{
+		const sender = await this.usersService.getByNameWithRelations(request.sender);
+		const receiver = await this.usersService.getByNameWithRelations(request.receiver);
+
+		const toDelete = await this.prInviteService.getPrInviteByUsersId(sender.id, receiver.id);
+
+		let i = sender.privateRoomInvites.findIndex(prInvite => prInvite.id === toDelete.id);
+		sender.privateRoomInvites.splice(i, 1);
+		i = receiver.privateRoomInvites.findIndex(prInvite => prInvite.id === toDelete.id);
+		receiver.privateRoomInvites.splice(i, 1);
+
+		await this.prInviteService.deletePrInviteById(toDelete.id);
+	
+		await this.usersService.updateUser(sender.id);	
+		await this.usersService.updateUser(receiver.id);
+
+		this.dmService.dmUsers.find(user =>
+			user.name === request.sender).socket.emit('updatePrInvites');
+		this.dmService.dmUsers.find(user =>
+			user.name === request.receiver).socket.emit('updatePrInvites');
 	}
 }

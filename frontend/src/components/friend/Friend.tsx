@@ -6,11 +6,13 @@ import FriendButton from "./FriendButton";
 import FriendRequestButton from "./FriendRequestButton";
 import FriendSearch from "./FriendSearch";
 import "../../styles/friend.css";
+import PrRoomInviteButton from "./prRoomInviteButton";
 
 function Friend() {
   const dmContext = useDm();
   const [friendRequests, setFriendRequests] = useState<IUser[]>([]);
   const [friends, setFriends] = useState<IUser[]>([]);
+  const [prInvites, setPrInvites] = useState<{user: string, channel: string}[]>([]);
 
   const getFriendRequests = async () => {
     await axios
@@ -34,7 +36,18 @@ function Friend() {
       });
   };
 
-  const sendFriendRequest = () => {
+  const getPrInvites = async () => {
+    await axios
+      .get(`/privateRoomInvite/${dmContext.me.id}`)
+      .then((res) => {
+        setPrInvites(res.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
+  const sendFriendRequest = (name: string) => {
     getFriendRequests();
   };
 
@@ -63,6 +76,8 @@ function Friend() {
   useEffect(() => {
     getFriendRequests();
     getFriends();
+    getPrInvites();
+
   }, []);
 
   useEffect(() => {
@@ -119,6 +134,13 @@ function Friend() {
     };
   }, [reloadPage]);
 
+  useEffect(() => {
+    dmContext.socket?.on("updatePrInvites", getPrInvites);
+    return () => {
+      dmContext.socket?.off("updatePrInvites", getPrInvites);
+    };
+  }, [getPrInvites]);
+
   return (
     <ul className="friend-list">
       <li className="friendsearchbar">
@@ -126,6 +148,9 @@ function Friend() {
       </li>
       {friendRequests.map((friendRequest) => (
         <FriendRequestButton key={friendRequest.id} user={friendRequest} />
+      ))}
+       {prInvites.map((invite) => (
+        <PrRoomInviteButton key={0} user={invite.user} channel={invite.channel} />
       ))}
       {friends.map((friend) => (
         <FriendButton key={friend.id} user={friend} />
