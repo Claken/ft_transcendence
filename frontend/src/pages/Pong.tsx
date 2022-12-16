@@ -5,6 +5,7 @@ import { IGame } from "../interfaces/game.interface";
 import { useNavigate } from "react-router-dom";
 import "../styles/canvas.scss";
 import GameList from "../components/game/GameList";
+import { IUser } from "../interfaces/user.interface";
 
 function Pong() {
   const auth = useAuth();
@@ -27,7 +28,6 @@ function Pong() {
   /** reconnexion en pleine partie OU remettre en file d'attente s'il y est déjà **/
   useEffect(() => {
     if (auth.user)
-		// socket.emit("updateTheUser", auth.user);
 		socket.emit("inQueueOrGame", auth.user);
   }, [auth.user]);
 
@@ -45,17 +45,22 @@ function Pong() {
     setGame(gameToPlay);
   });
 
-  socket.on("updateUser", (user) => {
-    if (user.name === auth.user.name)
+  socket.on("updateUser", (user: IUser) => {
+    if (user.name === auth.user.name) {
+		user.avatarUrl = auth.user.avatarUrl
 		auth.user = user;
+	}
   });
 
-  socket.on("updateUsers", (userLeft, userRight) => {
-	console.log("upd called")
-	if (auth.user.name === userLeft.name)
+  socket.on("updateUsers", (userLeft: IUser, userRight: IUser) => {
+    if (auth.user.name === userLeft.name) {
+		userLeft.avatarUrl = auth.user.avatarUrl
 		auth.user = userLeft;
-    else
+	}
+    else {
+		userRight.avatarUrl = auth.user.avatarUrl
 		auth.user = userRight;
+	}
   });
 
   /* ***************************************************************************** */

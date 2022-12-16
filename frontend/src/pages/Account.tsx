@@ -5,11 +5,28 @@ import { useAuth } from "../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 import ModalSettings from "../components/Account/ModalSettings";
 import MatchHistory from "../components/Account/MatchHistory";
+import { socket } from "../components/Socket";
+import { IUser } from "../interfaces/user.interface";
+import { useState, useEffect } from "react";
 
 function Account() {
 	const auth = useAuth();
 	const navigate = useNavigate();
+	const [updated, setUpdated] = useState<boolean>(false);
 
+	useEffect(() => {
+		if (auth.user)
+			socket.emit("updateTheUser", auth.user);
+	}, [auth.user]);
+
+	socket.on("updateTheUser", (user: IUser) => {
+		if (user.name === auth.user.name) {
+			user.avatarUrl = auth.user.avatarUrl;
+			auth.user = user;
+			setUpdated(true);
+		}
+	});
+	
 	const handleLogout = () => {
 		// only api42 have a login field
 		if (auth.user?.login) {
@@ -38,10 +55,10 @@ function Account() {
 						<div className="profile-stats">
 							<h1> {auth.user?.name}</h1>
 							<h2>
-								Win: {auth.user?.win}
+								{updated ? ("Win: "+auth.user?.win) : null}
 							</h2>
 							<h2>
-								Lose: {auth.user?.lose}
+								{updated ? ("Lose: "+auth.user?.lose) : null}
 							</h2>
 						</div>
 						<div className="profile-buttons">

@@ -4,8 +4,8 @@ export const ModalSetAdmin = ({ name, userSetAdmin, activeRoom, toggle }) => {
   return (
     <div className="setAdmin">
       <p>
-        Do you really want to set {name} as an administrator of the room{" "}
-        {activeRoom} ?
+        Do you really want to set '{name}' as an administrator of the room{" "}
+        '{activeRoom}' ?
       </p>
       <div className="setAdmin-buttons">
       <button

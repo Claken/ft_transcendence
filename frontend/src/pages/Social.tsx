@@ -7,13 +7,12 @@ import "../styles/social.css";
 
 function Social() {
   const dmContext = useDm();
-  const [active, setActive] = useState("Leaderboard");
+  const [active, setActive] = useState("FriendList");
 
   return (
     <div>
       <div className="socialContainer">
         <div className="sortButtons">
-          <button onClick={() => setActive("Leaderboard")}>Leaderboard</button>
           {(dmContext.friendNotif && (
             <button onClick={() => setActive("FriendList")}>
               <div className="friendNotif">Friends & Invites List</div>
@@ -23,7 +22,6 @@ function Social() {
           )}
           <button onClick={() => setActive("Search")}>Search</button>
         </div>
-        {active === "Leaderboard" && <Leaderboard />}
         {active === "FriendList" && <FriendList />}
         {active === "Search" && <Search />}
       </div>

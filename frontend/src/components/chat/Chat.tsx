@@ -15,6 +15,9 @@ import CancelInviteButton from "./CancelInviteButton";
 import JoinInviteButton from "./JoinInviteButton";
 import RoomSettings from "./RoomSettings";
 import { useDm } from "../../contexts/DmContext";
+import { IUser } from "../../interfaces/user.interface";
+import RoomsList from "./RoomsList";
+import { parseInt } from 'lodash';
 
 const Chat = () => {
   const [text, changeText] = useState<string>("");
@@ -91,29 +94,29 @@ const Chat = () => {
     else setGameButton("invite");
   };
 
-  const isAlpha = (input: string) => {
-    for (let index = 0; index < input.length; index++) {
-      const element = input.charCodeAt(index);
-      if (element < 48 || element > 122 || (element >= 58 && element <= 64))
-        return false;
-    }
-    return true;
-  };
+  // const isAlpha = (input: string) => {
+  //   for (let index = 0; index < input.length; index++) {
+  //     const element = input.charCodeAt(index);
+  //     if (element < 48 || element > 122 || (element >= 58 && element <= 64))
+  //       return false;
+  //   }
+  //   return true;
+  // };
 
-  const parseRoomName = (roomName: string) => {
-    let status: boolean = true;
-    if (roomName === "") {
-      alert("you need to write a name please");
-      status = false;
-    } else if (roomName.length > 20) {
-      alert("the name cannot exceed 20 characters");
-      status = false;
-    } else if (isAlpha(roomName) === false) {
-      alert("the name contains none alphanumeric character.s");
-      status = false;
-    }
-    return status;
-  };
+  // const parseRoomName = (roomName: string) => {
+  //   let status: boolean = true;
+  //   if (roomName === "") {
+  //     alert("you need to write a name please");
+  //     status = false;
+  //   } else if (roomName.length > 20) {
+  //     alert("the name cannot exceed 20 characters");
+  //     status = false;
+  //   } else if (isAlpha(roomName) === false) {
+  //     alert("the name contains none alphanumeric character.s");
+  //     status = false;
+  //   }
+  //   return status;
+  // };
 
   /* ***************************************************************************** */
   /*    					Functions pour la gestion des chats 					 */
@@ -134,6 +137,10 @@ const Chat = () => {
   const pswdUpdateMessage = () => {
     alert("The password has been successfully updated");
   };
+
+  const channelCreatedMsg = () => {
+    alert('The room has been successfully created');
+  }
 
   const changeChannelOwner = (update: {
     newOwner: string;
@@ -303,37 +310,29 @@ const Chat = () => {
     chatEndRef.current.scrollIntoView({ behavior: "smooth" });
   };
 
-  const addARoom = (event: any) => {
-    event.preventDefault();
-    let askARoom: string = "";
-    let typeOfRoom: number = -1;
-    let pswd: string = null;
-    while (askARoom === "") {
-      askARoom = prompt("Enter a name for your room: ")!;
-      if (askARoom === null) return;
-      if (!parseRoomName(askARoom)) askARoom = "";
-      else if (findRoom(askARoom)) {
+  const addARoom = (roomName : string, typeRoom : string, password : string) => {
+    
+      if (findRoom(roomName)) {
         alert("This name is already taken. Try another one.");
-        askARoom = "";
+        return;
       }
-    }
-    while (typeOfRoom < 0 || typeOfRoom > 2) {
-      let typeOfRoomInString = prompt(
-        "Do you want your room to be : (0) public, (1) private, or (2) protected ?"
-      );
-      typeOfRoom = parseInt(typeOfRoomInString);
-    }
-    if (typeOfRoom === type.protected) {
-      while (pswd == null)
-        pswd = prompt("Enter a password for your protected room: ");
-    }
+      if (roomName === "" || roomName === null || roomName.trim().length === 0)
+      {
+        alert("The room name cannot be empty.");
+        return;
+      }
+      if (typeRoom === "-1")
+      {
+        alert("You must choose a room type, please !");
+        return;
+      }
     const dbRoom: IChatRoom = {
-      chatRoomName: askARoom,
+      chatRoomName: roomName,
       owner: username,
-      type: typeOfRoom,
-      password: pswd,
+      type: parseInt(typeRoom, 10),
+      password: password,
     };
-    socket?.emit("createChatRoom", dbRoom);
+      socket?.emit("createChatRoom", dbRoom);
   };
 
   const deleteARoom = (roomName: string) => {
@@ -365,16 +364,13 @@ const Chat = () => {
     socket?.emit("checkPswdStatus", { room: room, user: user });
   };
 
-  const handlingPasswordPart2 = (infos: {
-    room: string;
-    user: string;
-    pswdStatus: boolean;
-  }) => {
+  const handlingPasswordPart2 = (infos: {room: string; user: string; pswdStatus: boolean;}) => {
     let pswd: string = undefined;
     if (infos.pswdStatus) {
       pswd = prompt(
         "you need a password to join this channel, please type it: "
       );
+      if (pswd === null) return;
     }
     socket?.emit("joinRoom", {
       room: infos.room,
@@ -603,8 +599,11 @@ const Chat = () => {
     navigate("/pong/");
   };
 
-  socket?.on("updateUser", (user) => {
-    if (user.name === username) auth.user = user;
+  socket?.on("updateUser", (user: IUser) => {
+    if (user.name === username) {
+      user.avatarUrl = auth.user.avatarUrl;
+      auth.user = user;
+    }
   });
 
   socket?.on("changeGameButton", (infos: { status: string; channel: any }) => {
@@ -770,6 +769,13 @@ const Chat = () => {
     };
   }, [navigateToTheGame]);
 
+  useEffect(() => {
+    socket?.on("Channel created", channelCreatedMsg);
+    return () => {
+      socket?.off("Channel created", channelCreatedMsg);
+    };
+  }, [channelCreatedMsg]);
+
   const sortedMessages = findActiveRoom().messages.sort((a, b) => {
     // Compare the dates of the messages to determine their order
     return new Date(a.date) - new Date(b.date);
@@ -782,72 +788,12 @@ const Chat = () => {
 
   return (
     <div className="chat-container">
-      <div className="left-side">
-        <div className="rooms-list">
-          <ul>
-            {rooms.map((room: any, id: number) =>
-              !(room.type === type.private && room.member === false) ? (
-                <li key={room.name}>
-                  <button
-                    onClick={() =>
-                      findRoom(room.name).ban
-                        ? alert("you are banned from this channel")
-                        : setActiveForRoom(room.name)
-                    }
-                  >
-                    {room.name}
-                  </button>
-                </li>
-              ) : null
-            )}
-          </ul>
-        </div>
-        <div className="room-buttons">
-          <form onSubmit={addARoom}>
-            <button type="submit">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="icon icon-tabler icon-tabler-message-plus"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                strokeWidth="2"
-                stroke="currentColor"
-                fill="none"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                <path d="M4 21v-13a3 3 0 0 1 3 -3h10a3 3 0 0 1 3 3v6a3 3 0 0 1 -3 3h-9l-4 4"></path>
-                <line x1="10" y1="11" x2="14" y2="11"></line>
-                <line x1="12" y1="9" x2="12" y2="13"></line>
-              </svg>
-            </button>
-          </form>
-          <form onSubmit={switchDm}>
-            <button>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="icon icon-tabler icon-tabler-switch-3"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                strokeWidth="2"
-                stroke="currentColor"
-                fill="none"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                <path d="M3 17h2.397a5 5 0 0 0 4.096 -2.133l.177 -.253m3.66 -5.227l.177 -.254a5 5 0 0 1 4.096 -2.133h3.397"></path>
-                <path d="M18 4l3 3l-3 3"></path>
-                <path d="M3 7h2.397a5 5 0 0 1 4.096 2.133l4.014 5.734a5 5 0 0 0 4.096 2.133h3.397"></path>
-                <path d="M18 20l3 -3l-3 -3"></path>
-              </svg>
-            </button>
-          </form>
-        </div>
-      </div>
+      <RoomsList
+        rooms={rooms}
+        findRoom={findRoom}
+        setActiveForRoom={setActiveForRoom}
+        addARoom={addARoom}
+      />
       <div className="middle">
         <div className="top-chat">
           <p>Active room : {activeRoom} </p>

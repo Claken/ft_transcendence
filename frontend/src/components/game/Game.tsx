@@ -16,6 +16,7 @@ import winPage from "./pageWin";
 import leavePage from "./pageLeave";
 import initPage from "./pageInit";
 import endPage from "./pageEnd";
+import { IUser } from "../../interfaces/user.interface";
 
 const Game = (
 	props: JSX.IntrinsicAttributes &
@@ -185,9 +186,8 @@ const Game = (
 		allPos.ballY = allPos.height / 2 + EmptyGround / 2; //placement en Y de la balle
 		allPos.vx = -1; //vitesse en X de la balle
 		allPos.vy = -1; //vitesse en Y de la balle
-		allPos.speed = 2;
-		if (allPos.compteur === null) {
-			console.log("gameId = "+gameId)
+		allPos.speed = 4;
+		if (allPos.compteur === null)
 			socket.emit("setCompteur", gameId);
 		}
 		allPos.key = key;
@@ -271,9 +271,11 @@ const Game = (
 			socket.emit("endGameF", allPos, auth.user.name, abandoner, "");
 		})
 
-		socket.on("updateUser", (user) => {
-			if (user.name === auth.user.name)
+		socket.on("updateUser", (user: IUser) => {
+			if (user.name === auth.user.name) {
+				user.avatarUrl = auth.user.avatarUrl
 				auth.user = user;
+			}
 		})
 
 		/* ***************************************************************************** */

@@ -169,7 +169,7 @@ export class GameGateway
 	|| infos[0].key === 'W'
 	|| infos[0].key === 'z'
 	|| infos[0].key === 'Z') {
-		infos[1] === infos[0].nameLP ? infos[0].pLY -= 6 : infos[0].pRY -= 6 ;
+		infos[1] === infos[0].nameLP ? infos[0].pLY -= 8 : infos[0].pRY -= 8 ;
 		if (infos[0].pLY < 0 + infos[0].EmptyGround)
 			infos[0].pLY = 0 + infos[0].EmptyGround;
 		else if (infos[0].pRY < 0 + infos[0].EmptyGround)
@@ -178,7 +178,7 @@ export class GameGateway
 	if ( infos[0].key === 'ArrowDown'
 		|| infos[0].key === 's'
 		|| infos[0].key === 'S') {
-		infos[1] === infos[0].nameLP ? infos[0].pLY += 6 : infos[0].pRY += 6 ;
+		infos[1] === infos[0].nameLP ? infos[0].pLY += 8 : infos[0].pRY += 8 ;
 		if (infos[0].pLY + infos[0].paddleH > infos[0].height)
 			infos[0].pLY = infos[0].height - infos[0].paddleH;
 		else if (infos[0].pRY + infos[0].paddleH > infos[0].height)
@@ -430,6 +430,15 @@ export class GameGateway
 	}
   }
 
+<<<<<<< HEAD
+=======
+  @SubscribeMessage('updateTheUser')
+  async UpdateTheUser(client: any, user: UserDTO) {
+	user = await this.usersService.getById(user.id)
+	client.emit("updateTheUser", user);
+  }
+
+>>>>>>> theLastBranch
   @SubscribeMessage('updateInGame')
   async UpdateInGame(client: any, user: UserDTO, gameId: number) {
 	user = await this.usersService.updateInGame(user.id, false);
@@ -586,4 +595,6 @@ export class GameGateway
 	}
 	this.eventEmitter.emit('updateGameButton', {gameId: 0, status: "invite", inviter: "", roomName: res[0].roomName});
   }
+
+  UpdateUserAccount
 }
