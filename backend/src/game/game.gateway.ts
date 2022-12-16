@@ -277,7 +277,6 @@ export class GameGateway
 
   @SubscribeMessage('setCompteur')
   async SetCompteur(client: any, gameId: number) {
-	console.log("gameId dans SetCompteur = "+gameId)
 	let nbInter = await this.gameService.updateNbInterval(gameId);
 	const interval = setInterval(this.tick, 1000, gameId, nbInter);
 	this.tabIntervalId.push({gameId, intervalID: interval});

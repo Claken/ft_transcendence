@@ -72,7 +72,7 @@ const Game = (
 			e.preventDefault();
 			if (allPos.state === State.PLAY)
 				socket.emit("pauseNplay", State.PAUSE, auth.user.name, gameId);
-			else if (allPos.state === State.PAUSE && auth.user.name === prev)
+			else if (allPos.state === State.PAUSE)
 				socket.emit("pauseNplay", State.PLAY, "", gameId);
 		}
 	};
@@ -145,7 +145,7 @@ const Game = (
 				y < 25 + allPos.radius * 2) {
 				if (allPos.state === State.PLAY)
 					socket.emit("pauseNplay", State.PAUSE, auth.user.name, gameId);
-				else if(allPos.state === State.PAUSE && auth.user.name === prev)
+				else if(allPos.state === State.PAUSE)
 					socket.emit("pauseNplay", State.PLAY, "", gameId);
 			}
 			else if (//button stop
@@ -186,10 +186,8 @@ const Game = (
 		allPos.vx = -1; //vitesse en X de la balle
 		allPos.vy = -1; //vitesse en Y de la balle
 		allPos.speed = 2;
-		if (allPos.compteur === null) {
-			console.log("gameId = "+gameId)
+		if (allPos.compteur === null)
 			socket.emit("setCompteur", gameId);
-		}
 		allPos.key = key;
 		let animationFrameId: number;
 		allPos.img = new Image();
