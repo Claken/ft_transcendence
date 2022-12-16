@@ -14,22 +14,26 @@ export class BlockUserService {
 	private readonly usersService: UsersService
 	) {}
 
-	async getBlockUsers(name: string): Promise<UsersEntity[] | undefined> {
+	async getAllBlockUsers(): Promise<BlockUserEntity[]> {
+		return await this.blockUserRepo.find({relations: ['user', 'blockBy']});
+	}
+
+	async getBlockUsers(id: number): Promise<UsersEntity[] | undefined> {
 		const listUsers: UsersEntity[] = [];
-		const user = (await this.usersService.getByNameWithRelations(name));
+		const user = (await this.usersService.getByIdWithRelations(id));
 		if (user && user.blockUsers) {
-			(await user).blockUsers.map(async blockUser => listUsers.push(blockUser.user));
+			user.blockUsers.map(async blockUser => listUsers.push(blockUser.user));
 			return listUsers;
 		}
 		else
 			return undefined;
 	}
 
-	async getBlockBys(name: string): Promise<UsersEntity[] | undefined> {
-		const listBys: UsersEntity[] = undefined;
-		const user = (await this.usersService.getByNameWithRelations(name));
+	async getBlockBys(id: number): Promise<UsersEntity[] | undefined> {
+		const listBys: UsersEntity[] = [];
+		const user = (await this.usersService.getByIdWithRelations(id));
 		if (user && user.blockBys) {
-			(await user).blockBys.map(async blockBy => listBys.push(blockBy.user));
+			user.blockBys.map(async blockBy => listBys.push(blockBy.blockBy));
 			return listBys;
 		}
 		else
@@ -41,8 +45,7 @@ export class BlockUserService {
 		return await this.blockUserRepo.save(newrequest);
 	}
 
-	async removeblockUser(id: number): Promise<BlockUserEntity> {
-		const newrequest = await this.blockUserRepo.findOne({ relations: ['user'], where: { user: { id: id }}});
-		return await this.blockUserRepo.remove(newrequest);
+	async removeblockUser(toDelete: BlockUserEntity): Promise<BlockUserEntity> {
+		return await this.blockUserRepo.remove(toDelete);
 	}
 }

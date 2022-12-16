@@ -48,7 +48,7 @@ export class UsersService {
     return await this.userRepo.find({relations: ['ownedChannels', 'memberships', 'memberships.inChannel',
     'friendRequests', 'friends', 'friends.user',
     'privateRoomInvites',
-    'blockUsers', 'blockUsers.user', 'blockBys', 'blockBys.user']});
+    'blockUsers', 'blockUsers.user', 'blockUsers.blockBy', 'blockBys', 'blockBys.blockBy']});
   }
 
 	async getByName(nameToFind: string): Promise<UsersEntity> {
@@ -80,7 +80,7 @@ export class UsersService {
       where: { name: nameToFind }, relations: ['ownedChannels', 'memberships', 'memberships.inChannel',
       'friendRequests', 'friends', 'friends.user',
       'privateRoomInvites',
-      'blockUsers', 'blockUsers.user', 'blockBys', 'blockBys.user']
+      'blockUsers', 'blockUsers.user', 'blockUsers.blockBy', 'blockBys', 'blockBys.blockBy']
     });
   }
 
@@ -89,7 +89,7 @@ export class UsersService {
       where: { id: idToFind }, relations: ['ownedChannels', 'memberships', 'memberships.inChannel',
       'friendRequests', 'friends', 'friends.user',
       'privateRoomInvites',
-      'blockUsers', 'blockUsers.user', 'blockBys', 'blockBys.user']
+      'blockUsers', 'blockUsers.user', 'blockUsers.blockBy', 'blockBys', 'blockBys.blockBy']
     });
   }
 
@@ -303,4 +303,9 @@ export class UsersService {
 		else
 			return undefined;
 	}
+
+  async getName(id: number): Promise<string> {
+    const user = await this.getById(id);
+    return user.name;
+  }
 }

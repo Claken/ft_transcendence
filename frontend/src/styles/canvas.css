@@ -141,6 +141,20 @@ path.two {
   animation: color_anim 1s infinite 0.4s;
 }
 
+.cta2:hover path.three {
+    animation: color_anim 1s infinite 0.2s;
+}
+
+.cta2:hover path.one {
+    transform: translateX(0%);
+    animation: color_anim 1s infinite 0.6s;
+}
+
+.cta2:hover path.two {
+    transform: translateX(0%);
+    animation: color_anim 1s infinite 0.4s;
+}
+
 /* SVG animations */
 
 @keyframes color_anim {

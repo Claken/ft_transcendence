@@ -9,9 +9,9 @@ import "../../styles/social.css";
 import FriendButton from "../friend/FriendButton";
 
 function DmList() {
+  const dmContext = useDm();
   const [users, setUsers] = useState<IUser[]>([]);
   const [friends, setFriends] = useState<IUser[]>([]);
-  const dmContext = useDm();
 
   const getUsers = async () => {
     await axios
@@ -38,28 +38,21 @@ function DmList() {
   useEffect(() => {
     getUsers();
     getFriends();
+  }, [dmContext.setSocket]);
+
+  useEffect(() => {
+    getUsers();
+    getFriends();
   }, []);
 
-  const acceptFriendRequest = (name: string) => {
+  const acceptFriendRequest = () => {
     getUsers();
-    let i = users.findIndex((user) => user.name === name);
-    if (i > -1) users.splice(i, 1);
     getFriends();
-		i = friends.findIndex(
-      (friend) => friend.name === name
-    );
-    if (i > -1) friends.splice(i, 1);
   };
 
-  const deleteFriend = (name: string) => {
+  const deleteFriend = () => {
     getUsers();
-    let i = users.findIndex((user) => user.name === name);
-    if (i > -1) users.splice(i, 1);
     getFriends();
-		i = friends.findIndex(
-      (friend) => friend.name === name
-    );
-    if (i > -1) friends.splice(i, 1);
   };
 
   useEffect(() => {
@@ -76,12 +69,24 @@ function DmList() {
     };
   }, [deleteFriend]);
 
-  const isMe = (id): boolean => {
+  const reloadPage = () => {
+    getUsers();
+    getFriends();
+  }
+
+  useEffect(() => {
+    dmContext.socket?.on("reload_user", reloadPage);
+    return () => {
+      dmContext.socket?.off("reload_user", reloadPage);
+    };
+  }, [reloadPage]);
+
+  const isMe = (id: number): boolean => {
     if (id === dmContext.me.id) return true;
     return false;
   };
 
-  const isConnect = (user): boolean => {
+  const isConnect = (user: IUser): boolean => {
     if (user.status === "online") return true;
     return false;
   };

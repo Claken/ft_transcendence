@@ -37,7 +37,7 @@ export class FriendRequestGateway {
 			(await receiver).friendRequests.push(await pushFriendRequest);
 			await this.usersService.save(sender);
 			await this.usersService.save(receiver);
-			this.dmService.dmUsers.find(user => user.name === request.receiver).socket.emit('send_friendRequest', request.sender);
+			this.dmService.dmUsers.find(user => user.name === request.receiver).socket.emit('send_friendRequest');
 		}
 	}
 
@@ -46,21 +46,23 @@ export class FriendRequestGateway {
 		const sender = this.usersService.getByNameWithRelations(request.sender);
 		const receiver = this.usersService.getByNameWithRelations(request.receiver);
 		const toDelete = (await this.friendRequestService.getFriendRequestByUserId((await sender).id, (await receiver).id));
-		let i = (await sender).friendRequests.findIndex(friendRequest => friendRequest.id === toDelete.id);
-		(await sender).friendRequests.splice(i, 1);
-		i = (await receiver).friendRequests.findIndex(friendRequest => friendRequest.id === toDelete.id);
-		(await receiver).friendRequests.splice(i, 1);
-		await this.friendRequestService.remove(toDelete);
-		const senderFriend: IFriend = { user: await sender, friendOf: await receiver };
-		const receiverFriend : IFriend = { user: await receiver, friendOf: await sender };
-		const pushSenderFriend = this.friendRequestService.createNewFriend(senderFriend);
-		const pushReceiverFriend = this.friendRequestService.createNewFriend(receiverFriend);
-		(await sender).friends.push(await pushReceiverFriend);
-		(await receiver).friends.push(await pushSenderFriend);
-		await this.usersService.save(sender);
-		await this.usersService.save(receiver);
-		this.dmService.dmUsers.find(user => user.name === request.sender).socket.emit('accept_friendRequest', request.receiver);
-		this.dmService.dmUsers.find(user => user.name === request.receiver).socket.emit('accept_friendRequest', request.sender);
+		if (toDelete !== undefined) {
+			let i = (await sender).friendRequests.findIndex(friendRequest => friendRequest.id === toDelete.id);
+			(await sender).friendRequests.splice(i, 1);
+			i = (await receiver).friendRequests.findIndex(friendRequest => friendRequest.id === toDelete.id);
+			(await receiver).friendRequests.splice(i, 1);
+			await this.friendRequestService.remove(toDelete);
+			const senderFriend: IFriend = { user: await sender, friendOf: await receiver };
+			const receiverFriend : IFriend = { user: await receiver, friendOf: await sender };
+			const pushSenderFriend = this.friendRequestService.createNewFriend(senderFriend);
+			const pushReceiverFriend = this.friendRequestService.createNewFriend(receiverFriend);
+			(await sender).friends.push(await pushReceiverFriend);
+			(await receiver).friends.push(await pushSenderFriend);
+			await this.usersService.save(sender);
+			await this.usersService.save(receiver);
+		}
+		this.dmService.dmUsers.find(user => user.name === request.sender).socket.emit('accept_friendRequest');
+		this.dmService.dmUsers.find(user => user.name === request.receiver).socket.emit('accept_friendRequest');
 	}
 
 	@SubscribeMessage('refuse_friendRequest')
@@ -68,19 +70,22 @@ export class FriendRequestGateway {
 		const sender = this.usersService.getByNameWithRelations(request.sender);
 		const receiver = this.usersService.getByNameWithRelations(request.receiver);
 		const toDelete = (await this.friendRequestService.getFriendRequestByUserId((await sender).id, (await receiver).id));
-		let i = (await sender).friendRequests.findIndex(friendRequest => friendRequest.id === toDelete.id);
-		(await sender).friendRequests.splice(i, 1);
-		i = (await receiver).friendRequests.findIndex(friendRequest => friendRequest.id === toDelete.id);
-		(await receiver).friendRequests.splice(i, 1);
-		await this.friendRequestService.remove(toDelete);
-		await this.usersService.save(sender);
-		await this.usersService.save(receiver);
-		this.dmService.dmUsers.find(user => user.name === request.sender).socket.emit('refuse_friendRequest', request.receiver);
-		this.dmService.dmUsers.find(user => user.name === request.receiver).socket.emit('refuse_friendRequest', request.sender);
+		if (toDelete !== undefined) {
+			let i = (await sender).friendRequests.findIndex(friendRequest => friendRequest.id === toDelete.id);
+			(await sender).friendRequests.splice(i, 1);
+			i = (await receiver).friendRequests.findIndex(friendRequest => friendRequest.id === toDelete.id);
+			(await receiver).friendRequests.splice(i, 1);
+			await this.friendRequestService.remove(toDelete);
+			await this.usersService.save(sender);
+			await this.usersService.save(receiver);
+		}
+		this.dmService.dmUsers.find(user => user.name === request.sender).socket.emit('refuse_friendRequest');
+		this.dmService.dmUsers.find(user => user.name === request.receiver).socket.emit('refuse_friendRequest');
 	}
 
+	@OnEvent('delete_friend')
 	@SubscribeMessage('delete_friend')
-	async deleteFriend(@MessageBody() request: DmDto) {
+	async deleteFriend(@MessageBody() request: DmDto): Promise<void> {
 		const sender = this.usersService.getByNameWithRelations(request.sender);
 		const receiver = this.usersService.getByNameWithRelations(request.receiver);
 		const senderFriend = (await sender).friends.find(friend => friend.user.name === request.receiver);
@@ -93,8 +98,8 @@ export class FriendRequestGateway {
 		await this.friendRequestService.deleteFriend(receiverFriend);
 		await this.usersService.save(sender);
 		await this.usersService.save(receiver);
-		this.dmService.dmUsers.find(user => user.name === request.sender).socket.emit('delete_friend', request.receiver);
-		this.dmService.dmUsers.find(user => user.name === request.receiver).socket.emit('delete_friend', request.sender);
+		this.dmService.dmUsers.find(user => user.name === request.sender).socket.emit('delete_friend');
+		this.dmService.dmUsers.find(user => user.name === request.receiver).socket.emit('delete_friend');
 	}
 
 	@OnEvent('sendPrivateRoomInvite')

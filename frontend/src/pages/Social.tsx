@@ -9,14 +9,6 @@ function Social() {
   const dmContext = useDm();
   const [active, setActive] = useState("Leaderboard");
 
-  useEffect(() => {
-    if (active === "FriendList") dmContext.setFriendNotif(false);
-  }, [dmContext.friendNotif]);
-
-  useEffect(() => {
-    if (active === "FriendList") dmContext.setFriendNotif(false);
-  }, [active]);
-
   return (
     <div>
       <div className="socialContainer">

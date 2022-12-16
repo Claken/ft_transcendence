@@ -51,18 +51,27 @@ function Friend() {
     getFriendRequests();
   };
 
-  const acceptFriendRequest = (name: string) => {
+  const acceptFriendRequest = () => {
     getFriendRequests();
     getFriends();
   };
 
-  const refuseFriendRequest = (name: string) => {
+  const refuseFriendRequest = () => {
     getFriendRequests();
   };
 
-  const deleteFriend = (name: string) => {
+  const deleteFriend = () => {
     getFriends();
   };
+
+  const blockUserRefresh = () => {
+    getFriends();
+  }
+
+  useEffect(() => {
+    getFriendRequests();
+    getFriends();
+  }, [dmContext.setSocket]);
 
   useEffect(() => {
     getFriendRequests();
@@ -76,28 +85,54 @@ function Friend() {
     return () => {
       dmContext.socket?.off("send_friendRequest", sendFriendRequest);
     };
-  }, [sendFriendRequest, friendRequests]);
+  }, [sendFriendRequest]);
 
   useEffect(() => {
     dmContext.socket?.on("accept_friendRequest", acceptFriendRequest);
     return () => {
       dmContext.socket?.off("accept_friendRequest", acceptFriendRequest);
     };
-  }, [acceptFriendRequest, friends, friendRequests]);
+  }, [acceptFriendRequest]);
 
   useEffect(() => {
     dmContext.socket?.on("refuse_friendRequest", refuseFriendRequest);
     return () => {
       dmContext.socket?.off("refuse_friendRequest", refuseFriendRequest);
     };
-  }, [refuseFriendRequest, friendRequests]);
+  }, [refuseFriendRequest]);
 
   useEffect(() => {
     dmContext.socket?.on("delete_friend", deleteFriend);
     return () => {
       dmContext.socket?.off("delete_friend", deleteFriend);
     };
-  }, [deleteFriend, friends]);
+  }, [deleteFriend]);
+
+  useEffect(() => {
+    dmContext.socket?.on("block_user", blockUserRefresh);
+    return () => {
+      dmContext.socket?.off("block_user", blockUserRefresh);
+    };
+  }, [blockUserRefresh]);
+
+  useEffect(() => {
+    dmContext.socket?.on("deblock_user", blockUserRefresh);
+    return () => {
+      dmContext.socket?.off("deblock_user", blockUserRefresh);
+    };
+  }, [blockUserRefresh]);
+
+  const reloadPage = () => {
+    getFriendRequests();
+    getFriends();
+  }
+
+  useEffect(() => {
+    dmContext.socket?.on("reload_user", reloadPage);
+    return () => {
+      dmContext.socket?.off("reload_user", reloadPage);
+    };
+  }, [reloadPage]);
 
   useEffect(() => {
     dmContext.socket?.on("updatePrInvites", getPrInvites);

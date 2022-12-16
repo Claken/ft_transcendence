@@ -6,9 +6,10 @@ import { BlockUserGateway } from './blockUser.gateway';
 import { UsersModule } from 'src/users/users.module';
 import { BlockUserController } from './blockUser.controller';
 import { DmModule } from 'src/dm/dm.module';
+import { FriendRequestModule } from 'src/friendRequest/friendRequest.module';
 
 @Module({
-	imports: [TypeOrmModule.forFeature([BlockUserEntity]), UsersModule, DmModule],
+	imports: [TypeOrmModule.forFeature([BlockUserEntity]), UsersModule, DmModule, FriendRequestModule],
   controllers: [BlockUserController],
   providers: [BlockUserService, BlockUserGateway],
 	exports: [BlockUserService],

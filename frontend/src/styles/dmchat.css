@@ -7,17 +7,6 @@
   font-family: "Lucida Sans";
 }
 
-.nameuser {
-  display: flex;
-  width: 150px;
-  height: 50px;
-  font-size: 25px;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-  font-family: "Lucida Sans";
-}
-
 .cercleconnect {
   display: flex;
   width: 150px;
@@ -189,6 +178,7 @@
   height: 50px;
   border-radius: 75px 75px 75px 75px;
   overflow: hidden;
+	border: none;
   background: transparent;
   transition: height 1s;
 }
@@ -205,17 +195,47 @@
   height: 50px;
   border-radius: 75px 75px 75px 75px;
   font-size: 20px;
-  cursor: pointer;
-  border: none;
   color: white;
   background: #523b82;
+}
+
+.nameuser {
+  display: flex;
+  width: 15%;
+  height: 50px;
+  font-size: 25px;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  font-family: "Lucida Sans";
+}
+
+.notifications {
+  display: flex;
+	width: 57%;
+  height: 50px;
+	justify-content: center;
+  align-items: center;
+  text-align: center;
+	background: transparent;
+	color: rgb(160, 76, 220);
+	font-family: "Lucida Sans";
+}
+
+.boxtourne {
+	width: 8%;
+	height: 50px;
+	display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
 }
 
 .tourne {
   margin-left: auto;
   margin-top: auto;
   margin-bottom: auto;
-  margin-right: 5%;
+  margin-right: auto;
   width: 30px;
   height: 30px;
 }
@@ -232,6 +252,30 @@
   100% {
     transform: rotate(360deg);
   }
+}
+
+.overlayup {
+	width: 20%;
+	height: 50px;
+  display: flex;
+  flex-direction: row;
+}
+
+.overlayupright {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  width: 100%;
+  height: 50px;
+  border-radius: 0px 75px 75px 0px;
+  font-size: 20px;
+  cursor: pointer;
+  border: none;
+  color: white;
+  background: #523b82;
+  overflow: hidden;
+	font-family: "Lucida Sans";
 }
 
 .overlay {
@@ -254,6 +298,7 @@
   color: white;
   background: #523b82;
   overflow: hidden;
+	font-family: "Lucida Sans";
 }
 
 .overlaymiddle {
@@ -269,6 +314,7 @@
   color: white;
   background: #523b82;
   overflow: hidden;
+	font-family: "Lucida Sans";
 }
 
 .overlayright {
@@ -285,6 +331,11 @@
   color: white;
   background: #523b82;
   overflow: hidden;
+	font-family: "Lucida Sans";
+}
+
+.overlaycenter:hover {
+  opacity: 0.5;
 }
 
 .bodysearchinput {
@@ -325,17 +376,6 @@
 
 .btnsend:hover {
   opacity: 0.5;
-}
-
-.notifications {
-  margin-top: auto;
-  margin-bottom: auto;
-	justify-content: center;
-  align-items: center;
-  text-align: center;
-	background: transparent;
-	color: rgb(160, 76, 220);
-	font-family: "Lucida Sans";
 }
 
 .simplebtn {
