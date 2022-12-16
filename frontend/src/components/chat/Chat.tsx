@@ -272,9 +272,9 @@ const Chat = () => {
       });
       // chatEndRef.current.scrollIntoView({ behavior: "smooth" });
     } else {
-      if (activeRoom.mute) alert("you cannot talk in this room bitch !");
+      if (activeRoom.mute) alert("You cannot talk in this room bitch !");
       else if (activeRoom.member === false)
-        alert("you must be a member of the room bitch !");
+        alert("You must join a room to send a message.");
       changeText("");
     }
   };
