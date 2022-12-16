@@ -430,15 +430,12 @@ export class GameGateway
 	}
   }
 
-<<<<<<< HEAD
-=======
   @SubscribeMessage('updateTheUser')
   async UpdateTheUser(client: any, user: UserDTO) {
 	user = await this.usersService.getById(user.id)
 	client.emit("updateTheUser", user);
   }
 
->>>>>>> theLastBranch
   @SubscribeMessage('updateInGame')
   async UpdateInGame(client: any, user: UserDTO, gameId: number) {
 	user = await this.usersService.updateInGame(user.id, false);
