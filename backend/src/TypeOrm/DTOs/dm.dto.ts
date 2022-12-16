@@ -4,7 +4,7 @@ export class DmDto {
 	
 @IsOptional()
 @IsNumber()
-id: number;
+id?: number;
 
 @IsString()
 sender: string;
@@ -13,10 +13,21 @@ sender: string;
 receiver: string;
 
 @IsOptional()
+@IsNumber()
+senderId?: number;
+
+@IsOptional()
+@IsNumber()
+receiverId?: number;
+
+@IsOptional()
 @IsString()
-message: string;
+message?: string;
 
 @IsOptional()
 @IsBoolean()
-read: boolean;
+read?: boolean;
+
+@IsOptional()
+date?: Date;
 }

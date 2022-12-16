@@ -21,9 +21,9 @@
 			rgba(82, 59, 130, 1) 0%,
 			rgba(48, 34, 75, 1) 40%,
 			rgba(82, 59, 130, 1) 100%);
-
+ 
 	.left-side {
-
+ 
 		display: flex;
 		justify-content: center;
 		align-items: center;
@@ -32,25 +32,25 @@
 		width: 100%;
 		flex-direction: column;
 		overflow: auto;
-
+ 
 		.rooms-list {
 			height: 90%;
 			width: 100%;
 			display: flex;
 			justify-content: center;
 			overflow: auto;
-
+ 
 			ul {
 				width: 90%;
 				height: 90%;
 				margin: 10px 0;
-
+ 
 				li {
 					margin: 10px 0;
 					list-style: none;
 					width: 100%;
 					height: 10%;
-
+ 
 					button {
 						width: 100%;
 						background-color: transparent;
@@ -62,18 +62,18 @@
 						background-color: rgb(82, 59, 130);
 						font-weight: 600;
 						font-size: 18px;
-
+ 
 					}
-
+ 
 					button:hover {
 						background-color: whitesmoke;
 						color: rgb(82, 59, 130);
 					}
-
+ 
 				}
 			}
 		}
-
+ 
 		.room-buttons {
 			width: 100%;
 			height: 10%;
@@ -81,38 +81,30 @@
 			justify-content: space-evenly;
 			align-items: center;
 			background-color: transparent;
-
-			form {
-				background-color: transparent;
+ 
+ 
+			button {
+				display: flex;
+				align-items: center;
+				justify-content: center;
 				width: 100%;
 				height: 100%;
-
-				button {
-					display: flex;
-					align-items: center;
-					justify-content: center;
-					width: 100%;
-					height: 100%;
-					cursor: pointer;
+				cursor: pointer;
+				background-color: transparent;
+				border: none;
+				overflow: auto;
+ 
+				.icon {
 					background-color: transparent;
-					border: none;
-					overflow: auto;
-
-					.icon {
-						background-color: transparent;
-						color: whitesmoke;
-						height: 60px;
-						width: 60px;
-					}
+					color: whitesmoke;
+					height: 60px;
+					width: 60px;
 				}
-
 			}
-
 		}
-
 	}
-
-
+ 
+ 
 	.middle {
 		display: flex;
 		justify-content: center;
@@ -122,7 +114,7 @@
 		border-left: solid 2px whitesmoke;
 		border-right: solid 2px whitesmoke;
 		flex-direction: column;
-
+ 
 		.top-chat {
 			height: 10%;
 			width: 100%;
@@ -133,7 +125,7 @@
 			color: whitesmoke;
 			font-weight: 600;
 			font-size: 15px;
-
+ 
 			button {
 				display: flex;
 				align-items: center;
@@ -149,23 +141,23 @@
 				background-color: rgb(82, 59, 130);
 				font-weight: 600;
 				font-size: 18px;
-
+ 
 			}
 		}
-
+ 
 		.chat-box {
 			height: 80%;
 			width: 100%;
-
+ 
 			ul {
 				display: flex;
 				overflow-y: auto;
 				flex-direction: column;
 				height: 100%;
 				width: 100%;
-
+ 
 				.owner_messages {
-
+ 
 					li {
 						width: fit-content;
 						height: fit-content;
@@ -176,12 +168,12 @@
 						margin: 10px 0;
 						margin-right: 15px;
 						max-width: 80%;
-
+ 
 						.sender-username {
 							color: lightgrey;
 							font-size: 12px;
 						}
-
+ 
 						p {
 							width: fit-content;
 							height: fit-content;
@@ -198,14 +190,14 @@
 							color: black;
 							word-break: break-all;
 						}
-
+ 
 						.message-date {
 							color: lightgray;
 							font-size: 12px;
 						}
 					}
 				}
-
+ 
 				.others-messages {
 					li {
 						width: fit-content;
@@ -217,12 +209,12 @@
 						margin-left: 15px;
 						max-width: 80%;
 						color: grey;
-
+ 
 						.sender-username {
 							color: lightgrey;
 							font-size: 12px;
 						}
-
+ 
 						p {
 							color: black;
 							background-color: whitesmoke;
@@ -236,32 +228,32 @@
 							font-weight: 600;
 							word-break: break-all;
 						}
-
+ 
 						.message-date {
 							color: lightgray;
 							font-size: 12px;
 						}
 					}
 				}
-
+ 
 				.endchat {
 					height: 90px;
 				}
-
+ 
 			}
 		}
-
+ 
 		.chat-bottom {
 			width: 100%;
 			height: 10%;
 			display: flex;
-
+ 
 			.chat-send-msg {
 				width: 100%;
 				height: 100%;
 				display: flex;
 				flex: 5;
-
+ 
 				form {
 					display: flex;
 					justify-content: space-evenly;
@@ -269,7 +261,7 @@
 					margin: auto;
 					width: 100%;
 					height: 100%;
-
+ 
 					input {
 						width: 75%;
 						height: 80%;
@@ -280,11 +272,11 @@
 						font-size: 20px;
 						padding-left: 10px;
 					}
-
+ 
 					input::placeholder {
 						color: whitesmoke;
 					}
-
+ 
 					button {
 						display: flex;
 						justify-content: center;
@@ -294,22 +286,22 @@
 						background-color: transparent;
 						color: whitesmoke;
 						border: none;
-
+ 
 						.icon {
 							height: 80%;
 							width: 80%;
 						}
 					}
 				}
-
+ 
 			}
-
+ 
 			.chat-game-btn {
 				width: 100%;
 				height: 100%;
 				display: flex;
 				flex: 1;
-
+ 
 				form {
 					display: flex;
 					justify-content: space-evenly;
@@ -317,7 +309,7 @@
 					margin: auto;
 					width: 100%;
 					height: 100%;
-
+ 
 					button {
 						display: flex;
 						justify-content: center;
@@ -327,20 +319,20 @@
 						background-color: transparent;
 						color: whitesmoke;
 						border: none;
-
+ 
 						.icon {
 							height: 80%;
 							width: 80%;
 						}
 					}
 				}
-
+ 
 			}
 		}
-
-
+ 
+ 
 	}
-
+ 
 	.rigth-side {
 		display: flex;
 		justify-content: flex-start;
@@ -357,7 +349,7 @@
 		display: flex;
 		justify-content: center;
 		overflow: auto;
-
+ 
 		.member-list {
 			display: flex;
 			justify-content: center;
@@ -366,18 +358,18 @@
 			height: 50%;
 			flex: 1;
 			flex-direction: column;
-
+ 
 			ul {
 				width: 90%;
 				height: 100%;
-
-
+ 
+ 
 				.member-element {
-
+ 
 					display: flex;
 					justify-content: start;
 					align-items: center;
-
+ 
 					list-style: none;
 					width: 100%;
 					height: 10%;
@@ -388,14 +380,14 @@
 					list-style: none;
 					color: whitesmoke;
 					margin: 10px 0;
-
-
+ 
+ 
 					li {
 						margin-left: 10px;
 						display: flex;
 						align-items: center;
 						width: 100%;
-
+ 
 						.member-name {
 							display: flex;
 							align-items: center;
@@ -404,27 +396,27 @@
 							flex: 1;
 							float: left;
 						}
-
-
+ 
+ 
 						.member-buttons {
-
+ 
 							width: 50%;
 							display: flex;
 							float: right;
 							flex: 1;
 							justify-content: space-evenly;
-
+ 
 							button {
 								border: none;
 								cursor: pointer;
 								background-color: transparent;
-
+ 
 								.icon {
 									background-color: transparent;
 									color: whitesmoke;
 									height: 24px;
 									width: 24px;
-
+ 
 								}
 							}
 						}
@@ -432,15 +424,15 @@
 				}
 			}
 		}
-
-
+ 
+ 
 	}
 }
-
+ 
 ::-webkit-scrollbar {
 	display: none;
 }
-
+ 
 .modal-overlay {
 	position: absolute;
 	display: flex;
@@ -452,7 +444,7 @@
 	background: rgba(255, 255, 255, 0.05);
 	top: 10%;
 	left: 0%;
-
+ 
 	.modal-box {
 		background: rgb(82, 59, 130);
 		background: -moz-linear-gradient(90deg,
@@ -467,7 +459,7 @@
 				rgba(82, 59, 130, 1) 0%,
 				rgba(48, 34, 75, 1) 40%,
 				rgba(82, 59, 130, 1) 100%);
-
+ 
 		overflow: hidden;
 		width: 60%;
 		height: 60%;
@@ -479,7 +471,7 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-
+ 
 		.setAdmin {
 			width: 100%;
 			height: 100%;
@@ -487,11 +479,11 @@
 			align-items: center;
 			justify-content: center;
 			flex-direction: column;
-
+ 
 			.setAdmin-buttons {
 				width: 100%;
 				height: 30%;
-
+ 
 				button {
 					display: flex;
 					justify-content: center;
@@ -503,18 +495,18 @@
 					border: 2px solid whitesmoke;
 					border-radius: 10px;
 					font-size: 24px;
-
+ 
 				}
-
+ 
 			}
-
+ 
 		}
-
+ 
 		.room-settings {
 			width: 100%;
 			height: 100%;
-
-
+ 
+ 
 			.top-settings {
 				display: flex;
 				justify-content: center;
@@ -522,13 +514,13 @@
 				width: 100%;
 				height: 10%;
 			}
-
+ 
 			.sides-room-settings {
 				display: flex;
 				flex-direction: row;
 				width: 100%;
 				height: 90%;
-
+ 
 				.room-settings-left {
 					height: 100%;
 					display: flex;
@@ -536,7 +528,7 @@
 					align-items: center;
 					flex: 1;
 					flex-direction: column;
-
+ 
 					.delete-room-settings {
 						display: flex;
 						justify-content: center;
@@ -544,7 +536,7 @@
 						width: 100%;
 						flex: 1;
 					}
-
+ 
 					.password-settings {
 						display: flex;
 						justify-content: center;
@@ -553,11 +545,11 @@
 						flex: 1;
 						flex-direction: column;
 						gap: 20px;
-
+ 
 					}
-
+ 
 				}
-
+ 
 				.room-settings-right {
 					height: 100%;
 					display: flex;
@@ -565,37 +557,37 @@
 					align-items: center;
 					flex: 1;
 					flex-direction: column;
-
+ 
 					.room-settings-lists {
 						width: 100%;
 						height: 100%;
 						display: flex;
 						justify-content: center;
 						flex-direction: column;
-
+ 
 						.banmute-list {
 							display: flex;
 							align-items: center;
 							justify-content: flex-start;
 							flex-direction: column;
 							flex: 1;
-
+ 
 							h3 {
 								height: 10%;
 								width: 1005;
 							}
-
+ 
 							ul {
 								width: 90%;
 								height: 100%;
-
-
+ 
+ 
 								.member-element {
-
+ 
 									display: flex;
 									justify-content: start;
 									align-items: center;
-
+ 
 									list-style: none;
 									width: 100%;
 									height: 10%;
@@ -606,14 +598,14 @@
 									list-style: none;
 									color: whitesmoke;
 									margin: 10px 0;
-
-
+ 
+ 
 									li {
 										margin-left: 10px;
 										display: flex;
 										align-items: center;
 										width: 100%;
-
+ 
 										.member-name {
 											display: flex;
 											align-items: center;
@@ -622,7 +614,7 @@
 											flex: 1;
 											float: left;
 										}
-
+ 
 									}
 								}
 							}
@@ -630,7 +622,7 @@
 					}
 				}
 			}
-
+ 
 		}
 	}
 }

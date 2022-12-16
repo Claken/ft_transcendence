@@ -1,13 +1,15 @@
 import React from "react";
-import Navigation from "../components/Navigation";
 import Chat from "../components/chat/Chat";
-import AppTestSockets from "../components/chat/webSocketTester";
 import "../styles/chat.scss"
+import { useDm } from "../contexts/DmContext";
+import DmChat from "../components/dm/DmChat";
 
 function Channel() {
+  const dmContext = useDm();
+
   return (
     <div>
-      < Chat />
+      {dmContext.openDm ? <DmChat /> : <Chat />}
     </div>
   );
 }

@@ -111,7 +111,7 @@ export class AuthGateway
     memberships.forEach((member: MemberEntity) => {
       this.eventEmitter.emit('GetListsForUser', member.inChannel.chatRoomName);
     });
-    // this.eventEmitter.emit('modify_name_dm', {newName, oldName});
-    // this.server.emit('reload_user');
+    this.eventEmitter.emit('modify_name_dm', {sender: newName, receiver: oldName});
+    this.server.emit('reload_user');
   }
 }

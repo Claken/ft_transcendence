@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { DmDto } from '../TypeOrm/DTOs/dm.dto';
 import { DmEntity } from '../TypeOrm/Entities/dm.entity';
 import { Socket } from 'socket.io';
+import { userQueue } from 'src/game/game.gateway';
 
 export class DmUser {
 	name: string;
@@ -24,38 +25,49 @@ export class DmService {
 		if (i >= 0 && this.dmUsers[i].socket !== socket) {
 			this.dmUsers[i].socket = socket;
 			this.dmUsers.find(user => user.name === dm.sender).socket.emit('block_user');
+			return;
 		}
-		else if (i === -1) {
+		const j = this.dmUsers.findIndex(dmUser => dmUser.socket === socket)
+		if (j >= 0 && this.dmUsers[j].name !== dm.sender) {
+			this.dmUsers[j].name = dm.sender;
+			this.dmUsers.find(user => user.name === dm.sender).socket.emit('block_user');
+			return;
+		}
+		else if (i === -1 && j === -1) {
 			this.dmUsers.unshift(newDmUser);
 			this.dmUsers.find(user => user.name === dm.sender).socket.emit('block_user');
 		}
 	}
 
-	modifyName(socket: Socket, dm: DmDto) {
+	modifyName(dm: DmDto) {
 		const i = this.dmUsers.findIndex(dmUser => dmUser.name === dm.receiver)
 		if (i >= 0 && this.dmUsers[i].name !== dm.sender) {
 			this.dmUsers[i].name = dm.sender;
 		}
+		console.log("all sockets:");
+		this.dmUsers.map(user => console.log("name = " + user.name + " socket = " + user.socket.id));
 	}
 
-  async newDm(dm: DmDto) {
+  async newDm(dm: DmDto): Promise<DmEntity> {
     const newDm = this.dmRepo.create(dm);
+		const returnDm = this.dmRepo.save(newDm);
+		const pushDm = await this.dmRepo.findOne({ where: { id: (await returnDm).id }});
 		if (this.dmUsers.find(dmUser => dmUser.name === dm.sender) !== undefined)
-			this.dmUsers.find(dmUser => dmUser.name === dm.sender).socket.emit('message_dm', dm)
+			this.dmUsers.find(dmUser => dmUser.name === dm.sender).socket.emit('message_dm', pushDm);
 		if (this.dmUsers.find(dmUser => dmUser.name === dm.receiver) !== undefined)
-			this.dmUsers.find(dmUser => dmUser.name === dm.receiver).socket.emit('message_dm', dm)
-    return await this.dmRepo.save(newDm);
+			this.dmUsers.find(dmUser => dmUser.name === dm.receiver).socket.emit('message_dm', pushDm);
+    return returnDm;
   }
 
 	async historyDm(): Promise<DmEntity[]> {
     return await this.dmRepo.find();
   }
 
-	async getByName(me: string, target: string): Promise<DmEntity[]> {
+	async getByName(me: number, target: number): Promise<DmEntity[]> {
     return await this.dmRepo.find({
 			where: [
-				{sender: me, receiver: target},
-				{sender: target, receiver: me},
+				{senderId: me, receiverId: target},
+				{senderId: target, receiverId: me},
 			]
 		});
   }
@@ -63,16 +75,16 @@ export class DmService {
 	async readDm(dm: DmDto): Promise<DmEntity[]> {
 		const dms = await this.dmRepo.find({
 			where: [
-				{sender: dm.receiver, receiver: dm.sender, read: false},
+				{senderId: dm.receiverId, receiverId: dm.senderId, read: false},
 			]
 		});
 		dms.map(dm => dm.read = true);
 		return await this.dmRepo.save([...dms]);
 	}
 
-	async getRead(me: string, target: string): Promise<number> {
+	async getRead(me: number, target: number): Promise<number> {
 		return await this.dmRepo.count({
-			where: {sender: target, receiver: me, read: false}
+			where: {senderId: target, receiverId: me, read: false}
 		});
 	}
 

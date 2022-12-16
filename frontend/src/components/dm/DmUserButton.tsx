@@ -13,7 +13,13 @@ function DmUserButton(props) {
   const [notifications, setNotifications] = useState<number>(0);
 
   const haveNotifications = () => {
-    if (notifications > 0) return true;
+    if (notifications > 0) {
+      if (dmContext.isBlock(props.user.id))
+        return false;
+      if (dmContext.isBlocked(props.user.id))
+        return false;
+      return true;
+    }
     return false;
   };
 
@@ -50,7 +56,7 @@ function DmUserButton(props) {
 
   const getNotifications = async () => {
     await axios
-      .get(`/dm/${dmContext.me.name}/${props.user.name}/read`)
+      .get(`/dm/${dmContext.me.id}/${props.user.id}/read`)
       .then((res) => {
         setNotifications(res.data);
       })

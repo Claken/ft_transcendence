@@ -12,12 +12,12 @@ export class DmController {
   }
 
 	@Get(':me/:target')
-  async getByName(@Param('me') me: string, @Param('target') target: string): Promise<DmEntity[]> {
+  async getByName(@Param('me') me: number, @Param('target') target: number): Promise<DmEntity[]> {
     return await this.dmService.getByName(me, target);
   }
 
 	@Get(':me/:target/read')
-	async getRead(@Param('me') me: string, @Param('target') target: string): Promise<number> {
+	async getRead(@Param('me') me: number, @Param('target') target: number): Promise<number> {
 		return await this.dmService.getRead(me, target);
 	}
 }

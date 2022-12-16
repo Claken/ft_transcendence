@@ -775,6 +775,11 @@ const Chat = () => {
     return new Date(a.date) - new Date(b.date);
   });
 
+  const switchDm = (event: any) => {
+    event.preventDefault();
+    dmContext.switchDm();
+  };
+
   return (
     <div className="chat-container">
       <div className="left-side">
@@ -816,6 +821,28 @@ const Chat = () => {
                 <path d="M4 21v-13a3 3 0 0 1 3 -3h10a3 3 0 0 1 3 3v6a3 3 0 0 1 -3 3h-9l-4 4"></path>
                 <line x1="10" y1="11" x2="14" y2="11"></line>
                 <line x1="12" y1="9" x2="12" y2="13"></line>
+              </svg>
+            </button>
+          </form>
+          <form onSubmit={switchDm}>
+            <button>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="icon icon-tabler icon-tabler-switch-3"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                strokeWidth="2"
+                stroke="currentColor"
+                fill="none"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                <path d="M3 17h2.397a5 5 0 0 0 4.096 -2.133l.177 -.253m3.66 -5.227l.177 -.254a5 5 0 0 1 4.096 -2.133h3.397"></path>
+                <path d="M18 4l3 3l-3 3"></path>
+                <path d="M3 7h2.397a5 5 0 0 1 4.096 2.133l4.014 5.734a5 5 0 0 0 4.096 2.133h3.397"></path>
+                <path d="M18 20l3 -3l-3 -3"></path>
               </svg>
             </button>
           </form>

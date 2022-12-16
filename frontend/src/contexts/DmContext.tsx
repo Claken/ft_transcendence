@@ -8,13 +8,13 @@ const DmContext = React.createContext(null);
 
 export const DmProvider = ({ children }) => {
   const auth = useAuth();
-  const [target, setTarget] = useState<IUser>();
-  const [haveTarget, setHaveTarget] = useState<boolean>(false);
+  const [target, setTarget] = useState<IUser>(null);
   const [me, setMe] = useState<IUser>(null);
   const [socket, setSocket] = useState<Socket>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [blockUsers, setBlockUsers] = useState<IUser[]>([]);
   const [blockBys, setBlockBys] = useState<IUser[]>([]);
+  const [openDm, setOpenDm] = useState<boolean>(false);
 
   const getBlockUsers = async () => {
     await axios
@@ -40,9 +40,25 @@ export const DmProvider = ({ children }) => {
       });
   };
 
+  const getTarget = async () => {
+    await axios
+      .get(`/users/${target.id}`)
+      .then((res) => {
+        setTarget(res.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
   const blockRefresh = () => {
     getBlockUsers();
     getBlockBys();
+  };
+
+  const reloadPage = () => {
+    blockRefresh();
+    if (openDm) getTarget();
   };
 
   useEffect(() => {
@@ -60,6 +76,13 @@ export const DmProvider = ({ children }) => {
   }, [blockRefresh]);
 
   useEffect(() => {
+    socket?.on("reload_user", reloadPage);
+    return () => {
+      socket?.off("reload_user", reloadPage);
+    };
+  }, [reloadPage]);
+
+  useEffect(() => {
     setMe(auth.user);
   }, [auth.user]);
 
@@ -70,7 +93,6 @@ export const DmProvider = ({ children }) => {
 
   useEffect(() => {
     if (me && socket) {
-      console.log("new socket connect " + me.name);
       socket.emit("join_dm", {
         sender: me.name,
         receiver: me.name,
@@ -81,8 +103,8 @@ export const DmProvider = ({ children }) => {
   }, [me, setSocket]);
 
   const changeTarget = (user: IUser) => {
+    setOpenDm(true);
     setTarget(user);
-    setHaveTarget(true);
     setLoading(true);
   };
 
@@ -113,6 +135,10 @@ export const DmProvider = ({ children }) => {
     return false;
   };
 
+  const switchDm = () => {
+    setOpenDm(!openDm);
+  };
+
   return (
     <DmContext.Provider
       value={{
@@ -120,8 +146,6 @@ export const DmProvider = ({ children }) => {
         socket,
         target,
         setTarget,
-        haveTarget,
-        setHaveTarget,
         loading,
         setLoading,
         changeTarget,
@@ -129,6 +153,8 @@ export const DmProvider = ({ children }) => {
         blockBys,
         isBlock,
         isBlocked,
+        openDm,
+        switchDm,
       }}
     >
       {children}

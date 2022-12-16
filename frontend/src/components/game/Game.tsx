@@ -186,8 +186,10 @@ const Game = (
 		allPos.vx = -1; //vitesse en X de la balle
 		allPos.vy = -1; //vitesse en Y de la balle
 		allPos.speed = 2;
-		if (allPos.compteur === null)
+		if (allPos.compteur === null) {
+			console.log("gameId = "+gameId)
 			socket.emit("setCompteur", gameId);
+		}
 		allPos.key = key;
 		let animationFrameId: number;
 		allPos.img = new Image();

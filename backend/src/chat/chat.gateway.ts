@@ -247,8 +247,16 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 	@SubscribeMessage('getAllChannels')
 	async HandleGettingChannels(client: Socket) : Promise<void> {
 		const Channels = await this.chatService.findAllChatRooms();
+		// console.log("CLIENTS.JOIN");
 		Channels.forEach((channel : ChatRoomEntity) => client.join(channel.id));
 		client.emit('sendAllChannels', Channels);
+	}
+
+	@OnEvent('getPrivatesForFriend')
+	@SubscribeMessage('getPrivates')
+	async letUsGetPrivateRooms(client: Socket) : Promise<void> {
+		const privates = await this.chatService.findAllPrivateRooms();
+		client.emit('sendPrivates', privates);
 	}
 
 	@SubscribeMessage('getListsForOneClient')
