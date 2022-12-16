@@ -270,7 +270,6 @@ const Chat = () => {
         room: activeRoom.name,
         msg: text,
       });
-      // chatEndRef.current.scrollIntoView({ behavior: "smooth" });
     } else {
       if (activeRoom.mute) alert("You cannot talk in this room bitch !");
       else if (activeRoom.member === false)
