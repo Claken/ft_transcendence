@@ -429,7 +429,11 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 	askToCancelGameInvite(client: Socket, user: UserDTO) {
 	this.eventEmitter.emit('askToCancelInvite', user);
 	}
-	
-	//TODO: faire fct pour cancel l'invit (penser à eventemitter dans gameGateway pour cancelInvite)
+
+	@SubscribeMessage('updateUserChat')
+	async UpdateUserChat(client: Socket, user: UserDTO) {
+		user = await this.usersService.updateInGame(user.id, false);
+		client.emit("updateUser", user);
+	}
 
 }

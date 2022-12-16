@@ -276,7 +276,6 @@ export class GameGateway
 
   @SubscribeMessage('setCompteur')
   async SetCompteur(client: any, gameId: number) {
-	console.log("gameId dans SetCompteur = "+gameId)
 	let nbInter = await this.gameService.updateNbInterval(gameId);
 	const interval = setInterval(this.tick, 1000, gameId, nbInter);
 	this.tabIntervalId.push({gameId, intervalID: interval});
@@ -288,6 +287,7 @@ export class GameGateway
 
   @SubscribeMessage('inQueueOrGame')
   async InQueueOrGame(client: any, user: UserDTO) {
+	user = await this.usersService.getById(user.id)
 	const res = this.tabGameInvite.filter((ObjInvite: ObjInvite) => ObjInvite.Inviter.name === user.name);
 	if (user && res[0]) {
 		user.hasSentAnInvite = true;
@@ -330,9 +330,15 @@ export class GameGateway
   async JoinQueue(client: any, user: UserDTO) {
     if (!userQueue.find((elet: UserDTO) => elet.name === user.name)) {
 		user = await this.usersService.updateInQueue(user.id, true);
-		client.emit("updateUser", user);
 		userQueue.push(user);
     }
+	else {
+		console.log("apdfjnadblakdjknbkgd")
+	  const game: GameDTO = await this.gameService.getCurrentGame(user.login);
+	  client.join(game.id);
+	  client.emit("updateUser", user);
+	  return;
+	}
     if (userQueue.length % 2 === 0) {
       /**** Take the first pending Game ****/
       const games: GameDTO[] = await this.gameService.getPendingGames();
@@ -384,6 +390,7 @@ export class GameGateway
 		nameRP: '',
       });
 	  client.join(newGame.id);
+	  client.emit("updateUser", user);
 	}
   }
 

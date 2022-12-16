@@ -27,32 +27,53 @@ function Pong() {
 
   /** reconnexion en pleine partie OU remettre en file d'attente s'il y est déjà **/
   useEffect(() => {
-    if (auth.user)
+	const updateUserApply = (user: IUser) => {
+		if (user.name === auth.user.name) {
+			user.avatarUrl = auth.user.avatarUrl
+			console.log("user inQueue = "+user.inQueue)
+			auth.user = user;
+		}
+	  }; 
+	socket.on("updateUser", updateUserApply);		
+
+    if (auth.user) {
+		console.log("on passe dans useEffect")
 		socket.emit("inQueueOrGame", auth.user);
+	}
+	return () => {
+		socket.off("updateUser", updateUserApply);
+	}
   }, [auth.user]);
 
 	/* ***************************************************************************** */
 	/*                                  socket.on                                    */
 	/* ***************************************************************************** */
 	/**** Display the Queue, cause the user is in ****/
-	socket.on("changeQueue", (status) => {
+	const changeQueueApply = (status: string) => {
+		console.log("change status par "+status)
 		setStatus(status);
-	});
+	};
+	useEffect(() => {
+		socket.on("changeQueue", changeQueueApply);
+		return () => {
+			socket.off("changeQueue", changeQueueApply);
+		}
+	  }, [changeQueueApply])
 
   /**** Join user in Queue and play ****/
-  socket.on("goPlay", (gameToPlay) => {
+  const goPlayApply = (gameToPlay: IGame) => {
     setStatus("join");
     setGame(gameToPlay);
-  });
-
-  socket.on("updateUser", (user: IUser) => {
-    if (user.name === auth.user.name) {
-		user.avatarUrl = auth.user.avatarUrl
-		auth.user = user;
+  };
+  useEffect(() => {
+	socket.on("goPlay", goPlayApply);
+	return () => {
+		socket.off("goPlay", goPlayApply);
 	}
-  });
+  }, [goPlayApply])
 
-  socket.on("updateUsers", (userLeft: IUser, userRight: IUser) => {
+
+  const updateUsersApply = (userLeft: IUser, userRight: IUser) => {
     if (auth.user.name === userLeft.name) {
 		userLeft.avatarUrl = auth.user.avatarUrl
 		auth.user = userLeft;
@@ -61,7 +82,13 @@ function Pong() {
 		userRight.avatarUrl = auth.user.avatarUrl
 		auth.user = userRight;
 	}
-  });
+  };
+  useEffect(() => {
+	socket.on("updateUsers", updateUsersApply);
+	return () => {
+		socket.off("updateUsers", updateUsersApply);
+	}
+  }, [updateUsersApply])
 
   /* ***************************************************************************** */
   /*                                  fonctions                                    */
@@ -73,13 +100,13 @@ function Pong() {
   };
 
   const QueueOut = () => {
-    setStatus("join");
-    socket.emit("leaveQueue", auth.user);
+	  socket.emit("leaveQueue", auth.user);
+	  setStatus("join");
   };
 
   const CancelInvite = () => {
-    setStatus("join");
-    socket.emit("cancelInvite", auth.user);
+	  socket.emit("cancelInvite", auth.user);
+	  setStatus("join");
   };
 
   return (

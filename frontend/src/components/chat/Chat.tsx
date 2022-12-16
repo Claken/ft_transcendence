@@ -622,6 +622,7 @@ const Chat = () => {
     let roomActive = findActiveRoom();
     roomActive.InviteGameId = infos.channel.InviteGameId;
     roomActive.InviteUserName = infos.channel.InviteUserName;
+	socket?.emit("updateUserChat", auth.user);
   });
 
   /* ***************************************************************************** */
