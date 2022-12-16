@@ -14,6 +14,7 @@ import GameInviteButton from "./GameInviteButton";
 import CancelInviteButton from "./CancelInviteButton";
 import JoinInviteButton from "./JoinInviteButton";
 import RoomSettings from "./RoomSettings";
+import { useDm } from "../../contexts/DmContext";
 
 const Chat = () => {
   const [text, changeText] = useState<string>("");
@@ -35,6 +36,8 @@ const Chat = () => {
   const chatEndRef = useRef(null);
 
   const auth = useAuth();
+
+  const dmContext = useDm();
 
   const navigate = useNavigate();
 
@@ -282,13 +285,14 @@ const Chat = () => {
 
   const receiveChatMessage = (obj: {
     sender: string;
+    senderId: number,
     room: string;
     content: string;
     date: Date;
   }) => {
-    // console.log("receiveChatMessage + " + username);
     const theroom: IMessageToBack = {
       sender: obj.sender,
+      senderId: obj.senderId,
       message: obj.content,
       date: obj.date,
     };
@@ -446,7 +450,7 @@ const Chat = () => {
         name: element.chatRoomName,
         type: element.type,
         InviteUserName: element.InviteUserName,
-		InviteGameId: element.InviteGameId,
+		    InviteGameId: element.InviteGameId,
         messages: [],
       };
       [...element.messages].reverse().forEach((oneMessage: any) => {
@@ -454,6 +458,7 @@ const Chat = () => {
           sender: oneMessage.sender,
           message: oneMessage.content,
           date: oneMessage.createdAt,
+          senderId: oneMessage.senderId,
         });
       });
       roomsCopy.push(newRoom);
@@ -493,6 +498,7 @@ const Chat = () => {
           sender: oneMessage.sender,
           message: oneMessage.content,
           date: oneMessage.createdAt,
+          senderId: oneMessage.senderId,
         });
       });
     }
@@ -877,6 +883,7 @@ const Chat = () => {
           <ul>
             {findActiveRoom().member ? (
               sortedMessages.map((msg: any, id: number) => (
+                !dmContext.isBlock(msg.senderId) &&
                 <div key={id}
                   className={
                     msg.sender == username
@@ -892,7 +899,7 @@ const Chat = () => {
                     </div>
                   </li>
                 </div>
-              ))
+                )) 
             ) : (
               <div></div>
             )}

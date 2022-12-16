@@ -104,6 +104,15 @@ export const DmProvider = ({ children }) => {
     return false;
   };
 
+  const isBlockedName = (name: string) => {
+    if (
+      blockBys !== undefined &&
+      blockBys.findIndex((blockBy) => blockBy.name === name) > -1
+    )
+      return true;
+    return false;
+  };
+
   return (
     <DmContext.Provider
       value={{
