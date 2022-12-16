@@ -36,13 +36,12 @@ const MatchHistory = () => {
               <div key={id} className={"gamePlayed gamePlayed" + game.map}>
                 <li>
                   <p>
-                    {game.loginLP} {game.scoreLP} - {game.loginRP}
+                    {game.loginLP} {game.scoreLP} - {" "} {game.loginRP}
                     {game.scoreRP}
                   </p>
                   <br />
                   <p>
-                    {game.abort ? "game abort by " : null}
-                    {game.abort ? game.abort : null}
+                    {game.abort ? "game aborted by " + game.abort : null}
                   </p>
                 </li>
               </div>

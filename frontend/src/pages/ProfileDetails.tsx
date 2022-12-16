@@ -112,13 +112,11 @@ function ProfileDetails() {
                         >
                           <li key={id}>
                             <p>
-                              {game.loginLP} {game.scoreLP} - {game.loginRP}
-                              {game.scoreRP}
+                              {game.loginLP} {game.scoreLP} - {game.scoreRP} {game.loginRP}
                             </p>
                             <br />
                             <p>
-                              {game.abort ? "game abort by " : null}
-                              {game.abort ? game.abort : null}
+                              {game.abort ? "game aborted by " + game.abort : null}
                             </p>
                           </li>
                         </div>
