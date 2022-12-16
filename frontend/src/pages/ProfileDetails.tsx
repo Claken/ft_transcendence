@@ -35,7 +35,6 @@ function ProfileDetails() {
 					...prev,
 					avatarUrl: base64string as string,
 				}));
-        console.log(JSON.stringify(user))
 			});
 		}
 	}, [blob]);
