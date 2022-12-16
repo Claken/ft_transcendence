@@ -430,8 +430,8 @@ export class GameGateway
 
   @SubscribeMessage('updateTheUser')
   async UpdateTheUser(client: any, user: UserDTO) {
-	console.log("passage fct update depuis account")
-	client.emit("updateUser", user);
+	user = await this.usersService.getById(user.id)
+	client.emit("updateTheUser", user);
   }
 
   @SubscribeMessage('updateInGame')

@@ -19,11 +19,10 @@ function Account() {
 			socket.emit("updateTheUser", auth.user);
 	}, [auth.user]);
 
-	socket.on("updateUser", (user: IUser) => {
+	socket.on("updateTheUser", (user: IUser) => {
 		if (user.name === auth.user.name) {
 			user.avatarUrl = auth.user.avatarUrl;
 			auth.user = user;
-			console.log("user updated. win/lose = "+user.win+"/"+user.lose);
 			setUpdated(true);
 		}
 	});
@@ -56,10 +55,10 @@ function Account() {
 						<div className="profile-stats">
 							<h1> {auth.user?.name}</h1>
 							<h2>
-								Win: {auth.user?.win}
+								{updated ? ("Win: "+auth.user?.win) : null}
 							</h2>
 							<h2>
-								Lose: {auth.user?.lose}
+								{updated ? ("Lose: "+auth.user?.lose) : null}
 							</h2>
 						</div>
 						<div className="profile-buttons">
