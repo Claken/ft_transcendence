@@ -136,7 +136,7 @@ export class GameGateway
 		}
 		else
 			infos[0].ballX = infos[0].width / 2;
-        infos[0].speed = 2;
+        infos[0].speed = 4;
       }
       // Si la balle sort du terrain de gauche
       if (left < 0) {
@@ -152,7 +152,7 @@ export class GameGateway
 		}
 		else
 			infos[0].ballX = infos[0].width / 2;
-        infos[0].speed = 2;
+        infos[0].speed = 4;
       }
       infos[0].ballX += infos[0].vx * infos[0].speed;
       infos[0].ballY += infos[0].vy * infos[0].speed;

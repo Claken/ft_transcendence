@@ -563,6 +563,13 @@ const Chat = () => {
 
   const CancelGameInvite = (event: any) => {
     event.preventDefault();
+	const inviteMessage: string =
+      "--- " + username + " has canceled his invite to a Pong game ---";
+    socket?.emit("chatToServer", {
+      sender: username,
+      room: findActiveRoom().name,
+      msg: inviteMessage,
+    });
     socket?.emit("askToCancelGameInvite", auth.user);
   };
 
