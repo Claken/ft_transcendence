@@ -1,7 +1,7 @@
-# FT_TRANSCENDENCE
+# 🧘‍♂️FT_TRANSCENDENCE
 
-## What we gained from this project
+## 👩🏻‍🏫 What we have gained from this project
 
-## Pre-requisites
+## 📦 Pre-requisites
 
-## Usage
+## 🚀 Usage
